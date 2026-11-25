@@ -60,9 +60,9 @@ private theorem op_eig {A K M W ι : Type} [CommRing A] [Field K] [AddCommGroup 
     (opC : ι → Module.End K W) (hop : ∀ i, ∀ f ∈ Y, sp (op i f) = opC i (sp f))
     (z : heckeAlg Y op →+* K) (hz : z.comp (algebraMap A _) = χ) :
     ∃ F ∈ Submodule.span K (sp '' Y), F ≠ 0 ∧ ∀ i, opC i F = z (heckeGen Y op i) • F := by
-  letI : Algebra A K := χ.toAlgebra
-  letI : Module A W := Module.compHom W χ
-  haveI : IsScalarTower A K W := ⟨fun a k w => mul_smul (χ a) k w⟩
+  let : Algebra A K := χ.toAlgebra
+  let : Module A W := Module.compHom W χ
+  have : IsScalarTower A K W := ⟨fun a k w => mul_smul (χ a) k w⟩
   let s : Y →ₗ[A] W :=
     { toFun := fun f => sp f
       map_add' := fun f g => hadd _ f.2 _ g.2
