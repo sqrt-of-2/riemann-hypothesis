@@ -33,11 +33,11 @@ theorem scaledWm_linear (t : ℝ) (z : V (nd X)) (τ : X.Ψ) : ExF.Wm X (S1 X t 
   have hc := c.isLt
   have hlt : Fin.castLE X.p0_le c < ExF.qI X m := by
     rw [Fin.lt_def]
-    simp only [Fin.coe_castLE, ExF.qI]
+    simp only [Fin.val_castLE, ExF.qI]
     omega
-  simp only [ExF.Wm, ExF.nM, mat, nmat, Matrix.submatrix_apply, Matrix.of_apply, Matrix.smul_apply, smul_eq_mul, S1, dif_pos hlt]
-  rw [if_pos]
-  simp only [isW, Equiv.symm_apply_apply, ExF.qI, Fin.coe_castLE]
+  simp only [ExF.Wm, ExF.nM, mat, nmat, Matrix.submatrix_apply, Matrix.of_apply, Matrix.smul_apply, smul_eq_mul, S1, dite_eq_left hlt]
+  rw [ite_eq_left]
+  simp only [isW, Equiv.symm_apply_apply, ExF.qI, Fin.val_castLE]
   omega
 
 theorem unipotentFrame_scaling_invariant (t : ℝ) (z : V (nd X)) (τ : X.Ψ) : ExF.n1 X (S1 X t z) τ = ExF.n1 X z τ := by
@@ -48,7 +48,7 @@ theorem unipotentFrame_scaling_invariant (t : ℝ) (z : V (nd X)) (τ : X.Ψ) : 
     first
     | rfl
     | (exfalso
-       simp only [isW, Equiv.symm_apply_apply, Fin.coe_castLE] at *
+       simp only [isW, Equiv.symm_apply_apply, Fin.val_castLE] at *
        omega)
 
 theorem retractedWm_eq_zero (t : ℝ) (z : V (nd X)) (τ : X.Ψ) : ExF.Wm X (S2 X t z) τ = 0 := by
@@ -56,11 +56,11 @@ theorem retractedWm_eq_zero (t : ℝ) (z : V (nd X)) (τ : X.Ψ) : ExF.Wm X (S2 
   have hc := c.isLt
   have hlt : Fin.castLE X.p0_le c < ExF.qI X m := by
     rw [Fin.lt_def]
-    simp only [Fin.coe_castLE, ExF.qI]
+    simp only [Fin.val_castLE, ExF.qI]
     omega
-  simp only [ExF.Wm, ExF.nM, mat, nmat, Matrix.submatrix_apply, Matrix.of_apply, S2, dif_pos hlt, Matrix.zero_apply]
-  rw [if_pos]
-  simp only [isW, Equiv.symm_apply_apply, ExF.qI, Fin.coe_castLE]
+  simp only [ExF.Wm, ExF.nM, mat, nmat, Matrix.submatrix_apply, Matrix.of_apply, S2, dite_eq_left hlt, Matrix.zero_apply]
+  rw [ite_eq_left]
+  simp only [isW, Equiv.symm_apply_apply, ExF.qI, Fin.val_castLE]
   omega
 
 theorem scaledZt_linear (t : ℝ) (z : V (nd X)) (τ : X.Ψ) : ExF.Zt X (S1 X t z) τ = (t : ℂ) • ExF.Zt X z τ := by
@@ -105,17 +105,17 @@ theorem radialRetraction_mem_chart (x0 : Frame X.Ψ r) (ho : IsOrth X x0) (z : V
 theorem continuous_linearScaling (z : V (nd X)) : Continuous fun t : ℝ => S1 X t z := by
   refine (PiLp.continuous_toLp 2 _).comp (continuous_pi fun i => ?_)
   by_cases h : isW X i
-  · simp only [h, if_true]
+  · simp only [h, ite_true]
     fun_prop
-  · simp only [h, if_false]
+  · simp only [h, ite_false]
     fun_prop
 
 theorem continuous_radialRetraction (z : V (nd X)) : Continuous fun t : ℝ => S2 X t z := by
   refine (PiLp.continuous_toLp 2 _).comp (continuous_pi fun i => ?_)
   by_cases h : isW X i
-  · simp only [h, if_true]
+  · simp only [h, ite_true]
     fun_prop
-  · simp only [h, if_false]
+  · simp only [h, ite_false]
     fun_prop
 
 theorem linearScaling_zero_eq_retraction (z : V (nd X)) : S1 X 0 z = S2 X 1 z := by

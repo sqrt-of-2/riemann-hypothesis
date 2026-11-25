@@ -59,8 +59,8 @@ variable (F : Type) [Field F] [NumberField F] (κ : Type)
 def splitE : ((κ → mixedEmbedding.mixedSpace F) × (κ → FiniteAdeleRing (𝓞 F) F)) ≃+ (κ → AdeleRing (𝓞 F) F) where
   toFun p := fun i => ((InfiniteAdeleRing.ringEquiv_mixedSpace F).symm (p.1 i), p.2 i)
   invFun x := (fun i => InfiniteAdeleRing.ringEquiv_mixedSpace F (x i).1, fun i => (x i).2)
-  left_inv p := Prod.ext (funext fun i => RingEquiv.apply_symm_apply _ _) (funext fun i => rfl)
-  right_inv x := funext fun i => Prod.ext (RingEquiv.symm_apply_apply _ _) rfl
+  left_inv p := Prod.ext (funext fun _i => RingEquiv.apply_symm_apply _ _) (funext fun _i => rfl)
+  right_inv x := funext fun _i => Prod.ext (RingEquiv.symm_apply_apply _ _) rfl
   map_add' p q := funext fun i => Prod.ext (map_add (InfiniteAdeleRing.ringEquiv_mixedSpace F).symm (p.1 i) (q.1 i)) rfl
 
 theorem splitE_apply (p : (κ → mixedEmbedding.mixedSpace F) × (κ → FiniteAdeleRing (𝓞 F) F)) :
@@ -117,10 +117,10 @@ theorem continuous_comp_splitE [Fintype κ] (Φ : (κ → AdeleRing (𝓞 F) F) 
 
 theorem splitE_add_finE (z : κ → mixedEmbedding.mixedSpace F) (y u : κ → FiniteAdeleRing (𝓞 F) F) :
     splitE F κ (z, y + u) = splitE F κ (z, y) + GlobalTheory.WeilAdm.finE F u :=
-  funext fun i => Prod.ext (add_zero _).symm rfl
+  funext fun _i => Prod.ext (add_zero _).symm rfl
 
 theorem volume_isAddHaar [Fintype κ] : (volume : Measure (κ → mixedEmbedding.mixedSpace F)).IsAddHaarMeasure := by
-  haveI : MeasurableAdd (mixedEmbedding.mixedSpace F) := ContinuousAdd.measurableAdd
+  have : MeasurableAdd (mixedEmbedding.mixedSpace F) := ContinuousAdd.measurableAdd
   exact Measure.pi.isAddHaarMeasure _
 
 end GlobalTheory.WeilAdm.HaarSplit
@@ -137,22 +137,22 @@ theorem haar_pure_slice_bounds : ∀ (F : Type) [Field F] [NumberField F] (κ : 
           ∀ Φ ∈ GlobalTheory.WeilM.schA F κ, (∀ x, ∀ u ∈ U, Φ (x + GlobalTheory.WeilAdm.finE F u) = Φ x) →
             ∀ y, c * ∫⁻ z, ‖GlobalTheory.WeilAdm.slice F Φ y z‖ₑ ^ 2 ≤ ∫⁻ x, ‖Φ x‖ₑ ^ 2 ∂μ := by
   intro F _ _ κ _ g hg U hU
-  haveI := volume_isAddHaar F κ
-  haveI : OpensMeasurableSpace (κ → mixedEmbedding.mixedSpace F) := inferInstance
-  haveI : LocallyCompactSpace (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.locallyCompact_finiteAdele F
-  haveI : SecondCountableTopology (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.secondCountable_finiteAdele F
-  haveI : T2Space (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.t2Space_finiteAdeleRing_of_numberField F
-  letI mY : MeasurableSpace (κ → FiniteAdeleRing (𝓞 F) F) := borel _
-  haveI : BorelSpace (κ → FiniteAdeleRing (𝓞 F) F) := ⟨rfl⟩
-  letI mA : MeasurableSpace (κ → AdeleRing (𝓞 F) F) := borel _
-  haveI : BorelSpace (κ → AdeleRing (𝓞 F) F) := ⟨rfl⟩
-  haveI : SigmaCompactSpace (κ → FiniteAdeleRing (𝓞 F) F) := sigmaCompactSpace_of_locallyCompact_secondCountable
+  have := volume_isAddHaar F κ
+  have : OpensMeasurableSpace (κ → mixedEmbedding.mixedSpace F) := inferInstance
+  have : LocallyCompactSpace (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.locallyCompact_finiteAdele F
+  have : SecondCountableTopology (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.secondCountable_finiteAdele F
+  have : T2Space (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.t2Space_finiteAdeleRing_of_numberField F
+  let mY : MeasurableSpace (κ → FiniteAdeleRing (𝓞 F) F) := borel _
+  have : BorelSpace (κ → FiniteAdeleRing (𝓞 F) F) := ⟨rfl⟩
+  let mA : MeasurableSpace (κ → AdeleRing (𝓞 F) F) := borel _
+  have : BorelSpace (κ → AdeleRing (𝓞 F) F) := ⟨rfl⟩
+  have : SigmaCompactSpace (κ → FiniteAdeleRing (𝓞 F) F) := sigmaCompactSpace_of_locallyCompact_secondCountable
   set ν : Measure (κ → FiniteAdeleRing (𝓞 F) F) := Measure.addHaar with hν
-  haveI : SFinite ν := inferInstance
-  haveI : MeasurableAdd (κ → mixedEmbedding.mixedSpace F) := ContinuousAdd.measurableAdd
-  haveI : MeasurableAdd (κ → FiniteAdeleRing (𝓞 F) F) := ContinuousAdd.measurableAdd
-  haveI : ν.IsAddHaarMeasure := by rw [hν]; infer_instance
-  haveI : ((volume : Measure (κ → mixedEmbedding.mixedSpace F)).prod ν).IsAddHaarMeasure :=
+  have : SFinite ν := inferInstance
+  have : MeasurableAdd (κ → mixedEmbedding.mixedSpace F) := ContinuousAdd.measurableAdd
+  have : MeasurableAdd (κ → FiniteAdeleRing (𝓞 F) F) := ContinuousAdd.measurableAdd
+  have : ν.IsAddHaarMeasure := by rw [hν]; infer_instance
+  have : ((volume : Measure (κ → mixedEmbedding.mixedSpace F)).prod ν).IsAddHaarMeasure :=
     Measure.prod.instIsAddHaarMeasure (volume : Measure (κ → mixedEmbedding.mixedSpace F)) ν
   have hμH : Measure.IsAddHaarMeasure ((volume.prod ν).map (splitE F κ)) :=
     (splitE F κ).isAddHaarMeasure_map _ (continuous_splitE F κ) (continuous_splitE_symm F κ)
@@ -167,7 +167,7 @@ theorem haar_pure_slice_bounds : ∀ (F : Type) [Field F] [NumberField F] (κ : 
     have h1 : ∫⁻ y, ‖g y * g y‖ₑ ∂ν < ⊤ :=
       ((hgc.mul hgc).integrable_of_hasCompactSupport (hg.2.mul_left (f := g))).2
     refine ne_of_lt (lt_of_le_of_lt (le_of_eq (lintegral_congr fun y => ?_)) h1)
-    rw [enorm_mul, sq]
+    rw [eNorm_mul, sq]
 
   obtain ⟨K, hKc, hK0⟩ := exists_compact_mem_nhds (0 : κ → FiniteAdeleRing (𝓞 F) F)
   set S : Set (κ → FiniteAdeleRing (𝓞 F) F) := (U : Set _) ∩ K with hS
@@ -181,14 +181,14 @@ theorem haar_pure_slice_bounds : ∀ (F : Type) [Field F] [NumberField F] (κ : 
     rw [hint]
     have e1 : ∀ p, ‖GlobalTheory.WeilM.pureA F f g (splitE F κ p)‖ₑ ^ 2 = ‖f p.1‖ₑ ^ 2 * ‖g p.2‖ₑ ^ 2 := by
       intro p
-      rw [pureA_splitE, enorm_mul, mul_pow]
+      rw [pureA_splitE, eNorm_mul, mul_pow]
     simp_rw [e1]
-    rw [lintegral_prod_mul (f.continuous.measurable.enorm.pow_const 2).aemeasurable
-      (hgc.measurable.enorm.pow_const 2).aemeasurable, mul_comm]
+    rw [lintegral_prod_mul (f.continuous.measurable.eNorm.pow_const 2).aemeasurable
+      (hgc.measurable.eNorm.pow_const 2).aemeasurable, mul_comm]
   · intro Φ hΦ hinv y
     rw [hint]
     have hHm : Measurable fun p => ‖Φ (splitE F κ p)‖ₑ ^ 2 :=
-      (continuous_comp_splitE F κ Φ hΦ).measurable.enorm.pow_const 2
+      (continuous_comp_splitE F κ Φ hΦ).measurable.eNorm.pow_const 2
     rw [lintegral_prod _ hHm.aemeasurable, ← lintegral_const_mul' _ _ hcT]
     refine lintegral_mono fun z => ?_
     set T : Set (κ → FiniteAdeleRing (𝓞 F) F) := (fun y' => y' + -y) ⁻¹' S with hT

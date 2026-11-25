@@ -62,12 +62,12 @@ private theorem swap_lt_iff {n : ℕ} (i j x y : Fin n) (h : (j : ℕ) = i + 1)
       · right; right; exact ⟨hi, hj, Equiv.swap_apply_of_ne_of_ne hi hj⟩
   rcases key x with ⟨hx, ex⟩ | ⟨hx, ex⟩ | ⟨hx1, hx2, ex⟩ <;>
   rcases key y with ⟨hy, ey⟩ | ⟨hy, ey⟩ | ⟨hy1, hy2, ey⟩ <;>
-  rw [ex, ey] <;> simp only [Fin.lt_iff_val_lt_val, Fin.ext_iff, ne_eq] at * <;>
+  rw [ex, ey] <;> simp only [Fin.lt_def, Fin.ext_iff, ne_eq] at * <;>
   constructor <;> intro <;> omega
 
 private theorem len_up {n : ℕ} (w : Equiv.Perm (Fin n)) (i j : Fin n) (h : (j : ℕ) = i + 1)
     (hw : w⁻¹ i < w⁻¹ j) : invLen (Equiv.swap i j * w) = invLen w + 1 := by
-  have hij : i < j := by rw [Fin.lt_iff_val_lt_val]; omega
+  have hij : i < j := by rw [Fin.lt_def]; omega
   show (Finset.univ.filter (fun p : Fin n × Fin n =>
       p.1 < p.2 ∧ (Equiv.swap i j * w) p.2 < (Equiv.swap i j * w) p.1)).card =
     (Finset.univ.filter (fun p : Fin n × Fin n => p.1 < p.2 ∧ w p.2 < w p.1)).card + 1
@@ -106,7 +106,7 @@ private theorem len_down {n : ℕ} (w : Equiv.Perm (Fin n)) (i j : Fin n) (h : (
 private theorem exists_desc {n : ℕ} (w : Equiv.Perm (Fin n)) (hw : w ≠ 1) :
     ∃ i j : Fin n, (j : ℕ) = i + 1 ∧ w⁻¹ j < w⁻¹ i := by
   by_contra hne
-  push_neg at hne
+  push Not at hne
   apply hw
   cases n with
   | zero => exact Subsingleton.elim _ _
@@ -116,7 +116,7 @@ private theorem exists_desc {n : ℕ} (w : Equiv.Perm (Fin n)) (hw : w ≠ 1) :
       intro k
       refine lt_of_le_of_ne (hne _ _ (by simp)) (fun e => ?_)
       exact absurd (w⁻¹.injective e) Fin.castSucc_lt_succ.ne
-    have hid : (⇑w⁻¹) = id := (hmono.range_inj strictMono_id).1 (by simp)
+    have hid : (⇑w⁻¹) = id := (hmono.range_inj_of_wellFoundedLT strictMono_id).1 (by simp)
     rw [← inv_eq_one]
     ext x
     simp [congrFun hid x]

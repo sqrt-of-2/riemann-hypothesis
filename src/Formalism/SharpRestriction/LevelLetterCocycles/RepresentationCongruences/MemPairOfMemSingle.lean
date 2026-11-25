@@ -18,7 +18,8 @@ noncomputable def cont (ϖ : O) (g f : O⟦X⟧) : ℕ∞ :=
 theorem Cont.enat_le_of_forall {a b : ℕ∞} (h : ∀ k : ℕ, (k : ℕ∞) ≤ a → (k : ℕ∞) ≤ b) : a ≤ b :=
   ENat.forall_natCast_le_iff_le.mp h
 
-theorem Cont.mem_pair_mono (ϖ : O) (g f : O⟦X⟧) {j k : ℕ} (hjk : j ≤ k)
+omit [IsDomain O] [IsDiscreteValuationRing O] [IsAdicComplete (IsLocalRing.maximalIdeal O) O] in
+theorem Cont.mem_pair_mono [IsDomain O] [IsDiscreteValuationRing O] [IsAdicComplete (IsLocalRing.maximalIdeal O) O] (ϖ : O) (g f : O⟦X⟧) {j k : ℕ} (hjk : j ≤ k)
     (h : f ∈ Ideal.span {C ϖ ^ k, g}) : f ∈ Ideal.span {C ϖ ^ j, g} := by
   refine (Ideal.span_le.2 ?_) h
   intro x hx
@@ -28,7 +29,8 @@ theorem Cont.mem_pair_mono (ϖ : O) (g f : O⟦X⟧) {j k : ℕ} (hjk : j ≤ k)
     exact Ideal.mul_mem_right _ _ (Ideal.subset_span (by simp))
   · exact Ideal.subset_span (by simp)
 
-theorem Cont.mem_zero (ϖ : O) (g f : O⟦X⟧) : f ∈ Ideal.span {C ϖ ^ 0, g} := by
+omit [IsDomain O] [IsDiscreteValuationRing O] [IsAdicComplete (IsLocalRing.maximalIdeal O) O] in
+theorem Cont.mem_zero [IsDomain O] [IsDiscreteValuationRing O] [IsAdicComplete (IsLocalRing.maximalIdeal O) O] (ϖ : O) (g f : O⟦X⟧) : f ∈ Ideal.span {C ϖ ^ 0, g} := by
   have h1 : (1 : O⟦X⟧) ∈ Ideal.span {C ϖ ^ 0, g} := Ideal.subset_span (by simp)
   simpa using Ideal.mul_mem_left _ f h1
 
@@ -48,20 +50,23 @@ theorem Cont.mem_iff_le (ϖ : O) (g f : O⟦X⟧) (k : ℕ) :
       intro j hj
       have hj' : j ≤ k - 1 := by
         by_contra hjk
-        push_neg at hjk
+        push Not at hjk
         exact hnot (Cont.mem_pair_mono ϖ g f (by omega) hj)
       exact_mod_cast hj'
     have h3 := le_trans hk hbound
     norm_cast at h3
     omega
 
-theorem Cont.residue_unif {ϖ : O} (hϖ : Irreducible ϖ) : IsLocalRing.residue O ϖ = 0 := by
+omit [IsAdicComplete (IsLocalRing.maximalIdeal O) O] in
+theorem Cont.residue_unif [IsAdicComplete (IsLocalRing.maximalIdeal O) O] {ϖ : O} (hϖ : Irreducible ϖ) : IsLocalRing.residue O ϖ = 0 := by
   exact (IsLocalRing.residue_eq_zero_iff ϖ).2 hϖ.not_isUnit
 
-theorem Cont.C_unif_ne_zero {ϖ : O} (hϖ : Irreducible ϖ) : (C ϖ : O⟦X⟧) ≠ 0 :=
+omit [IsDomain O] [IsDiscreteValuationRing O] [IsAdicComplete (IsLocalRing.maximalIdeal O) O] in
+theorem Cont.C_unif_ne_zero [IsDomain O] [IsDiscreteValuationRing O] [IsAdicComplete (IsLocalRing.maximalIdeal O) O] {ϖ : O} (hϖ : Irreducible ϖ) : (C ϖ : O⟦X⟧) ≠ 0 :=
   (map_ne_zero_iff C C_injective).mpr hϖ.ne_zero
 
-theorem Cont.C_dvd_of_map_eq_zero {ϖ : O} (hϖ : Irreducible ϖ) (f : O⟦X⟧)
+omit [IsAdicComplete (IsLocalRing.maximalIdeal O) O] in
+theorem Cont.C_dvd_of_map_eq_zero [IsAdicComplete (IsLocalRing.maximalIdeal O) O] {ϖ : O} (hϖ : Irreducible ϖ) (f : O⟦X⟧)
     (hf : f.map (IsLocalRing.residue O) = 0) : C ϖ ∣ f := by
   have hc (n : ℕ) : ϖ ∣ coeff n f := by
     rw [← Ideal.mem_span_singleton, ← hϖ.maximalIdeal_eq, ← IsLocalRing.residue_eq_zero_iff]

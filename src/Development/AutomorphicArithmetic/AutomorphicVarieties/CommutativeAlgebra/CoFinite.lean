@@ -61,8 +61,8 @@ open IsLocalRing MvPowerSeries UpperTheory.V.Alg
 private theorem isPrecomplete_finite {R M : Type} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Finite R M] (I : Ideal R) [IsPrecomplete I R] : IsPrecomplete I M := by
   first
-  | exact _root_.Formalism.SharedLemmas.isPrecomplete_of_moduleFinite
-  | (apply _root_.Formalism.SharedLemmas.isPrecomplete_of_moduleFinite <;> assumption)
+
+  | (apply _root_.Formalism.SharedLemmas.isPrecomplete_of_moduleFinite)
 
 private theorem prec_cofinal {R : Type*} [CommRing R] {I J : Ideal R} (hJI : J ≤ I) {e : ℕ}
     (he : I ^ e ≤ J) (hJ : IsPrecomplete J R) : IsPrecomplete I R := by
@@ -94,11 +94,11 @@ theorem UpperTheory.V.Alg.co_finite :
     ∀ (O : Type) [CommRing O] [IsLocalRing O] (R : Type) [CommRing R] [Algebra O R] [IsCO O R] (R' : Type) [CommRing R'] [Algebra O R'] [Algebra R R'] [IsScalarTower O R R'] [Module.Finite R R'] [IsLocalRing R'],
       (∀ x : R', ∃ a : O, x - algebraMap O R' a ∈ maximalIdeal R') → IsCO O R' := by
   intro O _ _ R _ _ _ R' _ _ _ _ _ _ hres
-  haveI : IsNoetherianRing R := IsCO.toIsNoetherian (O := O)
-  haveI : IsNoetherian R R' := inferInstance
-  haveI hN : IsNoetherianRing R' := isNoetherian_of_tower R this
-  haveI : Algebra.IsIntegral R R' := inferInstance
-  haveI hcompl : IsAdicComplete (maximalIdeal R) R := IsCO.complete (O := O)
+  have : IsNoetherianRing R := IsCO.toIsNoetherian (O := O)
+  have : IsNoetherian R R' := inferInstance
+  have hN : IsNoetherianRing R' := isNoetherian_of_tower R this
+  have : Algebra.IsIntegral R R' := inferInstance
+  have hcompl : IsAdicComplete (maximalIdeal R) R := IsCO.complete (O := O)
   have hcomap : ∀ P : Ideal R', P.IsPrime → maximalIdeal R ≤ P.comap (algebraMap R R') → P = maximalIdeal R' := by
     intro P hP hle
     have hcm : (P.comap (algebraMap R R')).IsMaximal := by
@@ -106,7 +106,7 @@ theorem UpperTheory.V.Alg.co_finite :
       have : P.comap (algebraMap R R') = maximalIdeal R :=
         le_antisymm (IsLocalRing.le_maximalIdeal hne) hle
       rw [this]; infer_instance
-    haveI := Ideal.isMaximal_of_isIntegral_of_isMaximal_comap (algebraMap R R')
+    have := Ideal.isMaximal_of_isIntegral_of_isMaximal_comap (algebraMap R R')
       (RingHom.Finite.to_isIntegral (RingHom.finite_algebraMap.mpr inferInstance)) P hcm
     exact IsLocalRing.eq_maximalIdeal this
   have hcm' : (maximalIdeal R').comap (algebraMap R R') = maximalIdeal R :=
@@ -126,12 +126,12 @@ theorem UpperTheory.V.Alg.co_finite :
     obtain ⟨hJP, hPp⟩ := hP
     rw [hcomap P hPp (Ideal.map_le_iff_le_comap.1 hJP)]
   obtain ⟨e, he⟩ := Ideal.exists_pow_le_of_le_radical_of_fg hrad (IsNoetherian.noetherian _)
-  haveI : IsPrecomplete (maximalIdeal R) R' := isPrecomplete_finite (R := R) (M := R') (maximalIdeal R)
+  have : IsPrecomplete (maximalIdeal R) R' := isPrecomplete_finite (R := R) (M := R') (maximalIdeal R)
   have hJp : IsPrecomplete J R' := by
     rw [hJdef]
     exact IsPrecomplete.map_algebraMap_iff.2 this
   have hprec : IsPrecomplete (maximalIdeal R') R' := prec_cofinal hJI he hJp
-  haveI : IsLocalHom (algebraMap O R) := IsCO.isLocalHom
+  have : IsLocalHom (algebraMap O R) := IsCO.isLocalHom
   have hlocO : IsLocalHom (algebraMap O R') := by
     rw [IsScalarTower.algebraMap_eq O R R']
     infer_instance

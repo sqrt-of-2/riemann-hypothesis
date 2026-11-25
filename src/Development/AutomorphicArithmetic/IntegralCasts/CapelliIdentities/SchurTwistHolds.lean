@@ -126,7 +126,7 @@ theorem UpperTheory.Reformulated.B.H13.schur_twist_holds :
     have h1 : δ (φ t) = 1 := DFunLike.congr_fun hδ t
     have h := hg' (φ t)
     rwa [h1, map_one, one_mul] at h
-  haveI : Nontrivial (Fin n → k) := by
+  have : Nontrivial (Fin n → k) := by
     by_contra h
     rw [not_nontrivial_iff_subsingleton] at h
     exact hne (Subsingleton.elim _ _)

@@ -43,16 +43,18 @@ theorem mul_entry_mem {K : Type} [CommRing K] (O : Subring K) {n : ℕ}
 
 variable {F E : Type} [Field F] [NumberField F] [Field E] [NumberField E] [Algebra F E]
 
-theorem rmul_add (R : Type) [CommRing R] [Algebra F R] {M n : ℕ}
+omit [NumberField F] [Field E] [NumberField E] [Algebra F E] in
+theorem rmul_add [NumberField F] [Field E] [NumberField E] [Algebra F E] (R : Type) [CommRing R] [Algebra F R] {M n : ℕ}
     (g : Matrix (Fin n) (Fin n) (R ⊗[F] E)) (X Y : Fin n → Fin M → R ⊗[F] E) :
     rmul R (X + Y) g = rmul R X g + rmul R Y g := by
   funext a i
   simp [rmul, add_mul, Finset.sum_add_distrib]
 
-theorem continuous_rmul (R : Type) [CommRing R] [Algebra F R] [TopologicalSpace R]
+omit [NumberField F] [Field E] [NumberField E] [Algebra F E] in
+theorem continuous_rmul [NumberField F] [Field E] [NumberField E] [Algebra F E] (R : Type) [CommRing R] [Algebra F R] [TopologicalSpace R]
     (hK : IsTopologicalRing (R ⊗[F] E)) {M n : ℕ} (g : Matrix (Fin n) (Fin n) (R ⊗[F] E)) :
     Continuous (fun X : Fin n → Fin M → R ⊗[F] E => rmul R X g) := by
-  haveI := hK
+  have := hK
   refine continuous_pi fun a => continuous_pi fun i => ?_
   simp only [rmul]
   exact continuous_finsetSum _ fun c _ =>
@@ -76,17 +78,17 @@ theorem mass_eq_of_integral (σ : E →ₐ[F] E) (hCM : IsCMExt F E σ) {M : ℕ
     m S' (latV b v) = m S (latV b v) := by
   have hloc := _root_.GlobalTheory.CompanionTheory.SW.LocFv.isLocR_Fv F v
   obtain ⟨hTR, hLC, hSC, hT2, -⟩ := id hloc
-  haveI := hTR; haveI := hLC; haveI := hSC; haveI := hT2
-  haveI : BorelSpace (Fv F v) := ⟨rfl⟩
+  have := hTR; have := hLC; have := hSC; have := hT2
+  have : BorelSpace (Fv F v) := ⟨rfl⟩
   obtain ⟨hKring, hKlc, hKsc, hKt2, -, -, -, hWb, hHcl, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hCM (Fv F v)
-  haveI := hKring; haveI := hKlc; haveI := hKsc; haveI := hKt2
-  haveI := hWb n M
-  haveI hWb' := hWb n n
+  have := hKring; have := hKlc; have := hKsc; have := hKt2
+  have := hWb n M
+  have hWb' := hWb n n
   obtain ⟨hHlc, hHsc, hHt2, hHb, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.HermTop.herm_top F E σ hCM (Fv F v) n
-  haveI := hHlc; haveI := hHsc; haveI := hHt2; haveI := hHb
+  have := hHlc; have := hHsc; have := hHt2; have := hHb
   obtain ⟨-, hμ, hν⟩ := _root_.GlobalTheory.CompanionTheory.SW.coord_measures_haar F E σ hCM (Fv F v) d b lam hlam.1
-  haveI := hμ n M
-  haveI := hν n
+  have := hμ n M
+  have := hν n
   obtain ⟨-, hcomp, hone, hherm, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.GramAlg.gram_algebra F E σ hCM M J hJ (Fv F v) n
   obtain ⟨hLc, hLo, hL0, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.latV_compact_open_mass F E σ hCM d b n M v
   obtain ⟨hLc', hLo', hL0', -⟩ := _root_.GlobalTheory.CompanionTheory.SW.latV_compact_open_mass F E σ hCM d b n n v
@@ -123,7 +125,7 @@ theorem mass_eq_of_integral (σ : E →ₐ[F] E) (hCM : IsCMExt F E σ) {M : ℕ
   have hcont : ∀ h : Matrix (Fin n) (Fin n) (Fv F v ⊗[F] E),
       Continuous (fun A : HermR (Fv F v) σ n =>
         cT (sigR (Fv F v) σ) h * (A : Matrix (Fin n) (Fin n) (Fv F v ⊗[F] E)) * h) := fun h =>
-    (continuous_const.matrix_mul continuous_subtype_val).matrix_mul continuous_const
+    (continuous_const.matrix_mul continuous_subtypeVal).matrix_mul continuous_const
   have hinv : ∀ (h h' : Matrix (Fin n) (Fin n) (Fv F v ⊗[F] E)),
       cT (sigR (Fv F v) σ) h * cT (sigR (Fv F v) σ) h' = 1 → h' * h = 1 →
       ∀ A : Matrix (Fin n) (Fin n) (Fv F v ⊗[F] E),
@@ -143,7 +145,7 @@ theorem mass_eq_of_integral (σ : E →ₐ[F] E) (hCM : IsCMExt F E σ) {M : ℕ
     · intro A
       exact Subtype.ext (hinv gi g hc1 hggi _)
     · exact (hHcl n).isClosedEmbedding_subtypeVal.isCompact_preimage hLc'
-    · exact hLo'.preimage continuous_subtype_val
+    · exact hLo'.preimage continuous_subtypeVal
     · intro A hA
       exact hconj g hg _ hA
     · intro A hA

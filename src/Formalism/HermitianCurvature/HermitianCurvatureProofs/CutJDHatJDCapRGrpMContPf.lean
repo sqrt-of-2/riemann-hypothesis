@@ -199,12 +199,12 @@ theorem cp_td (h : Sep a c d) (r : ℕ) : ∀ m, m ≤ r →
   | 1, hm => by
     refine ⟨by simp [td, K, hm], ?_⟩
     by_cases h2 : 2 ≤ r
-    · simp only [td, show 0 + 2 ≤ r from h2, if_true, show (1 : ℕ) ≤ r by omega, one_ne_zero, if_false]
+    · simp only [td, show 0 + 2 ≤ r from h2, ite_true, show (1 : ℕ) ≤ r by omega, one_ne_zero, ite_false]
       simp only [mul_zero, sub_zero]
       have hc := (h (r - (0 + 2)) (r - 1) (by omega)).2.2.1
       rw [hc.eq]
       simp [K]
-    · simp only [td, show ¬ (0 + 2 ≤ r) by omega, if_false]
+    · simp only [td, show ¬ (0 + 2 ≤ r) by omega, ite_false]
   | m + 2, hm => by
     have ih1 := cp_td h r (m + 1) (by omega)
     have ih0 := cp_td h r m (by omega)
@@ -213,11 +213,11 @@ theorem cp_td (h : Sep a c d) (r : ℕ) : ∀ m, m ≤ r →
     refine ⟨?_, ?_⟩
     · show (if m + 2 ≤ r then a (r - (m + 2)) * td a c d r (m + 1) 0 - c (r - (m + 1)) * d (r - (m + 2)) * td a c d r m 0
         else 0) = _
-      rw [if_pos hm, ih1.1, ih0.1, hb]
+      rw [ite_eq_left hm, ih1.1, ih0.1, hb]
     · show (if m + 1 + 2 ≤ r then a (r - (m + 1 + 2)) * td a c d r (m + 1 + 1) 1 -
           c (r - (m + 1 + 1)) * d (r - (m + 1 + 2)) * td a c d r (m + 1) 1 else 0) = _
       by_cases h3 : m + 3 ≤ r
-      · rw [if_pos (by omega), if_pos (by omega), ih1.2, if_pos (by omega), ih0.2, if_pos (by omega)]
+      · rw [ite_eq_left (by omega), ite_eq_left (by omega), ih1.2, ite_eq_left (by omega), ih0.2, ite_eq_left (by omega)]
         have hb2 := cp_K_both h m (r - (m + 3))
         rw [show r - (m + 3) + 1 = r - (m + 2) by omega, show r - (m + 3) + 2 = r - (m + 1) by omega] at hb2
         rw [show m + 1 + 2 = m + 3 by omega, show m + 1 + 1 = m + 2 by omega, show r - (m + 2 + 1) = r - (m + 3) by omega,
@@ -229,7 +229,7 @@ theorem cp_td (h : Sep a c d) (r : ℕ) : ∀ m, m ≤ r →
         rw [← mul_assoc (a (r - (m + 3))) (d (r - 1)), ca.eq,
           ← mul_assoc (c (r - (m + 2)) * d (r - (m + 3))) (d (r - 1)), (cc.mul_left cd).eq]
         simp only [mul_assoc]
-      · rw [if_neg (by omega), if_neg (by omega)]
+      · rw [ite_eq_right (by omega), ite_eq_right (by omega)]
 
 end chains
 
@@ -239,7 +239,7 @@ theorem cp_td_bu {R : Type*} [Ring R] {a c d : ℕ → R} (h : Sep a c d) (r : �
   · rw [(cp_td h r r le_rfl).1, (cp_bu r).1, Nat.sub_self]
   · rcases r with _ | s
     · simp [td, bu]
-    · rw [(cp_td h (s + 1) s (by omega)).2, if_pos le_rfl, (cp_bu s).2]
+    · rw [(cp_td h (s + 1) s (by omega)).2, ite_eq_left le_rfl, (cp_bu s).2]
       simp
 
 section ops
@@ -286,7 +286,7 @@ theorem cp_vAB (Y : ℂ) : ∀ i, i ≤ r → ∀ f : WSm r X,
   | i + 1, hi, f => by
     have ih := cp_vAB Y i (by omega) f
     have hir : i < r := by omega
-    simp only [Q.vAB, bu, aS, eS, dif_pos hir]
+    simp only [Q.vAB, bu, aS, eS, dite_eq_left hir]
     refine ⟨?_, ?_⟩
     · rw [ih.1, ih.2]
       rfl
@@ -301,11 +301,11 @@ theorem cp_tdU (Y : ℂ) (b : Fin 2) : ∀ m, ∀ f : WSm r X,
     by_cases h1 : 1 ≤ r
     · have hr : r - 1 < r := by omega
       fin_cases b
-      · simp only [tdU, td, dif_pos h1, if_pos h1, Fin.zero_eta, if_true, aS, eS, dif_pos hr]
+      · simp only [tdU, td, dite_eq_left h1, ite_eq_left h1, Fin.zero_eta, ite_true, aS, eS, dite_eq_left hr]
         rfl
-      · simp only [tdU, td, dif_pos h1, if_pos h1, Fin.mk_one, one_ne_zero, if_false, eS, dif_pos hr]
+      · simp only [tdU, td, dite_eq_left h1, ite_eq_left h1, Fin.mk_one, one_ne_zero, ite_false, eS, dite_eq_left hr]
         rfl
-    · simp only [tdU, td, dif_neg h1, if_neg h1]
+    · simp only [tdU, td, dite_eq_right h1, ite_eq_right h1]
       rfl
   | m + 2, f => by
     by_cases h2 : m + 2 ≤ r
@@ -313,11 +313,11 @@ theorem cp_tdU (Y : ℂ) (b : Fin 2) : ∀ m, ∀ f : WSm r X,
       have ih0 := cp_tdU Y b m f
       have hr2 : r - (m + 2) < r := by omega
       have hr1 : r - (m + 1) < r := by omega
-      simp only [tdU, td, dif_pos h2, if_pos h2]
+      simp only [tdU, td, dite_eq_left h2, ite_eq_left h2]
       rw [ih1, ih0]
-      simp only [aS, eS, dif_pos hr2, dif_pos hr1]
+      simp only [aS, eS, dite_eq_left hr2, dite_eq_left hr1]
       rfl
-    · simp only [tdU, td, dif_neg h2, if_neg h2]
+    · simp only [tdU, td, dite_eq_right h2, ite_eq_right h2]
       rfl
 
 end ops
@@ -329,7 +329,8 @@ variable {r : ℕ} {X : Type} [NormedAddCommGroup X] [NormedSpace ℂ X]
 def Loc (T : ((Fin r → ℂ) → X) → (Fin r → ℂ) → X) : Prop :=
   ∀ f₁ f₂ x, f₁ =ᶠ[nhds x] f₂ → T f₁ =ᶠ[nhds x] T f₂
 
-theorem loc_id : Loc (r := r) (X := X) id := fun _ _ _ h => h
+omit [NormedAddCommGroup X] [NormedSpace ℂ X] in
+theorem loc_id [NormedAddCommGroup X] [NormedSpace ℂ X] : Loc (r := r) (X := X) id := fun _ _ _ h => h
 
 theorem loc_zero : Loc (r := r) (X := X) (fun _ => 0) := fun _ _ _ _ => Filter.EventuallyEq.rfl
 
@@ -348,7 +349,8 @@ theorem loc_ciOp (l : Fin r) : Loc (X := X) (ciOp l) := by
   filter_upwards [h] with y hy
   simp only [ciOp, hy]
 
-theorem loc_comp {S T : ((Fin r → ℂ) → X) → (Fin r → ℂ) → X} (hS : Loc S) (hT : Loc T) :
+omit [NormedAddCommGroup X] [NormedSpace ℂ X] in
+theorem loc_comp [NormedAddCommGroup X] [NormedSpace ℂ X] {S T : ((Fin r → ℂ) → X) → (Fin r → ℂ) → X} (hS : Loc S) (hT : Loc T) :
     Loc (fun f => S (T f)) := fun _ _ x h => hS _ _ x (hT _ _ x h)
 
 theorem loc_add {S T : ((Fin r → ℂ) → X) → (Fin r → ℂ) → X} (hS : Loc S) (hT : Loc T) :
@@ -393,10 +395,10 @@ theorem loc_vAB (Y : ℂ) : ∀ i, Loc (X := X) (Q.vAB r Y i).1 ∧ Loc (X := X)
   | i + 1 => by
     have ih := loc_vAB Y i
     by_cases hi : i < r
-    · simp only [Q.vAB, dif_pos hi]
+    · simp only [Q.vAB, dite_eq_left hi]
       exact ⟨loc_sub (loc_add (loc_smul Y ih.1) (loc_comp (loc_pOp _) ih.1)) (loc_comp (loc_cOp _) ih.2),
         loc_comp (loc_ciOp _) ih.1⟩
-    · simp only [Q.vAB, dif_neg hi]
+    · simp only [Q.vAB, dite_eq_right hi]
       exact ih
 
 theorem cp_cutoff (O : Set (Fin r → ℂ)) (hO : IsOpen O) (hOm : O ⊆ OmX r) (f : (Fin r → ℂ) → X)
@@ -448,13 +450,13 @@ theorem residue_continuity_holds : JDRCont := by
   have hb : b = 0 ∨ b = 1 := by fin_cases b <;> simp
   rcases hb with rfl | rfl
   · have e2 : (Q.vAB r Y r).1 f c = (Q.vAB r Y r).1 f' c := (ev.1 f f' c hf'e.symm).eq_of_nhds
-    simp only [Q.cmp, if_true]
+    simp only [Q.cmp, ite_true]
     rw [e1, e2]
     change tdU r Y r 0 ((⟨f', hf'm⟩ : WSm r X) : (Fin r → ℂ) → X) c =
       (Q.vAB r Y r).1 ((⟨f', hf'm⟩ : WSm r X) : (Fin r → ℂ) → X) c
     rw [h3, h4.1, h5.1]
   · have e2 : (Q.vAB r Y r).2 f c = (Q.vAB r Y r).2 f' c := (ev.2 f f' c hf'e.symm).eq_of_nhds
-    simp only [Q.cmp, show ¬ ((1 : Fin 2) = 0) by decide, if_false]
+    simp only [Q.cmp, show ¬ ((1 : Fin 2) = 0) by decide, ite_false]
     rw [e1, e2]
     change tdU r Y r 1 ((⟨f', hf'm⟩ : WSm r X) : (Fin r → ℂ) → X) c =
       (Q.vAB r Y r).2 ((⟨f', hf'm⟩ : WSm r X) : (Fin r → ℂ) → X) c
@@ -541,7 +543,7 @@ theorem tds_eq (hcd : ∀ i, Commute (c (i + 1)) (d i)) (r : ℕ) :
     have hR : prodM a c d (r - (m + 2)) (m + 2) =
         Mi a c d (r - (m + 2)) * (Mi a c d (r - (m + 1)) * prodM a c d (r - m) m) := by
       rw [prodM_succ_left, e1, hL]
-    rw [if_pos hm, ih1, ih0, hL, hR]
+    rw [ite_eq_left hm, ih1, ih0, hL, hR]
     have hc := (hcd (r - (m + 2))).eq
     rw [e1] at hc
     simp only [Matrix.mul_apply, Fin.sum_univ_two, Mi]
@@ -573,19 +575,19 @@ theorem cp_vABs (Y : ℂ) : ∀ i, i ≤ r → ∀ f : WSm r X,
   | i + 1, hi, f => by
     have hir : i < r := by omega
     have ih := cp_vABs Y i (by omega)
-    simp only [Q.vABs, dif_pos hir, bus]
+    simp only [Q.vABs, dite_eq_left hir, bus]
     refine ⟨?_, ?_⟩
     · have e1 : Y • (f : (Fin r → ℂ) → X) - pbOp ⟨i, hir⟩ (f : (Fin r → ℂ) → X) =
           ((aSv X Y i f : WSm r X) : (Fin r → ℂ) → X) := by
-        simp only [aSv, eS, dif_pos hir]
+        simp only [aSv, eS, dite_eq_left hir]
         rfl
       have e2 : cbOp ⟨i, hir⟩ (f : (Fin r → ℂ) → X) = ((eS X i 4 f : WSm r X) : (Fin r → ℂ) → X) := by
-        simp only [eS, dif_pos hir]
+        simp only [eS, dite_eq_left hir]
         rfl
       rw [e1, e2, (ih _).1, (ih _).2]
       rfl
     · have e3 : cbiOp ⟨i, hir⟩ (f : (Fin r → ℂ) → X) = ((eS X i 5 f : WSm r X) : (Fin r → ℂ) → X) := by
-        simp only [eS, dif_pos hir]
+        simp only [eS, dite_eq_left hir]
         rfl
       rw [e3, (ih _).1]
       rfl
@@ -598,11 +600,11 @@ theorem cp_tdUv (Y : ℂ) (b : Fin 2) : ∀ m, ∀ f : WSm r X,
     by_cases h1 : 1 ≤ r
     · have hr : r - 1 < r := by omega
       fin_cases b
-      · simp only [tdUv, tds, dif_pos h1, if_pos h1, Fin.zero_eta, if_true, aSv, eS, dif_pos hr]
+      · simp only [tdUv, tds, dite_eq_left h1, ite_eq_left h1, Fin.zero_eta, ite_true, aSv, eS, dite_eq_left hr]
         rfl
-      · simp only [tdUv, tds, dif_pos h1, if_pos h1, Fin.mk_one, one_ne_zero, if_false, eS, dif_pos hr]
+      · simp only [tdUv, tds, dite_eq_left h1, ite_eq_left h1, Fin.mk_one, one_ne_zero, ite_false, eS, dite_eq_left hr]
         rfl
-    · simp only [tdUv, tds, dif_neg h1, if_neg h1]
+    · simp only [tdUv, tds, dite_eq_right h1, ite_eq_right h1]
       rfl
   | m + 2, f => by
     by_cases h2 : m + 2 ≤ r
@@ -610,11 +612,11 @@ theorem cp_tdUv (Y : ℂ) (b : Fin 2) : ∀ m, ∀ f : WSm r X,
       have ih0 := cp_tdUv Y b m f
       have hr2 : r - (m + 2) < r := by omega
       have hr1 : r - (m + 1) < r := by omega
-      simp only [tdUv, tds, dif_pos h2, if_pos h2]
+      simp only [tdUv, tds, dite_eq_left h2, ite_eq_left h2]
       rw [ih1, ih0]
-      simp only [aSv, eS, dif_pos hr2, dif_pos hr1]
+      simp only [aSv, eS, dite_eq_left hr2, dite_eq_left hr1]
       rfl
-    · simp only [tdUv, tds, dif_neg h2, if_neg h2]
+    · simp only [tdUv, tds, dite_eq_right h2, ite_eq_right h2]
       rfl
 
 end ops
@@ -668,10 +670,10 @@ theorem loc_vABs (Y : ℂ) : ∀ i, Loc (X := X) (Q.vABs r Y i).1 ∧ Loc (X := 
   | succ i ih =>
     obtain ⟨h1, h2⟩ := ih
     by_cases hi : i < r
-    · simp only [Q.vABs, dif_pos hi]
+    · simp only [Q.vABs, dite_eq_left hi]
       exact ⟨loc_sub (loc_comp h1 (loc_sub (loc_smul Y loc_id) (loc_pbOp _))) (loc_comp h2 (loc_cbOp _)),
         loc_comp h1 (loc_cbiOp _)⟩
-    · simp only [Q.vABs, dif_neg hi]
+    · simp only [Q.vABs, dite_eq_right hi]
       exact ⟨h1, h2⟩
 
 end loc
@@ -691,13 +693,13 @@ theorem mirror_residue_continuity : JDRvCont := by
   have hb : b = 0 ∨ b = 1 := by fin_cases b <;> simp
   rcases hb with rfl | rfl
   · have e2 : (Q.vABs r Y r).1 f c = (Q.vABs r Y r).1 f' c := (ev.1 f f' c hf'e.symm).eq_of_nhds
-    simp only [Q.cmp, if_true]
+    simp only [Q.cmp, ite_true]
     rw [e1, e2]
     change tdUv r Y r 0 ((⟨f', hf'm⟩ : WSm r X) : (Fin r → ℂ) → X) c =
       (Q.vABs r Y r).1 ((⟨f', hf'm⟩ : WSm r X) : (Fin r → ℂ) → X) c
     rw [h3, h4.1, h5.1]
   · have e2 : (Q.vABs r Y r).2 f c = (Q.vABs r Y r).2 f' c := (ev.2 f f' c hf'e.symm).eq_of_nhds
-    simp only [Q.cmp, show ¬ ((1 : Fin 2) = 0) by decide, if_false]
+    simp only [Q.cmp, show ¬ ((1 : Fin 2) = 0) by decide, ite_false]
     rw [e1, e2]
     change tdUv r Y r 1 ((⟨f', hf'm⟩ : WSm r X) : (Fin r → ℂ) → X) c =
       (Q.vABs r Y r).2 ((⟨f', hf'm⟩ : WSm r X) : (Fin r → ℂ) → X) c

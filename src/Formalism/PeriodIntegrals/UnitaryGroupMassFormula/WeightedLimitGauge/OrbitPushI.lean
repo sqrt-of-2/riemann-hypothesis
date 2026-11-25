@@ -117,8 +117,8 @@ lemma op_uwb_row {g : Mat k r} (hg : g ∈ UWb k r) (i l : Fin (2 * r + k + 1)) 
     rw [star_star] at h2
     rw [h2]
     by_cases e : l = j
-    · rw [if_pos e, if_pos e.symm, star_one]
-    · rw [if_neg e, if_neg (fun e' => e e'.symm), star_zero]
+    · rw [ite_eq_left e, ite_eq_left e.symm, star_one]
+    · rw [ite_eq_right e, ite_eq_right (fun e' => e e'.symm), star_zero]
   obtain ⟨a, rfl | rfl⟩ := op_not_mid_cases i hi
   · apply key
     have := op_fix_dual hg.1 (hg.2 a).2
@@ -160,17 +160,17 @@ lemma toW_ofW (v : Fin (k + 1) → ℂ) : toW k (ofW k v) = v := by
   funext j
   unfold toW ofW
   by_cases h : j.val < k
-  · rw [dif_pos h]
+  · rw [dite_eq_left h]
     congr 1
-  · rw [dif_neg h]
+  · rw [dite_eq_right h]
     have : j = Fin.last k := Fin.ext (by have := j.isLt; simp only [Fin.val_last]; omega)
     rw [this]
 
 lemma ofW_toW (p : (Fin k → ℂ) × ℂ) : ofW k (toW k p) = p := by
   unfold toW ofW
   ext i
-  · simp only [Fin.val_castSucc, i.isLt, dif_pos]
-  · simp only [Fin.val_last, lt_irrefl, dif_neg, not_false_eq_true]
+  · simp only [Fin.val_castSucc, i.isLt, dite_eq_left]
+  · simp only [Fin.val_last, lt_irrefl, dite_eq_right, not_false_eq_true]
 
 lemma blkAct_mul (μ ν : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (p : (Fin k → ℂ) × ℂ) :
     blkAct k μ (blkAct k ν p) = blkAct k (μ * ν) p := by
@@ -185,8 +185,8 @@ lemma toW_smul (t : ℝ) (p : (Fin k → ℂ) × ℂ) : toW k (t • p) = t • 
   funext j
   unfold toW
   by_cases h : j.val < k
-  · simp only [dif_pos h, Prod.smul_fst, Pi.smul_apply]
-  · simp only [dif_neg h, Prod.smul_snd, Pi.smul_apply]
+  · simp only [dite_eq_left h, Prod.smul_fst, Pi.smul_apply]
+  · simp only [dite_eq_right h, Prod.smul_snd, Pi.smul_apply]
 
 lemma blkAct_smul (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (t : ℝ) (p : (Fin k → ℂ) × ℂ) :
     blkAct k μ (t • p) = t • blkAct k μ p := by
@@ -198,11 +198,11 @@ lemma continuous_toW : Continuous (toW k) := by
   refine continuous_pi fun j => ?_
   by_cases h : j.val < k
   · have : (fun p : (Fin k → ℂ) × ℂ => toW k p j) = fun p => p.1 ⟨j.val, h⟩ := by
-      funext p; unfold toW; rw [dif_pos h]
+      funext p; unfold toW; rw [dite_eq_left h]
     rw [this]
     exact (continuous_apply _).comp continuous_fst
   · have : (fun p : (Fin k → ℂ) × ℂ => toW k p j) = fun p => p.2 := by
-      funext p; unfold toW; rw [dif_neg h]
+      funext p; unfold toW; rw [dite_eq_right h]
     rw [this]
     exact continuous_snd
 
@@ -222,12 +222,12 @@ lemma qf_eq (p : (Fin k → ℂ) × ℂ) : (qf k p : ℂ) = star (toW k p) ⬝�
   simp only [Hb, Matrix.mulVec_diagonal, Pi.star_apply]
   rw [Fin.sum_univ_castSucc]
   have h1 : ∀ i : Fin k, toW k p (Fin.castSucc i) = p.1 i := fun i => by
-    unfold toW; rw [dif_pos (by simp)]; rfl
+    unfold toW; rw [dite_eq_left (by simp)]; rfl
   have h2 : toW k p (Fin.last k) = p.2 := by
-    unfold toW; rw [dif_neg (by simp)]
+    unfold toW; rw [dite_eq_right (by simp)]
   have hz : ∀ z : ℂ, star z * z = (Complex.normSq z : ℂ) := fun z => by
     rw [Complex.normSq_eq_conj_mul_self]; rfl
-  simp only [h1, h2, Fin.castSucc_ne_last, if_false, if_true, one_mul, neg_one_mul, mul_neg, hz]
+  simp only [h1, h2, Fin.castSucc_ne_last, ite_false, ite_true, one_mul, neg_one_mul, mul_neg, hz]
   push_cast
   ring
 
@@ -250,16 +250,16 @@ lemma opAct_emb (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (p : (Fin k → �
       have := m.isLt
       unfold opVec toW wI
       by_cases h : m.val < k
-      · rw [dif_pos (by simp only; omega), dif_pos h]
+      · rw [dite_eq_left (by simp only; omega), dite_eq_left h]
         exact congrArg p.1 (Fin.ext (by simp))
-      · rw [dif_neg (by simp only; omega), dif_neg h, if_pos (by simp only; omega)]
+      · rw [dite_eq_right (by simp only; omega), dite_eq_right h, ite_eq_left (by simp only; omega)]
     show ∑ i, embWb k r μ (wI k r j) i * opVec k r p i = ∑ m, μ j m * toW k p m
     rw [sum_wb]
     · exact Finset.sum_congr rfl fun m _ => by rw [embWb_wI, hv]
     · intro i hi
       have : opVec k r p i = 0 := by
         unfold opVec
-        rw [dif_neg (by omega), if_neg (by omega)]
+        rw [dite_eq_right (by omega), ite_eq_right (by omega)]
       rw [this, mul_zero]
   unfold opAct opCo blkAct ofW
   ext i

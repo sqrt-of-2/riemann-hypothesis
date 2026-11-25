@@ -59,25 +59,25 @@ theorem GlobalTheory.CompanionTheory.SW.coordW_image_unit_mul : ∀ (F E : Type)
   intro F E _ _ _ _ _ σ hσ M d b v lam hlam u S hS
   have hR := GlobalTheory.CompanionTheory.SW.LocFv.isLocR_Fv F v
   obtain ⟨h1, h2, h3, h4, -⟩ := id hR
-  haveI := h1
-  haveI := h2
-  haveI := h3
-  haveI := h4
-  haveI : BorelSpace (Fv F v) := ⟨rfl⟩
+  have := h1
+  have := h2
+  have := h3
+  have := h4
+  have : BorelSpace (Fv F v) := ⟨rfl⟩
   obtain ⟨a1, a2, a3, a4, -, -, -, a8, -, -⟩ := GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hσ (Fv F v)
-  haveI := a1
-  haveI := a2
-  haveI := a3
-  haveI := a4
-  haveI := a8 1 M
+  have := a1
+  have := a2
+  have := a3
+  have := a4
+  have := a8 1 M
   obtain ⟨-, hW, -⟩ := GlobalTheory.CompanionTheory.SW.coord_measures_haar F E σ hσ (Fv F v) d b lam hlam.1
-  haveI := hW 1 M
-  haveI : (coordW (Fv F v) b lam 1 M).Regular := by
+  have := hW 1 M
+  have : (coordW (Fv F v) b lam 1 M).Regular := by
     let K : TopologicalSpace.PositiveCompacts (Fin 1 → Fin M → Fv F v ⊗[F] E) := Classical.choice inferInstance
     exact Measure.regular_of_isAddLeftInvariant K.isCompact K.interior_nonempty K.isCompact.measure_ne_top
   have hchar : distribHaarChar (Fv F v ⊗[F] E) u = ‖Algebra.norm (Fv F v) (u : Fv F v ⊗[F] E)‖₊ := by
-    haveI : Module.Finite F E := Module.Finite.of_restrictScalars_finite ℚ F E
-    haveI : IsModuleTopology (Fv F v) (Fv F v ⊗[F] E) := ⟨rfl⟩
+    have : Module.Finite F E := Module.Finite.of_restrictScalars_finite ℚ F E
+    have : IsModuleTopology (Fv F v) (Fv F v ⊗[F] E) := ⟨rfl⟩
     let bE := Algebra.TensorProduct.basis (Fv F v) (Module.finBasis F E)
     let e : (Fv F v ⊗[F] E) ≃ₜ+ (Fin (Module.finrank F E) → Fv F v) :=
       { bE.equivFun.toAddEquiv with

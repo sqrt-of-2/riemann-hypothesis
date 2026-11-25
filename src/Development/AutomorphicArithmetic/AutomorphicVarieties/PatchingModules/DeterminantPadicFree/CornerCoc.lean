@@ -66,8 +66,8 @@ private theorem cut_conj {F : Type} [Field F] {n : ℕ} (p q : Fin n → Prop) [
   by_cases h1 : p i ↔ p k
   · by_cases h2 : q m ↔ q j
     · by_cases h : p i ∧ q j
-      · rw [if_pos h, if_pos ⟨h1.1 h.1, h2.2 h.2⟩]
-      · rw [if_neg h, if_neg (fun h' => h ⟨h1.2 h'.1, h2.1 h'.2⟩)]; simp
+      · rw [ite_eq_left h, ite_eq_left ⟨h1.1 h.1, h2.2 h.2⟩]
+      · rw [ite_eq_right h, ite_eq_right (fun h' => h ⟨h1.2 h'.1, h2.1 h'.2⟩)]; simp
     · simp [hB m j h2]
   · simp [hA i k h1]
 
@@ -104,10 +104,10 @@ theorem UpperTheory.V.Pa.Det.cornerCoc :
     rw [(cV_lin _ _ _ _).2.2, (cV_conj (D.ev _) (D.ev _) _).2]
   · intro i j
     refine ⟨fun e => ?_, fun _ => Submodule.mem_top⟩
-    rw [Submodule.mem_bot, cV, Matrix.of_apply, if_neg (fun h => h.2 (e.1 h.1))]
+    rw [Submodule.mem_bot, cV, Matrix.of_apply, ite_eq_right (fun h => h.2 (e.1 h.1))]
   · intro i j
     refine ⟨fun e => ?_, fun _ => Submodule.mem_top⟩
-    rw [Submodule.mem_bot, cV', Matrix.of_apply, if_neg (fun h => h.1 (e.2 h.2))]
+    rw [Submodule.mem_bot, cV', Matrix.of_apply, ite_eq_right (fun h => h.1 (e.2 h.2))]
   · ext i j
     simp only [cV, cV', Matrix.of_apply, Matrix.transpose_apply, and_comm]
   · ext i j
@@ -115,6 +115,6 @@ theorem UpperTheory.V.Pa.Det.cornerCoc :
     simp only [cV, cV', Matrix.of_apply, Matrix.add_apply]
     by_cases hi : (i : ℕ) < D.a <;> by_cases hj : (j : ℕ) < D.a
     · simp [hi, hj, h0 (iff_of_true hi hj)]
-    · rw [if_pos ⟨hi, hj⟩, if_neg (fun h => h.1 hi), add_zero]
-    · rw [if_neg (fun h => hi h.1), if_pos ⟨hi, hj⟩, zero_add]
-    · rw [if_neg (fun h => hi h.1), if_neg (fun h => hj h.2), add_zero, h0 (iff_of_false hi hj)]
+    · rw [ite_eq_left ⟨hi, hj⟩, ite_eq_right (fun h => h.1 hi), add_zero]
+    · rw [ite_eq_right (fun h => hi h.1), ite_eq_left ⟨hi, hj⟩, zero_add]
+    · rw [ite_eq_right (fun h => hi h.1), ite_eq_right (fun h => hj h.2), add_zero, h0 (iff_of_false hi hj)]

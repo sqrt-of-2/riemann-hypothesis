@@ -78,11 +78,11 @@ theorem blockRank_cast (hB : BlockRankAt) (hY : DimYAt) (p : ℕ) [Fact p.Prime]
   dsimp only
   refine finsum_congr fun x => ?_
   by_cases hx : (blockData p S aTop aPlus m b).LevelOK x.1 x.2
-  · rw [if_pos hx, if_pos hx]
+  · rw [ite_eq_left hx, ite_eq_left hx]
     push_cast
     congr 1
     exact hY p O Sd (2 * s + 1) r _ _ _ _ (fun k => segTies_J_le p S b k)
-  · rw [if_neg hx, if_neg hx]
+  · rw [ite_eq_right hx, ite_eq_right hx]
     simp
 
 theorem rankOnDigits_cast (hB : BlockRankAt) (hY : DimYAt) (C0 CE1 CE2 : ℝ) (X : Loc) [NeZero X.m] [Fact X.p.Prime]
@@ -94,16 +94,16 @@ theorem rankOnDigits_cast (hB : BlockRankAt) (hY : DimYAt) (C0 CE1 CE2 : ℝ) (X
   rw [cast_finsum]
   refine finsum_congr fun b => ?_
   by_cases hb : Kept X.p X.m (X.seg C0 CE1 CE2 j) (segATop X.TT X.aT j) b ∧ b.rz = rz ∧ b.ry = ry
-  · rw [if_pos hb, if_pos hb]
+  · rw [ite_eq_left hb, ite_eq_left hb]
     exact blockRank_cast hB hY X.p O Sd _ _ _ m b
-  · rw [if_neg hb, if_neg hb]
+  · rw [ite_eq_right hb, ite_eq_right hb]
     simp
 
 theorem restUp_of (hB : BlockRankAt) (hY : DimYAt) (hC : RestCountUp) : RestUp := by
   refine TransportedAlt.mono ?_ hC
   intro C0 CYb Cde Ck CD Cb CE1 CE2 _ Cc h X _ W Qq O Kf _ _ _ _ _ _ _ _ _ _ ι σ jO w hS hH hc j m hm rz ry hd
   have hD1 : D1num X := ⟨hS.1.prime, hS.1.five_le, hS.1.two_le, hS.1.even⟩
-  haveI : Fact X.p.Prime := ⟨hS.1.prime⟩
+  have : Fact X.p.Prime := ⟨hS.1.prime⟩
   have h1 := h X hD1 hH hc j m hm rz ry hd
   rw [← rankOnDigits_cast hB hY C0 CE1 CE2 X O (dvrOfStd hS) j m rz ry] at h1
   exact_mod_cast h1
@@ -112,7 +112,7 @@ theorem restLow_of (hB : BlockRankAt) (hY : DimYAt) (hC : RestCountLow) : RestLo
   refine TransportedAlt.mono ?_ hC
   intro C0 CYb Cde Ck CD Cb CE1 CE2 _ Cc h X _ W Qq O Kf _ _ _ _ _ _ _ _ _ _ ι σ jO w hS hH hc j m hm hm2 rz ry hd
   have hD1 : D1num X := ⟨hS.1.prime, hS.1.five_le, hS.1.two_le, hS.1.even⟩
-  haveI : Fact X.p.Prime := ⟨hS.1.prime⟩
+  have : Fact X.p.Prime := ⟨hS.1.prime⟩
   have h1 := h X hD1 hH hc j m hm hm2 rz ry hd
   rw [← rankOnDigits_cast hB hY C0 CE1 CE2 X O (dvrOfStd hS) j m rz ry] at h1
   simpa using h1

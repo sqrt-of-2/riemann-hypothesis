@@ -83,8 +83,8 @@ def ind (a : InfinitePlace F → ι) (b : HeightOneSpectrum (𝓞 F) → ι) (i 
   ((fun w => if a w = i then 1 else 0),
     ⟨fun v => if b v = i then 1 else 0, Filter.Eventually.of_forall fun v => by
       by_cases h : b v = i
-      · simp only [h, if_true]; exact one_mem _
-      · simp only [h, if_false]; exact zero_mem _⟩)
+      · simp only [h, ite_true]; exact one_mem _
+      · simp only [h, ite_false]; exact zero_mem _⟩)
 
 theorem compInf_ind (a : InfinitePlace F → ι) (b : HeightOneSpectrum (𝓞 F) → ι) (i : ι) (w : InfinitePlace F) :
     compInf w (ind a b i) = if a w = i then 1 else 0 := rfl
@@ -109,7 +109,7 @@ theorem GlobalTheory.QSA.exists_idem_pick_unit : ∀ (F : Type) [Field F] [Numbe
   have hinf : ∀ w, ∃ i, compInf w (n i) ≠ 0 := by
     intro w
     by_contra h
-    push_neg at h
+    push Not at h
     apply (hs.map (compInf w)).ne_zero
 
     rw [map_sum]
@@ -130,12 +130,12 @@ theorem GlobalTheory.QSA.exists_idem_pick_unit : ∀ (F : Type) [Field F] [Numbe
     apply ext_comp
     · intro w; rw [map_mul, map_zero, compInf_ind, compInf_ind]
       by_cases h1 : a w = i
-      · rw [if_pos h1, if_neg (fun h2 => hij (h1.symm.trans h2)), mul_zero]
-      · rw [if_neg h1, zero_mul]
+      · rw [ite_eq_left h1, ite_eq_right (fun h2 => hij (h1.symm.trans h2)), mul_zero]
+      · rw [ite_eq_right h1, zero_mul]
     · intro v; rw [map_mul, map_zero, compFin_ind, compFin_ind]
       by_cases h1 : b v = i
-      · rw [if_pos h1, if_neg (fun h2 => hij (h1.symm.trans h2)), mul_zero]
-      · rw [if_neg h1, zero_mul]
+      · rw [ite_eq_left h1, ite_eq_right (fun h2 => hij (h1.symm.trans h2)), mul_zero]
+      · rw [ite_eq_right h1, zero_mul]
   · apply ext_comp
     · intro w; rw [map_sum, map_one]; simp only [compInf_ind]; rw [Finset.sum_ite_eq]; simp
     · intro v; rw [map_sum, map_one]; simp only [compFin_ind]; rw [Finset.sum_ite_eq]; simp
@@ -143,15 +143,15 @@ theorem GlobalTheory.QSA.exists_idem_pick_unit : ∀ (F : Type) [Field F] [Numbe
       intro w
 
       rw [map_sum, Finset.sum_eq_single (a w)]
-      · rw [map_mul, compInf_ind, if_pos rfl, one_mul]
-      · intro j _ hj; rw [map_mul, compInf_ind, if_neg (Ne.symm hj), zero_mul]
+      · rw [map_mul, compInf_ind, ite_eq_left rfl, one_mul]
+      · intro j _ hj; rw [map_mul, compInf_ind, ite_eq_right (Ne.symm hj), zero_mul]
       · intro h; exact absurd (Finset.mem_univ _) h
     have hcFin : ∀ v, compFin v (∑ i, ind a b i * n i) = compFin v (n (b v)) := by
       intro v
 
       rw [map_sum, Finset.sum_eq_single (b v)]
-      · rw [map_mul, compFin_ind, if_pos rfl, one_mul]
-      · intro j _ hj; rw [map_mul, compFin_ind, if_neg (Ne.symm hj), zero_mul]
+      · rw [map_mul, compFin_ind, ite_eq_left rfl, one_mul]
+      · intro j _ hj; rw [map_mul, compFin_ind, ite_eq_right (Ne.symm hj), zero_mul]
       · intro h; exact absurd (Finset.mem_univ _) h
     apply isUnit_of_comp
     · intro w; rw [hcInf]; exact ha w
@@ -163,7 +163,7 @@ theorem GlobalTheory.QSA.exists_idem_pick_unit : ∀ (F : Type) [Field F] [Numbe
       refine Finset.sum_eq_zero fun j _ => ?_
       have h := hb v j
       rw [h0, map_zero] at h
-      rw [map_mul, (Valuation.zero_iff _).1 (le_antisymm h zero_le'), mul_zero]
+      rw [map_mul, (Valuation.zero_iff _).1 (le_antisymm h zero_le), mul_zero]
     · have hsu := (FiniteAdeleRing.isUnit_iff.1 (hs.map (RingHom.snd (InfiniteAdeleRing F) (Af F)))).2
       have hint : ∀ᶠ v in Filter.cofinite, ∀ j,
           Valued.v (compFin v (u j)) ≤ 1 ∧ Valued.v (compFin v (n j)) ≤ 1 := by
@@ -179,4 +179,4 @@ theorem GlobalTheory.QSA.exists_idem_pick_unit : ∀ (F : Type) [Field F] [Numbe
       rw [← hv1', map_sum]
       refine Valuation.map_sum_le _ fun j _ => ?_
       rw [map_mul, map_mul]
-      exact (mul_le_of_le_one_left zero_le' (hv2 j).1).trans (hb v j)
+      exact (mul_le_of_le_one_left zero_le (hv2 j).1).trans (hb v j)

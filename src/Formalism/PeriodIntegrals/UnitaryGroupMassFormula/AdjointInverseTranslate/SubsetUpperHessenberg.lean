@@ -65,12 +65,12 @@ theorem lf_sig_eI (k r : ℕ) (a : Fin r) : hkSig k r (eI k r a) = esI k r a := 
   apply Fin.ext
   rw [lf_sig_val, lf_esI_val, lf_eI_val]
   have h := a.isLt
-  rw [if_neg (by omega)]
+  rw [ite_eq_right (by omega)]
 
 theorem lf_eps_eI (k r : ℕ) (a : Fin r) : hkEps k r (eI k r a) = 1 := by
   have h := a.isLt
   unfold hkEps
-  rw [if_neg (by rw [lf_eI_val]; omega)]
+  rw [ite_eq_right (by rw [lf_eI_val]; omega)]
 
 theorem lf_H_eI (k r : ℕ) (a : Fin r) (q : Fin (2 * r + k + 1)) :
     Hpk k r (eI k r a) q = if q = esI k r a then 1 else 0 := by
@@ -131,9 +131,9 @@ theorem lf_UW_row (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) {h : Matrix (Fin
   have h2 := lf_unit_entry k r h (show inUH (Hpk k r) h from hU) (eI k r a) p
   rw [lf_H_eI] at h2
   rw [← h2, Finset.sum_eq_single (eI k r a)]
-  · rw [hcol, if_pos rfl, star_one, one_mul, lf_eps_eI, one_mul, lf_sig_eI]
+  · rw [hcol, ite_eq_left rfl, star_one, one_mul, lf_eps_eI, one_mul, lf_sig_eI]
   · intro t _ ht
-    rw [hcol, if_neg ht, star_zero, zero_mul]
+    rw [hcol, ite_eq_right ht, star_zero, zero_mul]
   · intro hn
     exact absurd (Finset.mem_univ _) hn
 
@@ -146,7 +146,7 @@ theorem lf_sig_small (k r : ℕ) (t : Fin (2 * r + k + 1)) (ht : t.val < r) :
     hkSig k r t = esI k r ⟨t.val, ht⟩ := by
   apply Fin.ext
   rw [lf_sig_val, lf_esI_val]
-  rw [if_neg (by omega)]
+  rw [ite_eq_right (by omega)]
 
 theorem lf_N_rowStar (k r : ℕ) {m : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     (hm : m ∈ Formalism.QuantumDeterminants.Nset k r) : ∀ (b : ℕ) (hb : b < r) (p : Fin (2 * r + k + 1)), p.val ≤ 2 * r + k - b →
@@ -160,14 +160,14 @@ theorem lf_N_rowStar (k r : ℕ) {m : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r +
   have h2 := lf_unit_entry k r m hU (eI k r ⟨b, hb⟩) p
   rw [lf_H_eI] at h2
   rw [← h2, Finset.sum_eq_single (eI k r ⟨b, hb⟩)]
-  · rw [hcol (eI k r ⟨b, hb⟩) (lf_eI_val k r ⟨b, hb⟩).ge, if_pos rfl, star_one, one_mul, lf_eps_eI,
+  · rw [hcol (eI k r ⟨b, hb⟩) (lf_eI_val k r ⟨b, hb⟩).ge, ite_eq_left rfl, star_one, one_mul, lf_eps_eI,
       one_mul, lf_sig_eI]
   · intro t _ ht
     by_cases htb : b ≤ t.val
-    · rw [hcol t htb, if_neg ht, star_zero, zero_mul]
-    · push_neg at htb
+    · rw [hcol t htb, ite_eq_right ht, star_zero, zero_mul]
+    · push Not at htb
       have htr : t.val < r := by omega
-      rw [lf_sig_small k r t htr, ih t.val htb htr p (by omega), if_neg, mul_zero, mul_zero]
+      rw [lf_sig_small k r t htr, ih t.val htb htr p (by omega), ite_eq_right, mul_zero, mul_zero]
       intro hpe
       have h3 : p.val = 2 * r + k - t.val := by rw [hpe, lf_esI_val]
       omega
@@ -179,10 +179,10 @@ theorem lf_S_rowStar (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (s : Matrix (
     s (esI k r a) j = if j = esI k r a then 1 else 0 := by
   obtain ⟨h, hh, m, hm, rfl⟩ := hs
   rw [Matrix.mul_apply, Finset.sum_eq_single (esI k r a)]
-  · rw [lf_UW_row k r z hh a, if_pos rfl, one_mul]
+  · rw [lf_UW_row k r z hh a, ite_eq_left rfl, one_mul]
     exact lf_N_rowStar k r hm a.val a.isLt j hj
   · intro t _ ht
-    rw [lf_UW_row k r z hh a, if_neg ht, zero_mul]
+    rw [lf_UW_row k r z hh a, ite_eq_right ht, zero_mul]
   · intro hn
     exact absurd (Finset.mem_univ _) hn
 
@@ -193,7 +193,7 @@ theorem subset_row_star : SsetRowStar := by
   have hjl := j.isLt
   apply lf_S_rowStar k r z s hs a j
   by_contra hlt
-  push_neg at hlt
+  push Not at hlt
   have hb : 2 * r + k - j.val < a.val := by omega
   apply hj ⟨2 * r + k - j.val, by omega⟩ hb
   apply Fin.ext
@@ -212,14 +212,14 @@ theorem lf_S_col (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (s : Matrix (Fin 
     s i (eI k r a) = if i = eI k r a then 1 else 0 := by
   obtain ⟨h, hh, m, hm, rfl⟩ := hs
   rw [Matrix.mul_apply, Finset.sum_eq_single (eI k r a)]
-  · rw [hm.2.1 a (eI k r a) (lf_eI_val k r a).ge, if_pos rfl, mul_one, lf_UW_col k r z hh a i]
+  · rw [hm.2.1 a (eI k r a) (lf_eI_val k r a).ge, ite_eq_left rfl, mul_one, lf_UW_col k r z hh a i]
   · intro t _ ht
     by_cases hat : a.val ≤ t.val
-    · rw [hm.2.1 a t hat, if_neg ht, mul_zero]
-    · push_neg at hat
+    · rw [hm.2.1 a t hat, ite_eq_right ht, mul_zero]
+    · push Not at hat
       have htr : t.val < r := by have := a.isLt; omega
       have ht' : t = eI k r ⟨t.val, htr⟩ := Fin.ext (lf_eI_val k r ⟨t.val, htr⟩).symm
-      rw [ht', lf_UW_col k r z hh ⟨t.val, htr⟩ i, if_neg, zero_mul]
+      rw [ht', lf_UW_col k r z hh ⟨t.val, htr⟩ i, ite_eq_right, zero_mul]
       intro hie
       have h3 := congrArg Fin.val hie
       rw [lf_eI_val] at h3
@@ -239,15 +239,15 @@ theorem lf_triInv (k r : ℕ) (M : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k 
   have h1 := congrFun (congrFun hM i) (eI k r ⟨a, ha⟩)
   rw [Matrix.mul_apply, Matrix.one_apply] at h1
   rw [Finset.sum_eq_single (eI k r ⟨a, ha⟩)] at h1
-  · rw [hU ⟨a, ha⟩ (eI k r ⟨a, ha⟩) (lf_eI_val k r ⟨a, ha⟩).ge, if_pos rfl, mul_one] at h1
+  · rw [hU ⟨a, ha⟩ (eI k r ⟨a, ha⟩) (lf_eI_val k r ⟨a, ha⟩).ge, ite_eq_left rfl, mul_one] at h1
     exact h1
   · intro t _ ht
     by_cases hat : a ≤ t.val
-    · rw [hU ⟨a, ha⟩ t hat, if_neg ht, mul_zero]
-    · push_neg at hat
+    · rw [hU ⟨a, ha⟩ t hat, ite_eq_right ht, mul_zero]
+    · push Not at hat
       have htr : t.val < r := by omega
       have ht' : t = eI k r ⟨t.val, htr⟩ := Fin.ext (lf_eI_val k r ⟨t.val, htr⟩).symm
-      rw [ht', ih t.val hat htr i (by omega), if_neg, zero_mul]
+      rw [ht', ih t.val hat htr i (by omega), ite_eq_right, zero_mul]
       intro hie
       have h3 := congrArg Fin.val hie
       rw [lf_eI_val] at h3
@@ -269,7 +269,7 @@ theorem subset_inverse_column : SsetInvCol := by
   intro k r z s hs a i hi
   apply lf_S_invCol k r z s hs a i
   by_contra hlt
-  push_neg at hlt
+  push Not at hlt
   have ha := a.isLt
   exact hi ⟨i.val, by omega⟩ hlt (Fin.ext (lf_eI_val k r ⟨i.val, by omega⟩).symm)
 

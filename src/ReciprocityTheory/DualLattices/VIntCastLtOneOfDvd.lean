@@ -39,7 +39,7 @@ theorem v_intCast_lt_one_of_dvd (hv : v.Integers R) (hpv : v (p : C) < 1) {n : �
   push_cast
   rw [map_mul]
   calc v (p : C) * v (m : C) ≤ v (p : C) * 1 :=
-        mul_le_mul_of_nonneg_left (v_intCast_le_one hv m) zero_le'
+        mul_le_mul_of_nonneg_left (v_intCast_le_one hv m) zero_le
     _ < 1 := by rw [mul_one]; exact hpv
 
 theorem v_intCast_eq_one (hv : v.Integers R) (hpv : v (p : C) < 1) {n : ℤ}
@@ -53,23 +53,23 @@ theorem v_intCast_eq_one (hv : v.Integers R) (hpv : v (p : C) < 1) {n : ℤ}
   have ha : v ((a : C) * (p : C)) < 1 := by
     rw [map_mul]
     calc v (a : C) * v (p : C) ≤ 1 * v (p : C) :=
-          mul_le_mul_of_nonneg_right (v_intCast_le_one hv a) zero_le'
+          mul_le_mul_of_nonneg_right (v_intCast_le_one hv a) zero_le
       _ < 1 := by rw [one_mul]; exact hpv
   have hb : 1 ≤ v ((b : C) * (n : C)) := by
     by_contra hlt
-    push_neg at hlt
+    push Not at hlt
     have := v.map_add_lt ha hlt
     rw [h1, map_one] at this
     exact lt_irrefl _ this
   refine le_antisymm (v_intCast_le_one hv n) ?_
   rw [map_mul] at hb
   calc 1 ≤ v (b : C) * v (n : C) := hb
-    _ ≤ 1 * v (n : C) := mul_le_mul_of_nonneg_right (v_intCast_le_one hv b) zero_le'
+    _ ≤ 1 * v (n : C) := mul_le_mul_of_nonneg_right (v_intCast_le_one hv b) zero_le
     _ = v (n : C) := one_mul _
 
 theorem v_le_one_of_pow_eq {r : C} (hr : r ^ p = r) : v r ≤ 1 := by
   by_contra h
-  push_neg at h
+  push Not at h
   have h2 : 2 ≤ p := hp.out.two_le
   have key : v r ^ 1 < v r ^ p := pow_lt_pow_right₀ h (by omega)
   rw [pow_one, ← map_pow, hr] at key
@@ -82,8 +82,8 @@ theorem v_pow_sub_le {r s : C} (hr : v r ≤ 1) (hs : v s ≤ 1) (i : ℕ) :
     apply v.map_sum_le
     intro j _
     rw [map_mul, map_pow, map_pow]
-    exact mul_le_one₀ (pow_le_one₀ zero_le' hr) zero_le' (pow_le_one₀ zero_le' hs)
-  calc _ ≤ 1 * v (r - s) := mul_le_mul_of_nonneg_right hS zero_le'
+    exact mul_le_one₀ (pow_le_one₀ zero_le hr) zero_le (pow_le_one₀ zero_le hs)
+  calc _ ≤ 1 * v (r - s) := mul_le_mul_of_nonneg_right hS zero_le
     _ = _ := one_mul _
 
 theorem teich_unique (hv : v.Integers R) (hpv : v (p : C) < 1) {r s : C} (hr : r ^ p = r)
@@ -111,13 +111,13 @@ theorem teich_unique (hv : v.Integers R) (hpv : v (p : C) < 1) {r s : C} (hr : r
     intro k _
     rw [map_mul]
     calc v (r ^ k - s ^ k) * v (s ^ (p - 1 - k)) ≤ v (r ^ k - s ^ k) * 1 :=
-          mul_le_mul_of_nonneg_left (by rw [map_pow]; exact pow_le_one₀ zero_le' hs1) zero_le'
+          mul_le_mul_of_nonneg_left (by rw [map_pow]; exact pow_le_one₀ zero_le hs1) zero_le
       _ ≤ v (r - s) := by rw [mul_one]; exact v_pow_sub_le hr1 hs1 k
       _ < 1 := h
   have hlt2 : v ((p : C) * s ^ (p - 1)) < 1 := by
     rw [map_mul, map_pow]
     calc v (p : C) * v s ^ (p - 1) ≤ v (p : C) * 1 :=
-          mul_le_mul_of_nonneg_left (pow_le_one₀ zero_le' hs1) zero_le'
+          mul_le_mul_of_nonneg_left (pow_le_one₀ zero_le hs1) zero_le
       _ < 1 := by rw [mul_one]; exact hpv
   have hv : v S < 1 := by
     have := v.map_add_lt hlt1 hlt2
@@ -150,7 +150,7 @@ theorem exists_teich [IsAlgClosed C] (hv : v.Integers R) (hpv : v (p : C) < 1) (
     rw [Polynomial.eval_multiset_prod, Multiset.map_map] at this
     simpa [Function.comp_def] using this
   by_contra hno
-  push_neg at hno
+  push Not at hno
   have hge : 1 ≤ v ((n : C) ^ p - n) := by
     rw [heval, map_multiset_prod, Multiset.map_map]
     apply Multiset.one_le_prod_of_one_le
@@ -167,7 +167,7 @@ theorem exists_teichChar [IsAlgClosed C] (hv : v.Integers R) (hpv : v (p : C) < 
     ∃ ω : ZMod p → C, (∀ a, ω a ^ p = ω a) ∧ (∀ a, v (ω a - (a.val : C)) < 1) ∧
       ω 0 = 0 ∧ ω 1 = 1 ∧ (∀ a b, ω (a * b) = ω a * ω b) ∧
       (∀ a b, a ≠ b → v (ω a - ω b) = 1) := by
-  haveI : NeZero p := ⟨hp.out.ne_zero⟩
+  have : NeZero p := ⟨hp.out.ne_zero⟩
   choose ω hω1 hω2 using fun a : ZMod p => exists_teich hv hpv (p := p) a.val
   have hω1' : ∀ a, v (ω a) ≤ 1 := fun a => v_le_one_of_pow_eq (hω1 a)
   refine ⟨ω, hω1, hω2, ?_, ?_, ?_, ?_⟩
@@ -191,10 +191,10 @@ theorem exists_teichChar [IsAlgClosed C] (hv : v.Integers R) (hpv : v (p : C) < 
       rw [hx, Valuation.map_neg]
       apply v.map_add_lt
       · rw [map_mul]
-        calc _ ≤ v (ω a - a.val) * 1 := mul_le_mul_of_nonneg_left (v_natCast_le_one hv _) zero_le'
+        calc _ ≤ v (ω a - a.val) * 1 := mul_le_mul_of_nonneg_left (v_natCast_le_one hv _) zero_le
           _ < 1 := by rw [mul_one]; exact hω2 a
       · rw [map_mul]
-        calc _ ≤ 1 * v (ω b - b.val) := mul_le_mul_of_nonneg_right (hω1' a) zero_le'
+        calc _ ≤ 1 * v (ω b - b.val) := mul_le_mul_of_nonneg_right (hω1' a) zero_le
           _ < 1 := by rw [one_mul]; exact hω2 b
     have hx : ω (a * b) - ω a * ω b = (ω (a * b) - ((a * b).val : C)) +
         ((((a * b).val : C) - (a.val : C) * (b.val : C)) + ((a.val : C) * (b.val : C) - ω a * ω b)) := by ring
@@ -203,7 +203,7 @@ theorem exists_teichChar [IsAlgClosed C] (hv : v.Integers R) (hpv : v (p : C) < 
   · intro a b hab
     refine le_antisymm ((v.map_sub (ω a) (ω b)).trans (max_le (hω1' a) (hω1' b))) ?_
     by_contra hlt
-    push_neg at hlt
+    push Not at hlt
     have h1 : v ((a.val : C) - (b.val : C)) < 1 := by
       have hx : (a.val : C) - b.val = -(ω a - a.val) + (ω a - ω b) + (ω b - b.val) := by ring
       rw [hx]
@@ -220,7 +220,7 @@ theorem exists_teichChar [IsAlgClosed C] (hv : v.Integers R) (hpv : v (p : C) < 
     exact lt_irrefl _ h1
 
 theorem exists_primRoot [IsAlgClosed C] [CharZero C] : ∃ ζ : C, IsPrimitiveRoot ζ p := by
-  haveI : NeZero (p : C) := ⟨Nat.cast_ne_zero.mpr hp.out.ne_zero⟩
+  have : NeZero (p : C) := ⟨Nat.cast_ne_zero.mpr hp.out.ne_zero⟩
   obtain ⟨ζ, hζ⟩ := IsAlgClosed.exists_root (Polynomial.cyclotomic p C) (by
     rw [Polynomial.degree_cyclotomic, Nat.totient_prime hp.out]
     have := hp.out.two_le
@@ -232,7 +232,7 @@ theorem val_sub_one_le {α β : C} (hα : IsPrimitiveRoot α p) (hβ : IsPrimiti
     v (α - 1) ≤ v (β - 1) := by
   obtain ⟨i, -, hi⟩ := hβ.eq_pow_of_pow_eq_one hα.pow_eq_one
   have hβ1 : v β = 1 :=
-    (pow_eq_one_iff_of_nonneg zero_le' hp.out.ne_zero).mp (by rw [← map_pow, hβ.pow_eq_one, map_one])
+    (pow_eq_one_iff_of_nonneg zero_le hp.out.ne_zero).mp (by rw [← map_pow, hβ.pow_eq_one, map_one])
   rw [← hi]
   have := v_pow_sub_le (v := v) (r := β) (s := 1) hβ1.le (by rw [map_one]) i
   rwa [one_pow] at this

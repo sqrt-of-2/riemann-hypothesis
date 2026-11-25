@@ -31,7 +31,7 @@ theorem continuous_norm_tensor {F E : Type} [Field F] [Field E] [Algebra F E] [F
     [IsTopologicalRing (R ⊗[F] E)] :
     Continuous (Algebra.norm R : R ⊗[F] E → R) := by
   classical
-  haveI : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
+  have : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
   let B := Algebra.TensorProduct.basis R (Module.finBasis F E)
   have h : (fun y : R ⊗[F] E => Algebra.norm R y) = fun y => (Algebra.leftMulMatrix B y).det := by
     funext y; exact Algebra.norm_eq_matrix_det B y
@@ -47,7 +47,7 @@ theorem norm_tmul_one {F E : Type} [Field F] [Field E] [Algebra F E]
     (h2 : Module.finrank F E = 2) (R : Type) [CommRing R] [Nontrivial R] [Algebra F R] (r : R) :
     Algebra.norm R (r ⊗ₜ[F] (1 : E)) = r ^ 2 := by
   classical
-  haveI : FiniteDimensional F E := Module.finite_of_finrank_pos (by omega)
+  have : FiniteDimensional F E := Module.finite_of_finrank_pos (by omega)
   have e : r ⊗ₜ[F] (1 : E) = algebraMap R (R ⊗[F] E) r := by
     simp [Algebra.TensorProduct.algebraMap_apply]
   rw [e, Algebra.norm_algebraMap, Module.finrank_baseChange, h2]
@@ -58,9 +58,9 @@ theorem map_scale_adele {F : Type} [Field F] [NumberField F] (hF : IsTotallyReal
     μA.map (fun y => pairA F (θ t) 1 * y) =
       ENNReal.ofReal ((t ^ Module.finrank ℚ F)⁻¹) • μA := by
   obtain ⟨⟨lcA, scA, t2A⟩, -⟩ := GlobalTheory.CompanionTheory.AdeleTop.adele_top F
-  haveI : BorelSpace (AF F) := ⟨rfl⟩
+  have : BorelSpace (AF F) := ⟨rfl⟩
   let μ' : Measure (Unit → AF F) := Measure.pi fun _ => μA
-  haveI : μ'.IsAddHaarMeasure := Measure.pi.isAddHaarMeasure _
+  have : μ'.IsAddHaarMeasure := Measure.pi.isAddHaarMeasure _
   have h := _root_.GlobalTheory.CompanionTheory.AdelicFlow.map_scalar F hF θ hθ Unit μ' t ht
   have he : μ'.map (MeasurableEquiv.funUnique Unit (AF F)) = μA :=
     (measurePreserving_funUnique μA Unit).map_eq
@@ -100,10 +100,10 @@ theorem exists_modulus_chi : ∀ (F E : Type) [Field F] [NumberField F] [Field E
   intro F E _ _ _ _ _ σ hCM τ hτ M μW μA hW hA
   obtain ⟨⟨lcA, scA, t2A⟩, -⟩ := GlobalTheory.CompanionTheory.AdeleTop.adele_top F
   obtain ⟨trK, lcK, scK, t2K, cSig, -, -, bor, -, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hCM (AF F)
-  haveI : BorelSpace (AF F) := ⟨rfl⟩
-  haveI : BorelSpace (Fin 1 → Fin M → AF F ⊗[F] E) := bor 1 M
+  have : BorelSpace (AF F) := ⟨rfl⟩
+  have : BorelSpace (Fin 1 → Fin M → AF F ⊗[F] E) := bor 1 M
   have h2 : Module.finrank F E = 2 := hCM.2.2.1
-  haveI : FiniteDimensional F E := Module.finite_of_finrank_pos (by omega)
+  have : FiniteDimensional F E := Module.finite_of_finrank_pos (by omega)
   have cN : Continuous (Algebra.norm (AF F) : AF F ⊗[F] E → AF F) := continuous_norm_tensor (AF F)
   let a : (AF F ⊗[F] E)ˣ →
       ((Fin 1 → Fin M → AF F ⊗[F] E) × AF F) →+ ((Fin 1 → Fin M → AF F ⊗[F] E) × AF F) := fun t =>
@@ -113,11 +113,11 @@ theorem exists_modulus_chi : ∀ (F E : Type) [Field F] [NumberField F] [Field E
       map_add' := by intro p q; simp [smul_add, mul_add] }
   have ha : ∀ t p, a t p = (sigR (AF F) σ (t : AF F ⊗[F] E) • p.1,
       Algebra.norm (AF F) (t : AF F ⊗[F] E) * p.2) := fun _ _ => rfl
-  haveI : LocallyCompactSpace (AF F ⊗[F] E)ˣ :=
+  have : LocallyCompactSpace (AF F ⊗[F] E)ˣ :=
     (Units.isClosedEmbedding_embedProduct (α := AF F ⊗[F] E)).locallyCompactSpace
-  haveI : SecondCountableTopology (AF F ⊗[F] E)ᵐᵒᵖ :=
+  have : SecondCountableTopology (AF F ⊗[F] E)ᵐᵒᵖ :=
     (MulOpposite.opHomeomorph (M := AF F ⊗[F] E)).symm.secondCountableTopology
-  haveI : SecondCountableTopology (AF F ⊗[F] E)ˣ :=
+  have : SecondCountableTopology (AF F ⊗[F] E)ˣ :=
     (Units.isEmbedding_embedProduct (M := AF F ⊗[F] E)).secondCountableTopology
   have hcont : Continuous fun p : (AF F ⊗[F] E)ˣ × ((Fin 1 → Fin M → AF F ⊗[F] E) × AF F) =>
       a p.1 p.2 := by
@@ -126,14 +126,14 @@ theorem exists_modulus_chi : ∀ (F E : Type) [Field F] [NumberField F] [Field E
     refine Continuous.prodMk ?_ ?_
     · exact (cSig.comp hv).smul (continuous_fst.comp continuous_snd)
     · exact (cN.comp hv).mul (continuous_snd.comp continuous_snd)
-  haveI : μW.IsAddHaarMeasure := hW
-  haveI : μA.IsAddHaarMeasure := hA
-  haveI : IsTopologicalAddGroup (Fin 1 → Fin M → AF F ⊗[F] E) := inferInstance
-  haveI : LocallyCompactSpace (Fin 1 → Fin M → AF F ⊗[F] E) := inferInstance
-  haveI : SecondCountableTopology (Fin 1 → Fin M → AF F ⊗[F] E) := inferInstance
-  haveI : SigmaFinite μW := inferInstance
-  haveI : SigmaFinite μA := inferInstance
-  haveI : (μW.prod μA).IsAddHaarMeasure := inferInstance
+  have : μW.IsAddHaarMeasure := hW
+  have : μA.IsAddHaarMeasure := hA
+  have : IsTopologicalAddGroup (Fin 1 → Fin M → AF F ⊗[F] E) := inferInstance
+  have : LocallyCompactSpace (Fin 1 → Fin M → AF F ⊗[F] E) := inferInstance
+  have : SecondCountableTopology (Fin 1 → Fin M → AF F ⊗[F] E) := inferInstance
+  have : SigmaFinite μW := inferInstance
+  have : SigmaFinite μA := inferInstance
+  have : (μW.prod μA).IsAddHaarMeasure := inferInstance
   obtain ⟨χ, hχc, hχ⟩ := _root_.GlobalTheory.CompanionTheory.Adelic.ModulusAction.exists_continuous_modulus ((Fin 1 → Fin M → AF F ⊗[F] E) × AF F) (μW.prod μA)
     (AF F ⊗[F] E)ˣ a hcont continuous_inv
     (by intro y; rw [ha]; simp)
@@ -146,11 +146,11 @@ theorem exists_modulus_chi : ∀ (F E : Type) [Field F] [NumberField F] [Field E
   have hsig : sigR (AF F) σ ((τ (Multiplicative.ofAdd x) : (AF F ⊗[F] E)ˣ) : AF F ⊗[F] E) =
       ((τ (Multiplicative.ofAdd x) : (AF F ⊗[F] E)ˣ) : AF F ⊗[F] E) := by
     rw [hu]; simp [sigR]
-  haveI : Nontrivial (Ainf F) := by
+  have : Nontrivial (Ainf F) := by
     obtain ⟨v⟩ : Nonempty (InfinitePlace F) := inferInstance
     unfold Ainf InfiniteAdeleRing
     exact Pi.nontrivial_at v
-  haveI : Nontrivial (AF F) := inferInstanceAs (Nontrivial (Ainf F × Af F))
+  have : Nontrivial (AF F) := inferInstanceAs (Nontrivial (Ainf F × Af F))
   have hnorm : Algebra.norm (AF F) ((τ (Multiplicative.ofAdd x) : (AF F ⊗[F] E)ˣ) : AF F ⊗[F] E) =
       pairA F (θ (Real.exp (2 * x))) 1 := by
     rw [hu, norm_tmul_one h2, sq]
@@ -181,12 +181,12 @@ theorem exists_modulus_chi : ∀ (F E : Type) [Field F] [NumberField F] [Field E
   have pos : (μW.prod μA) S ≠ 0 := (Measure.measure_pos_of_mem_nhds _ hS0).ne'
   have fin : (μW.prod μA) S ≠ ⊤ := hS.measure_lt_top.ne
   have hS1 := congrArg (fun m : Measure _ => m S) hfin
-  simp only [Measure.smul_apply, smul_eq_mul, ENNReal.smul_def] at hS1
+  simp only [smul_apply, smul_eq_mul, ENNReal.smul_def] at hS1
   have hS2 := (ENNReal.mul_left_inj pos fin).1 hS1
   have hS3 := congrArg ENNReal.toReal hS2
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal (Real.exp_pos _).le,
     ENNReal.toReal_ofReal (by positivity), ENNReal.coe_toReal] at hS3
-  rw [← hS3, ← Real.exp_nat_mul, ← Real.exp_neg, ← Real.exp_add]
+  rw [← hS3, ← Real.exp_natCast_mul, ← Real.exp_neg, ← Real.exp_add]
   congr 1
   push_cast
   ring

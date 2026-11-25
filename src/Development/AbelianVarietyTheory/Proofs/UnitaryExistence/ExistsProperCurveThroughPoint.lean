@@ -79,7 +79,7 @@ theorem exists_eq_div {B R : Type} [CommRing B] [Field R] [Algebra B R]
 
 theorem isIntegrallyClosed_integralClosure {B R : Type} [CommRing B] [Field R] [Algebra B R]
     (h : (algebraMap B R).SurjectiveOnStalks) : IsIntegrallyClosed (integralClosure B R) := by
-  haveI : IsFractionRing (integralClosure B R) R := IsFractionRing.of_field _ _ fun z => by
+  have : IsFractionRing (integralClosure B R) R := IsFractionRing.of_field _ _ fun z => by
     obtain ⟨x, y, e⟩ := exists_eq_div h z
     exact ⟨algebraMap B _ x, algebraMap B _ y, e⟩
   exact (isIntegrallyClosed_iff R).mpr fun {x} hx => ⟨⟨x, isIntegral_trans x hx⟩, rfl⟩
@@ -90,28 +90,28 @@ theorem finite_integralClosure (k : Type) {B R : Type} [Field k] [PerfectField k
     Module.Finite B (integralClosure B R) ∧ ∀ [Algebra k R] [IsScalarTower k B R],
       ringKrullDim (B ⧸ RingHom.ker (algebraMap B R)) ≤ 1 → Algebra.trdeg k R ≤ 1 := by
   let A := B ⧸ RingHom.ker (algebraMap B R)
-  haveI : (RingHom.ker (algebraMap B R)).IsPrime := RingHom.ker_isPrime _
-  letI : Algebra A R := (RingHom.kerLift (algebraMap B R)).toAlgebra
-  haveI : IsScalarTower B A R := .of_algebraMap_eq fun x => (RingHom.kerLift_mk _ x).symm
-  haveI : FaithfulSMul A R := (faithfulSMul_iff_algebraMap_injective _ _).mpr
+  have : (RingHom.ker (algebraMap B R)).IsPrime := RingHom.ker_isPrime _
+  let : Algebra A R := (RingHom.kerLift (algebraMap B R)).toAlgebra
+  have : IsScalarTower B A R := .of_algebraMap_eq fun x => (RingHom.kerLift_mk _ x).symm
+  have : FaithfulSMul A R := (faithfulSMul_iff_algebraMap_injective _ _).mpr
     (RingHom.kerLift_injective _)
-  haveI : IsFractionRing A R := IsFractionRing.of_field _ _ fun z => by
+  have : IsFractionRing A R := IsFractionRing.of_field _ _ fun z => by
     obtain ⟨x, y, e⟩ := exists_eq_div h z
     exact ⟨algebraMap B _ x, algebraMap B _ y, by
       rwa [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]⟩
   constructor
-  · haveI := NormFin.finite_integralClosure_of_perfectField k A R R
-    haveI : Module.Finite B (integralClosure A R) := Module.Finite.trans A _
+  · have := NormFin.finite_integralClosure_of_perfectField k A R R
+    have : Module.Finite B (integralClosure A R) := Module.Finite.trans A _
     have h' : Module.Finite B ((integralClosure A R).restrictScalars B) := this
     rwa [integralClosure_restrictScalars_of_isIntegral] at h'
   · intro _ _ hd
-    haveI : IsScalarTower k A R := .of_algebraMap_eq fun x => by
+    have : IsScalarTower k A R := .of_algebraMap_eq fun x => by
       rw [IsScalarTower.algebraMap_apply k B R, IsScalarTower.algebraMap_apply k B A,
         ← IsScalarTower.algebraMap_apply B A R]
     obtain ⟨s, hs1, hs2⟩ := ReciprocityTheory.CA.exists_dim_trdeg_field (K := k) (A := A)
-    haveI : FaithfulSMul k A := (faithfulSMul_iff_algebraMap_injective _ _).mpr
+    have : FaithfulSMul k A := (faithfulSMul_iff_algebraMap_injective _ _).mpr
       (algebraMap k A).injective
-    haveI : Algebra.IsAlgebraic A R := IsLocalization.isAlgebraic R (nonZeroDivisors A)
+    have : Algebra.IsAlgebraic A R := IsLocalization.isAlgebraic R (nonZeroDivisors A)
     rw [← trdeg_add_eq k A (A := R), trdeg_eq_zero (R := A) (A := R), add_zero, hs2]
     rw [hs1] at hd
     exact_mod_cast hd
@@ -177,12 +177,12 @@ theorem isFinite_fromNormalization [PerfectField k] (s : X ⟶ Sp k) [LocallyOfF
     IsFinite f.fromNormalization := by
   refine ⟨fun U hU => ?_⟩
   rw [f.fromNormalization_app hU]
-  letI := (f.app U).hom.toAlgebra
+  let := (f.app U).hom.toAlgebra
   have h : Module.Finite Γ(X, U) (integralClosure Γ(X, U) Γ(Z, f ⁻¹ᵁ U)) := by
     by_cases hne : Nonempty (f ⁻¹ᵁ U)
-    · letI := (isField_sections (f ⁻¹ᵁ U)).toField
-      letI := (constHom s U).toAlgebra
-      haveI : Algebra.FiniteType k Γ(X, U) := finiteType_constHom s hU
+    · let := (isField_sections (f ⁻¹ᵁ U)).toField
+      let := (constHom s U).toAlgebra
+      have : Algebra.FiniteType k Γ(X, U) := finiteType_constHom s hU
       refine (finite_integralClosure k ?_).1
       have := surjectiveOnStalks_appLE f hU (f ⁻¹ᵁ U) le_rfl
       rwa [← Scheme.Hom.app_eq_appLE] at this
@@ -204,18 +204,18 @@ theorem isIntegrallyClosed_stalk (y : f.normalization) :
     refine ⟨⟨z, ?_⟩⟩
     rw [← f.toNormalization_fromNormalization]
     exact hz
-  letI := (f.app U).hom.toAlgebra
+  let := (f.app U).hom.toAlgebra
   have h1 : IsIntegrallyClosed (integralClosure Γ(X, U) Γ(Z, f ⁻¹ᵁ U)) := by
-    letI := (isField_sections (f ⁻¹ᵁ U)).toField
+    let := (isField_sections (f ⁻¹ᵁ U)).toField
     refine isIntegrallyClosed_integralClosure ?_
     have := surjectiveOnStalks_appLE f hU (f ⁻¹ᵁ U) le_rfl
     rwa [← Scheme.Hom.app_eq_appLE] at this
   have h2 : IsIntegrallyClosed Γ(f.normalization, f.fromNormalization ⁻¹ᵁ U) :=
     IsIntegrallyClosed.of_equiv (f.normalizationObjIso hU).symm.commRingCatIsoToRingEquiv
   have hV := hU.preimage f.fromNormalization
-  haveI : Nonempty (f.fromNormalization ⁻¹ᵁ U) := ⟨⟨y, hy⟩⟩
-  letI := f.normalization.presheaf.algebra_section_stalk (⟨y, hy⟩ : f.fromNormalization ⁻¹ᵁ U)
-  haveI := hV.isLocalization_stalk ⟨y, hy⟩
+  have : Nonempty (f.fromNormalization ⁻¹ᵁ U) := ⟨⟨y, hy⟩⟩
+  let := f.normalization.presheaf.algebra_section_stalk (⟨y, hy⟩ : f.fromNormalization ⁻¹ᵁ U)
+  have := hV.isLocalization_stalk ⟨y, hy⟩
   exact isIntegrallyClosed_of_isLocalization (R := Γ(f.normalization, f.fromNormalization ⁻¹ᵁ U)) _
     (hV.primeIdealOf ⟨y, hy⟩).asIdeal.primeCompl (Ideal.primeCompl_le_nonZeroDivisors _)
 
@@ -223,10 +223,10 @@ theorem isDedekindDomain_sections [PerfectField k] (s : X ⟶ Sp k) [LocallyOfFi
     (hd : letI := (constHom (f ≫ s) ⊤).toAlgebra; Algebra.trdeg k Γ(Z, ⊤) ≤ 1)
     (U : f.normalization.Opens) (hU : IsAffineOpen U) [hne : Nonempty U] :
     IsDedekindDomain Γ(f.normalization, U) := by
-  haveI := isFinite_fromNormalization f s
-  letI := (constHom (f ≫ s) ⊤).toAlgebra
-  letI := (constHom (f.fromNormalization ≫ s) U).toAlgebra
-  haveI : Algebra.FiniteType k Γ(f.normalization, U) := finiteType_constHom _ hU
+  have := isFinite_fromNormalization f s
+  let := (constHom (f ≫ s) ⊤).toAlgebra
+  let := (constHom (f.fromNormalization ≫ s) U).toAlgebra
+  have : Algebra.FiniteType k Γ(f.normalization, U) := finiteType_constHom _ hU
   have e : ⊤ ≤ f.toNormalization ⁻¹ᵁ U := by
     obtain ⟨y, hy⟩ := hne
     obtain ⟨z, hz⟩ := f.toNormalization.denseRange.exists_mem_open U.isOpen ⟨y, hy⟩

@@ -40,8 +40,8 @@ lemma twist_toMK_inj {ε : Fin n → Bool} {k k' : KG ε} (h : toMK k = toMK k')
 
 private theorem hasDerivAt_exp_smul_apply_zero (X : Matrix (Fin n) (Fin n) ℂ) (i j : Fin n) :
     HasDerivAt (fun t : ℝ => NormedSpace.exp ((t : ℂ) • X) i j) (X i j) 0 := by
-  letI : NormedRing (Matrix (Fin n) (Fin n) ℂ) := Matrix.linftyOpNormedRing
-  letI : NormedAlgebra ℝ (Matrix (Fin n) (Fin n) ℂ) := Matrix.linftyOpNormedAlgebra
+  let : NormedRing (Matrix (Fin n) (Fin n) ℂ) := Matrix.linftyOpNormedRing
+  let : NormedAlgebra ℝ (Matrix (Fin n) (Fin n) ℂ) := Matrix.linftyOpNormedAlgebra
   have hc : ∀ t : ℝ, ((t : ℂ) • X) = t • X := fun t => Complex.coe_smul t X
   have h1 := hasDerivAt_exp_smul_const (𝕂 := ℝ) X (0 : ℝ)
   rw [zero_smul, NormedSpace.exp_zero, one_mul] at h1
@@ -68,10 +68,10 @@ lemma twist_zpow_star {ε : Fin n → Bool} (k : KG ε) (c : ℤ) :
 
 theorem kType_twist {ε : Fin n → Bool} {Λ : Fin n → ℝ} (T : KType ε Λ) (c : ℤ) :
     Nonempty (KType ε (fun a => Λ a + (c : ℝ))) := by
-  letI := T.instNACG
-  letI := T.instIPS
-  letI := T.instFD
-  letI := T.instCS
+  let := T.instNACG
+  let := T.instIPS
+  let := T.instFD
+  let := T.instCS
   let d : KG ε → ℂ := fun k => (toMK k).det ^ c
   have hd : ∀ k, star (d k) * d k = 1 := fun k => twist_zpow_star k c
   have hdne : ∀ k, d k ≠ 0 := fun k => zpow_ne_zero c (twist_det_ne k)
@@ -97,7 +97,7 @@ theorem kType_twist {ε : Fin n → Bool} {Λ : Fin n → ℝ} (T : KType ε Λ)
         rw [hdmul, map_mul, Submonoid.coe_mul, smul_mul_smul_comm] }
   have hcontd : Continuous d := by
     have h1 : Continuous fun k : KG ε => (toMK k).det :=
-      Continuous.matrix_det (Units.continuous_val.comp (continuous_subtype_val.comp continuous_subtype_val))
+      Continuous.matrix_det (Units.continuous_val.comp (continuous_subtypeVal.comp continuous_subtypeVal))
     exact h1.zpow₀ c (fun k => Or.inl (twist_det_ne k))
   let dτ' : Matrix (Fin n) (Fin n) ℂ →ₗ[ℂ] (T.V →L[ℂ] T.V) :=
     T.dτ + (c : ℂ) • (Matrix.traceLinearMap (Fin n) ℂ ℂ).smulRight (1 : T.V →L[ℂ] T.V)
@@ -108,13 +108,13 @@ theorem kType_twist {ε : Fin n → Bool} {Λ : Fin n → ℝ} (T : KType ε Λ)
   refine ⟨⟨T.V, τ', ?_, ?_, dτ', ?_, T.w, T.w_norm, ?_, ?_⟩⟩
   · show Continuous (fun k => (⟨d k • ((T.τ k : unitary (T.V →L[ℂ] T.V)) : T.V →L[ℂ] T.V),
         twist_smul_mem_unitary (hd k) (T.τ k).2⟩ : unitary (T.V →L[ℂ] T.V)))
-    exact Continuous.subtype_mk (hcontd.smul (continuous_subtype_val.comp T.cont)) _
+    exact Continuous.subtype_mk (hcontd.smul (continuous_subtypeVal.comp T.cont)) _
   · intro W hW
     refine T.irred W (fun k v hv => ?_)
     have h : (d k • ((T.τ k : unitary (T.V →L[ℂ] T.V)) : T.V →L[ℂ] T.V)) v ∈ W := hW k v hv
     have e : ((T.τ k : unitary (T.V →L[ℂ] T.V)) : T.V →L[ℂ] T.V) v =
         (d k)⁻¹ • ((d k • ((T.τ k : unitary (T.V →L[ℂ] T.V)) : T.V →L[ℂ] T.V)) v) := by
-      rw [ContinuousLinearMap.smul_apply, smul_smul, inv_mul_cancel₀ (hdne k), one_smul]
+      rw [smul_apply, smul_smul, inv_mul_cancel₀ (hdne k), one_smul]
     rw [e]
     exact W.smul_mem _ h
   · intro X hX γ hγ
@@ -144,12 +144,12 @@ theorem kType_twist {ε : Fin n → Bool} {Λ : Fin n → ℝ} (T : KType ε Λ)
     rw [← hdτ] at hsm
     exact hsm
   · intro a
-    rw [hdτ, ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply, ContinuousLinearMap.one_apply,
+    rw [hdτ, add_apply, smul_apply, one_apply_eq_self,
       T.w_wt a, Matrix.trace_single_eq_same, mul_one]
     push_cast
     rw [add_smul]
   · intro a b hab he
-    rw [hdτ, ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply, ContinuousLinearMap.one_apply,
+    rw [hdτ, add_apply, smul_apply, one_apply_eq_self,
       T.w_hw a b hab he, Matrix.trace_single_eq_of_ne _ _ _ hab.ne, mul_zero, zero_smul, add_zero]
 
 end ReciprocityTheory.ChartRestriction.DS.HW

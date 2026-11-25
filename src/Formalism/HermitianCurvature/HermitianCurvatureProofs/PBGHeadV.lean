@@ -92,31 +92,31 @@ theorem headAlg_gen (A : Type) [Ring A] [Algebra ℂ A] (M : Type) [AddCommGroup
       rw [Matrix.det_succ_row _ (Fin.last (m + 1)), Fin.sum_univ_castSucc, Finset.sum_eq_zero]
       · simp only [Matrix.of_apply, Matrix.submatrix, Fin.succAbove_last, zero_add]
         have h1 : xi (Fin.castLE hm (Fin.last (m + 1))) (xR k r (m + 2) hm (Fin.last (m + 1))) = c := by
-          rw [hxl' _ _ (by simp), if_pos (by simp [xR, eI])]
+          rw [hxl' _ _ (by simp), ite_eq_left (by simp [xR, eI])]
         rw [h1]
         have h2 : (Matrix.of fun i j : Fin (m + 1) => xi (Fin.castLE hm (Fin.castSucc i))
             (xR k r (m + 2) hm (Fin.castSucc j))) = Z := by
           ext i j
           simp only [Matrix.of_apply]
-          rw [hxi' _ _ (by simp <;> omega), dite_eq_left (by simp [xR, eI] <;> omega)]
+          rw [hxi' _ _ (by simp; omega), dite_eq_left (by simp [xR, eI]; omega)]
           congr 1
         rw [h2]
         simp only [Fin.val_last]
         rw [← two_mul, pow_mul]; norm_num; ring
       · intro j _
         simp only [Matrix.of_apply]
-        rw [hxl' _ _ (by simp), if_neg (by simp [xR, eI]; omega)]
+        rw [hxl' _ _ (by simp), ite_eq_right (by simp [xR, eI]; omega)]
         ring
     · intro a p ha hp
       by_cases ha' : a.val < m + 1
       · rw [hxi' a p ha', dite_eq_right (by omega)]
-      · rw [hxl' a p (by omega), if_neg (by omega)]
+      · rw [hxl' a p (by omega), ite_eq_right (by omega)]
   have hA1 : AAx k r E xi (m + 1) (by omega) u = Z.det • qminor E (xR k r (m + 1) (by omega)) (xR k r (m + 1) (by omega)) u := by
     rw [AAx_head k r E xi (m + 1) (by omega) Z u]
     · intro a p ha hp
       rw [hxi' a p ha, dite_eq_right (by omega)]
     · intro a b
-      rw [hxi' _ _ (by simp <;> omega), dite_eq_left (by simp [xR, eI] <;> omega)]
+      rw [hxi' _ _ (by simp; omega), dite_eq_left (by simp [xR, eI]; omega)]
       congr 1
   have hA0 : AAx k r E xi m (by omega) u = ∑ l0 : Fin (m + 1),
       (Z.submatrix Fin.castSucc l0.succAbove).det •
@@ -127,7 +127,7 @@ theorem headAlg_gen (A : Type) [Ring A] [Algebra ℂ A] (M : Type) [AddCommGroup
       congr 2
       ext a l
       simp only [Matrix.of_apply, Matrix.submatrix_apply]
-      rw [hxi' _ _ (by simp), dite_eq_left (by simp [xR, eI] <;> omega)]
+      rw [hxi' _ _ (by simp), dite_eq_left (by simp [xR, eI]; omega)]
       congr 1
     · intro a p ha hp
       rw [hxi' a p (by omega), dite_eq_right (by omega)]
@@ -149,8 +149,8 @@ theorem headAlg_gen (A : Type) [Ring A] [Algebra ℂ A] (M : Type) [AddCommGroup
       rw [la_intmul]
       have hne : a (Fin.castSucc (Fin.castSucc l)) ≠ a (Fin.last (m + 1)) := by
         intro h'; have := congrArg Fin.val h'; rw [hav, hav] at this; simp at this; omega
-      rw [tm_offdiag _ _ hne, hR _ _ _ (by rw [hav, hav]; simp) (by rw [hav]; simp <;> omega),
-        if_neg (by rw [hav, hav]; simp <;> omega), zero_smul, smul_zero]
+      rw [tm_offdiag _ _ hne, hR _ _ _ (by rw [hav, hav]; simp) (by rw [hav]; simp; omega),
+        ite_eq_right (by rw [hav, hav]; simp; omega), zero_smul, smul_zero]
     rw [Finset.sum_eq_zero (fun l _ => hzero l), zero_add]
     have hlast : La ((((-1 : ℤ) ^ (m + 1 + ((Fin.last (m + 1) : Fin (m + 2)) : ℕ)) : ℤ) : A) *
         (qminor E (a ∘ (Fin.last (m + 1)).succAbove) (a ∘ Fin.castSucc) u *
@@ -169,8 +169,8 @@ theorem headAlg_gen (A : Type) [Ring A] [Algebra ℂ A] (M : Type) [AddCommGroup
         La (qminor E (a ∘ (Fin.castSucc (Fin.last m) : Fin (m + 2)).succAbove) (a ∘ Fin.castSucc) u) := by
       have hne : a (Fin.castSucc (Fin.last m)) ≠ a (Fin.last (m + 1)) := by
         intro h'; have := congrArg Fin.val h'; rw [hav, hav] at this; simp at this
-      rw [tm_offdiag _ _ hne, hR _ _ _ (by rw [hav, hav]; simp) (by rw [hav]; simp <;> omega),
-        if_pos (by rw [hav, hav]; simp), one_smul]
+      rw [tm_offdiag _ _ hne, hR _ _ _ (by rw [hav, hav]; simp) (by rw [hav]; simp; omega),
+        ite_eq_left (by rw [hav, hav]; simp), one_smul]
     rw [la_intmul, hmT]
     have h3 : ((((-1 : ℤ) ^ (m + 1 + ((Fin.castSucc (Fin.last m) : Fin (m + 2)) : ℕ))) : ℤ) : ℂ) = -1 := by
       simp only [Fin.val_castSucc, Fin.val_last]
@@ -275,30 +275,30 @@ theorem Emir_gl {E : Fin (2 * r + k + 1) → Fin (2 * r + k + 1) → A} (hE : Fo
       have hs : ep d * ep b * (ep b * ep d) = 1 := by
         calc _ = (ep d * ep d) * (ep b * ep b) := by ring
           _ = 1 := by rw [ep_sq, ep_sq, mul_one]
-      simp only [if_true, hs, one_smul, Emir, ep_sq, neg_sub_neg]
+      simp only [ite_true, hs, one_smul, Emir, ep_sq, neg_sub_neg]
     · have hs : ep a * ep b * (ep b * ep d) = ep a * ep d := by
         calc _ = ep a * ep d * (ep b * ep b) := by ring
           _ = _ := by rw [ep_sq, mul_one]
       have had : ¬ a = d := fun e => hda e.symm
-      simp only [if_true, had, hda, if_false, hs, Emir, zero_sub, sub_zero, smul_neg]
+      simp only [ite_true, had, hda, ite_false, hs, Emir, zero_sub, sub_zero, smul_neg]
   · by_cases hda : d = a
     · subst a
       have hs : ep d * ep b * (ep c * ep d) = ep c * ep b := by
         calc _ = ep c * ep b * (ep d * ep d) := by ring
           _ = _ := by rw [ep_sq, mul_one]
       have hcb : ¬ c = b := fun e => hbc e.symm
-      simp only [if_true, hcb, hbc, if_false, hs, Emir, zero_sub, sub_zero, neg_neg]
+      simp only [ite_true, hcb, hbc, ite_false, hs, Emir, zero_sub, sub_zero, neg_neg]
     · have had : ¬ a = d := fun e => hda e.symm
       have hcb : ¬ c = b := fun e => hbc e.symm
-      simp only [had, hcb, hbc, hda, if_false, sub_zero, smul_zero]
+      simp only [had, hcb, hbc, hda, ite_false, sub_zero, smul_zero]
 
 theorem Tm_Emir (E : Fin (2 * r + k + 1) → Fin (2 * r + k + 1) → A) (v : ℂ) (p q : Fin (2 * r + k + 1)) :
     Tm (Emir E) v p q = (ep p * ep q) • Tm (Formalism.FourierDecayAlt.P.Qx5.Eop E) v (rv p) (rv q) := by
   by_cases h : p = q
   · subst q
-    simp only [Tm, Emir, Formalism.FourierDecayAlt.P.Qx5.Eop, if_true, ep_sq, one_smul]
+    simp only [Tm, Emir, Formalism.FourierDecayAlt.P.Qx5.Eop, ite_true, ep_sq, one_smul]
   · have h' : ¬ rv p = rv q := fun e => h (by rw [← rv_rv p, e, rv_rv])
-    simp only [Tm, Emir, Formalism.FourierDecayAlt.P.Qx5.Eop, h, h', if_false, zero_add, smul_neg]
+    simp only [Tm, Emir, Formalism.FourierDecayAlt.P.Qx5.Eop, h, h', ite_false, zero_add, smul_neg]
 
 theorem ofFn_prod_smul' : ∀ {n : ℕ} (c : Fin n → ℂ) (X : Fin n → A),
     (List.ofFn fun i => c i • X i).prod = (∏ i, c i) • (List.ofFn X).prod
@@ -369,7 +369,7 @@ theorem AAx_mirror (E : Fin (2 * r + k + 1) → Fin (2 * r + k + 1) → A) (hG :
     have hkey : ∀ l, C3.keyS k r ((rv ∘ c) l) = (c l).val := by
       intro l
       simp only [Function.comp_apply, C3.keyS, rv_val]
-      rw [if_pos (by have := hcol l; omega)]
+      rw [ite_eq_left (by have := hcol l; omega)]
       have := (c l).isLt
       omega
     have hmono : StrictMono c ↔ StrictMono (fun l => C3.keyS k r ((rv ∘ c) l)) := by
@@ -377,11 +377,11 @@ theorem AAx_mirror (E : Fin (2 * r + k + 1) → Fin (2 * r + k + 1) → A) (hG :
       exact ⟨fun h a b hab => h hab, fun h a b hab => h hab⟩
     by_cases hS : StrictMono c
     · have hYc' : (Matrix.of fun a l : Fin m => y (Fin.castLE hm a) ((rv ∘ c) l)).det = Yc.det := rfl
-      rw [if_pos hS, if_pos (hmono.1 hS), hdet, hq, smul_smul, smul_smul, hYc']
+      rw [ite_eq_left hS, ite_eq_left (hmono.1 hS), hdet, hq, smul_smul, smul_smul, hYc']
       congr 1
       have h2 := prod_ep_sq (k := k) (r := r) c
       linear_combination ((∏ l, ep (xR k r m hm l)) * (-1) ^ m * Yc.det) * h2
-    · rw [if_neg hS, if_neg (fun h => hS (hmono.2 h)), smul_zero]
+    · rw [ite_eq_right hS, ite_eq_right (fun h => hS (hmono.2 h)), smul_zero]
 
 theorem prod_ep_xR (m : ℕ) (hm : m ≤ r) :
     ∏ l : Fin m, ep (xR k r m hm l) = ∏ l : Fin m, (-1 : ℂ) ^ (l : ℕ) := by
@@ -443,17 +443,17 @@ theorem _root_.Formalism.FourierDecayAlt.P.head_algebra_relations_vector : HeadA
     have hdp : C3.dpsiP k r z' (rv q) (rv p) = if q.val = p.val + 1 then 1 else 0 := by
       unfold C3.dpsiP
       rw [rv_val, rv_val]
-      rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_pos (by omega)]
+      rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_left (by omega)]
       by_cases h : q.val = p.val + 1
-      · rw [if_pos (by omega), if_pos h]
-      · rw [if_neg (by omega), if_neg h]
+      · rw [ite_eq_left (by omega), ite_eq_left h]
+      · rw [ite_eq_right (by omega), ite_eq_right h]
     rw [hdp]
     by_cases h : q.val = p.val + 1
-    · simp only [if_pos h, one_smul]
+    · simp only [ite_eq_left h, one_smul]
       have : ep p * ep q = -1 := by
         unfold ep; rw [h, pow_succ, ← mul_assoc, ← pow_add, ← two_mul, pow_mul]; norm_num
       rw [this, neg_one_smul, neg_neg]
-    · simp only [if_neg h, zero_smul, smul_zero, neg_zero]
+    · simp only [ite_eq_right h, zero_smul, smul_zero, neg_zero]
   have hepI : ∀ (b : ℕ) (hb : b < r), ep (eI k r ⟨b, hb⟩) = (-1 : ℂ) ^ b := by intro b hb; simp [ep, eI]
   have hL'' : ∀ (b : Fin (m + 1)) (x : A), La (Emir E (eI k r ⟨m + 1, by omega⟩) (eI k r ⟨b, by omega⟩) * x) =
       (c' * Z''⁻¹ b (Fin.last m)) • La x := by
@@ -482,9 +482,9 @@ theorem _root_.Formalism.FourierDecayAlt.P.head_algebra_relations_vector : HeadA
     simp only [hxidef]
     rw [hyl (rv q)]
     by_cases hq : q.val = m + 1
-    · rw [if_pos (by rw [rv_val]; omega), if_pos hq, hcdef]
+    · rw [ite_eq_left (by rw [rv_val]; omega), ite_eq_left hq, hcdef]
       simp only [ep, hq]
-    · rw [if_neg (by rw [rv_val]; omega), if_neg hq, mul_zero]
+    · rw [ite_eq_right (by rw [rv_val]; omega), ite_eq_right hq, mul_zero]
   have hmain := headAlg_gen A M k r m hm (Emir E) La xi'' Z'' c c' (-ℓ) (Emir_gl hG) hR'' hZ hc hL'' hxi'' hxl''
   have hsupp : ∀ m' : ℕ, m' ≤ m + 2 → ∀ (a : Fin r) (p : Fin (2 * r + k + 1)), a.val < m' → y a p ≠ 0 →
       r + k < p.val := by

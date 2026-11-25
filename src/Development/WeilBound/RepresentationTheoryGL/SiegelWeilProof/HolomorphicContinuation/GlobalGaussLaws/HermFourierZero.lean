@@ -78,24 +78,24 @@ theorem hermFourierZero (D : D7) (r : ℕ) (ψ : AddChar (AF D.host.F) ℂ) (hψ
       ∫ b in 𝓖, φ b * ψ (-halfTr (Matrix.trace (HMul.hMul (β.1.map (incA D)) b.1 : Mx D r r))) ∂lam = 0) :
     ∀ x, φ x = 0 := by
   obtain ⟨i1, i2, i3, i4, -, -⟩ := lattice_Mx D r r
-  haveI : IsTopologicalAddGroup (Mx D r r) := i1
-  haveI : LocallyCompactSpace (Mx D r r) := i2
-  haveI : SecondCountableTopology (Mx D r r) := i3
-  haveI : T2Space (Mx D r r) := i4
-  haveI : SecondCountableTopology (hermA D r) := Topology.IsInducing.subtypeVal.secondCountableTopology
-  haveI : T2Space (hermA D r) := Topology.IsEmbedding.subtypeVal.t2Space
-  haveI : BorelSpace (Mx D r r) := ⟨rfl⟩
-  haveI : LocallyCompactSpace (hermA D r) :=
+  have : IsTopologicalAddGroup (Mx D r r) := i1
+  have : LocallyCompactSpace (Mx D r r) := i2
+  have : SecondCountableTopology (Mx D r r) := i3
+  have : T2Space (Mx D r r) := i4
+  have : SecondCountableTopology (hermA D r) := Topology.IsInducing.subtypeVal.secondCountableTopology
+  have : T2Space (hermA D r) := Topology.IsEmbedding.subtypeVal.t2Space
+  have : BorelSpace (Mx D r r) := ⟨rfl⟩
+  have : LocallyCompactSpace (hermA D r) :=
     (GlobalTheory.CompanionTheory.HermVol.isClosed_hermA (D := D) (r := r)).locallyCompactSpace
-  haveI : Countable D.host.E := _root_.Formalism.IndefR.Eqv.G5.numField_countable D.host.E
-  haveI : Countable (Matrix (Fin r) (Fin r) D.host.E) :=
+  have : Countable D.host.E := _root_.Formalism.IndefR.Eqv.G5.numField_countable D.host.E
+  have : Countable (Matrix (Fin r) (Fin r) D.host.E) :=
     inferInstanceAs (Countable (Fin r → Fin r → D.host.E))
   have hmem : ∀ q : ratHerm D r, q.1.1 ∈ ratMx D r r := fun q => AddSubgroup.mem_comap.1 q.2
-  haveI : Countable (ratHerm D r) := by
+  have : Countable (ratHerm D r) := by
     choose g hg using fun q : ratHerm D r => mem_ratMx.1 (hmem q)
     exact Function.Injective.countable (f := g) fun a b h =>
       Subtype.ext (Subtype.ext (by rw [← hg a, ← hg b, h]))
-  haveI := hH
+  have := hH
   obtain ⟨K, hK, hc⟩ := hermCocompact D r
   intro x
   refine GlobalTheory.CompanionTheory.FourierComplete.eq_zero_of_coeffs_vanish (ratHerm D r) lam h𝓖 hK hc (T := ratHerm D r)

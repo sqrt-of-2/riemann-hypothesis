@@ -116,7 +116,7 @@ lemma zhat_eq (k r : ℕ) (z z' : Fin (2 * r + k + 1) → ℂ)
 lemma exists_N (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)
     (m : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ) (hm : m ∈ Nset k r) :
     ∃ U : Matrix (Fin (r + 1)) (Fin (r + 1)) ℂ, UpUni U ∧ m * flagMat k r z = flagMat k r z * U := by
-  simp only [Nset, Set.mem_setOf_eq] at hm
+  simp only [Nset, Set.mem_ofPred_eq] at hm
   obtain ⟨-, hm2, hm3⟩ := hm
   have key : ∀ (a : Fin (r + 1)) (i : Fin (2 * r + k + 1)),
       (m *ᵥ fvec k r z a) i =
@@ -124,24 +124,24 @@ lemma exists_N (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)
     intro a i
     have ha := a.isLt
     by_cases hia : i.val < a.val
-    · rw [if_pos hia]
+    · rw [ite_eq_left hia]
       suffices h0 : fvec k r z a i = 0 by rw [h0, zero_add]
       by_cases har : a.val < r
-      · simp only [fvec, dif_pos har, bvec]
-        rw [Pi.single_apply, if_neg]
+      · simp only [fvec, dite_eq_left har, bvec]
+        rw [Pi.single_apply, ite_eq_right]
         intro he
         have h1 := congrArg Fin.val he
         simp [eI] at h1
         omega
-      · simp only [fvec, dif_neg har]
+      · simp only [fvec, dite_eq_right har]
         exact hz i (Or.inl (by omega))
-    · rw [if_neg hia, add_zero]
+    · rw [ite_eq_right hia, add_zero]
       by_cases har : a.val < r
-      · simp only [fvec, dif_pos har, bvec]
+      · simp only [fvec, dite_eq_left har, bvec]
         simp only [Matrix.mulVec, dotProduct, Pi.single_apply, mul_ite, mul_one, mul_zero,
-          Finset.sum_ite_eq', Finset.mem_univ, if_true]
+          Finset.sum_ite_eq', Finset.mem_univ, ite_true]
         exact hm2 ⟨a.val, har⟩ i (by show a.val ≤ i.val; omega)
-      · simp only [fvec, dif_neg har]
+      · simp only [fvec, dite_eq_right har]
         have hterm : ∀ j, m i j * z j = if i = j then z j else 0 := by
           intro j
           by_cases hj : r ≤ j.val ∧ j.val ≤ r + k
@@ -149,7 +149,7 @@ lemma exists_N (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)
             split_ifs <;> simp
           · rw [hz j (by omega)]
             simp
-        simp only [Matrix.mulVec, dotProduct, hterm, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+        simp only [Matrix.mulVec, dotProduct, hterm, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
   refine ⟨Matrix.of fun b a => (if b = a then 1 else 0) +
       (if hba : b.val < a.val then
         (m *ᵥ fvec k r z a) (eI k r ⟨b.val, by have := a.isLt; omega⟩) else 0), ⟨?_, ?_⟩, ?_⟩
@@ -162,13 +162,13 @@ lemma exists_N (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)
   · ext i a
     rw [mul_flagMat, Matrix.mul_apply]
     simp only [flagMat, Matrix.of_apply, mul_add, Finset.sum_add_distrib, mul_ite, mul_one,
-      mul_zero, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+      mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
     rw [key a i]
     congr 1
     have ha := a.isLt
     by_cases hia : i.val < a.val
     · have hir : i.val < r := by omega
-      rw [if_pos hia, Finset.sum_eq_single (⟨i.val, by omega⟩ : Fin (r + 1))]
+      rw [ite_eq_left hia, Finset.sum_eq_single (⟨i.val, by omega⟩ : Fin (r + 1))]
       · have he : eI k r ⟨i.val, hir⟩ = i := Fin.ext rfl
         simp [fvec, hir, hia, he, bvec]
       · intro b _ hb
@@ -182,7 +182,7 @@ lemma exists_N (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)
           simp [fvec, hbr, bvec, hne]
         · simp
       · simp
-    · rw [if_neg hia]
+    · rw [ite_eq_right hia]
       symm
       apply Finset.sum_eq_zero
       intro b _
@@ -199,13 +199,13 @@ lemma exists_N (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)
 lemma exists_S (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)
     (s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ) (hs : s ∈ Sset k r z) :
     sᴴ * Hpk k r * s = Hpk k r ∧ ∃ U : Matrix (Fin (r + 1)) (Fin (r + 1)) ℂ, UpUni U ∧ s * flagMat k r z = flagMat k r z * U := by
-  simp only [Sset, Set.mem_setOf_eq] at hs
+  simp only [Sset, Set.mem_ofPred_eq] at hs
   obtain ⟨h, hh, m, hm, rfl⟩ := hs
   obtain ⟨U, hU, hmF⟩ := exists_N k r z hz m hm
-  simp only [UWset, Set.mem_setOf_eq] at hh
+  simp only [UWset, Set.mem_ofPred_eq] at hh
   obtain ⟨hhU, hfix, hhz⟩ := hh
   have hmU : mᴴ * Hpk k r * m = Hpk k r := by
-    simp only [Nset, Set.mem_setOf_eq] at hm
+    simp only [Nset, Set.mem_ofPred_eq] at hm
     exact hm.1
   have hhU' : hᴴ * Hpk k r * h = Hpk k r := hhU
   refine ⟨?_, U, hU, ?_⟩
@@ -217,9 +217,9 @@ lemma exists_S (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)
       rw [mul_flagMat]
       simp only [flagMat, Matrix.of_apply]
       by_cases hb : b.val < r
-      · simp only [fvec, dif_pos hb]
+      · simp only [fvec, dite_eq_left hb]
         rw [(hfix ⟨b.val, hb⟩).1]
-      · simp only [fvec, dif_neg hb]
+      · simp only [fvec, dite_eq_right hb]
         rw [hhz]
     rw [Matrix.mul_assoc, hmF, ← Matrix.mul_assoc, hF]
 

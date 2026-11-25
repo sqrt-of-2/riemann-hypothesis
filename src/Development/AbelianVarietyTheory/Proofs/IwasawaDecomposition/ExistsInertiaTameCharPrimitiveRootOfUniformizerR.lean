@@ -68,11 +68,11 @@ theorem irreducible_X_pow_sub_C {E : Type} [Field E] [NumberField E]
     · rw [hmon.leadingCoeff]; exact fun h => P.isPrime.ne_top ((Ideal.eq_top_iff_one _).2 h)
     · intro m hm
       rw [hdeg] at hm
-      rw [coeff_sub, coeff_X_pow, coeff_C, if_neg hm.ne]
+      rw [coeff_sub, coeff_X_pow, coeff_C, ite_eq_right hm.ne]
       by_cases h0 : m = 0
       · subst h0; simpa using P.asIdeal.neg_mem_iff.2 hmem
       · simp [h0]
-    · rw [coeff_sub, coeff_X_pow, coeff_C, if_neg hL.ne, if_pos rfl, zero_sub]
+    · rw [coeff_sub, coeff_X_pow, coeff_C, ite_eq_right hL.ne, ite_eq_left rfl, zero_sub]
       rwa [Ideal.neg_mem_iff]
   have hirr : Irreducible (X ^ L - C ϖ : (𝓞 E)[X]) :=
     hEis.irreducible P.isPrime hmon.isPrimitive (by rw [hdeg]; exact hL)
@@ -97,28 +97,28 @@ theorem main : ∀ {E Ω : Type} [Field E] [NumberField E] [Field Ω] [Algebra E
     refine ⟨1, one_mem _, ?_⟩
     rw [AlgEquiv.one_apply, div_self hπ0]
     exact IsPrimitiveRoot.one
-  haveI : IsAlgClosed Ω := IsAlgClosure.isAlgClosed E
-  haveI : CharZero Ω := charZero_of_injective_algebraMap (algebraMap E Ω).injective
-  haveI : NeZero ((L : ℕ) : Ω) := ⟨Nat.cast_ne_zero.mpr hL0⟩
-  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot Ω L
+  have : IsAlgClosed Ω := IsAlgClosure.isAlgClosed E
+  have : CharZero Ω := charZero_of_injective_algebraMap (algebraMap E Ω).injective
+  have : NeZero ((L : ℕ) : Ω) := ⟨Nat.cast_ne_zero.mpr hL0⟩
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot Ω L
   have hirr := irreducible_X_pow_sub_C P (Nat.pos_of_ne_zero hL0) h1 h2
   have hmon : (X ^ L - C (ϖ : E)).Monic := monic_X_pow_sub_C _ hL0
   have hr1 : aeval π (X ^ L - C (ϖ : E)) = 0 := by simp [hπ]
   have hr2 : aeval (ζ * π) (X ^ L - C (ϖ : E)) = 0 := by simp [mul_pow, hζ.pow_eq_one, hπ]
   have hm1 := minpoly.eq_of_irreducible_of_monic hirr hr1 hmon
   have hm2 := minpoly.eq_of_irreducible_of_monic hirr hr2 hmon
-  haveI : IsGalois E Ω := IsAlgClosure.isGalois E Ω
+  have : IsGalois E Ω := IsAlgClosure.isGalois E Ω
   obtain ⟨g, hg⟩ : ∃ g : Ω ≃ₐ[E] Ω, g π = ζ * π := by
     obtain ⟨g, hg⟩ := (Normal.minpoly_eq_iff_mem_orbit (F := E) (E := Ω)).1 (hm2.symm.trans hm1)
     exact ⟨g, hg⟩
   obtain ⟨-, hx2⟩ := GlobalTheory.InertiaMovesRoot.cong_on_adjoin hA hL2 h1 h2 hπ
-  letI : TopologicalSpace (IntCl E Ω) := ⊥
-  haveI : DiscreteTopology (IntCl E Ω) := ⟨rfl⟩
-  haveI := continuousSMul_intCl E Ω
+  let : TopologicalSpace (IntCl E Ω) := ⊥
+  have : DiscreteTopology (IntCl E Ω) := ⟨rfl⟩
+  have := continuousSMul_intCl E Ω
   let H := MulAction.stabilizer (Ω ≃ₐ[E] Ω) π
   have hH : IsClosed (H : Set (Ω ≃ₐ[E] Ω)) :=
     H.isClosed_of_isOpen (stabilizer_isOpen_of_isIntegral (K := E) π)
-  haveI : CompactSpace H := isCompact_iff_compactSpace.mp hH.isCompact
+  have : CompactSpace H := isCompact_iff_compactSpace.mp hH.isCompact
   obtain ⟨k, hk, k', hk', hc⟩ := GlobalTheory.InertiaMovesRoot.exists_cong_of_cong_on_fixed (R := 𝓞 E) H
     (primeBelow (F := E) A) g (fun b hb => by
       refine hx2 g b ?_ (valuation_le_one_intCl A b)

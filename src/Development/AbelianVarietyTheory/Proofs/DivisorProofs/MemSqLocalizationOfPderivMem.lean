@@ -71,7 +71,7 @@ theorem mem_sq_localization_of_pderiv_mem :
     ∀ (Λ : Type) [CommRing Λ] [IsDomain Λ] [PerfectField (FractionRing Λ)] (σ : Type) [Finite σ] (Q : Ideal (MvPolynomial σ Λ)) [Q.IsPrime], (∀ a : Λ, MvPolynomial.C a ∈ Q → a = 0) → ∀ x ∈ Q, (∀ s, MvPolynomial.pderiv s x ∈ Q) → ∃ g, g ∉ Q ∧ g * x ∈ Q ^ 2 := by
   intro Λ _ _ _ σ _ Q _ hQ x hx hd
   classical
-  haveI : Fintype σ := Fintype.ofFinite σ
+  have : Fintype σ := Fintype.ofFinite σ
   let R := Localization.AtPrime Q
   let F := ResidueField R
   let k := FractionRing Λ
@@ -80,21 +80,21 @@ theorem mem_sq_localization_of_pderiv_mem :
     rw [IsScalarTower.algebraMap_apply Λ (MvPolynomial σ Λ) R]
     exact IsLocalization.map_units R (M := Q.primeCompl)
       ⟨MvPolynomial.C a.1, fun h => nonZeroDivisors.coe_ne_zero a (hQ _ h)⟩
-  letI : Algebra k R := (IsLocalization.lift (M := nonZeroDivisors Λ) (S := k) hunit).toAlgebra
-  haveI : IsScalarTower Λ k R := IsScalarTower.of_algebraMap_eq
+  let : Algebra k R := (IsLocalization.lift (M := nonZeroDivisors Λ) (S := k) hunit).toAlgebra
+  have : IsScalarTower Λ k R := IsScalarTower.of_algebraMap_eq
     (fun a => (IsLocalization.lift_eq (M := nonZeroDivisors Λ) (S := k) hunit a).symm)
-  letI : Algebra k F := ((algebraMap R F).comp (algebraMap k R)).toAlgebra
-  haveI : IsScalarTower k R F := IsScalarTower.of_algebraMap_eq (fun _ => rfl)
-  haveI : IsScalarTower Λ k F := IsScalarTower.of_algebraMap_eq (fun a => by
+  let : Algebra k F := ((algebraMap R F).comp (algebraMap k R)).toAlgebra
+  have : IsScalarTower k R F := IsScalarTower.of_algebraMap_eq (fun _ => rfl)
+  have : IsScalarTower Λ k F := IsScalarTower.of_algebraMap_eq (fun a => by
     rw [IsScalarTower.algebraMap_apply Λ R F, IsScalarTower.algebraMap_apply Λ k R]; rfl)
-  haveI : Algebra.EssFiniteType (MvPolynomial σ Λ) R := .of_isLocalization R Q.primeCompl
-  haveI : Algebra.EssFiniteType Λ R := .comp Λ (MvPolynomial σ Λ) R
-  haveI : Algebra.EssFiniteType R F := .of_surjective (Algebra.ofId R F) residue_surjective
-  haveI : Algebra.EssFiniteType Λ F := .comp Λ R F
-  haveI : Algebra.EssFiniteType k F := Algebra.EssFiniteType.of_comp Λ k F
-  haveI : Algebra.FormallySmooth k F := Algebra.FormallySmooth.of_perfectField
-  haveI : Algebra.FormallySmooth Λ k := Algebra.FormallySmooth.of_isLocalization (nonZeroDivisors Λ)
-  haveI : Algebra.FormallySmooth Λ F := Algebra.FormallySmooth.comp Λ k F
+  have : Algebra.EssFiniteType (MvPolynomial σ Λ) R := .of_isLocalization R Q.primeCompl
+  have : Algebra.EssFiniteType Λ R := .comp Λ (MvPolynomial σ Λ) R
+  have : Algebra.EssFiniteType R F := .of_surjective (Algebra.ofId R F) residue_surjective
+  have : Algebra.EssFiniteType Λ F := .comp Λ R F
+  have : Algebra.EssFiniteType k F := Algebra.EssFiniteType.of_comp Λ k F
+  have : Algebra.FormallySmooth k F := Algebra.FormallySmooth.of_perfectField
+  have : Algebra.FormallySmooth Λ k := Algebra.FormallySmooth.of_isLocalization (nonZeroDivisors Λ)
+  have : Algebra.FormallySmooth Λ F := Algebra.FormallySmooth.comp Λ k F
   have hinj := kerCotangentToTensor_injective_of_formallySmooth Λ R F (residue_surjective)
   have hker : RingHom.ker (algebraMap R F) = maximalIdeal R := ker_residue
   have hmem : ∀ p ∈ Q, algebraMap (MvPolynomial σ Λ) R p ∈ RingHom.ker (algebraMap R F) := by

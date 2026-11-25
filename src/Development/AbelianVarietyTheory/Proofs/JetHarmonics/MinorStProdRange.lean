@@ -82,17 +82,17 @@ theorem minorSt : MinorSt := by
   refine ⟨rk, hrk, col, fun τ s => m τ (s.val + 1), ?_, ?_, ?_, ?_⟩
   · intro τ i j hij
     by_cases h : typ τ
-    · simp only [col, dif_pos h] at hij
+    · simp only [col, dite_eq_left h] at hij
       have := congrArg Fin.val hij
       exact Fin.ext (by simpa using this)
-    · simp only [col, dif_neg h] at hij
+    · simp only [col, dite_eq_right h] at hij
       have := congrArg Fin.val hij
       exact Fin.ext (by simpa using this)
   · intro τ i
     by_cases h : typ τ
     · have := hrk1 τ h
       have := i.isLt
-      simp only [col, dif_pos h, h, iff_true, Fin.val_castAdd, Fin.val_castLE]
+      simp only [col, dite_eq_left h, h, iff_true, Fin.val_castAdd, Fin.val_castLE]
       omega
     · simp [col, h]
   · unfold degOf
@@ -104,27 +104,27 @@ theorem minorSt : MinorSt := by
     refine Finset.prod_congr rfl fun τ _ => ?_
     rw [map_prod]
     by_cases h : typ τ
-    · rw [if_pos h, if_neg (not_not.mpr h), _root_.mul_one,
+    · rw [ite_eq_left h, ite_eq_right (not_not.mpr h), _root_.mul_one,
         minorSt_prod_range (hrk τ) _ (fun s hs => by rw [hm0 τ s hs, pow_zero])]
       refine Finset.prod_congr rfl fun s _ => ?_
       have hs : s.val + 1 ≤ Dw.mult τ ∧ s.val + 1 ≤ n₁ :=
         ⟨(Nat.succ_le_of_lt s.isLt).trans (hrk τ), (Nat.succ_le_of_lt s.isLt).trans (hrk1 τ h)⟩
-      rw [dif_pos hs, map_pow, AlgHom.map_det]
+      rw [dite_eq_left hs, map_pow, AlgHom.map_det]
       unfold leadMinor
       congr 2
       ext a i : 2
-      simp only [col, dif_pos h, Matrix.of_apply, AlgHom.mapMatrix_apply, Matrix.map_apply, MvPolynomial.rename_X]
+      simp only [col, dite_eq_left h, Matrix.of_apply, AlgHom.mapMatrix_apply, Matrix.map_apply, MvPolynomial.rename_X]
       rfl
-    · rw [if_neg h, if_pos h, _root_.one_mul,
+    · rw [ite_eq_right h, ite_eq_left h, _root_.one_mul,
         minorSt_prod_range (hrk τ) _ (fun s hs => by rw [hm0 τ s hs, pow_zero])]
       refine Finset.prod_congr rfl fun s _ => ?_
       have hs : s.val + 1 ≤ Dw.mult τ ∧ s.val + 1 ≤ n₂ :=
         ⟨(Nat.succ_le_of_lt s.isLt).trans (hrk τ), (Nat.succ_le_of_lt s.isLt).trans (hrk2 τ h)⟩
-      rw [dif_pos hs, map_pow, AlgHom.map_det]
+      rw [dite_eq_left hs, map_pow, AlgHom.map_det]
       unfold leadMinor
       congr 2
       ext a i : 2
-      simp only [col, dif_neg h, Matrix.of_apply, AlgHom.mapMatrix_apply, Matrix.map_apply, MvPolynomial.rename_X]
+      simp only [col, dite_eq_right h, Matrix.of_apply, AlgHom.mapMatrix_apply, Matrix.map_apply, MvPolynomial.rename_X]
       rfl
 
 end GlobalTheory.PowGerm

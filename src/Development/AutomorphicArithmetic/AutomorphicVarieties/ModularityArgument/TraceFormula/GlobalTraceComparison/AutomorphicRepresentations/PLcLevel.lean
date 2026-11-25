@@ -50,11 +50,11 @@ private theorem exists_core {G : Type} [Group G] [TopologicalSpace G] [IsTopolog
     (K M : Subgroup G) (hKo : IsOpen (K : Set G)) (hKc : IsCompact (K : Set G))
     (hMo : IsOpen (M : Set G)) (hMK : M ≤ K) :
     ∃ C : Subgroup G, IsOpen (C : Set G) ∧ C ≤ M ∧ ∀ k ∈ K, ∀ x ∈ C, k * x * k⁻¹ ∈ C := by
-  haveI : CompactSpace K := isCompact_iff_compactSpace.mp hKc
+  have : CompactSpace K := isCompact_iff_compactSpace.mp hKc
   set M' : Subgroup K := M.subgroupOf K with hM'
-  have hM'o : IsOpen (M' : Set K) := hMo.preimage continuous_subtype_val
-  haveI : Finite (K ⧸ M') := Subgroup.quotient_finite_of_isOpen M' hM'o
-  haveI : M'.FiniteIndex := Subgroup.finiteIndex_of_finite_quotient
+  have hM'o : IsOpen (M' : Set K) := hMo.preimage continuous_subtypeVal
+  have : Finite (K ⧸ M') := Subgroup.quotient_finite_of_isOpen M' hM'o
+  have : M'.FiniteIndex := Subgroup.finiteIndex_of_finite_quotient
   have hcl : IsClosed (M'.normalCore : Set K) := by
     have hc : IsClosed (M' : Set K) := Subgroup.isClosed_of_isOpen M' hM'o
     have : (M'.normalCore : Set K) = ⋂ b : K, (fun a : K => b * a * b⁻¹) ⁻¹' (M' : Set K) := by
@@ -67,7 +67,7 @@ private theorem exists_core {G : Type} [Group G] [TopologicalSpace G] [IsTopolog
   · have : ((M'.normalCore.map K.subtype : Subgroup G) : Set G) = Subtype.val '' (M'.normalCore : Set K) := by
       ext x; simp
     rw [this]
-    exact hKo.isOpenMap_subtype_val _ hop
+    exact hKo.isOpenMap_subtypeVal _ hop
   · rintro _ ⟨a, ha, rfl⟩
     have h1 : a ∈ M' := Subgroup.normalCore_le M' ha
     exact h1
@@ -80,7 +80,7 @@ private theorem hecke_slice {E : Type} [Field E] [NumberField E] {n : ℕ} (w : 
     (N : Subgroup (GLw n w)) (hN : ∀ k ∈ N, ((k, 1) : GLw n w × GLw 0 w) ∈ K') :
     IsHecke N (fun g => f (g, 1)) := by
   refine ⟨?_, fun k hk x => ?_⟩
-  · haveI : Unique (GLw 0 w) := Unique.mk' _
+  · have : Unique (GLw 0 w) := Unique.mk' _
     have e : (fun g : GLw n w => ((g, 1) : GLw n w × GLw 0 w)) =
         ⇑(Homeomorph.prodUnique (GLw n w) (GLw 0 w)).symm := by
       funext g
@@ -114,19 +114,19 @@ theorem lcLevel_pf : LcLevel := by
   refine ⟨fun w => if w ∈ Z then C w else N₀ w, ?_, ?_, ?_⟩
   · intro w
     by_cases hw : w ∈ Z
-    · simp only [if_pos hw]
+    · simp only [ite_eq_left hw]
       obtain ⟨a, b, c, -⟩ := hC w hw
       exact ⟨a, b.trans (hN₀ w).2.1, c, fun h => absurd hw h⟩
-    · simp only [if_neg hw]
+    · simp only [ite_eq_right hw]
       exact hN₀ w
   · intro w
     by_cases hw : w ∈ Z
-    · simp only [if_pos hw]
+    · simp only [ite_eq_left hw]
       exact (hC w hw).2.1
-    · simp only [if_neg hw]
+    · simp only [ite_eq_right hw]
       exact le_rfl
   · intro w hw b
-    simp only [if_pos hw]
+    simp only [ite_eq_left hw]
     exact (hC w hw).2.2.2 b
 
 end UpperTheory.V.Z.Tf.GlobalTraceComparison.Pi

@@ -27,14 +27,14 @@ theorem tq_tfaZ_symm {N n : ℕ} (hN : N = n + 1) (f : Sp E n ≃ₗ[E] Sp E n) 
   show (Sc.Fr.tfaD z hz).symm ((extE f).symm v) i = _
   rw [Sc.Fr.tfaD_symm_apply]
   by_cases h : i.1 < n
-  · rw [dif_pos h, if_neg (fun h' => by rw [h'] at h; simp at h)]
+  · rw [dite_eq_left h, ite_eq_right (fun h' => by rw [h'] at h; simp at h)]
     obtain ⟨j, rfl⟩ : ∃ j : Fin n, i = Fin.castSucc j := ⟨⟨i.1, h⟩, Fin.ext rfl⟩
     show initL E n ((extE f).symm v) j = _
     rw [initL_extE_symm]
     rfl
   · rw [dite_eq_right h]
     obtain rfl : i = Fin.last n := Fin.ext (by have := i.2; simp; omega)
-    rw [if_pos rfl, extE_symm_last]
+    rw [ite_eq_left rfl, extE_symm_last]
 
 end Gen
 
@@ -67,11 +67,11 @@ theorem xiTopTilQ_holds (hX : X.Ok) (hPr : Pr.Ok) (hc : cst.Ok) {m2 : ℕ} (hm :
   by_cases hP : P.1 ∈ Pr.vGs
   · have eF : frsG sel mu p' P = (tilQ sel mu u d).1.liftFr P := by
       unfold frsG
-      rw [dif_pos hP, hp']
+      rw [dite_eq_left hP, hp']
       rfl
     have ef : frsF sel mu p P = p.deco.1.liftFr ⟨P.1, hP⟩ := by
       unfold frsF
-      rw [dif_pos hP]
+      rw [dite_eq_left hP]
     rw [eF]
     have hT : ∀ Q : Pr.vT u, cO X.E (Pr.piT u) ∉ Q.1.asIdeal := fun Q => conj_piT_notMem hPr u Q
     have hG : ∀ w : rowSG Pr sel mu, Pr.piT u ∉ w.1.asIdeal := hpi
@@ -87,7 +87,7 @@ theorem xiTopTilQ_holds (hX : X.Ok) (hPr : Pr.Ok) (hc : cst.Ok) {m2 : ℕ} (hm :
         · intro h
           refine ⟨fun i => h _, ?_⟩
           unfold atNL
-          rw [dif_pos hlast]
+          rw [dite_eq_left hlast]
           exact h _
         · rintro ⟨h1, h2⟩ i
           by_cases hi : i.1 < R.N R.m - 1

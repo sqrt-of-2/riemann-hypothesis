@@ -320,7 +320,7 @@ variable {n : ℕ} {V : Type} [AddCommGroup V] [Module (FractionRing (D.nd.O i))
 
 theorem fZ_pos (hn : K.plOf i dc n ∈ placesOver D.host.E (D.nd.l i)) :
     fZ i dc n ρ = finZ (eK (D.nbr i _ hn)) (Br.PD D.loc D.nbr i _ hn) ρ (Br.iota D.nbr i _ hn) :=
-  dif_pos hn
+  dite_eq_left hn
 
 
 variable (n) in
@@ -619,7 +619,7 @@ theorem im_le_Fs (w : ℕ) {T₁ T₂ : Type} [AddCommGroup T₁] [Module (D.nd.
   have hmem := fLoc_map i dc (resRep ρ₁ (Γn i dc w)) (Dat w).ρT' f hf _ hz
   show _ ∈ Hf₂ i dc VT VT' Dat w
   refine Submodule.subset_span ⟨ReciprocityTheory.Gal.cocycles1MapOfEquivariant (Dat w).ρTl' (Dat w).ρT' (Dat w).T'.subtype
-    continuous_subtype_val (fun _ _ => rfl)
+    continuous_subtypeVal (fun _ _ => rfl)
     (ReciprocityTheory.Gal.cocycles1MapOfEquivariant _ _ (vD.toLinearMap ∘ₗ π) hpD heD z), hmem, rfl⟩
 
 end PrfRow

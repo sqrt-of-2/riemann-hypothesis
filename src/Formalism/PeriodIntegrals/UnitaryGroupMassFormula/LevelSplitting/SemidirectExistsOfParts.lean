@@ -77,19 +77,19 @@ variable {F E σ M J}
 
 theorem lcsc_HAf [FiniteDimensional F E] (hsc : SecondCountableTopology (Af F)) :
     LCSC (HA (Af F) σ J) := by
-  haveI := hsc
+  have := hsc
   refine ⟨inferInstance, ?_, ?_, inferInstance⟩
-  · haveI : IsModuleTopology (Af F) (Af F ⊗[F] E) := ⟨rfl⟩
+  · have : IsModuleTopology (Af F) (Af F ⊗[F] E) := ⟨rfl⟩
     let e := (Algebra.TensorProduct.basis (Af F) (Module.finBasis F E)).equivFun
     have hc1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
     have hc2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
     let h : (Af F ⊗[F] E) ≃ₜ (Fin (Module.finrank F E) → Af F) := ⟨e.toEquiv, hc1, hc2⟩
-    haveI : SecondCountableTopology (Af F ⊗[F] E) := h.secondCountableTopology
-    haveI h4 : SecondCountableTopology (Matrix (Fin M) (Fin M) (Af F ⊗[F] E)) :=
+    have : SecondCountableTopology (Af F ⊗[F] E) := h.secondCountableTopology
+    have h4 : SecondCountableTopology (Matrix (Fin M) (Fin M) (Af F ⊗[F] E)) :=
       inferInstanceAs (SecondCountableTopology (Fin M → Fin M → Af F ⊗[F] E))
-    haveI : SecondCountableTopology (Matrix (Fin M) (Fin M) (Af F ⊗[F] E))ᵐᵒᵖ :=
+    have : SecondCountableTopology (Matrix (Fin M) (Fin M) (Af F ⊗[F] E))ᵐᵒᵖ :=
       MulOpposite.opHomeomorph.symm.secondCountableTopology
-    haveI : SecondCountableTopology (GL (Fin M) (Af F ⊗[F] E)) :=
+    have : SecondCountableTopology (GL (Fin M) (Af F ⊗[F] E)) :=
       Units.isEmbedding_embedProduct.isInducing.secondCountableTopology
     show SecondCountableTopology ↥(HR (Af F) σ J)
     exact Topology.IsInducing.subtypeVal.secondCountableTopology
@@ -102,10 +102,10 @@ theorem existS_of [FiniteDimensional F E] (hJ : IsHermND σ J) (hinv : ∀ x, σ
   intro r P T hP μN hN μH hH
   obtain ⟨hSc, hNc, hHc⟩ := PI.LevelKSplit.W.ExC.closed_SNH hJ hinv P T hP
   obtain ⟨hLC, hSC, hT2, hTG⟩ := lcsc_HAf (σ := σ) (J := J) hsc
-  haveI := hLC
-  haveI := hSC
-  haveI := hT2
-  haveI := hTG
+  have := hLC
+  have := hSC
+  have := hT2
+  have := hTG
   have hsub : ∀ K : Subgroup (HA (Af F) σ J), IsClosed (K : Set (HA (Af F) σ J)) → LCSC K := by
     intro K hK
     refine ⟨?_, ?_, ?_, inferInstance⟩
@@ -133,7 +133,7 @@ theorem existSAll_of (hPr : ProdHaarG) (hsc : SCAf) (hS : SemiNHSAll) (hCo : Con
     obtain ⟨τ⟩ := (inferInstance : Nonempty (E →+* ℂ))
     apply τ.injective
     rw [hσ.2.2.2 τ (σ x), hσ.2.2.2 τ x, star_star]
-  haveI : FiniteDimensional F E := Module.finite_of_finrank_pos (by rw [hσ.2.2.1]; norm_num)
+  have : FiniteDimensional F E := Module.finite_of_finrank_pos (by rw [hσ.2.2.1]; norm_num)
   exact existS_of hJ hinv hPr (hsc F) (hS F E σ hσ M J hJ) (hCo F E σ hσ M J hJ)
 
 end PI.LevelKSplit.W.ExS

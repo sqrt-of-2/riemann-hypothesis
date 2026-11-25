@@ -54,7 +54,7 @@ theorem height_add_height_maximal_quotient_field (K : Type*) [Field K] (N : ℕ)
     (𝔔 : Ideal (MvPolynomial (Fin N) K)) [𝔔.IsPrime]
     (𝔪 : Ideal (MvPolynomial (Fin N) K ⧸ 𝔔)) [h𝔪 : 𝔪.IsMaximal] :
     𝔔.height + 𝔪.height = N := by
-  haveI : (𝔪.comap (Ideal.Quotient.mk 𝔔)).IsMaximal :=
+  have : (𝔪.comap (Ideal.Quotient.mk 𝔔)).IsMaximal :=
     Ideal.comap_isMaximal_of_surjective _ Ideal.Quotient.mk_surjective
   have hle : 𝔔 ≤ 𝔪.comap (Ideal.Quotient.mk 𝔔) := fun x hx =>
     Ideal.mem_comap.2 (by rw [Ideal.Quotient.eq_zero_iff_mem.2 hx]; exact 𝔪.zero_mem)
@@ -67,9 +67,9 @@ theorem height_add_ringKrullDim_quotient_mvPolynomial_field (K : Type*) [Field K
   obtain ⟨𝔪0, h𝔪0⟩ := Ideal.exists_maximal (MvPolynomial (Fin N) K ⧸ 𝔔)
   have cancel : ∀ a b : ℕ∞, 𝔔.height + a = N → 𝔔.height + b = N → a = b := by
       intro a b ha hb
-      have hq : 𝔔.height ≠ ⊤ := fun h => by rw [h, top_add] at ha; exact ENat.top_ne_coe N ha
-      have ha' : a ≠ ⊤ := fun h => by rw [h, add_top] at ha; exact ENat.top_ne_coe N ha
-      have hb' : b ≠ ⊤ := fun h => by rw [h, add_top] at hb; exact ENat.top_ne_coe N hb
+      have hq : 𝔔.height ≠ ⊤ := fun h => by rw [h, top_add] at ha; exact ENat.top_ne_natCast N ha
+      have ha' : a ≠ ⊤ := fun h => by rw [h, add_top] at ha; exact ENat.top_ne_natCast N ha
+      have hb' : b ≠ ⊤ := fun h => by rw [h, add_top] at hb; exact ENat.top_ne_natCast N hb
       obtain ⟨q, hq0⟩ := ENat.ne_top_iff_exists.1 hq
       obtain ⟨a0, ha0⟩ := ENat.ne_top_iff_exists.1 ha'
       obtain ⟨b0, hb0⟩ := ENat.ne_top_iff_exists.1 hb'
@@ -94,13 +94,13 @@ theorem exists_dim_trdeg_field {K A : Type u} [Field K] [CommRing A] [IsDomain A
     [Algebra K A] [Algebra.FiniteType K A] :
     ∃ s : ℕ, ringKrullDim A = s ∧ Algebra.trdeg K A = s := by
   obtain ⟨s, g, hinj, hfin⟩ := exists_finite_inj_algHom_of_fg K A
-  letI : Algebra (MvPolynomial (Fin s) K) A := g.toRingHom.toAlgebra
-  haveI : Module.Finite (MvPolynomial (Fin s) K) A := hfin
-  haveI : IsScalarTower K (MvPolynomial (Fin s) K) A :=
+  let : Algebra (MvPolynomial (Fin s) K) A := g.toRingHom.toAlgebra
+  have : Module.Finite (MvPolynomial (Fin s) K) A := hfin
+  have : IsScalarTower K (MvPolynomial (Fin s) K) A :=
     IsScalarTower.of_algebraMap_eq (fun x => (g.commutes x).symm)
   have hinj' : Function.Injective (algebraMap (MvPolynomial (Fin s) K) A) := hinj
-  haveI : FaithfulSMul (MvPolynomial (Fin s) K) A := (faithfulSMul_iff_algebraMap_injective _ _).2 hinj'
-  haveI : FaithfulSMul K (MvPolynomial (Fin s) K) :=
+  have : FaithfulSMul (MvPolynomial (Fin s) K) A := (faithfulSMul_iff_algebraMap_injective _ _).2 hinj'
+  have : FaithfulSMul K (MvPolynomial (Fin s) K) :=
     (faithfulSMul_iff_algebraMap_injective _ _).2 (MvPolynomial.C_injective _ _)
   refine ⟨s, ?_, ?_⟩
   · rw [ringKrullDim_eq_of_isIntegral_of_injective hinj']
@@ -126,8 +126,8 @@ theorem height_eq_of_isMaximal_of_trdeg_eq_field {K A : Type u} [Field K] [CommR
   obtain ⟨N, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 (inferInstance : Algebra.FiniteType K A)
   let e : (MvPolynomial (Fin N) K ⧸ RingHom.ker f.toRingHom) ≃+* A :=
     RingHom.quotientKerEquivOfSurjective (f := f.toRingHom) hf
-  haveI : (RingHom.ker f.toRingHom).IsPrime := RingHom.ker_isPrime _
-  haveI : (𝔪.comap e).IsMaximal := Ideal.comap_isMaximal_of_surjective _ e.surjective
+  have : (RingHom.ker f.toRingHom).IsPrime := RingHom.ker_isPrime _
+  have : (𝔪.comap e).IsMaximal := Ideal.comap_isMaximal_of_surjective _ e.surjective
   have h5 := height_add_height_maximal_quotient_field K N (RingHom.ker f.toRingHom) (𝔪.comap e)
   rw [RingEquiv.height_comap] at h5
   have h6 := height_add_ringKrullDim_quotient_mvPolynomial_field K N (RingHom.ker f.toRingHom)
@@ -135,9 +135,9 @@ theorem height_eq_of_isMaximal_of_trdeg_eq_field {K A : Type u} [Field K] [CommR
   have h6' : (RingHom.ker f.toRingHom).height + n = N := by exact_mod_cast h6
   have cancel : ∀ a b : ℕ∞, (RingHom.ker f.toRingHom).height + a = N → (RingHom.ker f.toRingHom).height + b = N → a = b := by
       intro a b ha hb
-      have hq : (RingHom.ker f.toRingHom).height ≠ ⊤ := fun h => by rw [h, top_add] at ha; exact ENat.top_ne_coe N ha
-      have ha' : a ≠ ⊤ := fun h => by rw [h, add_top] at ha; exact ENat.top_ne_coe N ha
-      have hb' : b ≠ ⊤ := fun h => by rw [h, add_top] at hb; exact ENat.top_ne_coe N hb
+      have hq : (RingHom.ker f.toRingHom).height ≠ ⊤ := fun h => by rw [h, top_add] at ha; exact ENat.top_ne_natCast N ha
+      have ha' : a ≠ ⊤ := fun h => by rw [h, add_top] at ha; exact ENat.top_ne_natCast N ha
+      have hb' : b ≠ ⊤ := fun h => by rw [h, add_top] at hb; exact ENat.top_ne_natCast N hb
       obtain ⟨q, hq0⟩ := ENat.ne_top_iff_exists.1 hq
       obtain ⟨a0, ha0⟩ := ENat.ne_top_iff_exists.1 ha'
       obtain ⟨b0, hb0⟩ := ENat.ne_top_iff_exists.1 hb'

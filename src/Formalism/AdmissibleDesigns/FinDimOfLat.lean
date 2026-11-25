@@ -157,11 +157,11 @@ def latOf (heO : ∀ a : O, algebraMap Ow LL (eO a) = e (algebraMap O (FractionR
     rintro _ ⟨m, rfl⟩
     exact ⟨ρM (ι g) m, hjeq _ _⟩
   fg := by
-    haveI := finite_MO (eO := eO) (M := M)
-    haveI : Module.Finite Ow ↥(latT e eO j heO) := Module.Finite.equiv (latEquiv j heO hj)
+    have := finite_MO (eO := eO) (M := M)
+    have : Module.Finite Ow ↥(latT e eO j heO) := Module.Finite.equiv (latEquiv j heO hj)
     exact (Module.Finite.iff_fg).1 inferInstance
   free := by
-    haveI := free_MO (eO := eO) (M := M)
+    have := free_MO (eO := eO) (M := M)
     exact Module.Free.of_equiv (latEquiv j heO hj)
   span := by
     rw [eq_top_iff]

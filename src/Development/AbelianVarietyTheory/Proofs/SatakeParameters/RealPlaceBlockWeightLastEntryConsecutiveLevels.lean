@@ -60,8 +60,8 @@ theorem lamAt_last0 (v : X.Pl) (s : Fin (X.G.P.n' v)) :
       if IsOddPos s then -(X.G.P.lam0 v s 0) else X.G.P.lam0 v s (Fin.last X.G.P.m) := by
   unfold lamAt
   by_cases h : Even s.val
-  · rw [if_pos h, if_neg (fun ho : IsOddPos s => by unfold IsOddPos at ho; rw [Nat.even_iff] at h; omega)]
-  · rw [if_neg h, if_pos (show IsOddPos s by unfold IsOddPos; rw [Nat.even_iff] at h; omega), Fin.rev_last]
+  · rw [ite_eq_left h, ite_eq_right (fun ho : IsOddPos s => by unfold IsOddPos at ho; rw [Nat.even_iff] at h; omega)]
+  · rw [ite_eq_right h, ite_eq_left (show IsOddPos s by unfold IsOddPos; rw [Nat.even_iff] at h; omega), Fin.rev_last]
 
 theorem lamAt_lastS (l : ℕ) (v : X.Pl) (s : Fin (X.G.P.n' v)) :
     lamAt (fun s => liftWt X.Fl.t X.G.P.m (X.G.P.lam0 v s) (fun i => X.Fl.w v i s) (l + 1)) s
@@ -69,7 +69,7 @@ theorem lamAt_lastS (l : ℕ) (v : X.Pl) (s : Fin (X.G.P.n' v)) :
       if IsOddPos s then -(X.G.P.lam0 v s 0) else -(X.Fl.w v (l + 1) s) := by
   unfold lamAt
   by_cases h : Even s.val
-  · rw [if_pos h, if_neg (fun ho : IsOddPos s => by unfold IsOddPos at ho; rw [Nat.even_iff] at h; omega)]
+  · rw [ite_eq_left h, ite_eq_right (fun ho : IsOddPos s => by unfold IsOddPos at ho; rw [Nat.even_iff] at h; omega)]
     unfold liftWt
     beta_reduce
     have h1 : 1 ≤ (l + 1) * (X.Fl.t + 1) := Nat.one_le_iff_ne_zero.2 (Nat.mul_ne_zero (by omega) (by omega))
@@ -77,7 +77,7 @@ theorem lamAt_lastS (l : ℕ) (v : X.Pl) (s : Fin (X.G.P.n' v)) :
     simp only [Fin.val_last]
     have h2 : X.G.P.m + (l + 1) * (X.Fl.t + 1) - (X.G.P.m + 1) = (l + 1) * (X.Fl.t + 1) - 1 := by omega
     rw [h2, _root_.Formalism.L2.G.Pend.succ_mul_succ_sub_one_div_succ]
-  · rw [if_neg h, if_pos (show IsOddPos s by unfold IsOddPos; rw [Nat.even_iff] at h; omega), Fin.rev_last]
+  · rw [ite_eq_right h, ite_eq_left (show IsOddPos s by unfold IsOddPos; rw [Nat.even_iff] at h; omega), Fin.rev_last]
     unfold liftWt
     beta_reduce
     rw [dite_eq_left (by simp)]
@@ -86,7 +86,7 @@ theorem lamAt_lastS (l : ℕ) (v : X.Pl) (s : Fin (X.G.P.n' v)) :
 theorem nuv_one (j : ℕ) (v : X.Pl) (s : Fin (X.G.P.n' v)) :
     X.nuv v (j + 1) s 1 = X.G.P.lam0 v s 0 + X.w v (j + 1) s := by
   unfold Sys.nuv nu
-  rw [if_pos ⟨le_refl 1, by omega⟩]
+  rw [ite_eq_left ⟨le_refl 1, by omega⟩]
   unfold lamI
   rw [dite_eq_left ⟨le_refl 1, by omega⟩]
   rfl
@@ -94,7 +94,7 @@ theorem nuv_one (j : ℕ) (v : X.Pl) (s : Fin (X.G.P.n' v)) :
 theorem nuv_one_at_firstLevelIndex (v : X.Pl) (s : Fin (X.G.P.n' v)) :
     X.nuv v 1 s (NN X.G.P.m X.t 0) = X.G.P.lam0 v s (Fin.last X.G.P.m) + X.w v 1 s := by
   unfold Sys.nuv nu NN
-  rw [if_pos ⟨by omega, by omega⟩]
+  rw [ite_eq_left ⟨by omega, by omega⟩]
   unfold lamI
   rw [dite_eq_left ⟨by omega, by omega⟩]
   congr 2
@@ -106,7 +106,7 @@ theorem nuv_NNS (l : ℕ) (v : X.Pl) (s : Fin (X.G.P.n' v)) :
   have h1 : 1 ≤ (l + 1) * (X.t + 1) := Nat.one_le_iff_ne_zero.2 (Nat.mul_ne_zero (by omega) (by omega))
   have h3 : (l + 1) * (X.t + 1) + (X.t + 1) = (l + 1 + 1) * (X.t + 1) := by ring
   unfold Sys.nuv nu
-  rw [if_neg (by unfold NN; omega), if_pos ⟨by unfold NN; omega, by unfold NN; omega⟩]
+  rw [ite_eq_right (by unfold NN; omega), ite_eq_left ⟨by unfold NN; omega, by unfold NN; omega⟩]
   have h2 : NN X.G.P.m X.t (l + 1) - (X.G.P.m + 2) = (l + 1) * (X.t + 1) - 1 := by unfold NN; omega
   rw [h2, _root_.Formalism.L2.G.Pend.succ_mul_succ_sub_one_div_succ]
 

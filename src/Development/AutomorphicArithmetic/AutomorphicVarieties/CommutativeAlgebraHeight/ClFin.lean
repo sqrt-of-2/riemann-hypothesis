@@ -57,8 +57,8 @@ open IsLocalRing UpperTheory.V.Alg UpperTheory.V.CA ReciprocityTheory.CA
 private theorem isPrecomplete_finite {R M : Type} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Finite R M] (I : Ideal R) [IsPrecomplete I R] : IsPrecomplete I M := by
   first
-  | exact _root_.Formalism.SharedLemmas.isPrecomplete_of_moduleFinite
-  | (apply _root_.Formalism.SharedLemmas.isPrecomplete_of_moduleFinite <;> assumption)
+
+  | (apply _root_.Formalism.SharedLemmas.isPrecomplete_of_moduleFinite)
 
 private theorem prec_cofinal {R : Type*} [CommRing R] {I J : Ideal R} (hJI : J ≤ I) {e : ℕ}
     (he : I ^ e ≤ J) (hJ : IsPrecomplete J R) : IsPrecomplete I R := ⟨fun f hf => by
@@ -78,11 +78,11 @@ private theorem prec_cofinal {R : Type*} [CommRing R] {I J : Ideal R} (hJI : J �
 theorem UpperTheory.V.CA.cl_fin :
     ∀ (O : Type) [CommRing O] (R : Type) [CommRing R] [Algebra O R] [IsLocalRing R] (R' : Type) [CommRing R'] [Algebra O R'] [IsLocalRing R'] [Algebra R R'] [IsScalarTower O R R'] [Module.Finite R R'], IsCL O R → IsCL O R' := by
   intro O _ R _ _ _ R' _ _ _ _ _ _ h
-  haveI := h.noeth
-  haveI := h.complete
-  haveI := h.isLocalHom
-  haveI := h.res_fin
-  haveI hN : IsNoetherianRing R' := IsNoetherianRing.of_finite R R'
+  have := h.noeth
+  have := h.complete
+  have := h.isLocalHom
+  have := h.res_fin
+  have hN : IsNoetherianRing R' := IsNoetherianRing.of_finite R R'
   have hIntegral : (algebraMap R R').IsIntegral :=
     RingHom.Finite.to_isIntegral (RingHom.finite_algebraMap.mpr inferInstance)
   have hcomap : (maximalIdeal R').comap (algebraMap R R') = maximalIdeal R :=
@@ -104,12 +104,12 @@ theorem UpperTheory.V.CA.cl_fin :
   obtain ⟨e, he⟩ := Ideal.exists_pow_le_of_le_radical_of_fg hrad (IsNoetherian.noetherian _)
   have hP : IsPrecomplete (maximalIdeal R') R' :=
     prec_cofinal hle he (IsPrecomplete.map_algebraMap_iff.2 (isPrecomplete_finite _))
-  haveI hloc : IsLocalHom (algebraMap R R') := ⟨fun a ha => by
+  have hloc : IsLocalHom (algebraMap R R') := ⟨fun a ha => by
     by_contra hn
     have h1 : a ∈ maximalIdeal R := hn
     rw [← hcomap, Ideal.mem_comap] at h1
     exact h1 ha⟩
-  haveI hT : IsScalarTower O (ResidueField R) (ResidueField R') :=
+  have hT : IsScalarTower O (ResidueField R) (ResidueField R') :=
     IsScalarTower.of_algebraMap_eq fun a => by
       rw [IsScalarTower.algebraMap_apply O R (ResidueField R),
         ← IsScalarTower.algebraMap_apply R (ResidueField R) (ResidueField R'),

@@ -56,13 +56,13 @@ theorem UpperTheory.Gal.G3.pDescMap :
     have h1 := hA1 v hv
     have h2 : v ∈ L.KN ↑N' := by simpa using h1
     exact hA' v h2
-  haveI hred : IsReduced XM.X :=
+  have hred : IsReduced XM.X :=
     (GlobalTheory.isReduced_isNormalScheme_isLocallyNoetherian_of_smooth_over_field R XM.X XM.s
       (hSm p D R gb M XM).1).1
-  haveI hsep : IsSeparated X.s := (hSm p D R gb N X).2.1
-  haveI := hFin
-  haveI := hEtc
-  haveI := hSurj
+  have hsep : IsSeparated X.s := (hSm p D R gb N X).2.1
+  have := hFin
+  have := hEtc
+  have := hSurj
   have hsq : π₁ ≫ X.s = c ≫ X'.s := hW1.1.trans hWc.1.symm
   obtain ⟨hepi, π, hπ⟩ := hEt c X'.s X.s π₁ hsq (by
     intro Ω _ _ x y hxy
@@ -79,15 +79,15 @@ theorem UpperTheory.Gal.G3.pDescMap :
     rw [Category.assoc, φ.cart.1.w, ← Category.assoc, Over.w ψ]
   have hC : IsPullback Φc XM.univ.A.hom X'.univ.A.hom c :=
     hCart p D G L R gb (↑M) (↑N') XM X' 1 (one_mem _) c Φc hWc
-  haveI : IsReduced XM.univ.A.left := by
-    haveI := XM.univ.ab.smooth
+  have : IsReduced XM.univ.A.left := by
+    have := XM.univ.ab.smooth
     exact GlobalTheory.isReduced_of_smooth_of_isReduced XM.univ.A.hom
-  haveI : IsSeparated X.univ.A.hom := by
-    haveI := X.univ.ab.proper
+  have : IsSeparated X.univ.A.hom := by
+    have := X.univ.ab.proper
     infer_instance
-  haveI : IsFinite Φc := MorphismProperty.of_isPullback (P := @IsFinite) hC.flip hFin
-  haveI : Etale Φc := MorphismProperty.of_isPullback (P := @Etale) hC.flip hEtc
-  haveI : Surjective Φc := MorphismProperty.of_isPullback (P := @Surjective) hC.flip hSurj
+  have : IsFinite Φc := MorphismProperty.of_isPullback (P := @IsFinite) hC.flip hFin
+  have : Etale Φc := MorphismProperty.of_isPullback (P := @Etale) hC.flip hEtc
+  have : Surjective Φc := MorphismProperty.of_isPullback (P := @Surjective) hC.flip hSurj
   have hsq2 : Φ₁ ≫ X.univ.A.hom = Φc ≫ X'.univ.A.hom ≫ π := by
     rw [wsq _ _ _ _ _ hW1, reassoc_of% hC.w, hπ]
   obtain ⟨hepi2, Φ, hΦ⟩ := hEt Φc (X'.univ.A.hom ≫ π) X.univ.A.hom Φ₁ hsq2 (by

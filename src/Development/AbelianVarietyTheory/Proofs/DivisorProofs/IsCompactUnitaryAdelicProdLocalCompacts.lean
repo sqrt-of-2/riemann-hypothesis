@@ -60,7 +60,8 @@ namespace GlobalTheory.OrbFinAf.CompactOrbitVectors
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem isCompact_box (K : ∀ v : AwayP p, Set (Qv v)) (hK : ∀ v, IsCompact (K v))
+omit [Fact (Nat.Prime p)] in
+theorem isCompact_box [Fact (Nat.Prime p)] (K : ∀ v : AwayP p, Set (Qv v)) (hK : ∀ v, IsCompact (K v))
     (h : ∀ᶠ v in Filter.cofinite, K v ⊆ v.1.adicCompletionIntegers ℚ) :
     IsCompact {a : AfP p | ∀ v, AfP.eval v a ∈ K v} := by
   let S : Set (AwayP p) := {v | K v ⊆ v.1.adicCompletionIntegers ℚ}
@@ -107,7 +108,8 @@ theorem repr_tv (v : AwayP p) (y : AfP p ⊗[ℚ] G.C) (i : Fin (Module.finrank 
     simp [tv, basV, basA, Algebra.TensorProduct.basis_repr_tmul]
   | add x y hx hy => simp only [map_add (f := _), Finsupp.add_apply, hx, hy]
 
-theorem continuous_eval (v : AwayP p) : Continuous (AfP.eval (p := p) v) :=
+omit [Fact (Nat.Prime p)] in
+theorem continuous_eval [Fact (Nat.Prime p)] (v : AwayP p) : Continuous (AfP.eval (p := p) v) :=
   RestrictedProduct.continuous_eval v
 
 end GlobalTheory.OrbFinAf.CompactOrbitVectors
@@ -126,9 +128,9 @@ theorem tv_eq (v : AwayP p) (y : AfP p ⊗[ℚ] G.C) :
 
 theorem continuous_tv (v : AwayP p) :
     @Continuous _ _ (moduleTopology (AfP p) (AfP p ⊗[ℚ] G.C)) (moduleTopology (Qv v) (Qv v ⊗[ℚ] G.C)) (tv G v) := by
-  letI : TopologicalSpace (AfP p ⊗[ℚ] G.C) := moduleTopology (AfP p) (AfP p ⊗[ℚ] G.C)
-  haveI : IsModuleTopology (AfP p) (AfP p ⊗[ℚ] G.C) := ⟨rfl⟩
-  letI : TopologicalSpace (Qv v ⊗[ℚ] G.C) := moduleTopology (Qv v) (Qv v ⊗[ℚ] G.C)
+  let : TopologicalSpace (AfP p ⊗[ℚ] G.C) := moduleTopology (AfP p) (AfP p ⊗[ℚ] G.C)
+  have : IsModuleTopology (AfP p) (AfP p ⊗[ℚ] G.C) := ⟨rfl⟩
+  let : TopologicalSpace (Qv v ⊗[ℚ] G.C) := moduleTopology (Qv v) (Qv v ⊗[ℚ] G.C)
   haveI : IsModuleTopology (Qv v) (Qv v ⊗[ℚ] G.C) := ⟨rfl⟩
   haveI : ContinuousAdd (Qv v ⊗[ℚ] G.C) := IsModuleTopology.toContinuousAdd (Qv v) _
   have h1 : Continuous (basA G).equivFun := IsModuleTopology.continuous_of_linearMap (basA G).equivFun.toLinearMap

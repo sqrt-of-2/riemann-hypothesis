@@ -52,11 +52,11 @@ private theorem phiCond_quot {Γ : Type} [Group Γ] [TopologicalSpace Γ] (l : �
     (h : PhiCond Γ l) : PhiCond (Γ ⧸ M) l := by
   intro H hH
   have hc : Continuous (QuotientGroup.mk' M) := QuotientGroup.continuous_mk
-  haveI := h (H.comap (QuotientGroup.mk' M)) (hH.preimage hc)
+  have := h (H.comap (QuotientGroup.mk' M)) (hH.preimage hc)
   let π : H.comap (QuotientGroup.mk' M) →* H := (QuotientGroup.mk' M).subgroupComap H
-  have hπ : Continuous π := (hc.comp continuous_subtype_val).subtype_mk _
+  have hπ : Continuous π := (hc.comp continuous_subtypeVal).subtype_mk _
   have hs : Function.Surjective π :=
-    MonoidHom.subgroupComap_surjective_of_surjective _ _ (QuotientGroup.mk'_surjective M)
+    MonoidHom.subgroupComap_surjective _ _ (QuotientGroup.mk'_surjective M)
   refine Finite.of_injective (β := {φ : H.comap (QuotientGroup.mk' M) →* Multiplicative (ZMod l) //
     IsOpen (φ.ker : Set (H.comap (QuotientGroup.mk' M)))}) (fun φ => ⟨φ.1.comp π, φ.2.preimage hπ⟩) ?_
   intro φ φ' e
@@ -65,19 +65,19 @@ private theorem phiCond_quot {Γ : Type} [Group Γ] [TopologicalSpace Γ] (l : �
 private theorem exists_univ_loc (hP : Loc.LocalPublishedTheorems) (l : ℕ) [hl : Fact l.Prime] (O : Type) [CommRing O] [IsDomain O]
     [IsDiscreteValuationRing O] [CharZero O] [Algebra ℤ_[l] O] [Module.Finite ℤ_[l] O] (η : GQ l →* ℤˣ) (Ψ : GQ l →* Oˣ)
     (hη : IsLocallyConstant η) (hΨ : IsLocallyConstant (barChar O Ψ)) : Nonempty (Univ (GCond.noCondition O η Ψ)) := by
-  haveI : IsAdicComplete (maximalIdeal O) O := (dvrFacts l O).2.2.2.1
-  haveI : IsLocalHom (algebraMap ℤ_[l] O) := (dvrFacts l O).2.2.1
-  haveI : Finite (ResidueField O) := by
-    haveI : Finite (ResidueField ℤ_[l]) := Finite.of_equiv _ (PadicInt.residueField (p := l)).symm.toEquiv
+  have : IsAdicComplete (maximalIdeal O) O := (dvrFacts l O).2.2.2.1
+  have : IsLocalHom (algebraMap ℤ_[l] O) := (dvrFacts l O).2.2.1
+  have : Finite (ResidueField O) := by
+    have : Finite (ResidueField ℤ_[l]) := Finite.of_equiv _ (PadicInt.residueField (p := l)).symm.toEquiv
     exact Module.finite_of_finite (ResidueField ℤ_[l])
-  haveI : CharP (ResidueField O) l := by
+  have : CharP (ResidueField O) l := by
     refine (CharP.charP_iff_prime_eq_zero hl.out).2 ?_
     rw [← map_natCast (residue O), residue_eq_zero_iff, ← map_natCast (algebraMap ℤ_[l] O)]
     refine map_nonunit _ _ ?_
     rw [PadicInt.maximalIdeal_eq_span_p]
     exact Ideal.mem_span_singleton_self _
-  haveI : IsGalois ℚ_[l] (Om l) := IsAlgClosure.isGalois _ _
-  haveI : (Subgroup.normalClosure (∅ : Set (GQ l))).topologicalClosure.Normal :=
+  have : IsGalois ℚ_[l] (Om l) := IsAlgClosure.isGalois _ _
+  have : (Subgroup.normalClosure (∅ : Set (GQ l))).topologicalClosure.Normal :=
     Subgroup.is_normal_topologicalClosure _
   obtain ⟨U⟩ := exists_univ l η Ψ hη hΨ ∅ (fun g hg => hg.elim) _ rfl
     (phiCond_quot l _ fun H hH => Loc.phiCond hP l l H hH)

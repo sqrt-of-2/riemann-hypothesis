@@ -58,13 +58,13 @@ private lemma mEmb_apply_of_not_mem_block (m : Matrix (Fin (k + 1)) (Fin (k + 1)
     (h : ¬((r ≤ i.val ∧ i.val ≤ r + k) ∧ (r ≤ j.val ∧ j.val ≤ r + k))) :
     mEmb k r m i j = if i = j then 1 else 0 := by
   simp only [mEmb]
-  exact dif_neg h
+  exact dite_eq_right h
 
 private lemma mEmb_apply_of_mem_block (m : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (i j : Fin (2 * r + k + 1))
     (h : (r ≤ i.val ∧ i.val ≤ r + k) ∧ (r ≤ j.val ∧ j.val ≤ r + k)) :
     mEmb k r m i j = m ⟨i.val - r, by omega⟩ ⟨j.val - r, by omega⟩ := by
   simp only [mEmb]
-  exact dif_pos h
+  exact dite_eq_left h
 
 theorem mEmb_mulVec_of_supp (m : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) {v : Fin (2 * r + k + 1) → ℂ}
     (hv : ∀ i : Fin (2 * r + k + 1), r ≤ i.val → v i = 0) : mEmb k r m *ᵥ v = v := by
@@ -73,11 +73,11 @@ theorem mEmb_mulVec_of_supp (m : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) {v : Fi
   rw [Finset.sum_eq_single i]
   · by_cases hi : r ≤ i.val
     · rw [hv i hi, mul_zero]
-    · rw [mEmb_apply_of_not_mem_block m i i (fun h => hi h.1.1), if_pos rfl, one_mul]
+    · rw [mEmb_apply_of_not_mem_block m i i (fun h => hi h.1.1), ite_eq_left rfl, one_mul]
   · intro j _ hji
     by_cases hj : r ≤ j.val
     · rw [hv j hj, mul_zero]
-    · rw [mEmb_apply_of_not_mem_block m i j (fun h => hj h.2.1), if_neg (Ne.symm hji), zero_mul]
+    · rw [mEmb_apply_of_not_mem_block m i j (fun h => hj h.2.1), ite_eq_right (Ne.symm hji), zero_mul]
   · intro h
     exact absurd (Finset.mem_univ i) h
 
@@ -105,21 +105,21 @@ private lemma mEmb_mul' (m n : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) :
           apply hl
           exact Finset.mem_map.2 ⟨⟨l.val - r, by omega⟩, Finset.mem_univ _,
             Fin.ext (by show r + (l.val - r) = l.val; omega)⟩
-        rw [mEmb_apply_of_not_mem_block m i l (fun h => hl' h.2), if_neg (by rintro rfl; exact hl' hi), zero_mul]
+        rw [mEmb_apply_of_not_mem_block m i l (fun h => hl' h.2), ite_eq_right (by rintro rfl; exact hl' hi), zero_mul]
     · rw [mEmb_apply_of_not_mem_block (m * n) i j (fun h => hj h.2)]
       rw [Finset.sum_eq_single j]
-      · rw [mEmb_apply_of_not_mem_block n j j (fun h => hj h.1), if_pos rfl, mul_one]
+      · rw [mEmb_apply_of_not_mem_block n j j (fun h => hj h.1), ite_eq_left rfl, mul_one]
         exact mEmb_apply_of_not_mem_block m i j (fun h => hj h.2)
       · intro l _ hlj
-        rw [mEmb_apply_of_not_mem_block n l j (fun h => hj h.2), if_neg hlj, mul_zero]
+        rw [mEmb_apply_of_not_mem_block n l j (fun h => hj h.2), ite_eq_right hlj, mul_zero]
       · intro h
         exact absurd (Finset.mem_univ j) h
   · rw [mEmb_apply_of_not_mem_block (m * n) i j (fun h => hi h.1)]
     rw [Finset.sum_eq_single i]
-    · rw [mEmb_apply_of_not_mem_block m i i (fun h => hi h.1), if_pos rfl, one_mul]
+    · rw [mEmb_apply_of_not_mem_block m i i (fun h => hi h.1), ite_eq_left rfl, one_mul]
       exact mEmb_apply_of_not_mem_block n i j (fun h => hi h.1)
     · intro l _ hli
-      rw [mEmb_apply_of_not_mem_block m i l (fun h => hi h.1), if_neg (Ne.symm hli), zero_mul]
+      rw [mEmb_apply_of_not_mem_block m i l (fun h => hi h.1), ite_eq_right (Ne.symm hli), zero_mul]
     · intro h
       exact absurd (Finset.mem_univ i) h
 
@@ -131,7 +131,7 @@ private lemma mEmb_one' : mEmb k r (1 : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) 
     by_cases hij : i = j
     · subst hij
       simp
-    · rw [if_neg hij, if_neg]
+    · rw [ite_eq_right hij, ite_eq_right]
       intro h'
       apply hij
       have h'' : i.val - r = j.val - r := congrArg Fin.val h'
@@ -159,21 +159,21 @@ theorem uEmb_diagonal (a : Fin r → ℂ) (ha : ∀ b, a b ≠ 0) :
     simp only [uEmb]
     rw [hinv]
     by_cases h1 : i.val < r ∧ j.val < r
-    · rw [dif_pos h1]
+    · rw [dite_eq_left h1]
       by_cases hij : i = j
       · subst hij
-        rw [Matrix.diagonal_apply_eq, Matrix.diagonal_apply_eq, dif_pos h1.1]
+        rw [Matrix.diagonal_apply_eq, Matrix.diagonal_apply_eq, dite_eq_left h1.1]
       · rw [Matrix.diagonal_apply_ne _ hij, Matrix.diagonal_apply_ne]
         intro h
         have h2 := congrArg Fin.val h
         exact hij (Fin.ext h2)
-    · rw [dif_neg h1]
+    · rw [dite_eq_right h1]
       by_cases h2 : r + k < i.val ∧ r + k < j.val
-      · rw [dif_pos h2]
+      · rw [dite_eq_left h2]
         by_cases hij : i = j
         · subst hij
           rw [Matrix.diagonal_apply_eq, Matrix.diagonal_apply_eq,
-            dif_neg (show ¬ i.val < r from fun h => h1 ⟨h, h⟩), dif_pos h2.1]
+            dite_eq_right (show ¬ i.val < r from fun h => h1 ⟨h, h⟩), dite_eq_left h2.1]
         · have hne : (2 * r + k - j.val) ≠ (2 * r + k - i.val) := by
             intro h
             apply hij
@@ -182,12 +182,12 @@ theorem uEmb_diagonal (a : Fin r → ℂ) (ha : ∀ b, a b ≠ 0) :
           intro h
           have h2 := congrArg Fin.val h
           exact hne h2
-      · rw [dif_neg h2]
+      · rw [dite_eq_right h2]
         by_cases hij : i = j
         · subst hij
-          rw [if_pos rfl, Matrix.diagonal_apply_eq, dif_neg (show ¬ i.val < r from fun h => h1 ⟨h, h⟩),
-            dif_neg (show ¬ r + k < i.val from fun h => h2 ⟨h, h⟩)]
-        · rw [if_neg hij, Matrix.diagonal_apply_ne _ hij]
+          rw [ite_eq_left rfl, Matrix.diagonal_apply_eq, dite_eq_right (show ¬ i.val < r from fun h => h1 ⟨h, h⟩),
+            dite_eq_right (show ¬ r + k < i.val from fun h => h2 ⟨h, h⟩)]
+        · rw [ite_eq_right hij, Matrix.diagonal_apply_ne _ hij]
   · intro i
     dsimp only
     split_ifs
@@ -198,7 +198,7 @@ theorem uEmb_diagonal (a : Fin r → ℂ) (ha : ∀ b, a b ≠ 0) :
   · intro b
     dsimp only
     have hb : (eI k r b).val = b.val := rfl
-    rw [dif_pos (show (eI k r b).val < r by rw [hb]; exact b.isLt)]
+    rw [dite_eq_left (show (eI k r b).val < r by rw [hb]; exact b.isLt)]
     congr 1
 
 theorem norm_le_eucl {N : ℕ} (v : Fin N → ℂ) (i : Fin N) : ‖v i‖ ≤ eucl v := by
@@ -242,7 +242,7 @@ theorem lA_torus (z : Fin (2 * r + k + 1) → ℂ) (a : Fin r → ℝ) (ha : ∀
   have hbi : (Formalism.QuantumDeterminants.eI k r b).val = b.val := rfl
   have hf : Formalism.QuantumDeterminants.fvec k r z b.castSucc = Formalism.QuantumDeterminants.bvec (Formalism.QuantumDeterminants.eI k r b) := by
     unfold Formalism.QuantumDeterminants.fvec
-    rw [dif_pos (show (Fin.castSucc b).val < r from b.isLt)]
+    rw [dite_eq_left (show (Fin.castSucc b).val < r from b.isLt)]
     try rfl
   have hsupp : ∀ i : Fin (2 * r + k + 1), r ≤ i.val → Formalism.QuantumDeterminants.bvec (Formalism.QuantumDeterminants.eI k r b) i = 0 := by
     intro i hi
@@ -254,7 +254,7 @@ theorem lA_torus (z : Fin (2 * r + k + 1) → ℂ) (a : Fin r → ℝ) (ha : ∀
   simp only [hf]
   apply IsLeast.csInf_eq
   constructor
-  · rw [Set.mem_setOf_eq]
+  · rw [Set.mem_ofPred_eq]
     refine ⟨0, Submodule.zero_mem _, ?_⟩
     rw [sub_zero, key _ hsupp]
     have hs : (fun i => Formalism.QuantumDeterminants.bvec (Formalism.QuantumDeterminants.eI k r b) i / d i) =
@@ -266,16 +266,16 @@ theorem lA_torus (z : Fin (2 * r + k + 1) → ℂ) (a : Fin r → ℝ) (ha : ∀
       · rw [Formalism.QuantumDeterminants.bvec, Pi.single_eq_of_ne hi, Pi.single_eq_of_ne hi, zero_div]
     rw [hs, eucl_single, norm_inv, Complex.norm_real, Real.norm_eq_abs, abs_of_pos (ha b)]
   · intro t ht
-    rw [Set.mem_setOf_eq] at ht
+    rw [Set.mem_ofPred_eq] at ht
     obtain ⟨y, hy, rfl⟩ := ht
     have hy' := (GlobalTheory.Mom.LowVec.mem_flagSpan).1 hy
     have hw : ∀ i : Fin (2 * r + k + 1), r ≤ i.val →
         (Formalism.QuantumDeterminants.bvec (Formalism.QuantumDeterminants.eI k r b) - y) i = 0 := by
       intro i hi
-      rw [Pi.sub_apply, hy' i (by rw [Fin.coe_castSucc]; omega), hsupp i hi, sub_zero]
+      rw [Pi.sub_apply, hy' i (by rw [Fin.val_castSucc]; omega), hsupp i hi, sub_zero]
     rw [key _ hw]
     have h1 : (Formalism.QuantumDeterminants.bvec (Formalism.QuantumDeterminants.eI k r b) - y) (Formalism.QuantumDeterminants.eI k r b) = 1 := by
-      rw [Pi.sub_apply, hy' _ (by rw [Fin.coe_castSucc]; exact le_of_eq hbi.symm), Formalism.QuantumDeterminants.bvec,
+      rw [Pi.sub_apply, hy' _ (by rw [Fin.val_castSucc]; exact le_of_eq hbi.symm), Formalism.QuantumDeterminants.bvec,
         Pi.single_eq_same, sub_zero]
     calc (a b)⁻¹ = ‖(Formalism.QuantumDeterminants.bvec (Formalism.QuantumDeterminants.eI k r b) - y) (Formalism.QuantumDeterminants.eI k r b) / d (Formalism.QuantumDeterminants.eI k r b)‖ := by
           rw [h1, hda, one_div, norm_inv, Complex.norm_real, Real.norm_eq_abs, abs_of_pos (ha b)]

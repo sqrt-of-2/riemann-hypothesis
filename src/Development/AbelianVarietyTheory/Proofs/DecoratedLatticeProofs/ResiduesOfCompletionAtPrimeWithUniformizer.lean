@@ -61,11 +61,11 @@ variable {E k : Type} [Field E] [NumberField E] [Field k] [ValuativeRel k] [Topo
 def vI (h : IsCompl P q ι ϖ) (γ : ValueGroupWithZero k) : Ideal (𝓞 E) where
   carrier := {x | valuation k (ι (x : E)) ≤ γ}
   add_mem' {a b} ha hb := by
-    simp only [Set.mem_setOf_eq, map_add (f := _)] at *
+    simp only [Set.mem_ofPred_eq, map_add (f := _)] at *
     exact le_trans (Valuation.map_add _ _ _) (max_le ha hb)
   zero_mem' := by simp
   smul_mem' c x hx := by
-    simp only [Set.mem_setOf_eq, smul_eq_mul, map_mul] at *
+    simp only [Set.mem_ofPred_eq, smul_eq_mul, map_mul] at *
     have hc : valuation k (ι (c : E)) ≤ 1 :=
       (Valuation.mem_integer_iff _ _).mp ((h.int _).mpr ⟨c, 1, P.asIdeal.ne_top_iff_one.mp P.isPrime.ne_top, by simp⟩)
     calc _ ≤ 1 * γ := mul_le_mul' hc hx
@@ -106,9 +106,12 @@ theorem v_eq_one_of_not_mem (h : IsCompl P q ι ϖ) {s : 𝓞 E} (hs : s ∉ P.a
       _ < 1 := hlt
   rw [hm] at this; exact lt_irrefl _ this
 
-theorem coe_mul' (a b : 𝓞 E) : ((a * b : 𝓞 E) : E) = (a : E) * (b : E) := by simp
-theorem coe_nat' (n : ℕ) : (((n : ℕ) : 𝓞 E) : E) = (n : E) := by simp
-theorem coe_int' (n : ℤ) : (((n : ℤ) : 𝓞 E) : E) = (n : E) := by simp
+omit [NumberField E] in
+theorem coe_mul' [NumberField E] (a b : 𝓞 E) : ((a * b : 𝓞 E) : E) = (a : E) * (b : E) := by simp
+omit [NumberField E] in
+theorem coe_nat' [NumberField E] (n : ℕ) : (((n : ℕ) : 𝓞 E) : E) = (n : E) := by simp
+omit [NumberField E] in
+theorem coe_int' [NumberField E] (n : ℤ) : (((n : ℤ) : 𝓞 E) : E) = (n : E) := by simp
 
 theorem mem_P_iff (h : IsCompl P q ι ϖ) (hu : GlobalTheory.IndefiniteRowSideFullHecke.FramePositiveSum.IsUnif ϖ) (x : 𝓞 E) :
     x ∈ P.asIdeal ↔ valuation k (ι (x : E)) < 1 := by
@@ -122,7 +125,7 @@ theorem mem_P_iff (h : IsCompl P q ι ϖ) (hu : GlobalTheory.IndefiniteRowSideFu
       rw [mem_vI, mem_vI, ← hu, ← hu] at *
       rw [coe_mul', map_mul, map_mul] at hab
       by_contra hn
-      push_neg at hn
+      push Not at hn
       have ha : valuation k (ι (a : E)) = 1 := le_antisymm (v_int_le_one h a) hn.1
       have hb : valuation k (ι (b : E)) = 1 := le_antisymm (v_int_le_one h b) hn.2
       rw [ha, hb, one_mul] at hab; exact lt_irrefl _ hab

@@ -61,11 +61,11 @@ private theorem linearIndependent_update_sum_of_ne_zero {l : ℕ} [Fact (Nat.Pri
       intro j
       by_cases h : j = j0
       · subst h
-        rw [if_pos rfl, if_pos rfl]
+        rw [ite_eq_left rfl, ite_eq_left rfl]
         show ((g j + g j * a j - g j : F) : Om l) * e j = (g j : Om l) * e j + _ - _
         push_cast
         ring
-      · rw [if_neg h, if_neg h]
+      · rw [ite_eq_right h, ite_eq_right h]
         show ((g j + g j0 * a j - 0 : F) : Om l) * e j = (g j : Om l) * e j + _ - _
         push_cast
         ring
@@ -74,17 +74,17 @@ private theorem linearIndependent_update_sum_of_ne_zero {l : ℕ} [Fact (Nat.Pri
       intro j
       by_cases h : j = j0
       · subst h
-        rw [Function.update_self, if_pos rfl]
+        rw [Function.update_self, ite_eq_left rfl]
         show (g j : Om l) * _ = (g j : Om l) * e j + _
         ring
-      · rw [Function.update_of_ne h, if_neg h, add_zero]
+      · rw [Function.update_of_ne h, ite_eq_right h, add_zero]
     rw [Finset.sum_congr rfl (fun j _ => h1 j), Finset.sum_congr rfl (fun j _ => h2 j)]
-    simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.mem_univ, if_true, ← Finset.mul_sum]
+    simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.mem_univ, ite_true, ← Finset.mul_sum]
     ring
   have hz := hLI _ key
   have h0 : g j0 = 0 := by
     have h3 := hz j0
-    rw [if_pos rfl] at h3
+    rw [ite_eq_left rfl] at h3
     have h4 : g j0 * a j0 = 0 := by linear_combination h3
     rcases mul_eq_zero.1 h4 with h | h
     · exact h
@@ -107,11 +107,11 @@ private theorem exists_bounded_coeffs_after_update {l : ℕ} [Fact (Nat.Prime l)
   refine ⟨fun j => if j = j0 then c j0 / a j0 else c j - c j0 * a j / a j0, ?_, ?_⟩
   · intro j
     by_cases h : j = j0
-    · simp only [if_pos h]
+    · simp only [ite_eq_left h]
       push_cast
       rw [norm_div, div_le_one hpos]
       linarith [hc j0]
-    · simp only [if_neg h]
+    · simp only [ite_eq_right h]
       push_cast
       rw [sub_eq_add_neg]
       refine (IsUltrametricDist.norm_add_le_max _ _).trans (max_le (hc j) ?_)
@@ -126,15 +126,15 @@ private theorem exists_bounded_coeffs_after_update {l : ℕ} [Fact (Nat.Prime l)
       intro j
       by_cases h : j = j0
       · subst h
-        rw [if_pos rfl, if_pos rfl, Function.update_self]
+        rw [ite_eq_left rfl, ite_eq_left rfl, Function.update_self]
         push_cast
         field_simp
         ring
-      · rw [if_neg h, if_neg h, Function.update_of_ne h]
+      · rw [ite_eq_right h, ite_eq_right h, Function.update_of_ne h]
         push_cast
         ring
     rw [Finset.sum_congr rfl (fun j _ => h1 j)]
-    simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.mem_univ, if_true, ← Finset.mul_sum, ← hy]
+    simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.mem_univ, ite_true, ← Finset.mul_sum, ← hy]
     ring
 
 private theorem exists_bounded_independent_spanning_family {l : ℕ} [Fact (Nat.Prime l)] (F : IntermediateField ℚ_[l] (Om l)) (n : ℕ) :
@@ -155,9 +155,9 @@ private theorem exists_bounded_independent_spanning_family {l : ℕ} [Fact (Nat.
         induction i using Fin.lastCases with
         | last => exact ⟨a, hb, ha'⟩
         | cast i => exact hc i
-      · push_neg at hb
+      · push Not at hb
         obtain ⟨j1, hj1⟩ := hb
-        haveI : Nonempty (Fin m) := ⟨j1⟩
+        have : Nonempty (Fin m) := ⟨j1⟩
         obtain ⟨j0, hj0⟩ := Finite.exists_max (fun j => ‖(a j : Om l)‖)
         have ha1 : 1 < ‖(a j0 : Om l)‖ := lt_of_lt_of_le hj1 (hj0 j1)
         have ha0 : a j0 ≠ 0 := by
@@ -221,7 +221,7 @@ private theorem exists_bounded_independent_spanning_family {l : ℕ} [Fact (Nat.
             | cast j => simp [hc1 j]
           · simp [Fin.sum_univ_castSucc, hc2]
 
-theorem intBasis_holds : IntBasis := fun l _ F n x hx => exists_bounded_independent_spanning_family F n x hx
+theorem intBasis_holds : IntBasis := fun _l _ F n x hx => exists_bounded_independent_spanning_family F n x hx
 
 end UpperTheory.Gal.ClosedPhiFromClosedTrace
 

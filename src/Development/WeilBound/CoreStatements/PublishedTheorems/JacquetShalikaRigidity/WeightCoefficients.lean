@@ -81,7 +81,7 @@ theorem wtB (hN3 : N3) (hN4b : OneMoreAdelicColumn) {m : ℕ} (hmk : m < k) {β 
     (g : GA E k) : ∫⁻ h, β (h * g) ∂nuB E k m = 1 := by
   have hB := (hN3 E k).2.1 m hmk.le
   have hP := (hN3 E k).1 m hmk
-  haveI := hP.1
+  have := hP.1
   have hinvB : ∫⁻ h, β (h * g) ∂nuB E k m = ∫⁻ h, β (h⁻¹ * g) ∂nuB E k m := by
     conv_lhs => rw [← hB.2.1]
     exact lintegral_map (f := fun h => β (h * g)) (hβ.1.comp (measurable_mul_const g)) measurable_inv
@@ -100,7 +100,7 @@ theorem wtB (hN3 : N3) (hN4b : OneMoreAdelicColumn) {m : ℕ} (hmk : m < k) {β 
 
 theorem wtA (hN0 : N0) (hN3 : N3) (hN4a : CosetIntegralParabolic) (hN4b : OneMoreAdelicColumn) {m : ℕ} (hm1 : 1 ≤ m) (hmk : m < k)
     {β : GA E k → ℝ≥0∞} (hβ : IsWt (nuP E k m) β) : IsWt (nuP E k (m - 1)) (bA m β) := by
-  haveI : Countable (RowT E k m) := (hN0 E k m hm1 hmk.le).2.2.2.2.2.2.1
+  have : Countable (RowT E k m) := (hN0 E k m hm1 hmk.le).2.2.2.2.2.2.1
   refine ⟨Measurable.tsum fun ξ => hβ.1.comp (measurable_const_mul _), fun g => ?_⟩
   have := hN4a E k m hm1 hmk.le (fun h => β (h * g)) (hβ.1.comp (measurable_mul_const g))
   rw [wtB hN3 hN4b hmk hβ g] at this
@@ -112,14 +112,14 @@ theorem wtA (hN0 : N0) (hN3 : N3) (hN4a : CosetIntegralParabolic) (hN4b : OneMor
 
 theorem hypB (hN3 : N3) (hN4b : OneMoreAdelicColumn) {m : ℕ} (hmk : m < k) {β : GA E k → ℝ≥0∞} (hβ : IsWt (nuP E k m) β)
     (g : GA E k) : ∫⁻ r, ∫⁻ h, β (r⁻¹ * h * g) ∂nuP E k m ∂rhoB m = 1 := by
-  haveI := ((hN3 E k).1 m hmk).1
+  have := ((hN3 E k).1 m hmk).1
   rw [rhoB, lintegral_map (measI hβ.1 g) (meas_blkU m)]
   exact (hN4b E k m hmk _ (hβ.1.comp (measurable_mul_const g))).symm.trans (wtB hN3 hN4b hmk hβ g)
 
 theorem hypA (hN0 : N0) (hN3 : N3) (hN4a : CosetIntegralParabolic) (hN4b : OneMoreAdelicColumn) {m : ℕ} (hm1 : 1 ≤ m) (hmk : m < k)
     {β : GA E k → ℝ≥0∞} (hβ : IsWt (nuP E k m) β) (g : GA E k) :
     ∫⁻ r, ∫⁻ h, β (r⁻¹ * h * g) ∂nuP E k (m - 1) ∂rhoA m = 1 := by
-  haveI := ((hN3 E k).1 (m - 1) (by omega)).1
+  have := ((hN3 E k).1 (m - 1) (by omega)).1
   rw [rhoA, lintegral_sum_measure]
   refine (tsum_congr fun ξ => lintegral_dirac' _ (measI hβ.1 g)).trans ?_
   exact (hN4a E k m hm1 hmk.le _ (hβ.1.comp (measurable_mul_const g))).symm.trans (wtB hN3 hN4b hmk hβ g)
@@ -145,8 +145,8 @@ theorem integral_rhoA {m : ℕ} {Φ : GA E k → ℂ} (hΦ : Continuous Φ) (g :
   have hint : Integrable (fun r => Φ (r * g)) (rhoA m) := by
     refine ⟨hc.aestronglyMeasurable, ?_⟩
     simp only [HasFiniteIntegral, rhoA, lintegral_sum_measure]
-    rw [tsum_congr fun ξ => lintegral_dirac' _ (hc.measurable.enorm)]
-    simp only [← ofReal_norm_eq_enorm]
+    rw [tsum_congr fun ξ => lintegral_dirac' _ (hc.measurable.eNorm)]
+    simp only [← ofReal_norm]
     rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ => norm_nonneg _) hn]
     exact ENNReal.ofReal_lt_top
   rw [rhoA, integral_sum_measure hint]
@@ -157,8 +157,8 @@ variable {ψ : AddChar (Ad E) ℂ}
 theorem inv_sq (hP2 : P2) (hψ : StdPsi ψ) {n : ℕ} {f : GA E k → ℂ} (hf : Pre ψ n f) :
     ∀ h ∈ HS (k := k) n, ∀ g, ‖f (h * g)‖ₑ ^ 2 = ‖f g‖ₑ ^ 2 := by
   rintro h ⟨γ, u, hγ, hu, rfl⟩ g
-  have hn : ‖psN ψ u‖ₑ = 1 := by rw [← ofReal_norm_eq_enorm, (hP2 E k ψ hψ).2.1 u, ENNReal.ofReal_one]
-  rw [mul_assoc, hf.left γ hγ, (hP2 E k ψ hψ).1 n f hf u hu g, enorm_mul, hn, one_mul]
+  have hn : ‖psN ψ u‖ₑ = 1 := by rw [← ofReal_norm, (hP2 E k ψ hψ).2.1 u, ENNReal.ofReal_one]
+  rw [mul_assoc, hf.left γ hγ, (hP2 E k ψ hψ).1 n f hf u hu g, eNorm_mul, hn, one_mul]
 
 theorem inv_prod (hP2 : P2) (hψ : StdPsi ψ) {n : ℕ} {f φ : GA E k → ℂ} (hf : Pre ψ n f) (hφ : Pre ψ n φ) :
     ∀ h ∈ HS (k := k) n, ∀ g, f (h * g) * conj (φ (h * g)) = f g * conj (φ g) := by
@@ -173,8 +173,8 @@ theorem int_mul {ν : Measure (GA E k)} {f φ : GA E k → ℂ} (hf : Continuous
     Integrable (fun g => f g * conj (φ g)) ν := by
   have hF : Integrable (fun g => ‖f g‖ ^ 2 + ‖φ g‖ ^ 2) ν := by
     refine Integrable.add ⟨(hf.norm.pow 2).aestronglyMeasurable, ?_⟩ ⟨(hφ.norm.pow 2).aestronglyMeasurable, ?_⟩
-    · simpa only [HasFiniteIntegral, enorm_pow, enorm_norm] using h1
-    · simpa only [HasFiniteIntegral, enorm_pow, enorm_norm] using h2
+    · simpa only [HasFiniteIntegral, eNorm_pow, eNorm_norm] using h1
+    · simpa only [HasFiniteIntegral, eNorm_pow, eNorm_norm] using h2
   refine hF.mono' (hf.mul (Complex.continuous_conj.comp hφ)).aestronglyMeasurable (ae_of_all _ fun g => ?_)
   rw [norm_mul, Complex.norm_conj]
   nlinarith [norm_nonneg (f g), norm_nonneg (φ g), sq_nonneg (‖f g‖ - ‖φ g‖)]
@@ -234,7 +234,7 @@ theorem bessel (hP0 : P0) (hP1 : P1) (hψ : StdPsi ψ) {m : ℕ} (hm1 : 1 ≤ m)
   have hI2 : Integrable (fun x => ‖f (blkU x * g)‖ ^ 2)
       ((vecMeasure E (UnipotentBlockColumnIndex k m m)).restrict (vecDomain E (UnipotentBlockColumnIndex k m m))) := by
     refine ⟨(hc.norm.pow 2).aestronglyMeasurable, ?_⟩
-    simpa only [HasFiniteIntegral, enorm_pow, enorm_norm] using lt_top_iff_ne_top.2 hI
+    simpa only [HasFiniteIntegral, eNorm_pow, eNorm_norm] using lt_top_iff_ne_top.2 hI
   have H := parseval_gen hP0 hψ hf hf g
   obtain ⟨-, -, -, e, he⟩ := hP1 E k ψ hψ m hm1 hmk f hf
   have hre : (∫ x in vecDomain E (UnipotentBlockColumnIndex k m m), f (blkU x * g) * conj (f (blkU x * g)) ∂vecMeasure E (UnipotentBlockColumnIndex k m m)) =
@@ -251,13 +251,13 @@ theorem bessel (hP0 : P0) (hP1 : P1) (hψ : StdPsi ψ) {m : ℕ} (hm1 : 1 ≤ m)
     rw [ofReal_integral_eq_lintegral_ofReal hI2 (ae_of_all _ fun _ => by positivity)]
     congr 1
     ext x
-    rw [← ofReal_norm_eq_enorm, ENNReal.ofReal_pow (norm_nonneg _)]
+    rw [← ofReal_norm, ENNReal.ofReal_pow (norm_nonneg _)]
   rw [hlin, ← Hr.tsum_eq, ENNReal.ofReal_tsum_of_nonneg (fun _ => by positivity) Hr.summable]
   calc ∑' ξ : RowT E k m, ‖colT ψ m f (ratGL E k (gam ξ) * g)‖ₑ ^ 2
       = ∑' ξ : RowT E k m, ENNReal.ofReal (‖coefF ψ m (e ξ).1 f g‖ ^ 2) := by
         refine tsum_congr fun ξ => ?_
-        rw [row_eq hP1 hψ hm1 hmk hf e he, ← ofReal_norm_eq_enorm, ENNReal.ofReal_pow (norm_nonneg _)]
-    _ ≤ _ := ENNReal.tsum_comp_le_tsum_of_injective (Subtype.val_injective.comp e.injective)
+        rw [row_eq hP1 hψ hm1 hmk hf e he, ← ofReal_norm, ENNReal.ofReal_pow (norm_nonneg _)]
+    _ ≤ _ := tsum_comp_le_tsum_of_injective (Subtype.val_injective.comp e.injective)
         (fun ξ : UnipotentBlockColumnIndex k m m → E => ENNReal.ofReal (‖coefF ψ m ξ f g‖ ^ 2))
 
 theorem sf_B (m : ℕ) : SFinite (rhoB (E := E) (k := k) m) := by unfold rhoB; infer_instance
@@ -270,13 +270,13 @@ theorem twistedGeometricSide_unfolding : Q1 → Q2 → N0 → N3 → CosetIntegr
   set_option synthInstance.maxHeartbeats 200000 in
     intro hQ1 hQ2 hN0 hN3 hN4a hN4b hP0 hP1 hP2
     intro E _ _ _ k μ _ ψ hψ m hm1 hmk β hβ
-    haveI : Countable (RowT E k m) := (hN0 E k m hm1 hmk.le).2.2.2.2.2.2.1
+    have : Countable (RowT E k m) := (hN0 E k m hm1 hmk.le).2.2.2.2.2.2.1
     have hPm := (hN3 E k).1 m hmk
     have hPm1 := (hN3 E k).1 (m - 1) (by omega)
-    haveI := hPm.1
-    haveI := hPm1.1
-    haveI := WeightCoefficients.sf_A (E := E) (k := k) m
-    haveI := WeightCoefficients.sf_B (E := E) (k := k) m
+    have := hPm.1
+    have := hPm1.1
+    have := WeightCoefficients.sf_A (E := E) (k := k) m
+    have := WeightCoefficients.sf_B (E := E) (k := k) m
     have hwA := WeightCoefficients.wtA hN0 hN3 hN4a hN4b hm1 hmk hβ
     have hA : ∀ f, Pre ψ m f → ∫⁻ g, ‖colT ψ m f g‖ₑ ^ 2 ∂μ.withDensity (WeightCoefficients.bA m β) ≤
         ∫⁻ g, ‖f g‖ₑ ^ 2 ∂μ.withDensity β := by
@@ -284,12 +284,12 @@ theorem twistedGeometricSide_unfolding : Q1 → Q2 → N0 → N3 → CosetIntegr
       have hcf : Pre ψ (m - 1) (colT ψ m f) := (hP1 E k ψ hψ m hm1 hmk f hf).1
       rw [hQ1 (GA E k) μ (nuP E k (m - 1)) (WeightCoefficients.rhoA m) (WeightCoefficients.HS (m - 1)) (WeightCoefficients.bA m β) β hPm1.2.1 hPm1.2.2 hwA hβ.1
           (WeightCoefficients.hypA hN0 hN3 hN4a hN4b hm1 hmk hβ) (fun g => ‖colT ψ m f g‖ₑ ^ 2)
-          (hcf.cont.measurable.enorm.pow_const 2) (WeightCoefficients.inv_sq hP2 hψ hcf),
+          (hcf.cont.measurable.eNorm.pow_const 2) (WeightCoefficients.inv_sq hP2 hψ hcf),
         hQ1 (GA E k) μ (nuP E k m) (WeightCoefficients.rhoB m) (WeightCoefficients.HS m) β β hPm.2.1 hPm.2.2 hβ hβ.1
-          (WeightCoefficients.hypB hN3 hN4b hmk hβ) (fun g => ‖f g‖ₑ ^ 2) (hf.cont.measurable.enorm.pow_const 2) (WeightCoefficients.inv_sq hP2 hψ hf)]
+          (WeightCoefficients.hypB hN3 hN4b hmk hβ) (fun g => ‖f g‖ₑ ^ 2) (hf.cont.measurable.eNorm.pow_const 2) (WeightCoefficients.inv_sq hP2 hψ hf)]
       refine lintegral_mono fun g => ?_
-      rw [WeightCoefficients.lintegral_rhoA (hcf.cont.measurable.enorm.pow_const 2),
-        WeightCoefficients.lintegral_rhoB (hf.cont.measurable.enorm.pow_const 2)]
+      rw [WeightCoefficients.lintegral_rhoA (hcf.cont.measurable.eNorm.pow_const 2),
+        WeightCoefficients.lintegral_rhoB (hf.cont.measurable.eNorm.pow_const 2)]
       exact WeightCoefficients.bessel hP0 hP1 hψ hm1 hmk hf g
     refine ⟨WeightCoefficients.bA m β, hwA, hA, ?_⟩
     intro f φ hf hφ hf2 hφ2

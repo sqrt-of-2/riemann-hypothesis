@@ -93,9 +93,9 @@ theorem hasFDerivAt_fsv {m : ℕ} (t : ℂ) (l : Fin m) (c : Fin m → ℂ) :
       rfl
     rw [he, ← hc]
     exact h2
-  · simp only [ContinuousLinearMap.smul_apply, hL, Pi.single_eq_same, map_one, smul_eq_mul]
+  · simp only [smul_apply, hL, Pi.single_eq_same, map_one, smul_eq_mul]
     ring
-  · simp only [ContinuousLinearMap.smul_apply, hL, Pi.single_eq_same, Complex.conj_I, smul_eq_mul]
+  · simp only [smul_apply, hL, Pi.single_eq_same, Complex.conj_I, smul_eq_mul]
     ring
 
 section Leibniz
@@ -112,7 +112,7 @@ theorem wirt_fsv_smul (t : ℂ) (l : Fin m) (φ : (Fin m → ℂ) → E) (c : Fi
     hD.smul hφ.hasFDerivAt
   unfold wirt wirtBar
   rw [hP.fderiv]
-  simp only [ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply,
+  simp only [add_apply, smul_apply,
     ContinuousLinearMap.smulRight_apply, h1, hI, smul_add, smul_sub, smul_smul, ← mul_assoc, Complex.I_mul_I]
   constructor <;> module
 
@@ -122,9 +122,9 @@ theorem pOp_fsv_smul (t : ℂ) (l : Fin m) (φ : (Fin m → ℂ) → E) (c : Fin
       fsv t (c l) • pOp l φ c + t • fsv t (c l) • (c l • φ c) := by
   unfold pOp
   by_cases h : c ∈ OmX m
-  · rw [if_pos h, if_pos h, (wirt_fsv_smul t l φ c (hd h)).1]
+  · rw [ite_eq_left h, ite_eq_left h, (wirt_fsv_smul t l φ c (hd h)).1]
     module
-  · rw [if_neg h, if_neg h, h0 h]
+  · rw [ite_eq_right h, ite_eq_right h, h0 h]
     simp
 
 theorem pbOp_fsv_smul (t : ℂ) (l : Fin m) (φ : (Fin m → ℂ) → E) (c : Fin m → ℂ)
@@ -133,10 +133,10 @@ theorem pbOp_fsv_smul (t : ℂ) (l : Fin m) (φ : (Fin m → ℂ) → E) (c : Fi
       fsv (-t) (c l) • pbOp l φ c + conj t • fsv (-t) (c l) • (star (c l) • φ c) := by
   unfold pbOp
   by_cases h : c ∈ OmX m
-  · rw [if_pos h, if_pos h, (wirt_fsv_smul (-t) l φ c (hd h)).2]
+  · rw [ite_eq_left h, ite_eq_left h, (wirt_fsv_smul (-t) l φ c (hd h)).2]
     simp only [map_neg, neg_neg, Complex.star_def]
     module
-  · rw [if_neg h, if_neg h, h0 h]
+  · rw [ite_eq_right h, ite_eq_right h, h0 h]
     simp
 
 end Leibniz
@@ -152,11 +152,11 @@ theorem radSp_regular (Φ : RadSp k r z z' π π') (g : Mx k r) (c : Fin r → �
   have hΦm : (Φ : Fn k r (Wq →L[ℂ] Wp)) ∈ RadSp k r z z' π π' := Φ.2
   obtain ⟨h0, hs, -⟩ := hΦm
   refine ⟨fun hc => ?_, fun hc => h0 (c, g) (fun hx => hc (by
-    simp only [DomR, Set.mem_setOf_eq] at hx
+    simp only [DomR, Set.mem_ofPred_eq] at hx
     exact hx.1))⟩
   by_cases hg : g ∈ Glev k r (Fin.last r) ∧ 0 < GGl k r z z' g
   · obtain ⟨U, F, hU, hxU, hF, hΦ⟩ := hs (c, g) (by
-      simp only [DomR, Set.mem_setOf_eq]
+      simp only [DomR, Set.mem_ofPred_eq]
       exact ⟨hc, hg.1, hg.2⟩)
     have hcont : Continuous (fun c' : Fin r → ℂ => (c', g)) := by fun_prop
     have hev : ∀ᶠ c' in nhds c, (Φ : Fn k r (Wq →L[ℂ] Wp)) c' g = F (c', g) := by
@@ -170,7 +170,7 @@ theorem radSp_regular (Φ : RadSp k r z z' π π') (g : Mx k r) (c : Fin r → �
   · have hz : (fun c' => (Φ : Fn k r (Wq →L[ℂ] Wp)) c' g) = fun _ => 0 := by
       funext c'
       refine h0 (c', g) (fun hx => hg ?_)
-      simp only [DomR, Set.mem_setOf_eq] at hx
+      simp only [DomR, Set.mem_ofPred_eq] at hx
       exact ⟨hx.2.1, hx.2.2⟩
     rw [hz]
     exact differentiableAt_const 0
@@ -202,10 +202,10 @@ theorem waveSiteAll : WaveSiteAll := by
     fun i Φ => X.op_apply l i Φ
   have hWW' : Wv * Wv' = 1 := by
     apply LinearMap.ext; intro Φ; apply Subtype.ext; funext c g
-    simp only [Module.End.mul_apply, Module.End.one_apply, hW1, hW2, smul_smul, fsv_mul_fsv_neg, one_smul]
+    simp only [mul_apply_eq_comp, one_apply_eq_self, hW1, hW2, smul_smul, fsv_mul_fsv_neg, one_smul]
   have hW'W : Wv' * Wv = 1 := by
     apply LinearMap.ext; intro Φ; apply Subtype.ext; funext c g
-    simp only [Module.End.mul_apply, Module.End.one_apply, hW1, hW2, smul_smul, fsv_neg_mul_fsv, one_smul]
+    simp only [mul_apply_eq_comp, one_apply_eq_self, hW1, hW2, smul_smul, fsv_neg_mul_fsv, one_smul]
 
   have hcomm : ∀ (W : Module.End ℂ (RadSp P.k P.r z z' π π')) (u : ℂ → ℂ),
       (∀ (Φ : RadSp P.k P.r z z' π π') c g, (W Φ : Fn P.k P.r (Wq →L[ℂ] Wp)) c g =
@@ -213,7 +213,7 @@ theorem waveSiteAll : WaveSiteAll := by
       ∀ i : Fin 6, (i = 1 ∨ i = 2 ∨ i = 4 ∨ i = 5) → W * X.op l i = X.op l i * W := by
     intro W u hWu i hi
     apply LinearMap.ext; intro Φ; apply Subtype.ext; funext c g
-    simp only [Module.End.mul_apply, hWu, hop, crd]
+    simp only [mul_apply_eq_comp, hWu, hop, crd]
     rcases hi with rfl | rfl | rfl | rfl <;>
       simp only [opL, cOp, ciOp, cbOp, cbiOp] <;> exact smul_comm _ _ _
   have hsite : ∀ f : Pr (RadSp P.k P.r z z' π π'), (site L l).p = L.p l ∧ (site L l).c = L.c l ∧
@@ -232,14 +232,14 @@ theorem waveSiteAll : WaveSiteAll := by
   · change X.op l 0 * Wv = Wv * X.op l 0 + algebraMap ℂ _ s * Wv * X.op l 1
     apply LinearMap.ext; intro Φ; apply Subtype.ext; funext c g
     obtain ⟨hd, h0⟩ := radSp_regular Φ g c
-    simp only [Module.End.mul_apply, LinearMap.add_apply, Module.algebraMap_end_apply, Submodule.coe_add,
+    simp only [mul_apply_eq_comp, LinearMap.add_apply, Module.algebraMap_end_apply, Submodule.coe_add,
       Submodule.coe_smul, Pi.add_apply, Pi.smul_apply, hop, crd, hW1, opL]
     rw [pOp_fsv_smul s l _ c hd h0]
     simp only [cOp]
   · change Wv' * (-X.op l 3) = (-X.op l 3) * Wv' + X.op l 4 * (Wv' * algebraMap ℂ _ (conj s))
     apply LinearMap.ext; intro Φ; apply Subtype.ext; funext c g
     obtain ⟨hd, h0⟩ := radSp_regular Φ g c
-    simp only [Module.End.mul_apply, LinearMap.add_apply, LinearMap.neg_apply, Module.algebraMap_end_apply,
+    simp only [mul_apply_eq_comp, LinearMap.add_apply, LinearMap.neg_apply, Module.algebraMap_end_apply,
       Submodule.coe_add, Submodule.coe_neg, Submodule.coe_smul, Pi.add_apply, Pi.neg_apply, Pi.smul_apply, hop,
       crd, hW2, opL]
     rw [pbOp_fsv_smul s l _ c hd h0]

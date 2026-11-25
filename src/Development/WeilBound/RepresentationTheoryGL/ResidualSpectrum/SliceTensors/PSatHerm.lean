@@ -61,23 +61,23 @@ attribute [local instance] GlobalTheory.LocalData.complRel GlobalTheory.LocalDat
 
 theorem isUnitarisable_locRepD {N : ℕ} {V : Submodule ℂ (Sm E N)} (hV : IsDiscrete V)
     (w : HeightOneSpectrum (𝓞 E)) : GlobalTheory.LGrp.IsUnitarisable (GlobalTheory.DiscLocEx.locRepD hV.stable w) := by
-  letI : MeasurableSpace (GA E N) := borel _
-  haveI : BorelSpace (GA E N) := ⟨rfl⟩
-  haveI := GlobalTheory.AdelicUnitaryTop.locallyCompact_adele E
-  haveI := GlobalTheory.AdelicUnitaryTop.secondCountable_adele E
-  haveI := GlobalTheory.AdelicUnitaryTop.t2Space_adeleRing_numberField E
-  haveI : LocallyCompactSpace (Matrix (Fin N) (Fin N) (Ad E)) :=
+  let : MeasurableSpace (GA E N) := borel _
+  have : BorelSpace (GA E N) := ⟨rfl⟩
+  have := GlobalTheory.AdelicUnitaryTop.locallyCompact_adele E
+  have := GlobalTheory.AdelicUnitaryTop.secondCountable_adele E
+  have := GlobalTheory.AdelicUnitaryTop.t2Space_adeleRing_numberField E
+  have : LocallyCompactSpace (Matrix (Fin N) (Fin N) (Ad E)) :=
     inferInstanceAs (LocallyCompactSpace (Fin N → Fin N → Ad E))
-  haveI : LocallyCompactSpace (Matrix (Fin N) (Fin N) (Ad E))ᵐᵒᵖ :=
+  have : LocallyCompactSpace (Matrix (Fin N) (Fin N) (Ad E))ᵐᵒᵖ :=
     MulOpposite.opHomeomorph.symm.isClosedEmbedding.locallyCompactSpace
-  haveI : LocallyCompactSpace (GA E N) := Units.isClosedEmbedding_embedProduct.locallyCompactSpace
-  haveI : SecondCountableTopology (Matrix (Fin N) (Fin N) (Ad E)) :=
+  have : LocallyCompactSpace (GA E N) := Units.isClosedEmbedding_embedProduct.locallyCompactSpace
+  have : SecondCountableTopology (Matrix (Fin N) (Fin N) (Ad E)) :=
     inferInstanceAs (SecondCountableTopology (Fin N → Fin N → Ad E))
-  haveI : SecondCountableTopology (Matrix (Fin N) (Fin N) (Ad E))ᵐᵒᵖ :=
+  have : SecondCountableTopology (Matrix (Fin N) (Fin N) (Ad E))ᵐᵒᵖ :=
     MulOpposite.opHomeomorph.symm.isEmbedding.secondCountableTopology
-  haveI : SecondCountableTopology (GA E N) := Units.isEmbedding_embedProduct.secondCountableTopology
-  haveI := GlobalTheory.DiscreteUnit.countable_latticeGL (E := E) (N := N)
-  haveI : Infinite (w.adicCompletion E) := .of_injective _ (algebraMap E _).injective
+  have : SecondCountableTopology (GA E N) := Units.isEmbedding_embedProduct.secondCountableTopology
+  have := GlobalTheory.DiscreteUnit.countable_latticeGL (E := E) (N := N)
+  have : Infinite (w.adicCompletion E) := .of_injective _ (algebraMap E _).injective
   refine GlobalTheory.DiscreteUnit.isUnitarisable_of_embedding (Γ := latticeGL E N) (GlobalTheory.DiscLocEx.locRepD hV.stable w)
     (fun g => finGL E N (locGL E N w g)) (fun g => ?_)
     ((Sm E N).subtype.comp V.subtype) (Subtype.val_injective.comp Subtype.val_injective)

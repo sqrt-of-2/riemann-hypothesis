@@ -106,9 +106,9 @@ theorem wprod_vec (m d : ℕ) : wprod (m + 1) (fun i => if i = 0 then d else 0) 
     · exact ratio_one h _
     · rfl
   rw [h2, mul_one, Fin.prod_univ_succ, ← prodUp]
-  simp only [lt_self_iff_false, if_false, one_mul, if_true]
+  simp only [lt_self_iff_false, ite_false, one_mul, ite_true]
   refine Finset.prod_congr rfl fun j _ => ?_
-  rw [if_pos (Fin.succ_pos j), if_neg (Fin.succ_ne_zero j)]
+  rw [ite_eq_left (Fin.succ_pos j), ite_eq_right (Fin.succ_ne_zero j)]
   simp only [Fin.val_succ, Fin.val_zero, Nat.cast_zero, sub_zero, Nat.cast_add, Nat.cast_one]
   congr 1
   ring
@@ -122,7 +122,7 @@ theorem wprod_cov (m d : ℕ) :
         ((((if Fin.last m = Fin.last m then 0 else d : ℕ)) : ℚ) - (((if j = Fin.last m then 0 else d : ℕ)) : ℚ) +
           (j : ℚ) - ((Fin.last m : Fin (m + 1)) : ℚ)) / ((j : ℚ) - ((Fin.last m : Fin (m + 1)) : ℚ)) else 1) = 1 := by
     apply Finset.prod_eq_one; intro j _
-    rw [if_neg (not_lt.mpr (Fin.le_last j))]
+    rw [ite_eq_right (not_lt.mpr (Fin.le_last j))]
   rw [h2, mul_one, ← prodDown]
   refine Finset.prod_congr rfl fun i _ => ?_
   rw [Fin.prod_univ_castSucc]
@@ -131,13 +131,13 @@ theorem wprod_cov (m d : ℕ) :
         ((((if i.castSucc = Fin.last m then 0 else d : ℕ)) : ℚ) - (((if j.castSucc = Fin.last m then 0 else d : ℕ)) : ℚ) +
           (j.castSucc : ℚ) - (i.castSucc : ℚ)) / ((j.castSucc : ℚ) - (i.castSucc : ℚ)) else 1) = 1 := by
     apply Finset.prod_eq_one; intro j _
-    rw [if_neg (Fin.castSucc_lt_last i).ne, if_neg (Fin.castSucc_lt_last j).ne]
+    rw [ite_eq_right (Fin.castSucc_lt_last i).ne, ite_eq_right (Fin.castSucc_lt_last j).ne]
     by_cases h : i.castSucc < j.castSucc
-    · rw [if_pos h]
+    · rw [ite_eq_left h]
       exact ratio_one h _
-    · rw [if_neg h]
-  rw [h3, one_mul, if_pos (Fin.castSucc_lt_last i)]
-  simp only [if_neg (Fin.castSucc_lt_last i).ne, if_true, Fin.val_castSucc, Fin.val_last, Nat.cast_zero, sub_zero]
+    · rw [ite_eq_right h]
+  rw [h3, one_mul, ite_eq_left (Fin.castSucc_lt_last i)]
+  simp only [ite_eq_right (Fin.castSucc_lt_last i).ne, ite_true, Fin.val_castSucc, Fin.val_last, Nat.cast_zero, sub_zero]
 
 theorem last_ne_zero {m : ℕ} (hm : 1 ≤ m) : Fin.last m ≠ 0 := by
   intro h
@@ -153,7 +153,7 @@ theorem finrank_letter {D : Formalism.BasicNotions.D7} (h3 : adm3 D) (K : Type) 
     | true =>
       have hnu : nuOf (letterWt m d true) = fun i => if i = 0 then d else 0 := by
         funext i
-        simp only [nuOf, letterWt, if_true, if_neg (last_ne_zero hm), sub_zero]
+        simp only [nuOf, letterWt, ite_true, ite_eq_right (last_ne_zero hm), sub_zero]
         split_ifs <;> simp
       have hanti : Antitone (nuOf (letterWt m d true)) := by
         rw [hnu]

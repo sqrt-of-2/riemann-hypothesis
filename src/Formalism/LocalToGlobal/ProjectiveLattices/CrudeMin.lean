@@ -94,6 +94,7 @@ theorem crPderiv_supported {R : Type} [CommRing R] {s : Set (Letter T r n)} (i :
     rw [Derivation.leibniz, smul_eq_mul, smul_eq_mul]
     exact add_mem (mul_mem hx' hy) (mul_mem hy' hx)
 
+omit [Fintype T] in
 private theorem crPderiv_zero_lemma {R : Type} [CommRing R] {s : Set (Letter T r n)} (i : Letter T r n)
     (hi : i ∉ s) {p : MvPolynomial (Letter T r n) R} (hp : p ∈ supported R s) : pderiv i p = 0 := by
   classical
@@ -102,7 +103,7 @@ private theorem crPderiv_zero_lemma {R : Type} [CommRing R] {s : Set (Letter T r
   induction hp' using Algebra.adjoin_induction with
   | mem x hx =>
     obtain ⟨j, hj, rfl⟩ := hx
-    rw [pderiv_X, Pi.single_apply, if_neg]
+    rw [pderiv_X, Pi.single_apply, ite_eq_right]
     rintro rfl
     exact hi hj
   | algebraMap c => exact Derivation.map_algebraMap _ _
@@ -189,7 +190,7 @@ theorem crP_rowInv (k : Type) [Field k] (β : (Σ σ : T, Fin (r σ)) → Fin n)
   · congr 1
     ext p q
     simp only [AlgHom.mapMatrix_apply, Matrix.map_apply, crMinor, aeval_X]
-    rw [if_neg]
+    rw [ite_eq_right]
     rintro ⟨b, hb⟩
     apply hcase
     obtain ⟨h1, h2⟩ := Sigma.mk.inj hb

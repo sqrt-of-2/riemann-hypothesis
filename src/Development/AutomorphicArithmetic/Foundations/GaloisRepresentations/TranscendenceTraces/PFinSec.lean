@@ -56,8 +56,8 @@ private theorem sepClosed_of_isAlgebraic (K L : Type) [Field K] [Field L] [Algeb
   refine IsSepClosed.of_exists_root _ fun p hm hirr hsep => ?_
   have hdeg : p.degree ≠ 0 := fun h => hirr.not_isUnit (Polynomial.isUnit_iff_degree_eq_zero.2 h)
   obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero (AlgebraicClosure L) p hdeg
-  haveI : Algebra.IsAlgebraic K (AlgebraicClosure L) := Algebra.IsAlgebraic.trans K L _
-  haveI : IsPurelyInseparable L (AlgebraicClosure L) :=
+  have : Algebra.IsAlgebraic K (AlgebraicClosure L) := Algebra.IsAlgebraic.trans K L _
+  have : IsPurelyInseparable L (AlgebraicClosure L) :=
     IsPurelyInseparable.tower_top K L (AlgebraicClosure L)
   have hs : IsSeparable L r := Polynomial.Separable.of_dvd hsep (minpoly.dvd L r hr)
   obtain ⟨x, rfl⟩ := IsPurelyInseparable.inseparable' r hs
@@ -67,17 +67,17 @@ private theorem sepClosed_of_isAlgebraic (K L : Type) [Field K] [Field L] [Algeb
 private theorem sh_of_finite (O T : Type) [CommRing O] [CommRing T] [Algebra O T]
     [Module.Finite O T] (hO : SH O) (hT : HenselianLocalRing T) : SH T := by
   obtain ⟨hH, hS⟩ := hO
-  haveI := hH
-  haveI := hT
+  have := hH
+  have := hT
   refine ⟨hT, ?_⟩
-  haveI : IsLocalHom (algebraMap O T) := ⟨fun a ha => by
+  have : IsLocalHom (algebraMap O T) := ⟨fun a ha => by
     by_contra h
     have h1 : a ∈ IsLocalRing.maximalIdeal O := h
     rw [← GlobalTheory.comap_eq_maximalIdeal_of_finite (IsLocalRing.maximalIdeal T)] at h1
     exact (Ideal.mem_comap.1 h1) ha⟩
-  letI : Algebra (IsLocalRing.ResidueField O) (IsLocalRing.ResidueField T) :=
+  let : Algebra (IsLocalRing.ResidueField O) (IsLocalRing.ResidueField T) :=
     (IsLocalRing.ResidueField.map (algebraMap O T)).toAlgebra
-  haveI : Algebra.IsAlgebraic (IsLocalRing.ResidueField O) (IsLocalRing.ResidueField T) := by
+  have : Algebra.IsAlgebraic (IsLocalRing.ResidueField O) (IsLocalRing.ResidueField T) := by
     refine ⟨fun x => ?_⟩
     obtain ⟨t, rfl⟩ := IsLocalRing.residue_surjective x
     obtain ⟨p, hp, h0⟩ := Algebra.IsIntegral.isIntegral (R := O) t
@@ -107,17 +107,17 @@ theorem UpperTheory.Gal.TranscendenceTraces.finSec_of :
     SHSec → FinSec := by
   intro hS O B C _ _ _ _ _ _ _ _ hO
   obtain ⟨hH, -⟩ := id hO
-  haveI := hH
+  have := hH
   obtain ⟨ι, _, T, _, _, e, hT⟩ := GlobalTheory.exists_algEquiv_pi_henselianLocalRing O B
   have key : ∀ i, ∃ f : C →+* T i, ∀ b, f (algebraMap B C b) = e b i := by
     intro i
-    haveI := (hT i).2
+    have := (hT i).2
     have hs := sh_of_finite O (T i) hO (hT i).1
-    letI : Algebra B (T i) := ((Pi.evalRingHom T i).comp (e : B →+* Π i, T i)).toAlgebra
+    let : Algebra B (T i) := ((Pi.evalRingHom T i).comp (e : B →+* Π i, T i)).toAlgebra
     exact exists_ringHom hS B C (T i) hs
   choose f hf using key
-  refine ⟨{ toRingHom := (e.symm : (Π i, T i) →+* B).comp (Pi.ringHom f), commutes' := fun b => ?_ }⟩
-  have h : Pi.ringHom f (algebraMap B C b) = e b := funext fun i => hf i b
-  change e.symm (Pi.ringHom f (algebraMap B C b)) = b
+  refine ⟨{ toRingHom := (e.symm : (Π i, T i) →+* B).comp (RingHom.pi f), commutes' := fun b => ?_ }⟩
+  have h : RingHom.pi f (algebraMap B C b) = e b := funext fun i => hf i b
+  change e.symm (RingHom.pi f (algebraMap B C b)) = b
   rw [h]
   exact e.symm_apply_apply b

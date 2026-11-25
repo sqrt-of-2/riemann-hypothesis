@@ -46,8 +46,8 @@ namespace UpperTheory.V.Th.Db
 
 theorem algClo (L Ω : Type) [Field L] [NumberField L] [Field Ω] [CharZero Ω] [IsAlgClosure ℚ Ω] [Algebra L Ω] :
     IsAlgClosure L Ω := by
-  haveI := IsAlgClosure.isAlgClosed ℚ (K := Ω)
-  haveI : Algebra.IsAlgebraic ℚ Ω := IsAlgClosure.isAlgebraic
+  have := IsAlgClosure.isAlgClosed ℚ (K := Ω)
+  have : Algebra.IsAlgebraic ℚ Ω := IsAlgClosure.isAlgebraic
   exact ⟨inferInstance, Algebra.IsAlgebraic.tower_top (K := ℚ) L⟩
 
 theorem algKL (K L Ω : Type) [Field K] [NumberField K] [Field L] [NumberField L] [Field Ω] [CharZero Ω] [IsAlgClosure ℚ Ω]
@@ -72,12 +72,12 @@ theorem algKL (K L Ω : Type) [Field K] [NumberField K] [Field L] [NumberField L
   have key : ∀ x, algebraMap L Ω (φ x) = algebraMap K Ω x := by
     intro x
     exact congrArg Subtype.val (e.apply_symm_apply ⟨f x, hmem x⟩)
-  letI : Algebra K L := φ.toAlgebra
+  let : Algebra K L := φ.toAlgebra
   exact ⟨this, IsScalarTower.of_algebraMap_eq fun x => (key x).symm⟩
 
 theorem galKL (K L : Type) [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L] (h : IsAbelianGalois ℚ L) :
     IsGalois K L ∧ IsSolvable (L ≃ₐ[K] L) := by
-  haveI : IsGalois ℚ L := h.toIsGalois
+  have : IsGalois ℚ L := h.toIsGalois
   refine ⟨IsGalois.tower_top_of_isGalois ℚ K L, ?_⟩
   haveI : Group.IsSolvable (L ≃ₐ[ℚ] L) :=
     isSolvable_of_comm fun a b => h.toIsMulCommutative.is_comm.comm a b

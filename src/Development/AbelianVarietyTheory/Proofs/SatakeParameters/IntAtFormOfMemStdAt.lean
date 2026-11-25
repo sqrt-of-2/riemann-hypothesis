@@ -95,27 +95,27 @@ theorem ftY_comp_glint : ∀ {X : Fields} {Pr : Primes X} (sel : HeightOneSpectr
   have hq := qOf_ne_zero (P := P.1)
   unfold ftY
   by_cases hP : P.1 ∈ Pr.vGs
-  · rw [if_pos hP, if_pos hP]
+  · rw [ite_eq_left hP, ite_eq_left hP]
     have hi := intAt_form_comp_iff 1 κ η
     simp only [one_mul] at hi
     by_cases h : ∀ i, IntAt P.1 (η (Pi.single i 1))
-    · rw [if_pos h, if_pos (hi.2 h)]
+    · rw [ite_eq_left h, ite_eq_left (hi.2 h)]
       have h' : ∀ i, IntAt P.1 (1 * η (Pi.single i 1)) := fun i => by rw [one_mul]; exact h i
       refine psi_add_int hc P (hc.D_pos P) ?_ ?_
       · have := intAt_form_of_mem_stdAt 1 η h' (v := (qOf P.1 : X.E) • y') (mem_stdAt.2 (hy1 hP))
         rwa [one_mul, map_smul, smul_eq_mul, ← pow_one (qOf P.1 : X.E)] at this
       · have := intAt_form_of_mem_stdAt 1 η h' (hk1 hP)
         rwa [one_mul, map_sub] at this
-    · rw [if_neg h, if_neg fun h' => h (hi.1 h')]
-  · rw [if_neg hP, if_neg hP]
+    · rw [ite_eq_right h, ite_eq_right fun h' => h (hi.1 h')]
+  · rw [ite_eq_right hP, ite_eq_right hP]
     have hi := intAt_form_comp_iff ((qOf P.1 : X.E) ^ cst.M) κ η
     by_cases h : ∀ i, IntAt P.1 ((qOf P.1 : X.E) ^ cst.M * η (Pi.single i 1))
-    · rw [if_pos h, if_pos (hi.2 h)]
+    · rw [ite_eq_left h, ite_eq_left (hi.2 h)]
       refine congrArg _ (psi_add_int hc P (hD hP) ?_ ?_)
       · have := intAt_form_of_mem_stdAt _ η h (v := (qOf P.1 : X.E) ^ cst.M • y') (mem_stdAt.2 (hy2 hP))
         rwa [map_smul, smul_eq_mul, ← mul_assoc, ← pow_add, ← two_mul] at this
       · have := intAt_form_of_mem_stdAt _ η h (hk2 hP)
         rwa [map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ (pow_ne_zero _ hq), one_mul, map_sub] at this
-    · rw [if_neg h, if_neg fun h' => h (hi.1 h')]
+    · rw [ite_eq_right h, ite_eq_right fun h' => h (hi.1 h')]
 
 end GlobalTheory.TopLaw

@@ -29,15 +29,15 @@ private theorem matRel_smono_lemma (π : Fin n → Fin n) (hπ : ∀ a, π (π a
   simp only [Matrix.add_apply, Matrix.mul_apply, Matrix.conjTranspose_apply, smono]
   congr 1
   · rw [Finset.sum_eq_single (π b)]
-    · rw [if_pos (hπ b).symm]
+    · rw [ite_eq_left (hπ b).symm]
     · intro k _ hk
-      rw [if_neg (fun h => hk (by rw [h, hπ])), zero_mul, mul_zero]
+      rw [ite_eq_right (fun h => hk (by rw [h, hπ])), zero_mul, mul_zero]
     · intro h
       exact absurd (Finset.mem_univ _) h
   · rw [Finset.sum_eq_single (π a)]
-    · rw [if_pos rfl]
+    · rw [ite_eq_left rfl]
     · intro k _ hk
-      rw [if_neg hk, zero_mul, zero_mul]
+      rw [ite_eq_right hk, zero_mul, zero_mul]
     · intro h
       exact absurd (Finset.mem_univ _) h
 
@@ -93,29 +93,29 @@ theorem matRel_smono (π : Fin n → Fin n) (hπ : ∀ a, π (π a) = a) (c ε :
     intro y
     by_cases h : y.val + 1 < n
     · by_cases hs : (π ⟨y.val + 1, h⟩).val + 1 = (π y).val
-      · have hy : ψ y = π ⟨y.val + 1, h⟩ := by rw [hψdef, dite_eq_left h, if_pos hs]
+      · have hy : ψ y = π ⟨y.val + 1, h⟩ := by rw [hψdef, dite_eq_left h, ite_eq_left hs]
         have h' : (π ⟨y.val + 1, h⟩).val + 1 < n := by have := (π y).isLt; omega
         have hzs : (⟨(π ⟨y.val + 1, h⟩).val + 1, h'⟩ : Fin n) = π y := Fin.ext hs
         have hs' : (π ⟨(π ⟨y.val + 1, h⟩).val + 1, h'⟩).val + 1 = (π (π ⟨y.val + 1, h⟩)).val := by
           rw [hzs, hπ, hπ]
-        rw [hy, hψdef (π ⟨y.val + 1, h⟩), dite_eq_left h', if_pos hs', hzs, hπ]
-      · have hy : ψ y = y := by rw [hψdef, dite_eq_left h, if_neg hs]
+        rw [hy, hψdef (π ⟨y.val + 1, h⟩), dite_eq_left h', ite_eq_left hs', hzs, hπ]
+      · have hy : ψ y = y := by rw [hψdef, dite_eq_left h, ite_eq_right hs]
         rw [hy, hy]
-    · have hy : ψ y = y := by rw [hψdef, dif_neg h]
+    · have hy : ψ y = y := by rw [hψdef, dite_eq_right h]
       rw [hy, hy]
   have hg : ∀ y : Fin n, (if h : y.val + 1 < n then A y ⟨y.val + 1, h⟩ else 0) =
       star (if h : (ψ y).val + 1 < n then A' (ψ y) ⟨(ψ y).val + 1, h⟩ else 0) := by
     intro y
     by_cases h : y.val + 1 < n
     · by_cases hs : (π ⟨y.val + 1, h⟩).val + 1 = (π y).val
-      · have hy : ψ y = π ⟨y.val + 1, h⟩ := by rw [hψdef, dite_eq_left h, if_pos hs]
+      · have hy : ψ y = π ⟨y.val + 1, h⟩ := by rw [hψdef, dite_eq_left h, ite_eq_left hs]
         have h' : (π ⟨y.val + 1, h⟩).val + 1 < n := by have := (π y).isLt; omega
         rw [hy, dite_eq_left h, dite_eq_left h']
         exact hF2 y h hs
-      · have hy : ψ y = y := by rw [hψdef, dite_eq_left h, if_neg hs]
+      · have hy : ψ y = y := by rw [hψdef, dite_eq_left h, ite_eq_right hs]
         rw [hy, dite_eq_left h, dite_eq_left h, (hF1 y h hs).1, (hF1 y h hs).2, star_zero]
-    · have hy : ψ y = y := by rw [hψdef, dif_neg h]
-      rw [hy, dif_neg h, dif_neg h, star_zero]
+    · have hy : ψ y = y := by rw [hψdef, dite_eq_right h]
+      rw [hy, dite_eq_right h, dite_eq_right h, star_zero]
   unfold supSum
   rw [Finset.sum_congr rfl (fun y _ => hg y), star_sum]
   exact Equiv.sum_comp (Function.Involutive.toPerm ψ hψ)
@@ -140,14 +140,14 @@ theorem pperm_step (bs : List (K × ℕ)) (hpos : ∀ b ∈ bs, 1 ≤ b.2) (i : 
     simp only [Formalism.L2.SG.PtCell.pperm, Formalism.L2.SG.PtCell.pval]
     by_cases h1 : i + 1 < s
     · left
-      rw [if_pos h1, if_pos (by omega : i < s), if_pos h1, if_pos (by omega : i < s)]
+      rw [ite_eq_left h1, ite_eq_left (by omega : i < s), ite_eq_left h1, ite_eq_left (by omega : i < s)]
       exact ⟨by omega, rfl⟩
     · by_cases h2 : i < s
       · right
-        rw [if_pos h2, if_neg h1]
+        rw [ite_eq_left h2, ite_eq_right h1]
         omega
       · have h3 := ih (fun b hb => hpos b (List.mem_cons_of_mem _ hb)) (i - s) (by omega)
-        rw [if_neg h1, if_neg h2, if_neg h1, if_neg h2, show i + 1 - s = i - s + 1 by omega]
+        rw [ite_eq_right h1, ite_eq_right h2, ite_eq_right h1, ite_eq_right h2, show i + 1 - s = i - s + 1 by omega]
         rcases h3 with ⟨h4, h5⟩ | h4
         · exact Or.inl ⟨by omega, h5⟩
         · exact Or.inr (by omega)
@@ -310,14 +310,14 @@ def coefM (F : FlagG S r T) (Y : S.V →ₗ[E] S.V) : Matrix (Fin (r + 1)) (Fin 
 theorem coefM_strict (F : FlagG S r T) (Y : S.V →ₗ[E] S.V) : StrictUp (coefM F Y) := by
   intro a b h
   unfold coefM
-  exact dif_neg (Fin.not_lt.mpr h)
+  exact dite_eq_right (Fin.not_lt.mpr h)
 
 theorem coefM_expand (F : FlagG S r T) {Y : S.V →ₗ[E] S.V} (hY : Y ∈ F.LieN) (ρ : Fin (r + 1)) :
     Y (F.fvec ρ) = ∑ d : Fin (r + 1), coefM F Y d ρ • F.fvec d := by
   rw [Fin.sum_univ_castSucc]
   have hlast : coefM F Y (Fin.last r) ρ = 0 := by
     unfold coefM
-    exact dif_neg (by have := ρ.isLt; simp only [Fin.val_last]; omega)
+    exact dite_eq_right (by have := ρ.isLt; simp only [Fin.val_last]; omega)
   rw [hlast, zero_smul, add_zero]
   conv_lhs => rw [expand_Xa F ρ.val (Y_fvec_mem F hY ρ)]
   refine Finset.sum_congr rfl fun i _ => ?_
@@ -327,13 +327,13 @@ theorem coefM_expand (F : FlagG S r T) {Y : S.V →ₗ[E] S.V} (hY : Y ∈ F.Lie
   rw [hfi]
   unfold coefM
   by_cases h : i.val < ρ.val
-  · rw [if_pos h, dite_eq_left (by simpa using h)]
+  · rw [ite_eq_left h, dite_eq_left (by simpa using h)]
     rfl
-  · rw [if_neg h, dif_neg (by simpa using h)]
+  · rw [ite_eq_right h, dite_eq_right (by simpa using h)]
 
 theorem coefM_supSum (F : FlagG S r T) (Y : S.V →ₗ[E] S.V) : supSum (coefM F Y) = F.ell Y := by
   unfold supSum FlagG.ell
-  rw [Fin.sum_univ_castSucc, dif_neg (by simp), add_zero]
+  rw [Fin.sum_univ_castSucc, dite_eq_right (by simp), add_zero]
   refine Finset.sum_congr rfl fun i _ => ?_
   rw [dite_eq_left (by simp)]
   unfold coefM

@@ -62,25 +62,25 @@ theorem exists_extension {A B Ω : Type} [CommRing A] [CommRing B] [Algebra A B]
     [Algebra.IsIntegral A B] (hinj : Function.Injective (algebraMap A B))
     [Field Ω] [IsAlgClosed Ω] (e : A →+* Ω) :
     ∃ φ : B →+* Ω, φ.comp (algebraMap A B) = e := by
-  haveI hP : (RingHom.ker e).IsPrime := RingHom.ker_isPrime e
+  have hP : (RingHom.ker e).IsPrime := RingHom.ker_isPrime e
   obtain ⟨Q, -, hQ, hQP⟩ := Ideal.exists_ideal_over_prime_of_isIntegral (S := B) (RingHom.ker e) ⊥
     (by
       intro a ha
       have : a = 0 := hinj (by simpa using ha)
       simp [this])
-  haveI : Q.LiesOver (RingHom.ker e) := ⟨hQP.symm⟩
-  letI : Algebra (A ⧸ RingHom.ker e) Ω := (RingHom.kerLift e).toAlgebra
-  haveI : FaithfulSMul (A ⧸ RingHom.ker e) Ω :=
+  have : Q.LiesOver (RingHom.ker e) := ⟨hQP.symm⟩
+  let : Algebra (A ⧸ RingHom.ker e) Ω := (RingHom.kerLift e).toAlgebra
+  have : FaithfulSMul (A ⧸ RingHom.ker e) Ω :=
     (faithfulSMul_iff_algebraMap_injective _ _).2 (RingHom.kerLift_injective e)
-  haveI : Algebra.IsIntegral (A ⧸ RingHom.ker e) (B ⧸ Q) := inferInstance
-  haveI : IsDomain (A ⧸ RingHom.ker e) := Ideal.Quotient.isDomain _
-  haveI : IsDomain (B ⧸ Q) := Ideal.Quotient.isDomain _
-  haveI : FaithfulSMul (A ⧸ RingHom.ker e) (B ⧸ Q) := inferInstance
-  haveI : Module.IsTorsionFree (A ⧸ RingHom.ker e) (B ⧸ Q) :=
+  have : Algebra.IsIntegral (A ⧸ RingHom.ker e) (B ⧸ Q) := inferInstance
+  have : IsDomain (A ⧸ RingHom.ker e) := Ideal.Quotient.isDomain _
+  have : IsDomain (B ⧸ Q) := Ideal.Quotient.isDomain _
+  have : FaithfulSMul (A ⧸ RingHom.ker e) (B ⧸ Q) := inferInstance
+  have : Module.IsTorsionFree (A ⧸ RingHom.ker e) (B ⧸ Q) :=
     Module.isTorsionFree_iff_algebraMap_injective.2 (FaithfulSMul.algebraMap_injective _ _)
-  haveI : Module.IsTorsionFree (A ⧸ RingHom.ker e) Ω :=
+  have : Module.IsTorsionFree (A ⧸ RingHom.ker e) Ω :=
     Module.isTorsionFree_iff_algebraMap_injective.2 (RingHom.kerLift_injective e)
-  haveI : Algebra.IsAlgebraic (A ⧸ RingHom.ker e) (B ⧸ Q) := Algebra.IsIntegral.isAlgebraic
+  have : Algebra.IsAlgebraic (A ⧸ RingHom.ker e) (B ⧸ Q) := Algebra.IsIntegral.isAlgebraic
   let l : (B ⧸ Q) →ₐ[A ⧸ RingHom.ker e] Ω := (by
     refine @_root_.IsAlgClosed.lift _ _ _ _ _ _ _ _ _ _ _ ?_ ?_ ?_
     solve_by_elim* (maxDepth := 2) only [*,
@@ -97,7 +97,7 @@ theorem exists_smul_of_comp_eq {A B Ω : Type} [CommRing A] [CommRing B] [Algebr
     (h : ψ.comp (algebraMap A B) = φ.comp (algebraMap A B)) :
     ∃ g : G, ∀ b, ψ b = φ (g • b) := by
   classical
-  letI := Fintype.ofFinite G
+  let := Fintype.ofFinite G
   have h1 : ∀ b, ∃ g : G, ψ b = φ (g • b) := by
     intro b
     obtain ⟨p, hp⟩ := Algebra.IsInvariant.charpoly_mem_lifts A B G b
@@ -116,11 +116,11 @@ theorem exists_smul_of_comp_eq {A B Ω : Type} [CommRing A] [CommRing B] [Algebr
       zero_mem' := by simp
       add_mem' := by
         intro a b ha hb
-        simp only [Set.mem_setOf_eq] at ha hb ⊢
+        simp only [Set.mem_ofPred_eq] at ha hb ⊢
         rw [map_add (f := _), smul_add, map_add (f := _), ha, hb]
       neg_mem' := by
         intro a ha
-        simp only [Set.mem_setOf_eq] at ha ⊢
+        simp only [Set.mem_ofPred_eq] at ha ⊢
         rw [map_neg, smul_neg, map_neg, ha] }
   obtain ⟨g, -, hg⟩ := AddSubgroup.exists_finiteIndex_of_leftCoset_cover
     (H := H) (g := fun _ => 0) (s := Finset.univ) (by
@@ -142,9 +142,9 @@ theorem exists_finite_extension_finrank_dvd :
         Module.finrank k K' ∣ Nat.card G ∧
         β.comp (algebraMap A B) = (algebraMap k K').comp ev := by
   intro A B _ _ _ G _ _ _ _ _ hinj k _ _ ev
-  haveI := Algebra.IsInvariant.isIntegral A B G
+  have := Algebra.IsInvariant.isIntegral A B G
   let Ω := AlgebraicClosure k
-  haveI : CharZero Ω := charZero_of_injective_algebraMap (algebraMap k Ω).injective
+  have : CharZero Ω := charZero_of_injective_algebraMap (algebraMap k Ω).injective
   obtain ⟨φ, hφ⟩ := exists_extension hinj ((algebraMap k Ω).comp ev)
   let K : IntermediateField k Ω := IntermediateField.adjoin k (Set.range φ)
   let P : Subgroup ((Ω ≃ₐ[k] Ω) × G) :=

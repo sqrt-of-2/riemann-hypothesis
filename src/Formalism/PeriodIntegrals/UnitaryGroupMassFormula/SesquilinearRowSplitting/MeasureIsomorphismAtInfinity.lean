@@ -61,20 +61,20 @@ theorem measure_isomorphism_at_infinity : IsoStep := by
     rw [← herm, hF.1 a c]
     by_cases h : a = c <;> simp [h]
   have addm : ∀ {I : FractionalIdeal (nonZeroDivisors (𝓞 E)) E} {u v : E}, u ∈ I → v ∈ I → u + v ∈ I :=
-    fun hu hv => FractionalIdeal.mem_coe.1
-      (Submodule.add_mem _ (FractionalIdeal.mem_coe.2 hu) (FractionalIdeal.mem_coe.2 hv))
+    fun hu hv => FractionalIdeal.mem_coeToSubmodule.1
+      (Submodule.add_mem _ (FractionalIdeal.mem_coeToSubmodule.2 hu) (FractionalIdeal.mem_coeToSubmodule.2 hv))
   have negm : ∀ {I : FractionalIdeal (nonZeroDivisors (𝓞 E)) E} {u : E}, u ∈ I → -u ∈ I :=
-    fun hu => FractionalIdeal.mem_coe.1 (Submodule.neg_mem _ (FractionalIdeal.mem_coe.2 hu))
+    fun hu => FractionalIdeal.mem_coeToSubmodule.1 (Submodule.neg_mem _ (FractionalIdeal.mem_coeToSubmodule.2 hu))
   have zerom : ∀ {I : FractionalIdeal (nonZeroDivisors (𝓞 E)) E}, (0 : E) ∈ I :=
-    FractionalIdeal.mem_coe.1 (Submodule.zero_mem _)
+    FractionalIdeal.mem_coeToSubmodule.1 (Submodule.zero_mem _)
   have summ : ∀ {I : FractionalIdeal (nonZeroDivisors (𝓞 E)) E} (g : Fin r → E), (∀ k, g k ∈ I) →
       ∑ k, g k ∈ I :=
-    fun g hg => FractionalIdeal.mem_coe.1 (Submodule.sum_mem _ (fun k _ => FractionalIdeal.mem_coe.2 (hg k)))
+    fun g hg => FractionalIdeal.mem_coeToSubmodule.1 (Submodule.sum_mem _ (fun k _ => FractionalIdeal.mem_coeToSubmodule.2 (hg k)))
   have intm : ∀ {I : FractionalIdeal (nonZeroDivisors (𝓞 E)) E} (o : 𝓞 E) {t : E}, t ∈ I → (o : E) * t ∈ I := by
     intro I o t ht
-    have h1 := Submodule.smul_mem (I : Submodule (𝓞 E) E) o (FractionalIdeal.mem_coe.2 ht)
+    have h1 := Submodule.smul_mem (I : Submodule (𝓞 E) E) o (FractionalIdeal.mem_coeToSubmodule.2 ht)
     rw [Algebra.smul_def] at h1
-    exact FractionalIdeal.mem_coe.1 h1
+    exact FractionalIdeal.mem_coeToSubmodule.1 h1
   have hff : ∀ k b, S.hT (f k) (f b) ∈ aa k * aa b := by
     intro k b
     have hle : FractionalIdeal.spanSingleton (nonZeroDivisors (𝓞 E)) (S.hT (f k) (f b)) * (aa b)⁻¹ ≤ aa k := by
@@ -84,7 +84,7 @@ theorem measure_isomorphism_at_infinity : IsoStep := by
       have h1 : S.hT (f k) (j • f b) ∈ aa k := hF.2.2 k _ (hFd b j hj)
       rw [map_smul, smul_eq_mul] at h1
       rw [smul_mul_assoc, mul_comm (S.hT (f k) (f b)) j]
-      exact FractionalIdeal.mem_coe.1 (Submodule.smul_mem _ z (FractionalIdeal.mem_coe.2 h1))
+      exact FractionalIdeal.mem_coeToSubmodule.1 (Submodule.smul_mem _ z (FractionalIdeal.mem_coeToSubmodule.2 h1))
     have h2 : FractionalIdeal.spanSingleton (nonZeroDivisors (𝓞 E)) (S.hT (f k) (f b)) * (aa b)⁻¹ * aa b ≤
         aa k * aa b := by gcongr
     rw [mul_assoc, inv_mul_cancel₀ (hne b), mul_one] at h2

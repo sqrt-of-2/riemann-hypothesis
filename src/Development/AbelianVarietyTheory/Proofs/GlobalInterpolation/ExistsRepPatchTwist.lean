@@ -102,19 +102,19 @@ theorem exists_hom_patch_of_agree {Γ G : Type*} [Group Γ] [Group G] (a b : Γ 
   refine ⟨MonoidHom.mk' (fun g => if η₀ g = 1 then a g else a g * z) ?_, ?_, ?_⟩
   · intro g g'
     rcases Int.units_eq_one_or (η₀ g) with h | h <;> rcases Int.units_eq_one_or (η₀ g') with h' | h'
-    · rw [if_pos (by rw [map_mul, h, h']; decide), if_pos h, if_pos h', map_mul]
-    · rw [if_neg (hn _ (by rw [map_mul, h, h']; decide)), if_pos h, if_neg (hn _ h'), map_mul, mul_assoc]
-    · rw [if_neg (hn _ (by rw [map_mul, h, h']; decide)), if_neg (hn _ h), if_pos h', map_mul,
+    · rw [ite_eq_left (by rw [map_mul, h, h']; decide), ite_eq_left h, ite_eq_left h', map_mul]
+    · rw [ite_eq_right (hn _ (by rw [map_mul, h, h']; decide)), ite_eq_left h, ite_eq_right (hn _ h'), map_mul, mul_assoc]
+    · rw [ite_eq_right (hn _ (by rw [map_mul, h, h']; decide)), ite_eq_right (hn _ h), ite_eq_left h', map_mul,
         mul_assoc, mul_assoc, hzH0 g' h']
-    · rw [if_pos (by rw [map_mul, h, h']; decide), if_neg (hn _ h), if_neg (hn _ h'), map_mul,
+    · rw [ite_eq_left (by rw [map_mul, h, h']; decide), ite_eq_right (hn _ h), ite_eq_right (hn _ h'), map_mul,
         mul_assoc, ← mul_assoc z, hzz g' h']
   · intro g hg
-    rw [MonoidHom.mk'_apply, if_pos hg]
+    rw [MonoidHom.mk'_apply, ite_eq_left hg]
   · intro g hg
     rw [MonoidHom.mk'_apply]
     rcases Int.units_eq_one_or (η₀ g) with h | h
-    · rw [if_pos h, hab g h hg]
-    · rw [if_neg (hn _ h)]
+    · rw [ite_eq_left h, hab g h hg]
+    · rw [ite_eq_right (hn _ h)]
       have hk : b (g * t⁻¹) = a (g * t⁻¹) :=
         hab _ (by rw [map_mul, map_inv, h, ht0]; decide) (by rw [map_mul, map_inv, hg, ht1]; decide)
       simp only [map_mul, map_inv] at hk

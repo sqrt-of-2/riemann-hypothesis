@@ -147,7 +147,7 @@ theorem sameOff_len_of_sameAway : Sites (fun {D L hT Gi Gl Kc Dx cX ex u μ w hg
     rw [hl]
   | succ i =>
     simp only [Joint.cp, cpAt]
-    simp only [chAt, dif_pos hj]
+    simp only [chAt, dite_eq_left hj]
     apply sameOff_reGL_of
     rw [show (A0 J).pl v = ((I.at' i hj).st.loc ((I.at' i hj).st.eC.symm c).1).pl v from (J.pl i hj _ v).symm]
     apply sameOff_eps_of_bases (H.core i hj _).good

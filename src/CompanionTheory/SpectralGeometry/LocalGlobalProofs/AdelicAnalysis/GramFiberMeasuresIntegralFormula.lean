@@ -103,7 +103,7 @@ theorem continuous_inv_val :
 
 theorem tup_continuousSMul :
     @ContinuousSMul (GL (Fin n) K) (Fin n → Fin M → K) (tupAction (K := K)).toSMul _ _ := by
-  letI := tupAction (K := K) (n := n) (M := M)
+  let := tupAction (K := K) (n := n) (M := M)
   refine ⟨?_⟩
   show Continuous fun p : GL (Fin n) K × (Fin n → Fin M → K) =>
     tupR p.2 ((p.1⁻¹ : GL (Fin n) K) : Matrix (Fin n) (Fin n) K)
@@ -119,12 +119,12 @@ theorem herm_continuousSMul (s : K →+* K) (hs : Continuous s)
     (hmem : ∀ (S : H) (g : Matrix (Fin n) (Fin n) K),
       cT s g * (S : Matrix (Fin n) (Fin n) K) * g ∈ H) :
     @ContinuousSMul (GL (Fin n) K) H (hermAction s H hmem).toSMul _ _ := by
-  letI := hermAction s H hmem
+  let := hermAction s H hmem
   refine ⟨?_⟩
   have hq : Continuous fun p : GL (Fin n) K × H =>
       ((p.1⁻¹ : GL (Fin n) K) : Matrix (Fin n) (Fin n) K) := continuous_inv_val.comp continuous_fst
   have hS : Continuous fun p : GL (Fin n) K × H => (p.2 : Matrix (Fin n) (Fin n) K) :=
-    continuous_subtype_val.comp continuous_snd
+    continuous_subtypeVal.comp continuous_snd
   have hc : Continuous fun p : GL (Fin n) K × H =>
       cT s ((p.1⁻¹ : GL (Fin n) K) : Matrix (Fin n) (Fin n) K) := by
     simp only [cT]
@@ -136,28 +136,28 @@ end Actions
 theorem fibre_scale_continuous : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [NumberField E] [Algebra F E] (σ : E →ₐ[F] E), IsCMExt F E σ → ∀ (M : ℕ) (J : Matrix (Fin M) (Fin M) E), IsHermND σ J → ∀ (R : Type) [CommRing R] [Algebra F R] [TopologicalSpace R] [MeasurableSpace R] [BorelSpace R], IsLocR R → ∀ (n : ℕ), ∀ (μ : Measure (Fin n → Fin M → R ⊗[F] E)) (ν : Measure (HermR R σ n)) (m : HermR R σ n → Measure (Fin n → Fin M → R ⊗[F] E)), μ.IsAddHaarMeasure → ν.IsAddHaarMeasure → IsGramFib R σ J n μ ν m → ∃ κ : GL (Fin n) (R ⊗[F] E) → ℝ≥0, Continuous κ ∧ (∀ g, κ g ≠ 0) ∧ κ 1 = 1 ∧ ∀ (g : GL (Fin n) (R ⊗[F] E)) (S S' : HermR R σ n), (S' : Matrix (Fin n) (Fin n) (R ⊗[F] E)) = cT (sigR R σ) (g : Matrix (Fin n) (Fin n) (R ⊗[F] E)) * (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)) * (g : Matrix (Fin n) (Fin n) (R ⊗[F] E)) → m S' = κ g • (m S).map (fun X => rmul R X (g : Matrix (Fin n) (Fin n) (R ⊗[F] E))) := by
   intro F E _ _ _ _ _ σ hCM M J hJ R _ _ _ _ _ hR n μ ν m hμ hν hm
   obtain ⟨r1, r2, r3, r4, -⟩ := id hR
-  haveI := r1
-  haveI := r2
-  haveI := r3
-  haveI := r4
+  have := r1
+  have := r2
+  have := r3
+  have := r4
   obtain ⟨k1, k2, k3, k4, k5, -, -, k8, -, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hCM R
-  haveI := k1
-  haveI := k2
-  haveI := k3
-  haveI := k4
+  have := k1
+  have := k2
+  have := k3
+  have := k4
   obtain ⟨h1, h2, h3, h4, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.HermTop.herm_top F E σ hCM R n
-  haveI := h1
-  haveI := h2
-  haveI := h3
-  haveI := h4
-  haveI : BorelSpace (Fin n → Fin M → R ⊗[F] E) := k8 n M
+  have := h1
+  have := h2
+  have := h3
+  have := h4
+  have : BorelSpace (Fin n → Fin M → R ⊗[F] E) := k8 n M
   have hmem := (_root_.GlobalTheory.CompanionTheory.SW.GramAlg.gram_algebra F E σ hCM M J hJ R n).2.2.2.1
-  letI a1 : DistribMulAction (GL (Fin n) (R ⊗[F] E)) (Fin n → Fin M → R ⊗[F] E) := tupAction
-  haveI c1 : ContinuousSMul (GL (Fin n) (R ⊗[F] E)) (Fin n → Fin M → R ⊗[F] E) := tup_continuousSMul
+  let a1 : DistribMulAction (GL (Fin n) (R ⊗[F] E)) (Fin n → Fin M → R ⊗[F] E) := tupAction
+  have c1 : ContinuousSMul (GL (Fin n) (R ⊗[F] E)) (Fin n → Fin M → R ⊗[F] E) := tup_continuousSMul
   obtain ⟨χ₁, hχ₁c, hχ₁⟩ := _root_.GlobalTheory.CompanionTheory.SW.exists_continuous_modulus_of_continuous_action (Fin n → Fin M → R ⊗[F] E) μ (GL (Fin n) (R ⊗[F] E))
-  letI a2 : DistribMulAction (GL (Fin n) (R ⊗[F] E)) (HermR R σ n) :=
+  let a2 : DistribMulAction (GL (Fin n) (R ⊗[F] E)) (HermR R σ n) :=
     hermAction (sigR R σ) (HermR R σ n) hmem
-  haveI c2 : ContinuousSMul (GL (Fin n) (R ⊗[F] E)) (HermR R σ n) :=
+  have c2 : ContinuousSMul (GL (Fin n) (R ⊗[F] E)) (HermR R σ n) :=
     herm_continuousSMul (sigR R σ) k5 (HermR R σ n) hmem
   obtain ⟨χ₂, hχ₂c, hχ₂⟩ := _root_.GlobalTheory.CompanionTheory.SW.exists_continuous_modulus_of_continuous_action (HermR R σ n) ν (GL (Fin n) (R ⊗[F] E))
   have hne : ∀ (χ : GL (Fin n) (R ⊗[F] E) →* ℝ≥0) (g), χ g ≠ 0 := by

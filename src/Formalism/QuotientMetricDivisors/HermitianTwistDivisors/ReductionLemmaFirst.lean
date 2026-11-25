@@ -73,7 +73,8 @@ def Tw (w : HeightOneSpectrum (𝓞 K)) : Submonoid (𝓞 K) where
       rcases w.isPrime.mem_or_mem h with h | h
       exacts [ha' h, hb' h]
 
-theorem cO_coe (x : 𝓞 K) : ((cO K x : 𝓞 K) : K) = star (x : K) := rfl
+omit [NumberField K] [StarRing K] in
+theorem cO_coe [NumberField K] [StarRing K] (x : 𝓞 K) : ((cO K x : 𝓞 K) : K) = star (x : K) := rfl
 
 theorem cO_cO (x : 𝓞 K) : cO K (cO K x) = x := by
   apply RingOfIntegers.ext
@@ -82,33 +83,39 @@ theorem cO_cO (x : 𝓞 K) : cO K (cO K x) = x := by
 theorem cO_mem_Tw {w : HeightOneSpectrum (𝓞 K)} {s : 𝓞 K} (hs : s ∈ Tw w) : cO K s ∈ Tw w :=
   ⟨hs.2, by rw [cO_cO]; exact hs.1⟩
 
-theorem hcompl_le_Tw (w : HeightOneSpectrum (𝓞 K)) :
+omit [NumberField K] [StarRing K] in
+theorem hcompl_le_Tw [NumberField K] [StarRing K] (w : HeightOneSpectrum (𝓞 K)) :
     Formalism.HermitianLatticesTheory.hcompl (K := K) w.asIdeal ≤ Tw w := by
   refine Submonoid.closure_le.2 ?_
   rintro s ⟨hs, hs'⟩
   exact ⟨hs, hs' (cO K s) rfl⟩
 
-theorem smul_coe {m : Type*} (r : 𝓞 K) (v : m → K) : r • v = (r : K) • v :=
+omit [NumberField K] [StarRing K] in
+theorem smul_coe [NumberField K] [StarRing K] {m : Type*} (r : 𝓞 K) (v : m → K) : r • v = (r : K) • v :=
   (algebraMap_smul K r v).symm
 
-theorem vw_mul (w : HeightOneSpectrum (𝓞 K)) {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) :
+omit [StarRing K] in
+theorem vw_mul [StarRing K] (w : HeightOneSpectrum (𝓞 K)) {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) :
     vw w (a * b) = vw w a + vw w b := by
   unfold vw
   rw [← FractionalIdeal.spanSingleton_mul_spanSingleton,
     FractionalIdeal.count_mul K w (mt FractionalIdeal.spanSingleton_eq_zero_iff.1 ha)
       (mt FractionalIdeal.spanSingleton_eq_zero_iff.1 hb)]
 
-theorem vw_pow (w : HeightOneSpectrum (𝓞 K)) (a : K) (m : ℕ) :
+omit [StarRing K] in
+theorem vw_pow [StarRing K] (w : HeightOneSpectrum (𝓞 K)) (a : K) (m : ℕ) :
     vw w (a ^ m) = (m : ℤ) * vw w a := by
   unfold vw
   rw [← FractionalIdeal.spanSingleton_pow, FractionalIdeal.count_pow]
 
-theorem vw_int_nonneg (w : HeightOneSpectrum (𝓞 K)) (r : 𝓞 K) : 0 ≤ vw w (r : K) := by
+omit [StarRing K] in
+theorem vw_int_nonneg [StarRing K] (w : HeightOneSpectrum (𝓞 K)) (r : 𝓞 K) : 0 ≤ vw w (r : K) := by
   unfold vw
   rw [show (r : K) = algebraMap (𝓞 K) K r from rfl, ← FractionalIdeal.coeIdeal_span_singleton]
-  exact FractionalIdeal.count_coe_nonneg K w _
+  exact FractionalIdeal.count_coeIdeal_nonneg K w _
 
-theorem vw_unit (w : HeightOneSpectrum (𝓞 K)) (r : 𝓞 K) (hr : r ∉ w.asIdeal) :
+omit [StarRing K] in
+theorem vw_unit [StarRing K] (w : HeightOneSpectrum (𝓞 K)) (r : 𝓞 K) (hr : r ∉ w.asIdeal) :
     vw w (r : K) = 0 := by
   classical
   have hr0 : r ≠ 0 := fun h => hr (h ▸ w.asIdeal.zero_mem)
@@ -116,14 +123,15 @@ theorem vw_unit (w : HeightOneSpectrum (𝓞 K)) (r : 𝓞 K) (hr : r ∉ w.asId
     rw [Ne, Submodule.zero_eq_bot, Ideal.span_singleton_eq_bot]; exact hr0
   unfold vw
   rw [show (r : K) = algebraMap (𝓞 K) K r from rfl, ← FractionalIdeal.coeIdeal_span_singleton,
-    FractionalIdeal.count_coe K w hJ]
+    FractionalIdeal.count_coeIdeal K w hJ]
   have h2 : ¬ w.asIdeal ∣ Ideal.span {r} := by
     rw [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]; exact hr
   have h3 := mt (Associates.count_ne_zero_iff_dvd hJ w.irreducible).1 h2
   rw [not_not] at h3
   simp [h3]
 
-theorem Tw_ne_zero {w : HeightOneSpectrum (𝓞 K)} {s : 𝓞 K} (hs : s ∈ Tw w) : (s : K) ≠ 0 := by
+omit [NumberField K] [StarRing K] in
+theorem Tw_ne_zero [NumberField K] [StarRing K] {w : HeightOneSpectrum (𝓞 K)} {s : 𝓞 K} (hs : s ∈ Tw w) : (s : K) ≠ 0 := by
   intro h
   apply hs.1
   have : s = 0 := RingOfIntegers.ext (by simpa using h)

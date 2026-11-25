@@ -31,7 +31,8 @@ def symPhiCond (P : HeightOneSpectrum (𝓞 E)) (q : ℕ) (k₀ rS r t j c n : �
     (∀ p p', r ≤ p' → p' < r + (j - 1) * t → p < r + (j - 1) * t → (p' - r) / t < (p - r) / t → redP P (M p p') = 0)
 
 open Classical in
-theorem phiGS_eq (ψ₀ : AddChar (𝓞 E ⧸ P.asIdeal) K) (χ : ℕ → (𝓞 E ⧸ P.asIdeal)ˣ →* Kˣ)
+omit [NumberField E] [StarRing E] [Field K] P q in
+theorem phiGS_eq [NumberField E] [StarRing E] [Field K] {P : HeightOneSpectrum (𝓞 E)} {q : ℕ} (ψ₀ : AddChar (𝓞 E ⧸ P.asIdeal) K) (χ : ℕ → (𝓞 E ⧸ P.asIdeal)ˣ →* Kˣ)
     (k₀ rS r t j c' n' c n : ℕ) (x : HomE E (n' + c') (n + c)) :
     LocE.PhiGS (P := P) q ψ₀ χ k₀ rS r t j c' n' c n x =
       if symPhiCond P q k₀ rS r t j c n (LocE.entB q k₀ c' n' c n (fun i => i + 1) (fun i => i + 1) x) then
@@ -62,7 +63,7 @@ theorem JGsym_entry (hq0 : (q : E) ≠ 0) {k₀ rS r t n c : ℕ} (hk : k₀ ≤
     · subst h1
       unfold LocE.bd5 symIdx
       split_ifs <;> omega
-  simp only [symFPos_fIdx hk hp, if_pos hbd] at h3
+  simp only [symFPos_fIdx hk hp, ite_eq_left hbd] at h3
   unfold LocE.bvecG at h3
   rw [map_smul, Pi.sub_apply, Pi.smul_apply, Pi.smul_apply, smul_eq_mul, smul_eq_mul] at h3
   have hat : Loc.atN (κ.toLinearMap (Loc.eN E (n + c) (LocE.fIdx k₀ c n p'))) (LocE.fIdx k₀ c n p) =
@@ -77,8 +78,8 @@ theorem JGsym_entry (hq0 : (q : E) ≠ 0) {k₀ rS r t n c : ℕ} (hk : k₀ ≤
     unfold Loc.eN
     by_cases hpp : p = p'
     · subst hpp
-      rw [if_pos rfl, if_pos rfl]
-    · rw [if_neg hpp, if_neg]
+      rw [ite_eq_left rfl, ite_eq_left rfl]
+    · rw [ite_eq_right hpp, ite_eq_right]
       intro h
       apply hpp
       have h' : LocE.fIdx k₀ c n p = LocE.fIdx k₀ c n p' := h
@@ -94,10 +95,10 @@ theorem JGsym_entry (hq0 : (q : E) ≠ 0) {k₀ rS r t n c : ℕ} (hk : k₀ ≤
         if p = p' then 1 else 0) / (q : E) := by
     by_cases hpp : p = p'
     · subst hpp
-      rw [if_pos rfl, sub_self, zpow_zero, zpow_add₀ hq0, zpow_one]
+      rw [ite_eq_left rfl, sub_self, zpow_zero, zpow_add₀ hq0, zpow_one]
       have hA := zpow_ne_zero (LocE.scE n (fun i => i + 1) (LocE.fIdx k₀ c n p)) hq0
       field_simp
-    · rw [if_neg hpp, zpow_sub₀ hq0, zpow_add₀ hq0, zpow_one]
+    · rw [ite_eq_right hpp, zpow_sub₀ hq0, zpow_add₀ hq0, zpow_one]
       have hA := zpow_ne_zero (LocE.scE n (fun i => i + 1) (LocE.fIdx k₀ c n p)) hq0
       field_simp
       ring
@@ -109,7 +110,7 @@ theorem JGsym_red (hq : ((q : ℕ) : 𝓞 E) ∈ P.asIdeal) (hq0 : (q : E) ≠ 0
     (hne : p ≠ p') (hb : symIdx k₀ rS p' < symIdx k₀ rS p ∨ (p' = k₀ + rS ∧ p < k₀)) :
     redP P (LocE.entB q k₀ c n c n (fun i => i + 1) (fun i => i + 1) κ.toLinearMap p p') = 0 := by
   have h := JGsym_entry hq0 hk hr hκ hp hp' hpn (hb.imp le_of_lt id)
-  rw [if_neg hne, sub_zero] at h
+  rw [ite_eq_right hne, sub_zero] at h
   exact (ciRed_of_div hq hq0 h).2
 
 theorem phiGS_col (hq : ((q : ℕ) : 𝓞 E) ∈ P.asIdeal) (hq0 : (q : E) ≠ 0) (ψ₀ : AddChar (𝓞 E ⧸ P.asIdeal) K) (χ : ℕ → (𝓞 E ⧸ P.asIdeal)ˣ →* Kˣ)
@@ -123,9 +124,9 @@ theorem phiGS_col (hq : ((q : ℕ) : 𝓞 E) ∈ P.asIdeal) (hq0 : (q : E) ≠ 0
   have hka : k₀ < r + (j - 1) * t := Nat.lt_of_lt_of_le hkr (Nat.le_add_right _ _)
   refine ⟨hC.1 p k₀ hp hka, ?_⟩
   by_cases hpk : p = k₀
-  · rw [if_pos hpk, hpk]
+  · rw [ite_eq_left hpk, hpk]
     exact (hC.2.2.1 k₀ hkr).1
-  · rw [if_neg hpk]
+  · rw [ite_eq_right hpk]
     by_cases hpa : p < r + (j - 1) * t
     · refine (hC.2.2.1 k₀ hkr).2 p hpa hpk (Or.inr ?_)
       unfold symIdx
@@ -145,7 +146,7 @@ theorem symEntB_join_col (q : ℕ) {k₀ n' c' n c : ℕ} (hc' : c' = 1) (hc : c
   subst hc' hc
   have f1 : LocE.fIdx k₀ 1 n' k₀ = n' := by
     unfold LocE.fIdx
-    rw [if_neg (lt_irrefl _), if_pos (by omega)]
+    rw [ite_eq_right (lt_irrefl _), ite_eq_left (by omega)]
     omega
   have f2 : LocE.fIdx k₀ 0 n p = p := ciFIdx (Or.inl rfl) (by omega)
   unfold LocE.entB joinCol atNL
@@ -158,10 +159,10 @@ theorem symEntB_join_col (q : ℕ) {k₀ n' c' n c : ℕ} (hc' : c' = 1) (hc : c
     show Loc.eN E (n' + 1) n' (Fin.castAdd 1 i) = 0
     unfold Loc.eN
     simp only [Fin.val_castAdd]
-    rw [if_neg (by have := i.2; omega)]
+    rw [ite_eq_right (by have := i.2; omega)]
   have e2 : Loc.eN E (n' + 1) n' ⟨n', by omega⟩ = 1 := by
     unfold Loc.eN
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
   have e3 : LocE.scE n' (fun i => i + 1) n' = 1 := by simp [LocE.scE]
   rw [e1, e2, e3, map_zero, Pi.zero_apply, zero_add, one_mul, sub_zero, zpow_one, mul_comm]
 
@@ -182,7 +183,7 @@ theorem psiAt_sym {m2 : ℕ} (hc' : cOf R m2 = 1) (hc : cOf R (m2 + 1) = 0) (hs 
   rw [ciOm_one] at h
   have h' := right_ne_zero_of_mul h
   unfold PhiAt at h'
-  rw [if_pos hP, if_pos hs] at h'
+  rw [ite_eq_left hP, ite_eq_left hs] at h'
   have hkr : R.k < R.r := by
     have := R.two_le_m
     unfold Ranks.r

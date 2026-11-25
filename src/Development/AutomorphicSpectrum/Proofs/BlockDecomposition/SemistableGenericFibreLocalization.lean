@@ -83,10 +83,10 @@ theorem smooth_away_core (O : Type) [CommRing O] (ϖ : O) (σ : Type) [Finite σ
   have hzg : ∏ i ∈ T.erase i0, z i = algebraMap C C' g := by
     rw [map_prod]
     refine Finset.prod_congr rfl (fun i hi => ?_)
-    simp only [z, if_neg (Finset.ne_of_mem_erase hi)]
+    simp only [z, ite_eq_right (Finset.ne_of_mem_erase hi)]
   have hz : ∏ i ∈ T, z i = algebraMap O C' ϖ := by
     rw [← Finset.mul_prod_erase T z hi0, hzg]
-    simp only [z, if_pos rfl]
+    simp only [z, ite_eq_left rfl]
     linear_combination (algebraMap O C' ϖ) * hu - (algebraMap O C' ϖ * u) * e1
   let ψP : P →ₐ[O] C' := MvPolynomial.aeval z
   have hψP : ∀ x ∈ I, ψP x = 0 := by
@@ -131,7 +131,7 @@ theorem smooth_away_core (O : Type) [CommRing O] (ϖ : O) (σ : Type) [Finite σ
   have hχy : ∀ i ∈ T.erase i0, χC (y i) = xB i := by
     intro i hi
     have hne : i ≠ i0 := Finset.ne_of_mem_erase hi
-    have hyi : y i = MvPolynomial.X ⟨i, hne⟩ := dif_neg hne
+    have hyi : y i = MvPolynomial.X ⟨i, hne⟩ := dite_eq_right hne
     rw [hyi, hχX ⟨i, hne⟩]
   have hχh : χC h = algebraMap O B ϖ * ∏ i ∈ T.erase i0, xB i := by
     show χC (MvPolynomial.C ϖ * ∏ i ∈ T.erase i0, y i) = _
@@ -162,11 +162,11 @@ theorem smooth_away_core (O : Type) [CommRing O] (ϖ : O) (σ : Type) [Finite σ
     show χ (z i) = xB i
     by_cases hi : i = i0
     · rw [hi]
-      have hz0 : z i0 = algebraMap O C' ϖ ^ 2 * u := if_pos rfl
+      have hz0 : z i0 = algebraMap O C' ϖ ^ 2 * u := ite_eq_left rfl
       rw [hz0, map_mul, map_pow, AlgHom.commutes]
       linear_combination (χ u * algebraMap O B ϖ) * hxB'.symm + xB i0 * hχu
-    · have hzi : z i = algebraMap C C' (y i) := if_neg hi
-      have hyi : y i = MvPolynomial.X ⟨i, hi⟩ := dif_neg hi
+    · have hzi : z i = algebraMap C C' (y i) := ite_eq_right hi
+      have hyi : y i = MvPolynomial.X ⟨i, hi⟩ := dite_eq_right hi
       rw [hzi, hχ, hyi, hχX ⟨i, hi⟩]
   have h2 : ψ.comp χ = AlgHom.id O C' := by
     apply IsLocalization.algHom_ext (Submonoid.powers h)
@@ -178,25 +178,25 @@ theorem smooth_away_core (O : Type) [CommRing O] (ϖ : O) (σ : Type) [Finite σ
     show ψ (algebraMap A B (Ideal.Quotient.mk I (MvPolynomial.X j.1))) = _
     rw [hψ, hψA]
     have hXi : ψP (MvPolynomial.X j.1) = z j.1 := MvPolynomial.aeval_X z j.1
-    have hzi : z j.1 = algebraMap C C' (y j.1) := if_neg j.2
-    have hyi : y j.1 = MvPolynomial.X ⟨j.1, j.2⟩ := dif_neg j.2
+    have hzi : z j.1 = algebraMap C C' (y j.1) := ite_eq_right j.2
+    have hyi : y j.1 = MvPolynomial.X ⟨j.1, j.2⟩ := dite_eq_right j.2
     rw [hXi, hzi, hyi]
   let e : C' ≃ₐ[O] B := AlgEquiv.ofAlgHom χ ψ h1 h2
-  haveI : Algebra.FormallySmooth C C' := Algebra.FormallySmooth.of_isLocalization (Submonoid.powers h)
-  haveI : Algebra.FormallySmooth O C' := Algebra.FormallySmooth.comp O C C'
-  haveI : Algebra.FormallySmooth O B := Algebra.FormallySmooth.of_equiv e
-  haveI : Algebra.FinitePresentation O A :=
+  have : Algebra.FormallySmooth C C' := Algebra.FormallySmooth.of_isLocalization (Submonoid.powers h)
+  have : Algebra.FormallySmooth O C' := Algebra.FormallySmooth.comp O C C'
+  have : Algebra.FormallySmooth O B := Algebra.FormallySmooth.of_equiv e
+  have : Algebra.FinitePresentation O A :=
     Algebra.FinitePresentation.quotient (Submodule.fg_span_singleton _)
-  haveI : Algebra.FinitePresentation A B := IsLocalization.Away.finitePresentation a
-  haveI : Algebra.FinitePresentation O B := Algebra.FinitePresentation.trans O A B
-  haveI : Algebra.FinitePresentation O F := IsLocalization.Away.finitePresentation ϖ
+  have : Algebra.FinitePresentation A B := IsLocalization.Away.finitePresentation a
+  have : Algebra.FinitePresentation O B := Algebra.FinitePresentation.trans O A B
+  have : Algebra.FinitePresentation O F := IsLocalization.Away.finitePresentation ϖ
   let φ := IsLocalization.Away.map F B (algebraMap O A) ϖ
-  letI : Algebra F B := φ.toAlgebra
-  haveI : IsScalarTower O F B := IsScalarTower.of_algebraMap_eq (fun x => by
+  let : Algebra F B := φ.toAlgebra
+  have : IsScalarTower O F B := IsScalarTower.of_algebraMap_eq (fun x => by
     rw [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply O A B]
     exact (IsLocalization.map_eq _ _).symm)
-  haveI : Algebra.FormallySmooth F B := Algebra.FormallySmooth.localization_base (Submonoid.powers ϖ)
-  haveI : Algebra.FinitePresentation F B :=
+  have : Algebra.FormallySmooth F B := Algebra.FormallySmooth.localization_base (Submonoid.powers ϖ)
+  have : Algebra.FinitePresentation F B :=
     Algebra.FinitePresentation.of_restrict_scalars_finitePresentation O F B
   have hs : Algebra.Smooth F B := ⟨inferInstance, inferInstance⟩
   exact hs

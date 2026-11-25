@@ -67,10 +67,10 @@ private theorem mul_antiJ_apply' (N : Matrix (Fin n) (Fin n) L) (i j : Fin n) :
     (N * antiJ L n) i j = N i (Fin.rev j) := by
   have hj := j.isLt
   rw [Matrix.mul_apply, Finset.sum_eq_single (Fin.rev j)]
-  · rw [antiJ_apply_adelic_iwasawa_hecke, if_pos (by rw [Fin.val_rev]; omega), mul_one]
+  · rw [antiJ_apply_adelic_iwasawa_hecke, ite_eq_left (by rw [Fin.val_rev]; omega), mul_one]
   · intro k _ hk
     have hk' := k.isLt
-    rw [antiJ_apply_adelic_iwasawa_hecke, if_neg, mul_zero]
+    rw [antiJ_apply_adelic_iwasawa_hecke, ite_eq_right, mul_zero]
     intro h
     apply hk
     ext
@@ -82,6 +82,7 @@ private theorem mul_antiJ_apply' (N : Matrix (Fin n) (Fin n) L) (i j : Fin n) :
 private theorem cT_apply_eq_sigma_transpose (N : Matrix (Fin n) (Fin n) L) (i j : Fin n) :
     cT σ N i j = σ (N j i) := rfl
 
+omit [Valued L (WithZero (Multiplicative ℤ))] in
 private theorem cT_mul_reverse (A B : Matrix (Fin n) (Fin n) L) :
     cT σ (A * B) = cT σ B * cT σ A := by
   unfold cT
@@ -130,10 +131,10 @@ theorem fIwasawa_gram_un (M : Matrix (Fin n) (Fin n) L) (hM : fIwasawaUn σ M) (
   have ha := a.isLt
   have hb := b.isLt
   by_cases hab : b = Fin.rev a
-  · rw [if_pos, if_pos hab]
+  · rw [ite_eq_left, ite_eq_left hab]
     rw [hab, Fin.val_rev]
     omega
-  · rw [if_neg, if_neg hab]
+  · rw [ite_eq_right, if_neg hab]
     intro h'
     apply hab
     ext

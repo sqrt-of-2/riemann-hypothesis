@@ -66,8 +66,9 @@ variable {G : Type} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [Local
 
 def conjSub (g : G) (K : Subgroup G) : Subgroup G := K.comap (MulAut.conj g⁻¹).toMonoidHom
 
-theorem mem_conjSub {g : G} {K : Subgroup G} {x : G} : x ∈ conjSub g K ↔ g⁻¹ * x * g ∈ K := by
-  simp [conjSub, MulAut.conj_apply]
+omit [TopologicalSpace G] [IsTopologicalGroup G] [LocallyCompactSpace G] [T2Space G] [TotallyDisconnectedSpace G] [MeasurableSpace G] [BorelSpace G] in
+theorem mem_conjSub [TopologicalSpace G] [IsTopologicalGroup G] [LocallyCompactSpace G] [T2Space G] [TotallyDisconnectedSpace G] [MeasurableSpace G] [BorelSpace G] {g : G} {K : Subgroup G} {x : G} : x ∈ conjSub g K ↔ g⁻¹ * x * g ∈ K := by
+  simp [conjSub]
 
 def conjHomeo (g : G) : G ≃ₜ G := (Homeomorph.mulLeft g⁻¹).trans (Homeomorph.mulRight g)
 
@@ -92,8 +93,8 @@ def conjEquiv (g : G) (K : Subgroup G) : fixedVectors ρ K ≃ₗ[ℂ] fixedVect
     have h := v.2
     rw [mem_fixedVectors] at h
     have e : x = g * (g⁻¹ * x * g) * g⁻¹ := by group
-    rw [e, map_mul, map_mul, Module.End.mul_apply, Module.End.mul_apply, ← Module.End.mul_apply (ρ g⁻¹),
-      ← map_mul, inv_mul_cancel, map_one, Module.End.one_apply, h _ (mem_conjSub.1 hx)]⟩
+    rw [e, map_mul, map_mul, mul_apply_eq_comp, mul_apply_eq_comp, ← mul_apply_eq_comp (ρ g⁻¹),
+      ← map_mul, inv_mul_cancel, map_one, one_apply_eq_self, h _ (mem_conjSub.1 hx)]⟩
   map_add' v w := Subtype.ext (map_add _ _ _)
   map_smul' c v := Subtype.ext (map_smul _ _ _)
   invFun w := ⟨ρ g⁻¹ w, by
@@ -103,14 +104,14 @@ def conjEquiv (g : G) (K : Subgroup G) : fixedVectors ρ K ≃ₗ[ℂ] fixedVect
     rw [mem_fixedVectors] at h
     have hx' : g * x * g⁻¹ ∈ conjSub g K := mem_conjSub.2 (by group; exact hx)
     have e : x = g⁻¹ * (g * x * g⁻¹) * g := by group
-    rw [e, map_mul, map_mul, Module.End.mul_apply, Module.End.mul_apply, ← Module.End.mul_apply (ρ g),
-      ← map_mul, mul_inv_cancel, map_one, Module.End.one_apply, h _ hx']⟩
+    rw [e, map_mul, map_mul, mul_apply_eq_comp, mul_apply_eq_comp, ← mul_apply_eq_comp (ρ g),
+      ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self, h _ hx']⟩
   left_inv v := Subtype.ext (by
     show ρ g⁻¹ (ρ g v) = v
-    rw [← Module.End.mul_apply, ← map_mul, inv_mul_cancel, map_one, Module.End.one_apply])
+    rw [← mul_apply_eq_comp, ← map_mul, inv_mul_cancel, map_one, one_apply_eq_self])
   right_inv w := Subtype.ext (by
     show ρ g (ρ g⁻¹ w) = w
-    rw [← Module.End.mul_apply, ← map_mul, mul_inv_cancel, map_one, Module.End.one_apply])
+    rw [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self])
 
 theorem conjEquiv_apply (g : G) (K : Subgroup G) (v : fixedVectors ρ K) :
     (conjEquiv g K v : V) = ρ g v := rfl
@@ -149,8 +150,8 @@ theorem formD_equiv [μ.IsMulRightInvariant] (hinv : ∀ g v w, B₀ (ρ g v) (�
     rw [hcoe]
     exact biInv_conj g hKf
   rw [DF_eq μ hρ hpos hinv _ _ hKc hKo hKf, DF_eq μ hρ hpos hinv _ _ hK'c hK'o hK'f]
-  haveI := hρ.2 _ hKc hKo
-  haveI := hρ.2 _ hK'c hK'o
+  have := hρ.2 _ hKc hKo
+  have := hρ.2 _ hK'c hK'o
   have hR : rN μ hρ hpos hK'c hK'o B (biTranslL g g (⟨f, hf⟩ : testFn G)) =
       (conjEquiv (ρ := ρ) g (K : Subgroup G)).conj
         (rN μ hρ hpos hKc hKo ((B ∘ₗ ρ g).compl₂ (ρ g)) ⟨f, hf⟩) := by

@@ -69,19 +69,19 @@ theorem _root_.GlobalTheory.finite_normalisation_of_finite_over_normal (A S : Ty
     [IsNoetherianRing A] [IsIntegrallyClosed A] [CommRing S] [IsDomain S] [CharZero S]
     [Algebra A S] [FaithfulSMul A S] [Module.Finite A S] :
     Module.Finite S (integralClosure S (FractionRing S)) := by
-  haveI : FaithfulSMul A (FractionRing S) := (faithfulSMul_iff_algebraMap_injective A _).2 (by
+  have : FaithfulSMul A (FractionRing S) := (faithfulSMul_iff_algebraMap_injective A _).2 (by
     rw [IsScalarTower.algebraMap_eq A S (FractionRing S)]
     exact (IsFractionRing.injective S _).comp (FaithfulSMul.algebraMap_injective A S))
-  letI : Algebra (FractionRing A) (FractionRing S) := FractionRing.liftAlgebra A _
-  haveI := FractionRing.isScalarTower_liftAlgebra A (FractionRing S)
-  haveI : CharZero (FractionRing S) := charZero_of_injective_algebraMap (IsFractionRing.injective S _)
-  haveI : CharZero (FractionRing A) := (algebraMap (FractionRing A) (FractionRing S)).charZero
-  haveI : FiniteDimensional (FractionRing A) (FractionRing S) := inferInstance
-  haveI : IsIntegralClosure (integralClosure S (FractionRing S)) A (FractionRing S) := by
+  let : Algebra (FractionRing A) (FractionRing S) := FractionRing.liftAlgebra A _
+  have := FractionRing.isScalarTower_liftAlgebra A (FractionRing S)
+  have : CharZero (FractionRing S) := charZero_of_injective_algebraMap (IsFractionRing.injective S _)
+  have : CharZero (FractionRing A) := (algebraMap (FractionRing A) (FractionRing S)).charZero
+  have : FiniteDimensional (FractionRing A) (FractionRing S) := inferInstance
+  have : IsIntegralClosure (integralClosure S (FractionRing S)) A (FractionRing S) := by
     refine ⟨Subtype.val_injective, fun {x} => ⟨fun h => ⟨⟨x, h.tower_top⟩, rfl⟩, ?_⟩⟩
     rintro ⟨y, rfl⟩
     exact isIntegral_trans (R := A) (A := S) (y : FractionRing S) y.2
-  haveI : Module.Finite A (integralClosure S (FractionRing S)) :=
+  have : Module.Finite A (integralClosure S (FractionRing S)) :=
     IsIntegralClosure.finite A (FractionRing A) (FractionRing S) _
   exact Module.Finite.of_restrictScalars_finite A S _
 
@@ -135,17 +135,17 @@ private theorem isLocalRing_of_finite_domain_over_complete (S C : Type) [CommRin
     [IsAdicComplete (maximalIdeal S) S] [CommRing C] [IsDomain C] [Algebra S C]
     [Module.Finite S C] : IsLocalRing C := by
   set I : Ideal C := (maximalIdeal S).map (algebraMap S C) with hI
-  haveI : IsPrecomplete (maximalIdeal S) C := isPrecomplete_of_finite_module
-  haveI : IsAdicComplete (maximalIdeal S) C := {}
-  haveI : IsAdicComplete I C := (IsAdicComplete.map_algebraMap_iff _ _).2 inferInstance
+  have : IsPrecomplete (maximalIdeal S) C := isPrecomplete_of_finite_module
+  have : IsAdicComplete (maximalIdeal S) C := {}
+  have : IsAdicComplete I C := (IsAdicComplete.map_algebraMap_iff _ _).2 inferInstance
   have hIM : ∀ M : Ideal C, M.IsMaximal → I ≤ M := by
     intro M hM
     rw [hI, Ideal.map_le_iff_le_comap]
     exact (IsLocalRing.eq_maximalIdeal
       (Ideal.isMaximal_under_of_isIntegral_of_isMaximal (R := S) M)).ge
-  haveI : IsArtinianRing (C ⧸ I) := by
-    letI := Ideal.Quotient.field (maximalIdeal S)
-    haveI : Module.Finite (S ⧸ maximalIdeal S) (C ⧸ I) :=
+  have : IsArtinianRing (C ⧸ I) := by
+    let := Ideal.Quotient.field (maximalIdeal S)
+    have : Module.Finite (S ⧸ maximalIdeal S) (C ⧸ I) :=
       Module.Finite.of_restrictScalars_finite S _ _
     exact IsArtinianRing.of_finite (S ⧸ maximalIdeal S) _
   refine IsLocalRing.of_unique_max_ideal ?_
@@ -233,16 +233,16 @@ theorem _root_.GlobalTheory.normalisation_finite_local_complete_of_mixedChar :
   intro S _ _ _ _ p hp hpm hS hSc
   obtain ⟨A, _, _, _, i, hi, hfin, hAn, hAic, hAc⟩ :=
     _root_.GlobalTheory.CohenStructure.exists_finite_injective_of_isAdicComplete S p hp hpm hS hSc
-  letI : Algebra A S := i.toAlgebra
-  haveI : FaithfulSMul A S := (faithfulSMul_iff_algebraMap_injective A S).2 hi
-  haveI : Module.Finite A S := hfin
-  haveI := hAn
-  haveI := hAic
-  haveI := hS
-  haveI := hSc
-  haveI hC : Module.Finite S (integralClosure S (FractionRing S)) := _root_.GlobalTheory.finite_normalisation_of_finite_over_normal A S
-  haveI : IsLocalRing (integralClosure S (FractionRing S)) := isLocalRing_of_finite_domain_over_complete S _
-  haveI : IsNoetherianRing (integralClosure S (FractionRing S)) := isNoetherian_of_tower S inferInstance
+  let : Algebra A S := i.toAlgebra
+  have : FaithfulSMul A S := (faithfulSMul_iff_algebraMap_injective A S).2 hi
+  have : Module.Finite A S := hfin
+  have := hAn
+  have := hAic
+  have := hS
+  have := hSc
+  have hC : Module.Finite S (integralClosure S (FractionRing S)) := _root_.GlobalTheory.finite_normalisation_of_finite_over_normal A S
+  have : IsLocalRing (integralClosure S (FractionRing S)) := isLocalRing_of_finite_domain_over_complete S _
+  have : IsNoetherianRing (integralClosure S (FractionRing S)) := isNoetherian_of_tower S inferInstance
   exact ⟨hC, inferInstance, inferInstance,
     _root_.GlobalTheory.FormalIsogeny.isAdicComplete_maximalIdeal_of_finite S _⟩
 

@@ -81,16 +81,16 @@ theorem at_iff {M : Type} [AddCommGroup M] [Module (AF F) M] (z : M) : At (evI F
 
 variable (F) in
 theorem t2Space_adeleRing_of_numberField : T2Space (AF F) := by
-  haveI : T2Space (IsDedekindDomain.FiniteAdeleRing (𝓞 F) F) :=
+  have : T2Space (IsDedekindDomain.FiniteAdeleRing (𝓞 F) F) :=
     T2Space.of_injective_continuous DFunLike.coe_injective RestrictedProduct.continuous_coe
-  haveI : T2Space (NumberField.InfiniteAdeleRing F) :=
+  have : T2Space (NumberField.InfiniteAdeleRing F) :=
     show T2Space ((v : InfinitePlace F) → v.Completion) from inferInstance
   show T2Space (NumberField.InfiniteAdeleRing F × IsDedekindDomain.FiniteAdeleRing (𝓞 F) F)
   infer_instance
 
 variable (F E) in
 theorem t2Space_cm_host_adeles : T2Space (AE F E) := by
-  haveI := t2Space_adeleRing_of_numberField F
+  have := t2Space_adeleRing_of_numberField F
   let b := Algebra.TensorProduct.basis (AF F) (Module.finBasis F E)
   exact T2Space.of_injective_continuous (X := AE F E) b.equivFun.injective
     (IsModuleTopology.continuous_of_linearMap (A := AE F E) b.equivFun.toLinearMap)
@@ -111,11 +111,11 @@ theorem continuous_sz (τ : ∀ w : InfinitePlace F, EmbOver E w) : Continuous (
 
 theorem isClosed_supp {C : Set (Ten F E n d)} (hC : IsCompact C) :
     IsClosed {z : Ten F E n d | ∃ c ∈ C, At (evI F) (z - c)} := by
-  haveI := t2Space_cm_host_adeles F E
+  have := t2Space_cm_host_adeles F E
   have hset : {z : Ten F E n d | ∃ c ∈ C, At (evI F) (z - c)} =
       (fun z : Ten F E n d => e0 F • z) ⁻¹' ((fun c : Ten F E n d => e0 F • c) '' C) := by
     ext z
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, Set.mem_image, at_iff, smul_sub, sub_eq_zero]
+    simp only [Set.mem_ofPred_eq, Set.mem_preimage, Set.mem_image, at_iff, smul_sub, sub_eq_zero]
     constructor
     · rintro ⟨c, hc, hzc⟩
       exact ⟨c, hc, hzc.symm⟩
@@ -134,7 +134,7 @@ theorem measurable_maj {G : Type} [TopologicalSpace G] [MeasurableSpace G] [Bore
 
 omit [NumberField E] in
 theorem continuous_mat_inv {J : Matrix (Fin n) (Fin n) E} : Continuous fun g : UA σ J => mat g⁻¹ := by
-  exact Units.continuous_coe_inv.comp continuous_subtype_val
+  exact Units.continuous_coe_inv.comp continuous_subtypeVal
 
 end LatticeQuotientMeasure
 
@@ -142,11 +142,11 @@ end LatticeQuotientMeasure
 open LatticeQuotientMeasure in
 theorem latMeas : LatMeas := by
   intro F E _ _ _ _ _ σ _ τ n d J J' _ _ C N S hC h
-  haveI := ring_AE F E
-  haveI := t2Space_cm_host_adeles F E
-  haveI : Countable E := Countable.of_equiv _ (Module.finBasis ℚ E).equivFun.toEquiv.symm
-  haveI : Countable (Matrix (Fin n) (Fin d) E) := show Countable (Fin n → Fin d → E) from inferInstance
-  haveI : BorelSpace (GlobalTheory.IndefiniteRowSideFullHecke.WeilTensorModels.UA σ J) := ⟨rfl⟩
+  have := ring_AE F E
+  have := t2Space_cm_host_adeles F E
+  have : Countable E := Countable.of_equiv _ (Module.finBasis ℚ E).equivFun.toEquiv.symm
+  have : Countable (Matrix (Fin n) (Fin d) E) := show Countable (Fin n → Fin d → E) from inferInstance
+  have : BorelSpace (GlobalTheory.IndefiniteRowSideFullHecke.WeilTensorModels.UA σ J) := ⟨rfl⟩
   delta latSum
   refine Measurable.tsum fun x => ENNReal.measurable_ofReal.comp ?_
   exact measurable_maj τ hC N ((continuous_mat_inv.matrix_mul continuous_const).matrix_mul continuous_const)

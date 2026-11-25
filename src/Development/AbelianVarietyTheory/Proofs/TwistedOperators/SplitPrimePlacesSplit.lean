@@ -58,10 +58,10 @@ theorem isSplit_of_norm {F E : Type} [Field F] [NumberField F] [Field E] [Number
       Ideal.absNorm w.asIdeal = p ∧ (p : 𝓞 E) ∉ w.asIdeal ^ 2)
     (v : HeightOneSpectrum (𝓞 F)) (hv : (p : 𝓞 F) ∈ v.asIdeal) : IsSplit (E := E) v := by
   classical
-  haveI hfin : Module.Finite (𝓞 F) (𝓞 E) := by
+  have hfin : Module.Finite (𝓞 F) (𝓞 E) := by
     first
     | infer_instance
-  haveI hint : Algebra.IsIntegral (𝓞 F) (𝓞 E) := by
+  have hint : Algebra.IsIntegral (𝓞 F) (𝓞 E) := by
     first
     | infer_instance
 
@@ -82,8 +82,8 @@ theorem isSplit_of_norm {F E : Type} [Field F] [NumberField F] [Field E] [Number
 
   have hf : ∀ q : v.asIdeal.primesOver (𝓞 E), q.1.inertiaDeg (𝓞 F) = 1 := by
     rintro ⟨Q, hQp, hQo⟩
-    haveI := hQp
-    haveI := hQo
+    have := hQp
+    have := hQo
     have hQ0 : Q ≠ ⊥ := Ideal.ne_bot_of_liesOver_of_ne_bot v.ne_bot Q
     have hN : Ideal.absNorm Q = p := (h ⟨Q, hQp, hQ0⟩ (hover Q hQo)).1
     have key : Ideal.absNorm v.asIdeal ^ Q.inertiaDeg (𝓞 F) = p := by
@@ -93,14 +93,14 @@ theorem isSplit_of_norm {F E : Type} [Field F] [NumberField F] [Field E] [Number
 
   have he : ∀ q : v.asIdeal.primesOver (𝓞 E), q.1.ramificationIdx (𝓞 F) = 1 := by
     rintro ⟨Q, hQp, hQo⟩
-    haveI := hQp
-    haveI := hQo
+    have := hQp
+    have := hQo
     have hQ0 : Q ≠ ⊥ := Ideal.ne_bot_of_liesOver_of_ne_bot v.ne_bot Q
     have hsq : (p : 𝓞 E) ∉ Q ^ 2 := (h ⟨Q, hQp, hQ0⟩ (hover Q hQo)).2
     have hle : Q.ramificationIdx (𝓞 F) ≤ 1 := by
       rw [← Ideal.ramificationIdx'_eq_ramificationIdx v.asIdeal Q v.ne_bot]
       by_contra hlt
-      push_neg at hlt
+      push Not at hlt
       have hmap : v.asIdeal.map (algebraMap (𝓞 F) (𝓞 E)) ≤ Q ^ 2 :=
         Ideal.le_pow_of_le_ramificationIdx' hlt
       apply hsq
@@ -115,15 +115,13 @@ theorem isSplit_of_norm {F E : Type} [Field F] [NumberField F] [Field E] [Number
     first
     | obtain ⟨Q0, hQ0m, hQ0o⟩ := Ideal.exists_maximal_ideal_liesOver_of_isIntegral (S := 𝓞 E) v.asIdeal
       exact ⟨Q0, hQ0m.isPrime, hQ0o⟩
-    | obtain ⟨Q0, hQ0⟩ := Set.nonempty_of_ncard_ne_zero
-        (IsDedekindDomain.primesOver_ncard_ne_zero v.asIdeal (𝓞 E))
-      exact ⟨Q0, hQ0.1, hQ0.2⟩
+
   let q0 : v.asIdeal.primesOver (𝓞 E) := ⟨Q0, hQ0p, hQ0o⟩
   have honly : ∀ q : v.asIdeal.primesOver (𝓞 E), q = q0 := by
     rintro ⟨Q, hQp, hQo⟩
     by_contra hne
     apply hns
-    haveI := hQo
+    have := hQo
     haveI := hQ0o
     refine ⟨⟨Q, hQp, Ideal.ne_bot_of_liesOver_of_ne_bot v.ne_bot Q⟩,
       ⟨Q0, hQ0p, Ideal.ne_bot_of_liesOver_of_ne_bot v.ne_bot Q0⟩, ?_, hQo.over.symm, hQ0o.over.symm⟩

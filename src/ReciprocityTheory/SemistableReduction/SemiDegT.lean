@@ -101,14 +101,14 @@ theorem formM_witt {K : Type} [Field K] {r : ℕ} (c : K →+* K) (m : ℕ) (g :
   simp only [Matrix.mulVec, dotProduct]
   have ha := a.isLt
   by_cases h : (a : ℕ) < m ∨ r ≤ (a : ℕ) + m
-  · have hw : wVal r m g a = 1 := if_pos h
-    have hp : wPart r m a = Fin.rev a := if_pos h
+  · have hw : wVal r m g a = 1 := ite_eq_left h
+    have hp : wPart r m a = Fin.rev a := ite_eq_left h
     rw [hw, hp, one_mul, Finset.sum_eq_single (Fin.rev a)]
-    · rw [wittMat, Matrix.of_apply, if_pos, one_mul]
+    · rw [wittMat, Matrix.of_apply, ite_eq_left, one_mul]
       rw [Fin.val_rev]
       omega
     · intro j _ hj
-      rw [wittMat, Matrix.of_apply, if_neg, if_neg, zero_mul]
+      rw [wittMat, Matrix.of_apply, ite_eq_right, ite_eq_right, zero_mul]
       · rintro ⟨rfl, h2, h3⟩
         omega
       · rintro ⟨h1, -⟩
@@ -117,13 +117,13 @@ theorem formM_witt {K : Type} [Field K] {r : ℕ} (c : K →+* K) (m : ℕ) (g :
         rw [Fin.val_rev]
         omega
     · simp
-  · have hw : wVal r m g a = g a := if_neg h
-    have hp : wPart r m a = a := if_neg h
+  · have hw : wVal r m g a = g a := ite_eq_right h
+    have hp : wPart r m a = a := ite_eq_right h
     rw [hw, hp, Finset.sum_eq_single a]
-    · rw [wittMat, Matrix.of_apply, if_neg, if_pos ⟨rfl, by omega, by omega⟩]
+    · rw [wittMat, Matrix.of_apply, ite_eq_right, ite_eq_left ⟨rfl, by omega, by omega⟩]
       omega
     · intro j _ hj
-      rw [wittMat, Matrix.of_apply, if_neg, if_neg, zero_mul]
+      rw [wittMat, Matrix.of_apply, ite_eq_right, ite_eq_right, zero_mul]
       · rintro ⟨rfl, -⟩
         exact hj rfl
       · have hj' := j.isLt

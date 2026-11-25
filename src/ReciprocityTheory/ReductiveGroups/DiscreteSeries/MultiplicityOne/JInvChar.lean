@@ -57,7 +57,7 @@ private theorem sum_eq_sum_wI_of_zero_off_block {f : Fin (2 * r + k + 1) → ℂ
   symm
   refine Fintype.sum_of_injective (wI k r) hinj (fun j => f (wI k r j)) f (fun i hi => hf i ?_) (fun j => rfl)
   rintro ⟨h1, h2⟩
-  exact hi ⟨⟨i.val - r, by omega⟩, Fin.ext (by simp only [wI_val_eq_add, Fin.val_mk]; omega)⟩
+  exact hi ⟨⟨i.val - r, by omega⟩, Fin.ext (by simp only [wI_val_eq_add]; omega)⟩
 
 private theorem embWb_apply_of_mem_block (X : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) {i j : Fin (2 * r + k + 1)}
     (hi : r ≤ i.val ∧ i.val ≤ r + k) (hj : r ≤ j.val ∧ j.val ≤ r + k) :
@@ -70,16 +70,16 @@ private theorem embWb_apply_of_left_not_mem_block (X : Matrix (Fin (k + 1)) (Fin
   simp only [embWb]
   rw [dite_eq_right (show ¬ ((r ≤ i.val ∧ i.val ≤ r + k) ∧ (r ≤ j.val ∧ j.val ≤ r + k)) from fun h => hi h.1)]
   by_cases h : i = j
-  · rw [if_pos (show i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k) from ⟨h, hi⟩), if_pos h]
-  · rw [if_neg (show ¬ (i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k)) from fun h' => h h'.1), if_neg h]
+  · rw [ite_eq_left (show i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k) from ⟨h, hi⟩), ite_eq_left h]
+  · rw [ite_eq_right (show ¬ (i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k)) from fun h' => h h'.1), ite_eq_right h]
 
 private theorem embWb_apply_of_right_not_mem_block (X : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) {i j : Fin (2 * r + k + 1)}
     (hj : ¬ (r ≤ j.val ∧ j.val ≤ r + k)) : embWb k r X i j = if i = j then 1 else 0 := by
   simp only [embWb]
   rw [dite_eq_right (show ¬ ((r ≤ i.val ∧ i.val ≤ r + k) ∧ (r ≤ j.val ∧ j.val ≤ r + k)) from fun h => hj h.2)]
   by_cases h : i = j
-  · rw [if_pos (show i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k) from ⟨h, by rw [h]; exact hj⟩), if_pos h]
-  · rw [if_neg (show ¬ (i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k)) from fun h' => h h'.1), if_neg h]
+  · rw [ite_eq_left (show i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k) from ⟨h, by rw [h]; exact hj⟩), ite_eq_left h]
+  · rw [ite_eq_right (show ¬ (i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k)) from fun h' => h h'.1), ite_eq_right h]
 
 private theorem embWb_mul' (X Y : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) :
     embWb k r (X * Y) = embWb k r X * embWb k r Y := by
@@ -90,18 +90,18 @@ private theorem embWb_mul' (X Y : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) :
     · rw [embWb_apply_of_mem_block _ hi hj, sum_eq_sum_wI_of_zero_off_block (f := fun l => embWb k r X i l * embWb k r Y l j)
         (fun l hl => by
           show embWb k r X i l * embWb k r Y l j = 0
-          rw [embWb_apply_of_right_not_mem_block X hl, if_neg (fun h => hl (by rw [← h]; exact hi)), zero_mul])]
+          rw [embWb_apply_of_right_not_mem_block X hl, ite_eq_right (fun h => hl (by rw [← h]; exact hi)), zero_mul])]
       simp only [embWb_apply_of_mem_block _ hi (wI_val_mem_block _), embWb_apply_of_mem_block _ (wI_val_mem_block _) hj, wI_val_sub_eq, Matrix.mul_apply]
     · rw [Finset.sum_eq_single j]
       · simp [embWb_apply_of_right_not_mem_block X hj, embWb_apply_of_right_not_mem_block Y hj, embWb_apply_of_right_not_mem_block (X * Y) hj]
       · intro l _ hl
-        rw [embWb_apply_of_right_not_mem_block Y hj, if_neg hl, mul_zero]
+        rw [embWb_apply_of_right_not_mem_block Y hj, ite_eq_right hl, mul_zero]
       · intro h
         exact absurd (Finset.mem_univ j) h
   · rw [Finset.sum_eq_single i]
     · simp [embWb_apply_of_left_not_mem_block X hi, embWb_apply_of_left_not_mem_block Y hi, embWb_apply_of_left_not_mem_block (X * Y) hi]
     · intro l _ hl
-      rw [embWb_apply_of_left_not_mem_block X hi, if_neg (Ne.symm hl), zero_mul]
+      rw [embWb_apply_of_left_not_mem_block X hi, ite_eq_right (Ne.symm hl), zero_mul]
     · intro h
       exact absurd (Finset.mem_univ i) h
 
@@ -131,7 +131,6 @@ theorem not_isW_eI (a : Fin r) : ¬ isW k r (eI k r a) := by
 
 theorem cStd_conj_re (w : ℂ) : (cStd * conj w).re = -(cStd * w).re := by
   first
-  | (simp [cStd, Complex.mul_re, Complex.mul_im]; ring)
   | simp [cStd, Complex.mul_re, Complex.mul_im]
 
 section
@@ -144,7 +143,7 @@ private theorem embWb_apply_eq_ite_of_left_index_not_isW {i : Fin (2 * r + k + 1
   simp only [embWb]
   rw [dite_eq_right (show ¬ ((r ≤ i.val ∧ i.val ≤ r + k) ∧ (r ≤ j.val ∧ j.val ≤ r + k)) from fun h => hi' h.1)]
   by_cases h : i = j
-  · rw [if_pos (show i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k) from ⟨h, hi'⟩), if_pos h]
+  · rw [ite_eq_left (show i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k) from ⟨h, hi'⟩), if_pos h]
   · rw [if_neg (show ¬ (i = j ∧ ¬ (r ≤ i.val ∧ i.val ≤ r + k)) from fun h' => h h'.1), if_neg h]
 
 private theorem embWb_apply_eq_ite_of_right_index_not_isW {j : Fin (2 * r + k + 1)} (hj : ¬ isW k r j) (i : Fin (2 * r + k + 1)) :

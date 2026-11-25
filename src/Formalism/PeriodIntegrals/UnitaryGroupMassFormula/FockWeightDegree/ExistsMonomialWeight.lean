@@ -69,7 +69,7 @@ theorem X_mul_monomial' {σ : Type*} (l : σ) (β : σ →₀ ℕ) (c : ℂ) :
     MvPolynomial.X l * MvPolynomial.monomial β c =
       MvPolynomial.monomial (Finsupp.single l 1 + β) c := by
   first
-    | (rw [MvPolynomial.X, MvPolynomial.monomial_mul, one_mul])
+    | (rw [MvPolynomial.X, MvPolynomial.monomial_mul_monomial, one_mul])
 
 theorem omE_diag_monomial {p q r s : ℕ} (l : Ln p q r s) (α : Ln p q r s →₀ ℕ) :
     omE l l (MvPolynomial.monomial α (1 : ℂ)) =
@@ -77,7 +77,7 @@ theorem omE_diag_monomial {p q r s : ℕ} (l : Ln p q r s) (α : Ln p q r s →�
   have hE : FockH1Action.omE l l (MvPolynomial.monomial α (1 : ℂ)) =
       FockH1Action.raiB l (FockH1Action.lowB l (MvPolynomial.monomial α 1)) + (1 / 2 : ℂ) • MvPolynomial.monomial α 1 := by
     unfold FockH1Action.omE
-    rw [if_pos rfl] <;> rfl
+    rw [ite_eq_left rfl]; rfl
   have hm : ∀ c : ℂ, MvPolynomial.monomial α c = c • MvPolynomial.monomial α (1 : ℂ) := fun c => by
     rw [MvPolynomial.smul_monomial, smul_eq_mul, mul_one]
   have hpd : ∀ (m : FockH1Action.Ln p q r s →₀ ℕ) (c : ℂ), MvPolynomial.pderiv l (MvPolynomial.monomial m c) =
@@ -87,11 +87,11 @@ theorem omE_diag_monomial {p q r s : ℕ} (l : Ln p q r s) (α : Ln p q r s →�
   cases hl : FockH1Action.linePos l
   · have hc : ¬ (FockH1Action.linePos l = true) := by simp [hl]
     have h1 : FockH1Action.lowB l (MvPolynomial.monomial α (1 : ℂ)) = MvPolynomial.X l * MvPolynomial.monomial α 1 := by
-      rw [FockH1Action.lowB, if_neg hc] <;> rfl
+      rw [FockH1Action.lowB, ite_eq_right hc]; rfl
     have h2 : ∀ x, FockH1Action.raiB l x = -MvPolynomial.pderiv l x := fun x => by
-      rw [FockH1Action.raiB, if_neg hc] <;> rfl
+      rw [FockH1Action.raiB, ite_eq_right hc]; rfl
     have hw : ((lw l α : ℚ) : ℂ) = -(α l : ℂ) - 1 / 2 := by
-      rw [lw, if_neg hc]; push_cast; ring
+      rw [lw, ite_eq_right hc]; push_cast; ring
     have hs : Finsupp.single l 1 + α - Finsupp.single l 1 = α := by
       first
         | exact add_tsub_cancel_left _ _
@@ -103,11 +103,11 @@ theorem omE_diag_monomial {p q r s : ℕ} (l : Ln p q r s) (α : Ln p q r s →�
     ring
   · have h1 : FockH1Action.lowB l (MvPolynomial.monomial α (1 : ℂ)) =
         MvPolynomial.pderiv l (MvPolynomial.monomial α 1) := by
-      rw [FockH1Action.lowB, if_pos hl] <;> rfl
+      rw [FockH1Action.lowB, ite_eq_left hl]; rfl
     have h2 : ∀ x, FockH1Action.raiB l x = MvPolynomial.X l * x := fun x => by
-      rw [FockH1Action.raiB, if_pos hl] <;> rfl
+      rw [FockH1Action.raiB, ite_eq_left hl]; rfl
     have hw : ((lw l α : ℚ) : ℂ) = (α l : ℂ) + 1 / 2 := by
-      rw [lw, if_pos hl]; push_cast; ring
+      rw [lw, ite_eq_left hl]; push_cast; ring
     have key : MvPolynomial.X l * MvPolynomial.monomial (α - Finsupp.single l 1) (1 * (α l : ℂ)) =
         (α l : ℂ) • MvPolynomial.monomial α 1 := by
       rw [one_mul]
@@ -124,7 +124,7 @@ theorem omAct_apply' (p q r s : ℕ) (M : Matrix (Ln p q r s) (Ln p q r s) ℂ) 
   unfold FockH1Action.omAct
   rw [LinearMap.sum_apply]
   refine Finset.sum_congr rfl fun l _ => ?_
-  rw [LinearMap.sum_apply] <;> rfl
+  rw [LinearMap.sum_apply]; rfl
 
 theorem sum_diag_of {p q r s : ℕ} (M : Matrix (Ln p q r s) (Ln p q r s) ℂ)
     (g : Ln p q r s → Prop) [DecidablePred g]
@@ -135,7 +135,7 @@ theorem sum_diag_of {p q r s : ℕ} (M : Matrix (Ln p q r s) (Ln p q r s) ℂ)
   · rw [hM]
     by_cases h : g l <;> simp [h]
   · intro l' _ hne
-    rw [hM, if_neg (show ¬ (l = l' ∧ g l) from fun h => hne h.1.symm), zero_smul]
+    rw [hM, ite_eq_right (show ¬ (l = l' ∧ g l) from fun h => hne h.1.symm), zero_smul]
   · intro h
     exact absurd (Finset.mem_univ l) h
 
@@ -212,7 +212,7 @@ theorem exists_monomial_weight {σ ι : Type*} [Fintype σ]
     ∃ α : σ →₀ ℕ, ∑ i, α i = d ∧ ∀ a, μ a = f a α := by
   obtain ⟨α, hα⟩ : ∃ α, AddMonoidAlgebra.coeff P α ≠ 0 := by
     by_contra hne
-    push_neg at hne
+    push Not at hne
     exact h0 (MvPolynomial.ext _ _ fun β => by simp [hne β])
   refine ⟨α, ?_, fun a => ?_⟩
   · have hh : MvPolynomial.IsHomogeneous P d := (MvPolynomial.mem_homogeneousSubmodule d P).1 hP

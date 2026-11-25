@@ -184,14 +184,15 @@ private noncomputable def ty0 (idx : InfinitePlace F' × Fin n) : F →+* ℂ :=
   if sS e w r v i₀ idx then idx.1.embedding.comp (e : F →+* F')
   else ComplexEmbedding.conjugate (idx.1.embedding.comp (e : F →+* F'))
 
+omit [NumberField F] [NumberField F'] in
 private theorem cmType_apply_positive {idx : InfinitePlace F' × Fin n} (h : sS e w r v i₀ idx) (x : F) :
     ty0 e w r v i₀ idx x = idx.1.embedding (e x) := by
-  rw [ty0, if_pos h]
+  rw [ty0, ite_eq_left h]
   rfl
 
 private theorem cmType_apply_negative {idx : InfinitePlace F' × Fin n} (h : ¬ sS e w r v i₀ idx) (x : F) :
     ty0 e w r v i₀ idx x = (starRingEnd ℂ) (idx.1.embedding (e x)) := by
-  rw [ty0, if_neg h]
+  rw [ty0, ite_eq_right h]
   rfl
 
 private theorem cmType_infinitePlace (idx : InfinitePlace F' × Fin n) :
@@ -227,6 +228,7 @@ private theorem cmType_at_place_iff (hr : ∀ τ : F →+* ℂ, τ w = r ∨ τ 
       rw [hc]
       simp [h2]
 
+omit [NumberField F] [NumberField F'] in
 private theorem emb_sep (hr : ∀ τ : F →+* ℂ, τ w = r ∨ τ w = (starRingEnd ℂ) r) (hne : (starRingEnd ℂ) r ≠ r)
     (τ τ' : F →+* ℂ) (hm : InfinitePlace.mk (τ.comp (e.symm : F' →+* F)) = InfinitePlace.mk (τ'.comp (e.symm : F' →+* F)))
     (hw : τ w = τ' w) : τ = τ' := by

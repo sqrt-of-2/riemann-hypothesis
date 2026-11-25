@@ -78,7 +78,7 @@ theorem UpperTheory.Reformulated.B.DYhc8.aux2 :
               Matrix.vecMul (UpperTheory.Reformulated.B.DYhc8.eLast k n) (↑g : Matrix (Fin (n + (1 : ℕ))) (Fin (n + (1 : ℕ))) k) =
                 UpperTheory.Reformulated.B.DYhc8.eLast k n} := by
   intro k _ n a b ha hb
-  simp only [Set.mem_setOf_eq] at ha hb ⊢
+  simp only [Set.mem_ofPred_eq] at ha hb ⊢
   rw [Units.val_mul, ← Matrix.vecMul_vecMul, ha, hb]
 
 theorem UpperTheory.Reformulated.B.DYhc8.aux3 :
@@ -100,7 +100,7 @@ theorem UpperTheory.Reformulated.B.DYhc8.aux4 :
             Matrix.vecMul (UpperTheory.Reformulated.B.DYhc8.eLast k n) (↑g : Matrix (Fin (n + (1 : ℕ))) (Fin (n + (1 : ℕ))) k) =
               UpperTheory.Reformulated.B.DYhc8.eLast k n} := by
   intro k _ n a ha
-  simp only [Set.mem_setOf_eq] at ha ⊢
+  simp only [Set.mem_ofPred_eq] at ha ⊢
   have h : (↑a : Matrix (Fin (n + (1 : ℕ))) (Fin (n + (1 : ℕ))) k) * (↑a⁻¹ : GL (Fin (n + (1 : ℕ))) k) = 1 := by
     rw [← Units.val_mul, mul_inv_cancel, Units.val_one]
   conv_lhs => rw [← ha]
@@ -169,7 +169,7 @@ private theorem colMat_add (k : Type) [Field k] (n : ℕ) (v w : Fin n → k) :
   ext i j
   simp only [UpperTheory.Reformulated.B.DYhc8.colMat, Matrix.add_apply]
   by_cases hj : j = Fin.last n
-  · simp only [hj, if_true]
+  · simp only [hj, ite_true]
     induction i using Fin.lastCases with
     | last => simp
     | cast i => simp
@@ -180,7 +180,7 @@ private theorem colMat_zero (k : Type) [Field k] (n : ℕ) :
   ext i j
   simp only [UpperTheory.Reformulated.B.DYhc8.colMat, Matrix.zero_apply]
   by_cases hj : j = Fin.last n
-  · simp only [hj, if_true]
+  · simp only [hj, ite_true]
     induction i using Fin.lastCases with
     | last => simp
     | cast i => simp
@@ -367,7 +367,7 @@ theorem UpperTheory.Reformulated.B.DYhc8.conj_invariant_character_mem :
         (↑(θ ⟨s m * (↑n : G) * (s m)⁻¹, h⟩) : ℂ) • ρ (s m) v := by
     rw [hθ, map_sub, map_smul]
     congr 1
-    simp only [← Module.End.mul_apply, ← map_mul]
+    simp only [← mul_apply_eq_comp, ← map_mul]
     congr 2
     group
   rw [key]
@@ -650,14 +650,14 @@ private theorem isOpen_fixed {G W : Type} [Group G] [TopologicalSpace G] [IsTopo
     { carrier := {g : G | ρ g x = x}
       mul_mem' := by
         intro a b ha hb
-        simp only [Set.mem_setOf_eq] at ha hb ⊢
-        rw [map_mul, Module.End.mul_apply, hb, ha]
+        simp only [Set.mem_ofPred_eq] at ha hb ⊢
+        rw [map_mul, mul_apply_eq_comp, hb, ha]
       one_mem' := by simp
       inv_mem' := by
         intro a ha
-        simp only [Set.mem_setOf_eq] at ha ⊢
+        simp only [Set.mem_ofPred_eq] at ha ⊢
         conv_lhs => rw [← ha]
-        rw [← Module.End.mul_apply, ← map_mul, inv_mul_cancel, map_one, Module.End.one_apply] }
+        rw [← mul_apply_eq_comp, ← map_mul, inv_mul_cancel, map_one, one_apply_eq_self] }
   exact S.isOpen_of_mem_nhds (g := 1) (Filter.mem_of_superset (hU.mem_nhds h1) hsub)
 
 theorem UpperTheory.Reformulated.B.DYhc8.main :
@@ -689,7 +689,8 @@ open Matrix
 
 variable (k : Type) [Field k] [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k]
 
-theorem continuous_glEmbHom (n : ℕ) : Continuous (glEmbHom k n) := by
+omit [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem continuous_glEmbHom [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k] (n : ℕ) : Continuous (glEmbHom k n) := by
   refine continuous_pi fun i => continuous_pi fun j => ?_
   show Continuous fun A : Matrix (Fin n) (Fin n) k => glEmbMat k n A i j
   induction i using Fin.lastCases with

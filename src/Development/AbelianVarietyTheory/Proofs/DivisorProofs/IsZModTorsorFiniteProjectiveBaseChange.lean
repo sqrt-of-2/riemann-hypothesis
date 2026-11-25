@@ -63,7 +63,7 @@ theorem isZModTorsor_baseChange : ∀ (B B' D : Type) [CommRing B] [CommRing B']
       GlobalTheory.LocAcyc.IsZModTorsor B' (B' ⊗[B] D) q act' := by
   intro B B' D _ _ _ _ _ q hq act hD
   obtain ⟨h1, h2, h3, h4⟩ := hD
-  haveI : NeZero q := ⟨hq.ne'⟩
+  have : NeZero q := ⟨hq.ne'⟩
   let act' : Multiplicative (ZMod q) →* ((B' ⊗[B] D) ≃ₐ[B'] (B' ⊗[B] D)) :=
     { toFun := fun g => Algebra.TensorProduct.congr (AlgEquiv.refl : B' ≃ₐ[B'] B') (act g)
       map_one' := by

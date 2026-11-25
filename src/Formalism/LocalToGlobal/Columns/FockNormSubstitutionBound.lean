@@ -67,14 +67,14 @@ theorem coeff_X_mul_pderiv_columns (v : σ) (F : MvPolynomial σ ℂ) (m : σ �
     by_cases hv : v ∈ m.support
     · have h1 : 1 ≤ m v := Nat.one_le_iff_ne_zero.2 (Finsupp.mem_support_iff.1 hv)
       have hm : m - Finsupp.single v 1 + Finsupp.single v 1 = m := tsub_add_cancel_of_le (Finsupp.single_le_iff.2 h1)
-      rw [if_pos hv]
+      rw [ite_eq_left hv]
       by_cases hu : u = m
       · subst hu
-        rw [if_pos rfl, if_pos rfl]
+        rw [ite_eq_left rfl, ite_eq_left rfl]
         ring
-      · rw [if_neg hu, mul_zero]
+      · rw [ite_eq_right hu, mul_zero]
         by_cases h2 : u - Finsupp.single v 1 = m - Finsupp.single v 1
-        · rw [if_pos h2]
+        · rw [ite_eq_left h2]
           by_cases h3 : u v = 0
           · rw [h3]; simp
           · exfalso
@@ -82,15 +82,15 @@ theorem coeff_X_mul_pderiv_columns (v : σ) (F : MvPolynomial σ ℂ) (m : σ �
             have hu' : u - Finsupp.single v 1 + Finsupp.single v 1 = u :=
               tsub_add_cancel_of_le (Finsupp.single_le_iff.2 (Nat.one_le_iff_ne_zero.2 h3))
             rw [← hu', h2, hm]
-        · rw [if_neg h2]
-    · rw [if_neg hv, Finsupp.notMem_support_iff.1 hv]
+        · rw [ite_eq_right h2]
+    · rw [ite_eq_right hv, Finsupp.notMem_support_iff.1 hv]
       simp
   | add p q hp hq => rw [map_add (f := _), mul_add, MvPolynomial.coeff_add, MvPolynomial.coeff_add, hp, hq]; ring
 
 theorem coeff_pderiv_eq_coeff_add_single_mul (v : σ) (F : MvPolynomial σ ℂ) (m : σ →₀ ℕ) :
     AddMonoidAlgebra.coeff (pderiv v F) m = AddMonoidAlgebra.coeff F (m + Finsupp.single v 1) * ((m v : ℂ) + 1) := by
   have h := coeff_X_mul_pderiv_columns v F (m + Finsupp.single v 1)
-  rw [coeff_X_mul', if_pos (by simp), add_tsub_cancel_right] at h
+  rw [coeff_X_mul', ite_eq_left (by simp), add_tsub_cancel_right] at h
   rw [h]
   simp
   ring

@@ -115,17 +115,17 @@ private def linC : Lie K n ≃L[ℝ] (Fin n × Fin n → mixedSpace K) :=
   LinearEquiv.toContinuousLinearEquiv
     { toFun := fun x p => Cm.mixEq K (x p.1 p.2)
       invFun := fun z i j => (Cm.mixEq K).symm (z (i, j))
-      map_add' := fun x y => funext fun p => map_add (Cm.mixEq K) _ _
-      map_smul' := fun c x => funext fun p => map_smul (Cm.mixEq K) c _
-      left_inv := fun x => funext fun i => funext fun j => (Cm.mixEq K).symm_apply_apply _
-      right_inv := fun z => funext fun p => (Cm.mixEq K).apply_symm_apply _ }
+      map_add' := fun _x _y => funext fun _p => map_add (Cm.mixEq K) _ _
+      map_smul' := fun c _x => funext fun _p => map_smul (Cm.mixEq K) c _
+      left_inv := fun _x => funext fun _i => funext fun _j => (Cm.mixEq K).symm_apply_apply _
+      right_inv := fun _z => funext fun _p => (Cm.mixEq K).apply_symm_apply _ }
 
 private theorem archSchwartz_grpC (φ : 𝓢(Fin n × Fin n → mixedSpace K, ℂ)) (y : GL (Fin n) (Cinf K)) :
     archSchwartz φ (grpC K n y).val = φ (linC K n (toL y.val)) :=
-  congrArg φ (funext fun p => hms_infEq K _)
+  congrArg φ (funext fun _p => hms_infEq K _)
 
 private theorem trace_mixEq (x : Cinf K) : mixedTrace K (Cm.mixEq K x) = 2 * ∑ w, (x w).re := by
-  haveI : IsEmpty {w : InfinitePlace K // w.IsReal} :=
+  have : IsEmpty {w : InfinitePlace K // w.IsReal} :=
     ⟨fun w => InfinitePlace.not_isReal_iff_isComplex.2 (IsTotallyComplex.isComplex w.1) w.2⟩
   rw [mixedTrace_apply, Finset.univ_eq_empty, Finset.sum_empty, zero_add, Finset.mul_sum]
   refine Fintype.sum_equiv (Equiv.subtypeUnivEquiv (IsTotallyComplex.isComplex (K := K))) _ _ fun w => ?_
@@ -139,15 +139,16 @@ private theorem pairing (x y : Lie K n) :
   rw [mixedTraceForm_apply, map_mul (Cm.mixEq K)]
   rfl
 
+omit [IsTotallyComplex K] in
 private theorem vol_haar : (volume : Measure (Lie K n)).IsAddHaarMeasure := by
-  haveI : (volume : Measure (Cinf K)).IsAddHaarMeasure := Measure.pi.isAddHaarMeasure _
-  haveI : (volume : Measure (Fin n → Cinf K)).IsAddHaarMeasure := Measure.pi.isAddHaarMeasure _
+  have : (volume : Measure (Cinf K)).IsAddHaarMeasure := Measure.pi.isAddHaarMeasure _
+  have : (volume : Measure (Fin n → Cinf K)).IsAddHaarMeasure := Measure.pi.isAddHaarMeasure _
   exact Measure.pi.isAddHaarMeasure _
 
 private theorem four_eq : ∃ c' : ℂ, c' ≠ 0 ∧ ∀ (φ : 𝓢(Fin n × Fin n → mixedSpace K, ℂ)) (y : Lie K n),
     archMatrixFourier φ (linC K n y) = c' * four (-4 * Real.pi) (fun x => φ (linC K n x)) y := by
-  haveI := vol_haar K n
-  haveI : (Measure.map (linC K n) (volume : Measure (Lie K n))).IsAddHaarMeasure :=
+  have := vol_haar K n
+  have : (Measure.map (linC K n) (volume : Measure (Lie K n))).IsAddHaarMeasure :=
     (linC K n).isAddHaarMeasure_map _
   set ν := Measure.map (linC K n) (volume : Measure (Lie K n)) with hν
   have h := Measure.isAddLeftInvariant_eq_smul (mixedMeasurePi K : Measure (Fin n × Fin n → mixedSpace K)) ν
@@ -168,10 +169,12 @@ private theorem four_eq : ∃ c' : ℂ, c' ≠ 0 ∧ ∀ (φ : 𝓢(Fin n × Fin
   push_cast
   ring
 
+omit [IsTotallyComplex K] in
 private theorem nrm_pos {x : Lie K n} (hx : x ∈ invSet K n) : 0 < nrm x := by
   have h : IsUnit (Matrix.of x).det := (Matrix.isUnit_iff_isUnit_det _).1 hx
   exact Finset.prod_pos fun w _ => pow_pos (norm_pos_iff.2 (Pi.isUnit_iff.1 h w).ne_zero) _
 
+omit [IsTotallyComplex K] in
 private theorem continuous_nrm : Continuous (nrm : Lie K n → ℝ) := by
   have h : Continuous fun x : Lie K n => (Matrix.of x).det := Continuous.matrix_det continuous_id
   exact continuous_finsetProd _ fun w _ => (((continuous_apply w).comp h).norm).pow 2
@@ -179,14 +182,14 @@ private theorem continuous_nrm : Continuous (nrm : Lie K n → ℝ) := by
 private theorem haar_eq (hH : HaarL) (μ : Measure (AdelicGLn.InfiniteAdelicGL K n)) [μ.IsHaarMeasure] :
     ∃ c : ℂ, c ≠ 0 ∧ ∀ (F : AdelicGLn.InfiniteAdelicGL K n → ℂ) (H : Lie K n → ℂ), ContinuousOn H (invSet K n) →
       (∀ y, F (grpC K n y) = H (toL y.val)) → ∫ x, F x ∂μ = c * ∫ x in invSet K n, ((nrm x)⁻¹ ^ n : ℝ) • H x := by
-  letI : MeasurableSpace (GL (Fin n) (Cinf K)) := borel _
-  haveI : BorelSpace (GL (Fin n) (Cinf K)) := ⟨rfl⟩
+  let : MeasurableSpace (GL (Fin n) (Cinf K)) := borel _
+  have : BorelSpace (GL (Fin n) (Cinf K)) := ⟨rfl⟩
   obtain ⟨m, hm, hmap⟩ := hH K n
-  haveI : (Measure.map (grpC K n) m).IsHaarMeasure := (grpC K n).isHaarMeasure_map _
-  haveI : LocallyCompactSpace (AdelicGLn.InfiniteAdelicGL K n) := by
+  have : (Measure.map (grpC K n) m).IsHaarMeasure := (grpC K n).isHaarMeasure_map _
+  have : LocallyCompactSpace (AdelicGLn.InfiniteAdelicGL K n) := by
     set_option synthInstance.maxHeartbeats 200000 in
       infer_instance
-  haveI : SecondCountableTopology (AdelicGLn.InfiniteAdelicGL K n) := by
+  have : SecondCountableTopology (AdelicGLn.InfiniteAdelicGL K n) := by
     set_option synthInstance.maxHeartbeats 200000 in
       infer_instance
   have h := Measure.isMulLeftInvariant_eq_smul μ (Measure.map (grpC K n) m)

@@ -68,14 +68,14 @@ theorem ptEntry_append_start (rest : C.LPt) : ∀ (H : C.LPt) (a b : ℕ),
     rw [hsz]
     show D.ptEntry ((s, t) :: (H' ++ rest)) (s + D.ptSize H' + a) b = _
     simp only [D.ptEntry]
-    rw [if_neg (by omega)]
+    rw [ite_eq_right (by omega)]
     by_cases hb : s ≤ b
-    · rw [if_pos ⟨by omega, hb⟩, show s + D.ptSize H' + a - s = D.ptSize H' + a by omega,
+    · rw [ite_eq_left ⟨by omega, hb⟩, show s + D.ptSize H' + a - s = D.ptSize H' + a by omega,
         ih a (b - s)]
       by_cases h2 : D.ptSize H' ≤ b - s
-      · rw [if_pos h2, if_pos (by omega), show b - s - D.ptSize H' = b - (s + D.ptSize H') by omega]
-      · rw [if_neg h2, if_neg (by omega)]
-    · rw [if_neg (by omega), if_neg (by omega)]
+      · rw [ite_eq_left h2, ite_eq_left (by omega), show b - s - D.ptSize H' = b - (s + D.ptSize H') by omega]
+      · rw [ite_eq_right h2, ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_right (by omega)]
 
 theorem det_big (H : C.LPt) (s : ℕ) (t : ℂ) (r : ℕ) (hs : 2 ≤ s) (hr : D.ptSize H + s = r + 1) :
     (D.ptMatN (H ++ [(s, t)]) r).det = 0 := by
@@ -87,7 +87,7 @@ theorem det_big (H : C.LPt) (s : ℕ) (t : ℂ) (r : ℕ) (hs : 2 ≤ s) (hr : D
   rw [h]
   split_ifs with hj
   · simp only [D.ptEntry]
-    rw [if_pos ⟨by omega, by omega⟩, if_neg (by omega)]
+    rw [ite_eq_left ⟨by omega, by omega⟩, ite_eq_right (by omega)]
   · rfl
 
 theorem ptG_big (TT : ℝ) (H : C.LPt) (s : ℕ) (t : ℂ) (r : ℕ) (hs : 2 ≤ s) (hr : D.ptSize H + s = r + 1) :

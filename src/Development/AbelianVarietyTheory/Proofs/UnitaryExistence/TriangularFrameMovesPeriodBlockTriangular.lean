@@ -61,7 +61,7 @@ namespace GlobalTheory.PerBor
 lemma inv_support {n α : Type*} [Fintype n] [DecidableEq n] [Fintype α] (t : n → α) (w : n → ℕ)
     (h : Matrix n n ℂ) (hu : IsUnit h.det) (hs : ∀ j j', h j j' ≠ 0 → t j = t j' ∧ w j ≤ w j') :
     ∀ j j', h⁻¹ j j' ≠ 0 → t j = t j' ∧ w j ≤ w j' := by
-  letI := Matrix.invertibleOfIsUnitDet h hu
+  let := Matrix.invertibleOfIsUnitDet h hu
   have key : ∀ ι : α → ℤ, h⁻¹.BlockTriangular (fun j => toLex (ι (t j), w j)) := by
     intro ι
     refine Matrix.blockTriangular_inv_of_blockTriangular ?_
@@ -121,7 +121,7 @@ variable {E : Type} [Field E] {Ψ : Finset (E →+* ℂ)} {r g : ℕ} (q : ℕ) 
 
 lemma moveMat_diag (hb : b ∈ Bor Ψ r) (k : Fin g) : moveMat q idx b k k =
     if ((idx k).2 : ℕ) < q then b (idx k).1 (idx k).2 (idx k).2 else (b (idx k).1 (idx k).2 (idx k).2)⁻¹ := by
-  simp only [moveMat, Matrix.of_apply, if_true]
+  simp only [moveMat, Matrix.of_apply, ite_true]
   split_ifs with hk
   · rfl
   · exact PerMove.bor_inv_diag hb _ _
@@ -131,14 +131,14 @@ lemma moveMat_support (hb : b ∈ Bor Ψ r) (k l : Fin g) (h : moveMat q idx b k
       else ((idx k).2 : ℕ) ≤ (idx l).2) := by
   simp only [moveMat, Matrix.of_apply] at h
   by_cases hτ : (idx l).1 = (idx k).1
-  · rw [if_pos hτ] at h
+  · rw [ite_eq_left hτ] at h
     refine ⟨hτ, ?_⟩
     split_ifs at h ⊢ with hk
     · by_contra hlt
       exact h (PerMove.bor_tri hb _ (show (idx k).2 < (idx l).2 by rw [Fin.lt_def]; omega))
     · by_contra hlt
       exact h (PerMove.bor_inv_tri hb _ (show (idx l).2 < (idx k).2 by rw [Fin.lt_def]; omega))
-  · rw [if_neg hτ] at h
+  · rw [ite_eq_right hτ] at h
     exact absurd rfl h
 
 lemma moveMat_mulVec (hb : b ∈ Bor Ψ r) (Gm : Matrix (Fin r) (Fin r) E) (x : Frame Ψ r) (v : Fin r → E)
@@ -155,7 +155,7 @@ lemma moveMat_mulVec (hb : b ∈ Bor Ψ r) (Gm : Matrix (Fin r) (Fin r) E) (x : 
   rw [hP', hm]
   simp only [moveMat, Matrix.mulVec, dotProduct, Matrix.of_apply]
   rw [← idx.symm.sum_comp, Fintype.sum_prod_type, Finset.sum_eq_single (idx k).1]
-  · simp only [Equiv.apply_symm_apply, if_true, hP]
+  · simp only [Equiv.apply_symm_apply, ite_true, hP]
     split_ifs with hk
     · rw [PerMove.hermC_col_mul]
       refine Finset.sum_congr rfl fun c _ => ?_
@@ -187,10 +187,10 @@ theorem GlobalTheory.per_bor : ∀ (E : Type) [Field E] [NumberField E] [IsCMFie
   have hlt : ∀ j, ((idx j).2 : ℕ) < (F.Di k).q → ((e j).2 : ℕ) < (F.Di k).q := by
     intro j hj
     have h1 := hty j
-    rw [if_pos hj] at h1
+    rw [ite_eq_left hj] at h1
     have h2 := ((M.X k).cmType _).1 (idx j).1.2
     rw [← h1, (hB.type k).2, hrt] at h2
-    have h3 : Dw.mult (e j).1 = Dw.q := if_neg h2
+    have h3 : Dw.mult (e j).1 = Dw.q := ite_eq_right h2
     have := (e j).2.isLt
     omega
   have hinj : ∀ j j', (e j).1 = (e j').1 → ((e j).2 : ℕ) = (e j').2 → j = j' := by
@@ -208,16 +208,16 @@ theorem GlobalTheory.per_bor : ∀ (E : Type) [Field E] [NumberField E] [IsCMFie
     have t1 := hty j
     have t2 := hty j'
     by_cases hj : ((idx j).2 : ℕ) < (F.Di k).q
-    · rw [if_pos hj] at h2 c1 t1
+    · rw [ite_eq_left hj] at h2 c1 t1
       have hj' : ((idx j').2 : ℕ) < (F.Di k).q := by omega
-      rw [if_pos hj'] at c2 t2
+      rw [ite_eq_left hj'] at c2 t2
       refine ⟨hbij.1 (by rw [t1, t2, h1]), ?_⟩
       have := l1 hj
       have := l2 hj'
       omega
-    · rw [if_neg hj] at h2 c1 t1
+    · rw [ite_eq_right hj] at h2 c1 t1
       have hj' : ¬ ((idx j').2 : ℕ) < (F.Di k).q := by omega
-      rw [if_neg hj'] at c2 t2
+      rw [ite_eq_right hj'] at c2 t2
       refine ⟨hbij.1 (by rw [t1, t2, h1]), ?_⟩
       omega
   have hdet := PerBor.det_of_support _ _ hinj _ hs
@@ -259,15 +259,15 @@ theorem GlobalTheory.per_bor : ∀ (E : Type) [Field E] [NumberField E] [IsCMFie
     unfold laU
     rw [hp, hm']
     by_cases hj : ((idx j).2 : ℕ) < (F.Di k).q
-    · rw [if_pos hj] at c1 t1
+    · rw [ite_eq_left hj] at c1 t1
       have := hlt j hj
       have t2 : conjEmb (idx j).1.1 = relab c σ (e j).1 := t1.symm
-      rw [if_pos hj, if_neg (by omega), t2, hinv,
+      rw [ite_eq_left hj, ite_eq_right (by omega), t2, hinv,
         show (F.Di k).q - 1 - ((idx j).2 : ℕ) = (e j).2 by omega, inv_pow, ← zpow_natCast, ← zpow_neg]
       congr 1
       push_cast
       ring
-    · rw [if_neg hj] at c1 t1
-      rw [if_neg hj, if_pos (by omega), ← t1, hinv,
+    · rw [ite_eq_right hj] at c1 t1
+      rw [ite_eq_right hj, ite_eq_left (by omega), ← t1, hinv,
         show ((idx j).2 : ℕ) - (F.Di k).q = (e j).2 by omega, inv_inv, ← zpow_natCast]
       congr 1

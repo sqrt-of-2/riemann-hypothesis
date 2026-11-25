@@ -25,7 +25,7 @@ theorem rmul_rmul (x a b : Frame X.Ψ r) : rmul (rmul x a) b = rmul x (bmul X a 
 
 theorem bmul_mem {a b : Frame X.Ψ r} (ha : a ∈ Bor X.Ψ r) (hb : b ∈ Bor X.Ψ r) :
     bmul X a b ∈ Bor X.Ψ r := by
-  simp only [Bor, Set.mem_setOf_eq] at ha hb ⊢
+  simp only [Bor, Set.mem_ofPred_eq] at ha hb ⊢
   intro τ
   obtain ⟨ha1, ha2⟩ := ha τ
   obtain ⟨hb1, hb2⟩ := hb τ
@@ -41,13 +41,13 @@ theorem bmul_mem {a b : Frame X.Ψ r} (ha : a ∈ Bor X.Ψ r) (hb : b ∈ Bor X.
   exact mul_ne_zero ha1 hb1
 
 theorem binv_mem {b : Frame X.Ψ r} (hb : b ∈ Bor X.Ψ r) : binv X b ∈ Bor X.Ψ r := by
-  simp only [Bor, Set.mem_setOf_eq] at hb ⊢
+  simp only [Bor, Set.mem_ofPred_eq] at hb ⊢
   intro τ
   obtain ⟨hb1, hb2⟩ := hb τ
   have hB : Matrix.BlockTriangular (mat b τ) id := by
     intro i j h
     exact hb2 i j h
-  haveI : Invertible (mat b τ) := Matrix.invertibleOfIsUnitDet _ (isUnit_iff_ne_zero.mpr hb1)
+  have : Invertible (mat b τ) := Matrix.invertibleOfIsUnitDet _ (isUnit_iff_ne_zero.mpr hb1)
   have hI : Matrix.BlockTriangular (mat b τ)⁻¹ id := Matrix.blockTriangular_inv_of_blockTriangular hB
   refine ⟨?_, fun i j h => hI h⟩
   show ((mat b τ)⁻¹).det ≠ 0
@@ -55,7 +55,7 @@ theorem binv_mem {b : Frame X.Ψ r} (hb : b ∈ Bor X.Ψ r) : binv X b ∈ Bor X
 
 theorem rmul_binv (x : Frame X.Ψ r) {b : Frame X.Ψ r} (hb : b ∈ Bor X.Ψ r) :
     rmul (rmul x b) (binv X b) = x := by
-  simp only [Bor, Set.mem_setOf_eq] at hb
+  simp only [Bor, Set.mem_ofPred_eq] at hb
   funext τ
   have h := isUnit_iff_ne_zero.mpr (hb τ).1
   show mat x τ * mat b τ * (mat b τ)⁻¹ = x τ
@@ -91,7 +91,7 @@ theorem avoid_base (Xa : ArchInM X) (Fl : FlatM X Xa) (j j' : Fin Fl.δ) {γ : G
   intro z hz b hb h1
   have hbc : ∀ c ∈ Bor X.Ψ r, bchar Xa.L c ≠ 0 := by
     intro c hc
-    simp only [Bor, Set.mem_setOf_eq] at hc
+    simp only [Bor, Set.mem_ofPred_eq] at hc
     unfold bchar
     refine Finset.prod_ne_zero_iff.mpr fun τ _ =>
       Finset.prod_ne_zero_iff.mpr fun i _ => zpow_ne_zero _ ?_
@@ -99,13 +99,13 @@ theorem avoid_base (Xa : ArchInM X) (Fl : FlatM X Xa) (j j' : Fin Fl.δ) {γ : G
     have hT : Matrix.BlockTriangular (mat c τ) id := by
       intro a e h
       exact ht a e h
-    rw [Matrix.det_of_upperTriangular hT] at hd
+    rw [Matrix.det_of_isUpperTriangular hT] at hd
     exact (Finset.prod_ne_zero_iff.mp hd) i (Finset.mem_univ _)
   have hzdom : cpt X x0 z ∈ X.dom := hball hz
   have hsz : ∀ k, Fl.s k (cpt X x0 z) = 0 := by
     intro k
     have hv := Fl.s_van k
-    simp only [Data.SSgt, Data.SS, Data.IsBddSec, Data.IsSec, Set.mem_setOf_eq] at hv
+    simp only [Data.SSgt, Data.SS, Data.IsBddSec, Data.IsSec, Set.mem_ofPred_eq] at hv
     have hsec := hv.1.1.1.2.1 (cpt X x0 z) hzdom b hb
     have h0 := hs1 k
     rw [h1, hsec] at h0
@@ -117,9 +117,9 @@ theorem avoid_base (Xa : ArchInM X) (Fl : FlatM X Xa) (j j' : Fin Fl.δ) {γ : G
       ext a e
       by_cases h : e < a
       · have hne : a ≠ e := ne_of_gt h
-        simp only [mat, nmat, Matrix.of_apply, dif_pos h, Matrix.one_apply_ne hne]
+        simp only [mat, nmat, Matrix.of_apply, dite_eq_left h, Matrix.one_apply_ne hne]
         all_goals first | rfl
-      · simp only [mat, nmat, Matrix.of_apply, dif_neg h, Matrix.one_apply]
+      · simp only [mat, nmat, Matrix.of_apply, dite_eq_right h, Matrix.one_apply]
     show mat x0 τ * mat (nmat X 0) τ = x0 τ
     rw [hm, Matrix.mul_one]
     rfl

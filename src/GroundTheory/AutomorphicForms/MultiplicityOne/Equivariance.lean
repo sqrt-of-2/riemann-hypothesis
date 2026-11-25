@@ -35,14 +35,14 @@ theorem uN_colX_mul_uN_colX_of_lt {k j : ℕ} (hkj : k < j) (x : Fin k → R) (y
       · have hab : a < b := by rw [Fin.lt_def]; omega
         have hak : a < (⟨k, hk⟩ : Fin n) := by rw [Fin.lt_def]; exact ha
         have hkb : (⟨k, hk⟩ : Fin n) < b := by rw [Fin.lt_def]; simp only; omega
-        rw [uN_apply, uN_apply, uN_apply, dif_pos hak, dif_pos hkb, dif_pos hab, colX_apply,
-          colX_apply, colX_apply, dif_pos rfl, dif_pos hb, dif_pos hb]
-        simp only [colShift, dif_pos ha]
+        rw [uN_apply, uN_apply, uN_apply, dite_eq_left hak, dite_eq_left hkb, dite_eq_left hab, colX_apply,
+          colX_apply, colX_apply, dite_eq_left rfl, dite_eq_left hb, dite_eq_left hb]
+        simp only [colShift, dite_eq_left ha]
         ring
       · intro c _ hc
         rw [uN_apply, uN_apply]
         by_cases hac : a < c
-        · rw [dif_pos hac, colX_apply, dite_eq_right (fun h => hc (Fin.ext h)), zero_mul]
+        · rw [dite_eq_left hac, colX_apply, dite_eq_right (fun h => hc (Fin.ext h)), zero_mul]
         · rw [dite_eq_right hac, zero_mul]
       · simp
     · rw [uN_apply]
@@ -50,14 +50,14 @@ theorem uN_colX_mul_uN_colX_of_lt {k j : ℕ} (hkj : k < j) (x : Fin k → R) (y
         intro c
         rw [uN_apply]
         by_cases hac : a < c
-        · rw [dif_pos hac, colX_apply]
+        · rw [dite_eq_left hac, colX_apply]
           by_cases hck : c.val = k
           · rw [Fin.lt_def] at hac; omega
           · rw [dite_eq_right hck, zero_mul]
         · rw [dite_eq_right hac, zero_mul]
       rw [Finset.sum_eq_zero fun c _ => h0 c]
       split_ifs with hab
-      · rw [colX_apply, dif_pos hb]
+      · rw [colX_apply, dite_eq_left hb]
         simp only [colShift]
         rw [dite_eq_right (by simpa using ha)]
       · rfl
@@ -65,7 +65,7 @@ theorem uN_colX_mul_uN_colX_of_lt {k j : ℕ} (hkj : k < j) (x : Fin k → R) (y
       intro c
       rw [uN_apply (colX j y)]
       by_cases hcb : c < b
-      · rw [dif_pos hcb, colX_apply, dite_eq_right hb, mul_zero]
+      · rw [dite_eq_left hcb, colX_apply, dite_eq_right hb, mul_zero]
       · rw [dite_eq_right hcb, mul_zero]
     rw [Finset.sum_eq_zero fun c _ => h0 c, uN_apply]
     split_ifs with hab
@@ -88,7 +88,7 @@ theorem pair_lastVec_colShift {K : Type*} [Field K] [NumberField K] {k j : ℕ} 
   refine Finset.sum_eq_zero fun i _ => ?_
   by_cases hi : i.val + 1 = j
   · rw [colShift, dite_eq_right (by omega), mul_zero]
-  · rw [lastVec, if_neg hi, map_zero, zero_mul]
+  · rw [lastVec, ite_eq_right hi, map_zero, zero_mul]
 
 end Columns
 
@@ -173,12 +173,12 @@ theorem whittaker_uGL_mul {ϕ : AdelicGLn.AdelicGL K n → ℂ} (hc : Continuous
       funext p
       rw [colX_apply]
       by_cases h : p.1.2.val = m
-      · rw [dif_pos h, if_pos h]
+      · rw [dite_eq_left h, ite_eq_left h]
         show X _ = X p
         congr 1
         apply Subtype.ext
         apply Prod.ext <;> apply Fin.ext <;> simp [h]
-      · rw [dite_eq_right h, if_neg h]
+      · rw [dite_eq_right h, ite_eq_right h]
     have hsplit : X = X' + colX m c := by
       funext p
       rw [hcol, Pi.add_apply]
@@ -189,7 +189,7 @@ theorem whittaker_uGL_mul {ϕ : AdelicGLn.AdelicGL K n → ℂ} (hc : Continuous
       intro p hp
       by_cases h : p.1.2.val = m
       · simp [X', h]
-      · simp only [X', if_neg h]; exact hX p (by omega)
+      · simp only [X', ite_eq_right h]; exact hX p (by omega)
     have hu : uGL X = uGL X' * colGL m c := by
       refine Units.ext ?_
       rw [Units.val_mul, colGL, coe_uGL, coe_uGL, coe_uGL,

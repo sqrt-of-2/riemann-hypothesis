@@ -58,14 +58,14 @@ open Formalism.IndefR.DatumF
 theorem continuous_mixed (K : Type) [Field K] [NumberField K] :
     Continuous (InfiniteAdeleRing.ringEquiv_mixedSpace K) := by
   first
-  | exact _root_.PositivityTheory.ThKF0.Split.continuous_toMixed
-  | (apply _root_.PositivityTheory.ThKF0.Split.continuous_toMixed <;> assumption)
+
+  | (apply _root_.PositivityTheory.ThKF0.Split.continuous_toMixed)
 
 theorem continuous_mixed_symm (K : Type) [Field K] [NumberField K] :
     Continuous (InfiniteAdeleRing.ringEquiv_mixedSpace K).symm := by
   first
-  | exact _root_.PositivityTheory.ThKF0.Split.continuous_ofMixed
-  | (apply _root_.PositivityTheory.ThKF0.Split.continuous_ofMixed <;> assumption)
+
+  | (apply _root_.PositivityTheory.ThKF0.Split.continuous_ofMixed)
 
 variable {F E : Type} [Field F] [NumberField F] [Field E] [NumberField E] [Algebra F E]
 
@@ -74,15 +74,15 @@ theorem modTop : IsModuleTopology (AF F) (AEF F E) := ⟨rfl⟩
 theorem finiteFE : Module.Finite F E := Module.Finite.of_restrictScalars_finite ℚ F E
 
 theorem topRing : IsTopologicalRing (AEF F E) := by
-  haveI := finiteFE (F := F) (E := E)
-  haveI := modTop (F := F) (E := E)
+  have := finiteFE (F := F) (E := E)
+  have := modTop (F := F) (E := E)
   exact IsModuleTopology.isTopologicalRing (AF F) (AEF F E)
 
 def sigLin (σ : E →ₐ[F] E) : AEF F E →ₗ[AF F] AEF F E :=
   TensorProduct.AlgebraTensorModule.map (LinearMap.id : AF F →ₗ[AF F] AF F) σ.toLinearMap
 
 theorem continuous_cAF (σ : E →ₐ[F] E) : Continuous (cAF σ) := by
-  haveI := finiteFE (F := F) (E := E)
+  have := finiteFE (F := F) (E := E)
   haveI := modTop (F := F) (E := E)
   haveI := topRing (F := F) (E := E)
   have h := IsModuleTopology.continuous_of_linearMap (sigLin σ)

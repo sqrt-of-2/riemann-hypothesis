@@ -53,7 +53,7 @@ theorem part_one (E : Fin n → Fin n → Module.End ℂ V) (e : Pos n) :
         cre e * (if cpt (allT n) i then (lift n (E i.1.1 i.1.2) : Module.End ℂ (Cn n V)) * ann i else 0) :
         Module.End ℂ (Cn n V)) = if i = e then (lift n (E e.1.1 e.1.2) : Module.End ℂ (Cn n V)) else 0 := by
     intro i
-    rw [if_pos (rfl : cpt (allT n) i), ← mul_assoc (cre e), cre_mul_lift, mul_assoc, mul_assoc, ← mul_add,
+    rw [ite_eq_left (rfl : cpt (allT n) i), ← mul_assoc (cre e), cre_mul_lift, mul_assoc, mul_assoc, ← mul_add,
       CompanionTheory.D.LK.Car.ann_cre]
     by_cases hi : i = e
     · subst hi; simp
@@ -83,18 +83,18 @@ theorem part_two (e : Pos n) :
         (if j = e ∧ i.1.2 = e.1.1 ∧ k.1 = (i.1.1, e.1.2) then cre k * ann i else 0) := by
     intro i j k
     by_cases ht : i.1.2 = j.1.1 ∧ k.1.1 = i.1.1 ∧ k.1.2 = j.1.2
-    · rw [if_pos ⟨rfl, rfl, ht⟩, tri_anti]
+    · rw [ite_eq_left ⟨rfl, rfl, ht⟩, tri_anti]
       obtain ⟨t1, t2, t3⟩ := ht
       congr 1
       · by_cases hi : i = e
         · subst hi
-          rw [if_pos rfl, if_pos ⟨rfl, t1, Prod.ext t2 t3⟩]
-        · rw [if_neg hi, if_neg fun c => hi c.1]
+          rw [ite_eq_left rfl, ite_eq_left ⟨rfl, t1, Prod.ext t2 t3⟩]
+        · rw [ite_eq_right hi, ite_eq_right fun c => hi c.1]
       · by_cases hj : j = e
         · subst hj
-          rw [if_pos rfl, if_pos ⟨rfl, t1, Prod.ext t2 t3⟩]
-        · rw [if_neg hj, if_neg fun c => hj c.1]
-    · rw [if_neg fun c => ht c.2.2, zero_mul, mul_zero, add_zero, if_neg, if_neg, sub_zero]
+          rw [ite_eq_left rfl, ite_eq_left ⟨rfl, t1, Prod.ext t2 t3⟩]
+        · rw [ite_eq_right hj, ite_eq_right fun c => hj c.1]
+    · rw [ite_eq_right fun c => ht c.2.2, zero_mul, mul_zero, add_zero, ite_eq_right, ite_eq_right, sub_zero]
       · rintro ⟨rfl, c1, c2⟩
         exact ht ⟨c1, by rw [c2], by rw [c2]⟩
       · rintro ⟨rfl, c1, c2⟩

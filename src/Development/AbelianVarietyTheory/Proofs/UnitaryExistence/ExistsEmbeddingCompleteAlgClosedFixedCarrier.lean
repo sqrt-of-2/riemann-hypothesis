@@ -88,13 +88,13 @@ theorem exists_small_closed_subfield {K C : Type} [Field K] [NontriviallyNormedF
   have hAL : A.toSubfield ≤ L := A.toSubfield.le_topologicalClosure
   have hKL : ∀ y : K, algebraMap K C y ∈ L := fun y => hAL (A.algebraMap_mem y)
   have hcl : IsClosed (L : Set C) := A.toSubfield.isClosed_topologicalClosure
-  letI : NontriviallyNormedField L :=
+  let : NontriviallyNormedField L :=
     { (inferInstance : NormedField L) with non_trivial := ⟨⟨_, hKL x⟩, hx⟩ }
-  haveI : CompleteSpace L := hcl.completeSpace_coe
-  letI : Algebra A L := (Subfield.inclusion hAL : A.toSubfield →+* L).toAlgebra
+  have : CompleteSpace L := hcl.completeSpace_coe
+  let : Algebra A L := (Subfield.inclusion hAL : A.toSubfield →+* L).toAlgebra
   have hd : DenseRange (algebraMap A L) :=
     (denseRange_inclusion_iff (s := (A.toSubfield : Set C)) (t := (L : Set C)) hAL).2 subset_rfl
-  haveI : IsAlgClosed A := IsAlgClosure.isAlgClosed K
+  have : IsAlgClosed A := IsAlgClosure.isAlgClosed K
   refine ⟨L, hKL, hcl, isAlgClosed_of_denseRange hd, (mk_le_of_denseRange _ hd).trans ?_⟩
   have hA : #A ≤ 𝔠 :=
     (Algebra.IsAlgebraic.cardinalMk_le_max K A).trans (max_le hK aleph0_le_continuum)
@@ -110,36 +110,36 @@ theorem exists_scf_isometry {p : ℕ} {C : Type} [NontriviallyNormedField C] [Is
   obtain ⟨j⟩ := (Cardinal.le_def _ _).1 hle
   let S : Set BigT := Set.range j
   let e : S ≃ C := (Equiv.ofInjective j j.injective).symm
-  letI : Field S := e.field
+  let : Field S := e.field
   let r : S ≃+* C := e.ringEquiv
-  letI : NormedField S := NormedField.induced S C r r.injective
+  let : NormedField S := NormedField.induced S C r r.injective
   have hn : ∀ x : S, ‖x‖ = ‖r x‖ := fun _ => rfl
   have hn' : ∀ x : C, ‖r.symm x‖ = ‖x‖ := fun x => by rw [hn, r.apply_symm_apply]
-  letI : NontriviallyNormedField S :=
+  let : NontriviallyNormedField S :=
     { (inferInstance : NormedField S) with
       non_trivial := by
         obtain ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := C)
         exact ⟨r.symm x, (hn' x).symm ▸ hx⟩ }
-  haveI : IsUltrametricDist S :=
+  have : IsUltrametricDist S :=
     IsUltrametricDist.isUltrametricDist_of_forall_norm_add_le_max_norm fun x y => by
       rw [hn, hn, hn, map_add (f := _)]; exact IsUltrametricDist.norm_add_le_max _ _
-  haveI : IsAlgClosed S := IsAlgClosed.of_ringEquiv C S r.symm
+  have : IsAlgClosed S := IsAlgClosed.of_ringEquiv C S r.symm
   have hiso : Isometry r := AddMonoidHomClass.isometry_of_norm r fun x => (hn x).symm
-  haveI : CompleteSpace S :=
+  have : CompleteSpace S :=
     (hiso.isUniformInducing.completeSpace_congr r.surjective).2 inferInstance
-  haveI : CharZero S := charZero_of_injective_ringHom (f := r.symm.toRingHom) r.symm.injective
+  have : CharZero S := charZero_of_injective_ringHom (f := r.symm.toRingHom) r.symm.injective
   exact ⟨{ S := S, norm_p := by rw [hn, map_natCast, hp] }, r.symm.toRingHom, hn'⟩
 
 theorem exists_extension_intO {V W C : Type} [CommRing V] [IsDomain V] [CommRing W] [IsDomain W]
     [NormedField C] [IsUltrametricDist C] [IsAlgClosed C] (g : V →+* intO C) (φ : V →+* W)
     (hg : Function.Injective g) (hφ : Function.Injective φ) (hf : φ.Finite) :
     ∃ g' : W →+* intO C, g'.comp φ = g ∧ Function.Injective g' := by
-  letI : Algebra V W := φ.toAlgebra
-  letI : Algebra V C := ((intO C).subtype.comp g).toAlgebra
-  haveI : Module.Finite V W := hf
+  let : Algebra V W := φ.toAlgebra
+  let : Algebra V C := ((intO C).subtype.comp g).toAlgebra
+  have : Module.Finite V W := hf
   have hgC : Function.Injective (algebraMap V C) := Subtype.val_injective.comp hg
-  haveI : FaithfulSMul V W := (faithfulSMul_iff_algebraMap_injective V W).2 hφ
-  haveI : FaithfulSMul V C := (faithfulSMul_iff_algebraMap_injective V C).2 hgC
+  have : FaithfulSMul V W := (faithfulSMul_iff_algebraMap_injective V W).2 hφ
+  have : FaithfulSMul V C := (faithfulSMul_iff_algebraMap_injective V C).2 hgC
   let l : W →ₐ[V] C := (by
     refine @_root_.IsAlgClosed.lift _ _ _ _ _ _ _ _ _ _ _ ?_ ?_ ?_
     solve_by_elim* (maxDepth := 2) only [*,
@@ -147,7 +147,7 @@ theorem exists_extension_intO {V W C : Type} [CommRing V] [IsDomain V] [CommRing
       @_root_.Algebra.IsIntegral.isAlgebraic, @_root_.inferInstance])
   have hl : Function.Injective l := by
     rw [RingHom.injective_iff_ker_eq_bot]
-    refine Ideal.eq_bot_of_comap_eq_bot (R := V) ?_
+    refine Ideal.eq_bot_of_under_eq_bot (R := V) ?_
     rw [eq_bot_iff]
     intro a ha
     rw [Ideal.mem_comap, RingHom.mem_ker, l.commutes] at ha
@@ -186,20 +186,20 @@ theorem exists_embedding_and_extension :
   · obtain ⟨C, _, _, _, _, _, hC, hCp⟩ :=
       exists_complete_isAlgClosed_of_isDiscreteValuationRing T.V T.Fr hp0 hpm
         (inv_pos.2 (zero_lt_one.trans h1)) (inv_lt_one_of_one_lt₀ h1)
-    haveI : Finite (ResidueField T.V) := hfin
+    have : Finite (ResidueField T.V) := hfin
     have hK : #T.Fr ≤ 𝔠 :=
       (IsLocalization.cardinalMk_le (nonZeroDivisors T.V)).trans
         (mk_le_continuum_of_finite_residueField T.V)
     have hx : 1 < ‖algebraMap T.Fr C (algebraMap T.V T.Fr p)⁻¹‖ := by
       rw [map_inv₀, norm_inv, hCp, inv_inv]; exact h1
     obtain ⟨L, hKL, hcl, hac, hL⟩ := exists_small_closed_subfield hK hx
-    letI : NontriviallyNormedField L :=
+    let : NontriviallyNormedField L :=
       { (inferInstance : NormedField L) with non_trivial := ⟨⟨_, hKL _⟩, hx⟩ }
-    haveI : CompleteSpace L := hcl.completeSpace_coe
-    haveI : CharZero T.Fr := charZero_of_injective_ringHom (IsFractionRing.injective T.V T.Fr)
+    have : CompleteSpace L := hcl.completeSpace_coe
+    have : CharZero T.Fr := charZero_of_injective_ringHom (IsFractionRing.injective T.V T.Fr)
     let i : T.Fr →+* L := (algebraMap T.Fr C).codRestrict L hKL
     have hi : ∀ y, ‖i y‖ = ‖algebraMap T.Fr C y‖ := fun _ => rfl
-    haveI : CharZero L := charZero_of_injective_ringHom i.injective
+    have : CharZero L := charZero_of_injective_ringHom i.injective
     have hLp : ‖(p : L)‖ = (p : ℝ)⁻¹ := by
       rw [← map_natCast i, hi, ← map_natCast (algebraMap T.V T.Fr), hCp]
     obtain ⟨D, e, he⟩ := exists_scf_isometry hLp hL

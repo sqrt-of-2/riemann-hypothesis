@@ -58,7 +58,7 @@ section Gen
 variable {σ R : Type*} [CommSemiring R]
 
 theorem X_mul_mon (i : σ) (s : σ →₀ ℕ) (q : R) : X i * monomial s q = monomial (s + Finsupp.single i 1) q := by
-  rw [show (X i : MvPolynomial σ R) = monomial (Finsupp.single i 1) 1 from rfl, monomial_mul, one_mul, add_comm]
+  rw [show (X i : MvPolynomial σ R) = monomial (Finsupp.single i 1) 1 from rfl, MvPolynomial.monomial_mul_monomial, one_mul, add_comm]
 
 theorem pderiv_mon_succ (i : σ) (s : σ →₀ ℕ) (q : R) :
     pderiv i (monomial (s + Finsupp.single i 1) q) = monomial s ((s i + 1) • q) := by
@@ -84,7 +84,7 @@ theorem oneT_monomial {σ τ Kf : Type} [Field Kf] (e : Module.End Kf (MvPolynom
   unfold oneT
   by_cases h : q = 0
   · subst h; simp
-  · rw [support_monomial, if_neg h, Finset.sum_singleton, coeff_monomial, if_pos rfl]
+  · rw [support_monomial, ite_eq_right h, Finset.sum_singleton, coeff_monomial, ite_eq_left rfl]
 
 theorem nat_A {P e t : ℕ} (h : t + 1 < P) : e % P = t ↔ (e + 1) % P = t + 1 := by
   constructor
@@ -178,8 +178,8 @@ theorem step_apply (mo : TV n' (m + 1) →₀ ℕ) (x : TL J nL r) (c : Fin (r +
   congr 1
   by_cases h : (x, c) = (x0, c0)
   · obtain ⟨h1, h2⟩ := Prod.mk.inj h
-    rw [if_pos h, if_pos (by rw [h1, h2])]
-  · rw [if_neg h, if_neg]
+    rw [ite_eq_left h, ite_eq_left (by rw [h1, h2])]
+  · rw [ite_eq_right h, ite_eq_right]
     intro h'
     exact h (aVar_inj Fr hk nL hx0 h'.symm)
 
@@ -193,9 +193,9 @@ theorem inLow_A (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV n' (m + 1) →
   rw [step_apply Fr hk nL hx0]
   by_cases hv : (x, c) = (x0, c0)
   · obtain ⟨h1, h2⟩ := Prod.mk.inj hv
-    rw [h1, h2, if_pos rfl, Function.update_self]
+    rw [h1, h2, ite_eq_left rfl, Function.update_self]
     exact nat_A h
-  · rw [if_neg hv, Function.update_of_ne hv, add_zero]
+  · rw [ite_eq_right hv, Function.update_of_ne hv, add_zero]
 
 include hx0 in
 theorem inLow_B (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV n' (m + 1) →₀ ℕ)
@@ -207,9 +207,9 @@ theorem inLow_B (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV n' (m + 1) →
   rw [step_apply Fr hk nL hx0]
   by_cases hv : (x, c) = (x0, c0)
   · obtain ⟨h1, h2⟩ := Prod.mk.inj hv
-    rw [h1, h2, if_pos rfl, Function.update_self]
+    rw [h1, h2, ite_eq_left rfl, Function.update_self]
     exact nat_B h
-  · rw [if_neg hv, Function.update_of_ne hv, add_zero]
+  · rw [ite_eq_right hv, Function.update_of_ne hv, add_zero]
 
 include hx0 in
 theorem div_A (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV n' (m + 1) →₀ ℕ)
@@ -219,9 +219,9 @@ theorem div_A (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV n' (m + 1) →�
   rw [step_apply Fr hk nL hx0]
   by_cases hv : (x, c) = (x0, c0)
   · obtain ⟨h1, h2⟩ := Prod.mk.inj hv
-    rw [h1, h2, if_pos rfl]
+    rw [h1, h2, ite_eq_left rfl]
     exact nat_A_div h ((inLow_iff Fr p hk nL rho mo).1 hL x0 c0)
-  · rw [if_neg hv, add_zero]
+  · rw [ite_eq_right hv, add_zero]
 
 include hx0 in
 theorem div_B (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV n' (m + 1) →₀ ℕ)
@@ -231,9 +231,9 @@ theorem div_B (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV n' (m + 1) →�
   rw [step_apply Fr hk nL hx0]
   by_cases hv : (x, c) = (x0, c0)
   · obtain ⟨h1, h2⟩ := Prod.mk.inj hv
-    rw [h1, h2, if_pos rfl]
+    rw [h1, h2, ite_eq_left rfl]
     exact nat_B_div h ((inLow_iff Fr p hk nL rho mo).1 hL x0 c0)
-  · rw [if_neg hv, add_zero, add_zero]
+  · rw [ite_eq_right hv, add_zero, add_zero]
 
 include hx0 in
 theorem plMon_A (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV n' (m + 1) →₀ ℕ)
@@ -266,8 +266,8 @@ theorem plMon_Bpl (a : Fin r) (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV 
   congr 1
   by_cases hv : (x0, a) = (x, a')
   · obtain ⟨h1, h2⟩ := Prod.mk.inj hv
-    rw [if_pos hv, if_pos (by rw [h1, h2])]
-  · rw [if_neg hv, if_neg]
+    rw [ite_eq_left hv, ite_eq_left (by rw [h1, h2])]
+  · rw [ite_eq_right hv, ite_eq_right]
     intro h'
     obtain ⟨h1, h2⟩ := Prod.mk.inj h'
     exact hv (by rw [h1, Fin.castAdd_injective r K h2])
@@ -277,7 +277,7 @@ theorem noMon_Bpl (a : Fin r) (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV 
     (h : rho (x0, Fin.castAdd K a) + 1 = lowP Fr p x0) (hL : InLow Fr p hk nL rho mo) :
     noMon Fr p hk nL (mo + Finsupp.single (aVar Fr hk nL x0 (Fin.castAdd K a)) 1) = noMon Fr p hk nL mo := by
   ext ⟨x, b⟩
-  rw [noMon_apply, div_B Fr p hk nL hx0 _ rho mo h hL, noMon_apply, if_neg, add_zero]
+  rw [noMon_apply, div_B Fr p hk nL hx0 _ rho mo h hL, noMon_apply, ite_eq_right, add_zero]
   intro h'
   exact cast_ne_nat a b (Prod.mk.inj h').2
 
@@ -291,8 +291,8 @@ theorem noMon_Bno (b : Fin K) (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV 
   congr 1
   by_cases hv : (x0, b) = (x, b')
   · obtain ⟨h1, h2⟩ := Prod.mk.inj hv
-    rw [if_pos hv, if_pos (by rw [h1, h2])]
-  · rw [if_neg hv, if_neg]
+    rw [ite_eq_left hv, ite_eq_left (by rw [h1, h2])]
+  · rw [ite_eq_right hv, ite_eq_right]
     intro h'
     obtain ⟨h1, h2⟩ := Prod.mk.inj h'
     exact hv (by rw [h1, Fin.natAdd_injective K r h2])
@@ -302,7 +302,7 @@ theorem plMon_Bno (b : Fin K) (rho : TL J nL r × Fin (r + K) → ℕ) (mo : TV 
     (h : rho (x0, Fin.natAdd r b) + 1 = lowP Fr p x0) (hL : InLow Fr p hk nL rho mo) :
     plMon Fr p hk nL (mo + Finsupp.single (aVar Fr hk nL x0 (Fin.natAdd r b)) 1) = plMon Fr p hk nL mo := by
   ext ⟨x, a⟩
-  rw [plMon_apply, div_B Fr p hk nL hx0 _ rho mo h hL, plMon_apply, if_neg, add_zero]
+  rw [plMon_apply, div_B Fr p hk nL hx0 _ rho mo h hL, plMon_apply, ite_eq_right, add_zero]
   intro h'
   exact cast_ne_nat a b (Prod.mk.inj h').2.symm
 
@@ -312,17 +312,17 @@ theorem sum_add_single {ι : Type} [DecidableEq ι] {n : ℕ} (f : ι × Fin n �
   congr 1
   by_cases h : x = x0
   · subst h
-    rw [if_pos rfl, Finset.sum_eq_single a]
+    rw [ite_eq_left rfl, Finset.sum_eq_single a]
     · rw [Finsupp.single_eq_same]
     · intro b _ hb
-      rw [Finsupp.single_apply, if_neg]
+      rw [Finsupp.single_apply, ite_eq_right]
       intro h'
       exact hb (Prod.mk.inj h').2.symm
     · simp
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     apply Finset.sum_eq_zero
     intro b _
-    rw [Finsupp.single_apply, if_neg]
+    rw [Finsupp.single_apply, ite_eq_right]
     intro h'
     exact h (Prod.mk.inj h').1.symm
 
@@ -331,9 +331,9 @@ theorem deg_upd {ι : Type} [DecidableEq ι] (S d : ι → ℕ) (x0 : ι) :
   refine forall_congr' fun x => ?_
   by_cases h : x = x0
   · subst h
-    rw [if_pos rfl, Function.update_self]
+    rw [ite_eq_left rfl, Function.update_self]
     omega
-  · rw [if_neg h, Function.update_of_ne h, add_zero]
+  · rw [ite_eq_right h, Function.update_of_ne h, add_zero]
 
 end Core
 
@@ -351,11 +351,11 @@ theorem levImg_monomial (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : TL J
   by_cases h : c = 0
   · subst h
     simp
-  · rw [support_monomial, if_neg h, Finset.filter_singleton]
+  · rw [support_monomial, ite_eq_right h, Finset.filter_singleton]
     by_cases h1 : InLow Fr p hk nL rho mo ∧ InBlock Fr p hk nL dPl dNo mo
-    · rw [if_pos h1, if_pos h1, Finset.sum_singleton, coeff_monomial, if_pos rfl]
+    · rw [ite_eq_left h1, ite_eq_left h1, Finset.sum_singleton, coeff_monomial, ite_eq_left rfl]
       rfl
-    · rw [if_neg h1, if_neg h1, Finset.sum_empty]
+    · rw [ite_eq_right h1, ite_eq_right h1, Finset.sum_empty]
 
 theorem levImg_empty (hp : 0 < p) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : TL J nL r → ℕ) (x0 : TL J nL r)
     (c0 : Fin (r + K)) (h : lowP Fr p x0 ≤ rho (x0, c0)) (F : MvPolynomial (TV n' (m + 1)) (KK O)) :
@@ -437,9 +437,9 @@ theorem lev_A (c0 : Fin (r + K)) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl d
         InBlock Fr p hk nL dPl dNo mo := by
       rw [inBlock_iff, inBlock_iff, hpl, hno]
     by_cases hBl : InBlock Fr p hk nL dPl dNo mo
-    · rw [if_pos ⟨hiff.1 hL, hB.2 hBl⟩, if_pos ⟨hL, hBl⟩, hpl, hno]
-    · rw [if_neg (fun hh => hBl (hB.1 hh.2)), if_neg (fun hh => hBl hh.2)]
-  · rw [if_neg (fun hh => hL (hiff.2 hh.1)), if_neg (fun hh => hL hh.1)]
+    · rw [ite_eq_left ⟨hiff.1 hL, hB.2 hBl⟩, ite_eq_left ⟨hL, hBl⟩, hpl, hno]
+    · rw [ite_eq_right (fun hh => hBl (hB.1 hh.2)), ite_eq_right (fun hh => hBl hh.2)]
+  · rw [ite_eq_right (fun hh => hL (hiff.2 hh.1)), ite_eq_right (fun hh => hL hh.1)]
 
 include hx0 in
 theorem block_Bpl (a : Fin r) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : TL J nL r → ℕ)
@@ -470,10 +470,10 @@ theorem lev_Bpl (a : Fin r) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : 
   by_cases hL : InLow Fr p hk nL rho mo
   · have hB := block_Bpl Fr p hk nL hx0 a rho dPl dNo h mo hL
     by_cases hBl : InBlock Fr p hk nL dPl dNo mo
-    · rw [if_pos ⟨hiff.1 hL, hB.2 hBl⟩, if_pos ⟨hL, hBl⟩, plMon_Bpl Fr p hk nL hx0 a rho mo h hL,
+    · rw [ite_eq_left ⟨hiff.1 hL, hB.2 hBl⟩, ite_eq_left ⟨hL, hBl⟩, plMon_Bpl Fr p hk nL hx0 a rho mo h hL,
         noMon_Bpl Fr p hk nL hx0 a rho mo h hL, pl_mul]
-    · rw [if_neg (fun hh => hBl (hB.1 hh.2)), if_neg (fun hh => hBl hh.2), mul_zero]
-  · rw [if_neg (fun hh => hL (hiff.2 hh.1)), if_neg (fun hh => hL hh.1), mul_zero]
+    · rw [ite_eq_right (fun hh => hBl (hB.1 hh.2)), ite_eq_right (fun hh => hBl hh.2), mul_zero]
+  · rw [ite_eq_right (fun hh => hL (hiff.2 hh.1)), ite_eq_right (fun hh => hL hh.1), mul_zero]
 
 include hx0 in
 theorem lev_Bno (b : Fin K) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : TL J nL r → ℕ)
@@ -486,10 +486,10 @@ theorem lev_Bno (b : Fin K) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : 
   by_cases hL : InLow Fr p hk nL rho mo
   · have hB := block_Bno Fr p hk nL hx0 b rho dPl dNo h mo hL
     by_cases hBl : InBlock Fr p hk nL dPl dNo mo
-    · rw [if_pos ⟨hiff.1 hL, hB.2 hBl⟩, if_pos ⟨hL, hBl⟩, plMon_Bno Fr p hk nL hx0 b rho mo h hL,
+    · rw [ite_eq_left ⟨hiff.1 hL, hB.2 hBl⟩, ite_eq_left ⟨hL, hBl⟩, plMon_Bno Fr p hk nL hx0 b rho mo h hL,
         noMon_Bno Fr p hk nL hx0 b rho mo h hL, no_mul]
-    · rw [if_neg (fun hh => hBl (hB.1 hh.2)), if_neg (fun hh => hBl hh.2), oneT_zero]
-  · rw [if_neg (fun hh => hL (hiff.2 hh.1)), if_neg (fun hh => hL hh.1), oneT_zero]
+    · rw [ite_eq_right (fun hh => hBl (hB.1 hh.2)), ite_eq_right (fun hh => hBl hh.2), oneT_zero]
+  · rw [ite_eq_right (fun hh => hL (hiff.2 hh.1)), ite_eq_right (fun hh => hL hh.1), oneT_zero]
 
 include hx0 in
 theorem mul_A (c0 : Fin (r + K)) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : TL J nL r → ℕ)
@@ -528,7 +528,7 @@ theorem mul_Bpl_zero (hp : 0 < p) (a : Fin r) (rho : TL J nL r × Fin (r + K) �
   have hP : 0 < lowP Fr p x0 := pow_pos hp _
   induction F using MvPolynomial.induction_on' with
   | monomial mo c =>
-    rw [X_mul_mon, levImg_monomial, if_neg]
+    rw [X_mul_mon, levImg_monomial, ite_eq_right]
     rintro ⟨hL, hB⟩
     have hs : Function.update rho (x0, Fin.castAdd K a) (lowP Fr p x0 - 1) (x0, Fin.castAdd K a) + 1 = lowP Fr p x0 := by
       rw [Function.update_self]; omega
@@ -538,7 +538,7 @@ theorem mul_Bpl_zero (hp : 0 < p) (a : Fin r) (rho : TL J nL r × Fin (r + K) �
     have hL' := hiff.2 hL
     rw [inBlock_iff, plMon_Bpl Fr p hk nL hx0 a _ mo hs hL'] at hB
     have h1 := hB.1 x0
-    rw [sum_add_single, if_pos rfl, hd] at h1
+    rw [sum_add_single, ite_eq_left rfl, hd] at h1
     omega
   | add F G hF hG => rw [mul_add, levImg_add, hF, hG, add_zero]
 
@@ -549,7 +549,7 @@ theorem mul_Bno_zero (hp : 0 < p) (b : Fin K) (rho : TL J nL r × Fin (r + K) �
   have hP : 0 < lowP Fr p x0 := pow_pos hp _
   induction F using MvPolynomial.induction_on' with
   | monomial mo c =>
-    rw [X_mul_mon, levImg_monomial, if_neg]
+    rw [X_mul_mon, levImg_monomial, ite_eq_right]
     rintro ⟨hL, hB⟩
     have hs : Function.update rho (x0, Fin.natAdd r b) (lowP Fr p x0 - 1) (x0, Fin.natAdd r b) + 1 = lowP Fr p x0 := by
       rw [Function.update_self]; omega
@@ -559,7 +559,7 @@ theorem mul_Bno_zero (hp : 0 < p) (b : Fin K) (rho : TL J nL r × Fin (r + K) �
     have hL' := hiff.2 hL
     rw [inBlock_iff, noMon_Bno Fr p hk nL hx0 b _ mo hs hL'] at hB
     have h1 := hB.2 x0
-    rw [sum_add_single, if_pos rfl, hd] at h1
+    rw [sum_add_single, ite_eq_left rfl, hd] at h1
     omega
   | add F G hF hG => rw [mul_add, levImg_add, hF, hG, add_zero]
 
@@ -591,12 +591,12 @@ theorem der_A_pl (a : Fin r) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo :
   | monomial mo c =>
     by_cases h0 : mo (aVar Fr hk nL x0 (Fin.castAdd K a)) = 0
     · rw [pderiv_mon_zero _ _ _ h0, levImg_zero, levImg_monomial,
-        if_neg (fun hh => notLow_of_zero Fr p hk nL _ rho mo h0 hh.1)]
+        ite_eq_right (fun hh => notLow_of_zero Fr p hk nL _ rho mo h0 hh.1)]
       simp
     · obtain ⟨mo', rfl⟩ := exists_add_single _ mo h0
       rw [pderiv_mon_succ, lev_A Fr p hk nL hx0 _ rho dPl dNo h, nsmul_eq_mul, levImg_monomial, levImg_monomial]
       by_cases hc : InLow Fr p hk nL rho mo' ∧ InBlock Fr p hk nL dPl dNo mo'
-      · rw [if_pos hc, if_pos hc, pl_euler, ← map_smul, ← map_smul, ← map_add (f := _)]
+      · rw [ite_eq_left hc, ite_eq_left hc, pl_euler, ← map_smul, ← map_smul, ← map_add (f := _)]
         congr 1
         have e1 : mo' (aVar Fr hk nL x0 (Fin.castAdd K a)) + 1 =
             (rho (x0, Fin.castAdd K a) + 1) + lowP Fr p x0 * plMon Fr p hk nL mo' (x0, a) := by
@@ -608,7 +608,7 @@ theorem der_A_pl (a : Fin r) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo :
         simp only [smul_eq_mul]
         push_cast
         ring
-      · rw [if_neg hc, if_neg hc]
+      · rw [ite_eq_right hc, ite_eq_right hc]
         simp
   | add F G hF hG =>
     simp only [map_add (f := _), levImg_add, mul_add, smul_add, hF, hG]
@@ -626,12 +626,12 @@ theorem der_A_no (b : Fin K) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo :
   | monomial mo c =>
     by_cases h0 : mo (aVar Fr hk nL x0 (Fin.natAdd r b)) = 0
     · rw [pderiv_mon_zero _ _ _ h0, levImg_zero, levImg_monomial,
-        if_neg (fun hh => notLow_of_zero Fr p hk nL _ rho mo h0 hh.1), oneT_zero]
+        ite_eq_right (fun hh => notLow_of_zero Fr p hk nL _ rho mo h0 hh.1), oneT_zero]
       simp
     · obtain ⟨mo', rfl⟩ := exists_add_single _ mo h0
       rw [pderiv_mon_succ, lev_A Fr p hk nL hx0 _ rho dPl dNo h, nsmul_eq_mul, levImg_monomial, levImg_monomial]
       by_cases hc : InLow Fr p hk nL rho mo' ∧ InBlock Fr p hk nL dPl dNo mo'
-      · rw [if_pos hc, if_pos hc, no_euler, ← map_smul, ← map_smul, ← map_add (f := _)]
+      · rw [ite_eq_left hc, ite_eq_left hc, no_euler, ← map_smul, ← map_smul, ← map_add (f := _)]
         congr 1
         have e1 : mo' (aVar Fr hk nL x0 (Fin.natAdd r b)) + 1 =
             (rho (x0, Fin.natAdd r b) + 1) + lowP Fr p x0 * noMon Fr p hk nL mo' (x0, b) := by
@@ -643,7 +643,7 @@ theorem der_A_no (b : Fin K) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo :
         simp only [smul_eq_mul]
         push_cast
         ring
-      · rw [if_neg hc, if_neg hc, oneT_zero]
+      · rw [ite_eq_right hc, ite_eq_right hc, oneT_zero]
         simp
   | add F G hF hG =>
     simp only [map_add (f := _), levImg_add, oneT_add, smul_add, hF, hG]
@@ -665,7 +665,7 @@ theorem der_B_pl (a : Fin r) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo :
     · obtain ⟨mo', rfl⟩ := exists_add_single _ mo h0
       rw [pderiv_mon_succ, lev_Bpl Fr p hk nL hx0 _ rho dPl dNo h, nsmul_eq_mul, levImg_monomial, levImg_monomial]
       by_cases hc : InLow Fr p hk nL rho mo' ∧ InBlock Fr p hk nL dPl dNo mo'
-      · rw [if_pos hc, if_pos hc, pl_mul, pl_der, ← map_smul]
+      · rw [ite_eq_left hc, ite_eq_left hc, pl_mul, pl_der, ← map_smul]
         congr 1
         have e1 : mo' (aVar Fr hk nL x0 (Fin.castAdd K a)) + 1 =
             lowP Fr p x0 * (plMon Fr p hk nL mo' (x0, a) + 1) := by
@@ -675,7 +675,7 @@ theorem der_B_pl (a : Fin r) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo :
         simp only [smul_eq_mul]
         push_cast
         ring
-      · rw [if_neg hc, if_neg hc]
+      · rw [ite_eq_right hc, ite_eq_right hc]
         simp
   | add F G hF hG =>
     simp only [map_add (f := _), levImg_add, smul_add, hF, hG]
@@ -696,7 +696,7 @@ theorem der_B_no (b : Fin K) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo :
     · obtain ⟨mo', rfl⟩ := exists_add_single _ mo h0
       rw [pderiv_mon_succ, lev_Bno Fr p hk nL hx0 _ rho dPl dNo h, nsmul_eq_mul, levImg_monomial, levImg_monomial]
       by_cases hc : InLow Fr p hk nL rho mo' ∧ InBlock Fr p hk nL dPl dNo mo'
-      · rw [if_pos hc, if_pos hc, no_mul, no_der, ← map_smul]
+      · rw [ite_eq_left hc, ite_eq_left hc, no_mul, no_der, ← map_smul]
         congr 1
         have e1 : mo' (aVar Fr hk nL x0 (Fin.natAdd r b)) + 1 =
             lowP Fr p x0 * (noMon Fr p hk nL mo' (x0, b) + 1) := by
@@ -706,7 +706,7 @@ theorem der_B_no (b : Fin K) (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo :
         simp only [smul_eq_mul]
         push_cast
         ring
-      · rw [if_neg hc, if_neg hc, oneT_zero, oneT_zero, smul_zero]
+      · rw [ite_eq_right hc, ite_eq_right hc, oneT_zero, oneT_zero, smul_zero]
   | add F G hF hG =>
     simp only [map_add (f := _), levImg_add, oneT_add, smul_add, hF, hG]
 

@@ -40,7 +40,8 @@ theorem matAct_matAct {A B : Matrix J J ℚ} (h : B * A = 1) (v : J → Ω) :
   rw [matAct_eq_mulVec, matAct_eq_mulVec, Matrix.mulVec_mulVec, ← Matrix.map_mul, h,
     Matrix.map_one _ (map_zero _) (map_one _), Matrix.one_mulVec]
 
-theorem matActC_eq (A : Matrix J J ℚ) (z : J → ℂ) : matActC A z = matAct A z := rfl
+omit [DecidableEq J] in
+theorem matActC_eq [DecidableEq J] (A : Matrix J J ℚ) (z : J → ℂ) : matActC A z = matAct A z := rfl
 
 theorem matAct_smul (A : Matrix J J ℚ) (c : Ω) (v : J → Ω) :
     matAct A (c • v) = c • matAct A v := by
@@ -70,7 +71,8 @@ theorem aeval_linSub (A : Matrix J J ℚ) (v : J → Ω) (g : MvPolynomial J ℚ
   funext i
   simp [matAct, eq_ratCast]
 
-theorem isHomogeneous_linSub (A : Matrix J J ℚ) {g : MvPolynomial J ℚ} {n : ℕ}
+omit [DecidableEq J] in
+theorem isHomogeneous_linSub [DecidableEq J] (A : Matrix J J ℚ) {g : MvPolynomial J ℚ} {n : ℕ}
     (hg : g.IsHomogeneous n) : (linSub A g).IsHomogeneous n := by
   have h := hg.eval₂ (algebraMap ℚ (MvPolynomial J ℚ)) (fun i => ∑ j, C (A i j) * X j)
     (fun r => by rw [MvPolynomial.algebraMap_eq]; exact isHomogeneous_C _ _)
@@ -84,11 +86,13 @@ section Pts
 
 variable {J : Type} [Fintype J] {Ω : Type*} [Field Ω] [CharZero Ω]
 
-theorem aeval_int_eq (z : J → ℂ) (f : MvPolynomial J ℤ) :
+omit [Fintype J] in
+theorem aeval_int_eq [Fintype J] (z : J → ℂ) (f : MvPolynomial J ℤ) :
     eval z (map (Int.castRingHom ℂ) f) = aeval z f := by
   rw [eval_map, aeval_def, algebraMap_int_eq]
 
-theorem aeval_qmap {S : Type*} [CommRing S] [Algebra ℚ S] (z : J → S) (f : MvPolynomial J ℤ) :
+omit [Fintype J] in
+theorem aeval_qmap [Fintype J] {S : Type*} [CommRing S] [Algebra ℚ S] (z : J → S) (f : MvPolynomial J ℤ) :
     aeval z (qmap f) = aeval z f := by
   show aeval z (map (Int.castRingHom ℚ) f) = _
   rw [aeval_def, aeval_def, eval₂_map]
@@ -99,7 +103,7 @@ theorem mem_pts_iff (v : J → Ω) (z : J → ℂ) :
     z ∈ pts (coordIdeal ℤ v) ↔ z ≠ 0 ∧ ∀ (n : ℕ) (g : MvPolynomial J ℚ), g.IsHomogeneous n →
       aeval v g = 0 → aeval z g = 0 := by
   classical
-  simp only [pts, conePts, Set.mem_setOf_eq, coordIdeal, RingHom.mem_ker, aeval_int_eq]
+  simp only [pts, conePts, Set.mem_ofPred_eq, coordIdeal, RingHom.mem_ker, aeval_int_eq]
   refine and_congr_right fun _ => ⟨fun H n g hg hv => ?_, fun H f hf => ?_⟩
   · obtain ⟨b, hb⟩ := IsLocalization.exist_integer_multiples_of_finset (nonZeroDivisors ℤ)
       (g.support.image fun m => g.coeff m)

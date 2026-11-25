@@ -34,19 +34,19 @@ theorem units_val_isOpenEmbedding : ∀ (F E : Type) [Field F] [NumberField F] [
     IsOpenEmbedding (Units.val : (R ⊗[F] E)ˣ → R ⊗[F] E) := by
   intro F E _ _ _ _ _ σ hσ R _ _ _ _ _ hR
   obtain ⟨hTR, hLC, hSC, hT2, hArt, hRd, hUo, -⟩ := hR
-  haveI := hTR
-  haveI := hLC
-  haveI := hSC
-  haveI := hT2
-  haveI := hArt
-  haveI := hRd
+  have := hTR
+  have := hLC
+  have := hSC
+  have := hT2
+  have := hArt
+  have := hRd
   obtain ⟨-, -, -, hinv, -, hfix, hunit⟩ := _root_.GlobalTheory.CompanionTheory.SW.KAlg.algebra_tensor_invol F E σ hσ R
   obtain ⟨hTK, -, -, -, hsc, htr, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hσ R
-  haveI := hTK
-  haveI : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
-  haveI : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R (R ⊗[F] E)
+  have := hTK
+  have : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
+  have : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R (R ⊗[F] E)
   have hfin : Module.finrank F E = 2 := hσ.2.2.1
-  haveI : Module.Finite F E := Module.finite_of_finrank_pos (by omega)
+  have : Module.Finite F E := Module.finite_of_finrank_pos (by omega)
   let b : Module.Basis (Fin 2) F E := Module.finBasisOfFinrankEq F E hfin
   let N : R ⊗[F] E → R := fun y =>
     algebraMap F R (1 / 2) * Algebra.trace R (R ⊗[F] E) (y * sigR R σ y)

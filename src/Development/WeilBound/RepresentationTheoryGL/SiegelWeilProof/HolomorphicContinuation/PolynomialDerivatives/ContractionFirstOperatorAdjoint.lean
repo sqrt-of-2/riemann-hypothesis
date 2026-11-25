@@ -101,21 +101,21 @@ theorem contraction_first_operator_adjoint (ε : Fin m → Bool) {c : ℝ} (hc :
   have hc2 : ((2 * c : ℝ) : ℂ) ≠ 0 := by exact_mod_cast (by positivity : (2 * c) ≠ 0)
   unfold D1 D2
   by_cases hab : ε a = ε b
-  · rw [if_pos hab, if_pos hab]
+  · rw [ite_eq_left hab, ite_eq_left hab]
     cases ha : ε a
     · have hb : ε b = false := by rw [← hab, ha]
-      simp only [Bool.false_eq_true, if_false]
+      simp only [Bool.false_eq_true, ite_false]
       rw [Finset.sum_mul, contr_sum, mul_neg, contr_neg, Finset.mul_sum, contr_sum, neg_neg]
       exact Finset.sum_congr rfl fun i _ => tB ε hc ha hb i hh hg
     · have hb : ε b = true := by rw [← hab, ha]
-      simp only [if_true]
+      simp only [ite_true]
       rw [neg_mul, contr_neg, Finset.sum_mul, contr_sum, Finset.mul_sum, contr_sum]
       congr 1
       exact Finset.sum_congr rfl fun i _ => tA ε hc ha hb i hh hg
-  · rw [if_neg hab, if_neg hab]
+  · rw [ite_eq_right hab, ite_eq_right hab]
     cases ha : ε a
     · have hb : ε b = true := by cases h' : ε b <;> simp_all
-      simp only [Bool.false_eq_true, if_false]
+      simp only [Bool.false_eq_true, ite_false]
       rw [smul_mul_assoc, contr_smul, Finset.sum_mul, contr_sum, mul_smul_comm, contr_smul, Finset.mul_sum _ _ h,
         contr_sum]
       simp_rw [← tD ε hc ha hb _ hh hg]
@@ -123,7 +123,7 @@ theorem contraction_first_operator_adjoint (ε : Fin m → Bool) {c : ℝ} (hc :
       push_cast at hc2 ⊢
       field_simp
     · have hb : ε b = false := by cases h' : ε b <;> simp_all
-      simp only [if_true]
+      simp only [ite_true]
       rw [smul_mul_assoc, contr_smul, Finset.sum_mul, contr_sum, mul_smul_comm, contr_smul, Finset.mul_sum _ _ h,
         contr_sum]
       simp_rw [tC ε hc ha hb _ hh hg]

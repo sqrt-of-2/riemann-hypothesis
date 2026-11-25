@@ -138,7 +138,8 @@ section Lat
 variable {k : Type} [Field k] [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k]
   {n n' : Type} [Fintype n] [Fintype n']
 
-theorem latInd_lastKer (ΛA : Submodule 𝒪[k] (n' → k)) (ΛT : Submodule 𝒪[k] (n → k)) :
+omit [Fintype n] [Fintype n'] in
+theorem latInd_lastKer [Fintype n] [Fintype n'] (ΛA : Submodule 𝒪[k] (n' → k)) (ΛT : Submodule 𝒪[k] (n → k)) :
     latInd (lastKer ΛA) ΛT = tensCol (latInd ΛA ΛT) (vecInd ΛT) := by
   classical
   funext x
@@ -168,13 +169,14 @@ theorem latInd_lastKer (ΛA : Submodule 𝒪[k] (n' → k)) (ΛT : Submodule �
       exact this
   simp only [latInd, tensCol, vecInd]
   by_cases h : ∀ y ∈ lastKer ΛA, x *ᵥ y ∈ ΛT
-  · rw [if_pos h, if_pos (key.1 h).1, if_pos (key.1 h).2, mul_one]
-  · rw [if_neg h]
+  · rw [ite_eq_left h, ite_eq_left (key.1 h).1, ite_eq_left (key.1 h).2, mul_one]
+  · rw [ite_eq_right h]
     by_cases h1 : ∀ y ∈ ΛA, x.submatrix id Sum.inl *ᵥ y ∈ ΛT
-    · rw [if_pos h1, if_neg fun h2 => h (key.2 ⟨h1, h2⟩), mul_zero]
-    · rw [if_neg h1, zero_mul]
+    · rw [ite_eq_left h1, ite_eq_right fun h2 => h (key.2 ⟨h1, h2⟩), mul_zero]
+    · rw [ite_eq_right h1, zero_mul]
 
-theorem latInd_lastKer_row (ΛA : Submodule 𝒪[k] (n' → k)) (ΛT : Submodule 𝒪[k] (n → k)) :
+omit [Fintype n'] in
+theorem latInd_lastKer_row [Fintype n'] (ΛA : Submodule 𝒪[k] (n' → k)) (ΛT : Submodule 𝒪[k] (n → k)) :
     latInd ΛT (lastKer ΛA) = tensRow (latInd ΛT ΛA) (dualInd ΛT) := by
   classical
   funext x
@@ -184,11 +186,11 @@ theorem latInd_lastKer_row (ΛA : Submodule 𝒪[k] (n' → k)) (ΛT : Submodule
     exact ⟨fun h => ⟨fun y hy => (h y hy).1, fun y hy => (h y hy).2⟩, fun h y hy => ⟨h.1 y hy, h.2 y hy⟩⟩
   simp only [latInd, tensRow, dualInd]
   by_cases h : ∀ y ∈ ΛT, x *ᵥ y ∈ lastKer ΛA
-  · rw [if_pos h, if_pos (key.1 h).1, if_pos (key.1 h).2, mul_one]
-  · rw [if_neg h]
+  · rw [ite_eq_left h, ite_eq_left (key.1 h).1, ite_eq_left (key.1 h).2, mul_one]
+  · rw [ite_eq_right h]
     by_cases h1 : ∀ y ∈ ΛT, x.submatrix Sum.inl id *ᵥ y ∈ ΛA
-    · rw [if_pos h1, if_neg fun h2 => h (key.2 ⟨h1, h2⟩), mul_zero]
-    · rw [if_neg h1, zero_mul]
+    · rw [ite_eq_left h1, ite_eq_right fun h2 => h (key.2 ⟨h1, h2⟩), mul_zero]
+    · rw [ite_eq_right h1, zero_mul]
 
 end Lat
 

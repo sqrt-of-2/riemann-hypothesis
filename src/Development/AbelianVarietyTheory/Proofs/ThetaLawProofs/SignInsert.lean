@@ -69,13 +69,13 @@ theorem kosD_deg (m : Fin g → ∀ j j', Matrix (Fin (N j)) (Fin (N j')) R) (ev
     (p q : KIx g d N) (h : kdeg q ≠ kdeg p + 1) : kosD m ev p q = 0 := by
   rcases p with p | p <;> rcases q with q | q
   · simp only [kosD]
-    refine Finset.sum_eq_zero fun i _ => if_neg ?_
+    refine Finset.sum_eq_zero fun i _ => ite_eq_right ?_
     rintro ⟨hi, hq⟩
     apply h
     simp [kdeg, hq, Finset.card_insert_of_notMem hi]
   · rfl
   · simp only [kosD]
-    refine if_neg fun hq => h ?_
+    refine ite_eq_right fun hq => h ?_
     simp [kdeg, hq]
   · rfl
 
@@ -112,27 +112,27 @@ theorem isCx_kosD (m : Fin g → ∀ j j', Matrix (Fin (N j)) (Fin (N j')) R) (e
       refine Finset.sum_congr rfl fun i _ => ?_
       by_cases hJ : J = insert i I
       · subst hJ
-        rw [if_pos rfl]
+        rw [ite_eq_left rfl]
         simp only [Finset.mul_sum]
         rw [Finset.sum_comm]
         refine Finset.sum_congr rfl fun i' _ => ?_
         by_cases hi : i ∉ I
         · by_cases hi' : i' ∉ insert i I ∧ K = insert i' (insert i I)
           · simp only [T]
-            rw [if_pos ⟨hi, hi'⟩, Matrix.mul_apply, Finset.mul_sum]
+            rw [ite_eq_left ⟨hi, hi'⟩, Matrix.mul_apply, Finset.mul_sum]
             refine Finset.sum_congr rfl fun k _ => ?_
-            rw [if_pos ⟨hi, trivial⟩, if_pos hi']
+            rw [ite_eq_left ⟨hi, trivial⟩, ite_eq_left hi']
             ring
           · simp only [T]
-            rw [if_neg (fun h => hi' h.2)]
-            exact Finset.sum_eq_zero fun k _ => by rw [if_neg hi', mul_zero]
+            rw [ite_eq_right (fun h => hi' h.2)]
+            exact Finset.sum_eq_zero fun k _ => by rw [ite_eq_right hi', mul_zero]
         · simp only [T]
-          rw [if_neg (fun h => hi h.1)]
-          exact Finset.sum_eq_zero fun k _ => by rw [if_neg (fun h => hi h.1), zero_mul]
-      · rw [if_neg hJ]
-        exact Finset.sum_eq_zero fun k _ => by rw [if_neg (fun h => hJ h.2), zero_mul]
+          rw [ite_eq_right (fun h => hi h.1)]
+          exact Finset.sum_eq_zero fun k _ => by rw [ite_eq_right (fun h => hi h.1), zero_mul]
+      · rw [ite_eq_right hJ]
+        exact Finset.sum_eq_zero fun k _ => by rw [ite_eq_right (fun h => hJ h.2), zero_mul]
     rw [Finset.sum_congr rfl fun J _ => h3 J, Finset.sum_comm]
-    simp only [Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    simp only [Finset.sum_ite_eq', Finset.mem_univ, ite_true]
     rw [← Fintype.sum_prod_type']
     have hT : ∀ i i', T i i' + T i' i = 0 := by
       intro i i'
@@ -146,41 +146,41 @@ theorem isCx_kosD (m : Fin g → ∀ j j', Matrix (Fin (N j)) (Fin (N j')) R) (e
           rw [h3, Finset.card_insert_of_notMem h2, Finset.card_insert_of_notMem h1]
         have hg : K.card ≤ g := by simpa using Finset.card_le_univ K
         simp only [T]
-        rw [if_pos ⟨h1, h2, h3⟩, if_pos ⟨h4, h5, h6⟩, sign_insert I h1, sign_insert I h4,
+        rw [ite_eq_left ⟨h1, h2, h3⟩, ite_eq_left ⟨h4, h5, h6⟩, sign_insert I h1, sign_insert I h4,
           hc' i i' _ _ _ _ (Finset.card_insert_of_notMem h1) (Finset.card_insert_of_notMem h4) hK hg]
         rcases lt_or_gt_of_ne hne with hlt | hlt
-        · rw [if_pos hlt, if_neg hlt.not_gt]; ring
-        · rw [if_pos hlt, if_neg hlt.not_gt]; ring
+        · rw [ite_eq_left hlt, ite_eq_right hlt.not_gt]; ring
+        · rw [ite_eq_left hlt, ite_eq_right hlt.not_gt]; ring
       · have h' : ¬ (i' ∉ I ∧ i ∉ insert i' I ∧ K = insert i (insert i' I)) := by
           rintro ⟨h1, h2, h3⟩
           have hne : i ≠ i' := fun e => h2 (e ▸ Finset.mem_insert_self _ _)
           exact h ⟨fun e => h2 (Finset.mem_insert_of_mem e), by simp [h1, hne.symm],
             h3.trans (Finset.insert_comm _ _ _)⟩
         simp only [T]
-        rw [if_neg h, if_neg h', add_zero]
+        rw [ite_eq_right h, ite_eq_right h', add_zero]
     refine Finset.sum_involution (fun p _ => p.swap) (fun p _ => hT p.1 p.2) ?_ (fun _ _ => Finset.mem_univ _)
       (fun p _ => Prod.swap_swap p)
     rintro ⟨i, i'⟩ _ h e
     apply h
     obtain rfl : i' = i := congrArg Prod.fst e
-    exact if_neg fun h => h.2.1 (Finset.mem_insert_self _ _)
+    exact ite_eq_right fun h => h.2.1 (Finset.mem_insert_self _ _)
   · have h2 : ∑ q : Fin d, kosD m ev (.inr a) (.inr q) * kosD m ev (.inr q) (.inl ⟨K, c⟩) = 0 := by
       simp [kosD]
     rw [h2, add_zero, Fintype.sum_sigma]
     refine Finset.sum_eq_zero fun J _ => ?_
     simp only [kosD]
     by_cases hJ : J = ∅
-    · simp only [if_pos hJ, Finset.mul_sum]
+    · simp only [ite_eq_left hJ, Finset.mul_sum]
       rw [Finset.sum_comm]
       refine Finset.sum_eq_zero fun i _ => ?_
       by_cases h : i ∉ J ∧ K = insert i J
-      · simp only [if_pos h]
+      · simp only [ite_eq_left h]
         have e := congrFun (congrFun (he' i J.card K.card (by simp [hJ]) (by simp [h.2, hJ])) a) c
         rw [Matrix.mul_apply, Matrix.zero_apply] at e
         rw [← mul_zero ((-1 : R) ^ (J.filter (· < i)).card), ← e, Finset.mul_sum]
         exact Finset.sum_congr rfl fun k _ => by ring
-      · simp only [if_neg h, mul_zero, Finset.sum_const_zero]
-    · simp only [if_neg hJ, zero_mul, Finset.sum_const_zero]
+      · simp only [ite_eq_right h, mul_zero, Finset.sum_const_zero]
+    · simp only [ite_eq_right hJ, zero_mul, Finset.sum_const_zero]
 
 end Alg
 
@@ -262,7 +262,7 @@ theorem koszul_isCx : ∀ (R : Type) [CommRing R] (x : KeyIn R) (n l d : ℕ) (s
       · exact ⟨0, fun h => absurd h hj⟩
     choose c hc using h1
     refine ⟨fun i j j' => if h : j' = j + 1 then Matrix.of fun k' k => c i j (h ▸ k) k' else 0, fun i j hj k => ?_⟩
-    simp only [dif_pos, Matrix.of_apply]
+    simp only [dite_eq_left, Matrix.of_apply]
     exact hc i j k hj
   · refine isCx_kosD (N := fun j => (l - j * n) ^ x.P.g) m _ (fun i i' j hj => ?_) (fun i => ?_)
     · ext k' k

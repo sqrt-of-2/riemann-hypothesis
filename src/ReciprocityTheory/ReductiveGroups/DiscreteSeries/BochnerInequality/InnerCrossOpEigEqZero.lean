@@ -59,19 +59,19 @@ private theorem casimirK_eq_casValK_smul_of_isKHWVec {X : Type*} [AddCommGroup X
       ((((if b = a then μ a ^ 2 else 0) + (if a < b then μ a - μ b else 0) : ℝ)) : ℂ) • w := by
     intro a b hab
     rcases lt_trichotomy b a with h | h | h
-    · rw [hw.2 b a h hab, map_zero, if_neg (ne_of_lt h), if_neg (lt_asymm h)]
+    · rw [hw.2 b a h hab, map_zero, ite_eq_right (ne_of_lt h), ite_eq_right (lt_asymm h)]
       simp
     · subst h
-      rw [if_pos rfl, if_neg (lt_irrefl b), add_zero, hw.1 b, map_smul, hw.1 b, smul_smul,
+      rw [ite_eq_left rfl, ite_eq_right (lt_irrefl b), add_zero, hw.1 b, map_smul, hw.1 b, smul_smul,
         ← Complex.ofReal_mul, ← sq]
     · have e := LinearMap.congr_fun (hA' a b b a) w
-      simp only [LinearMap.sub_apply, Module.End.mul_apply, if_true,
+      simp only [LinearMap.sub_apply, mul_apply_eq_comp, ite_true,
         hw.2 a b h hab.symm, map_zero, sub_zero] at e
-      rw [e, if_neg (ne_of_gt h), if_pos h, hw.1 a, hw.1 b]
+      rw [e, ite_eq_right (ne_of_gt h), ite_eq_left h, hw.1 a, hw.1 b]
       simp [sub_smul]
   have hsum : casimirK ε A w = ((∑ a, ∑ b ∈ univ.filter (fun b => ε b = ε a),
       ((if b = a then μ a ^ 2 else 0) + (if a < b then μ a - μ b else 0)) : ℝ) : ℂ) • w := by
-    simp only [casimirK, LinearMap.sum_apply, Module.End.mul_apply, Complex.ofReal_sum,
+    simp only [casimirK, LinearMap.sum_apply, mul_apply_eq_comp, Complex.ofReal_sum,
       Finset.sum_smul]
     exact Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b hb =>
       term a b (Finset.mem_filter.mp hb).2
@@ -90,8 +90,8 @@ private theorem casimirK_eq_casValK_smul_of_isKHWVec {X : Type*} [AddCommGroup X
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
     by_cases h1 : b < a ∧ ε a = ε b
-    · rw [if_pos h1, if_pos ⟨h1.1, h1.2.symm⟩]
-    · rw [if_neg h1, if_neg fun h2 => h1 ⟨h2.1, h2.2.symm⟩]
+    · rw [ite_eq_left h1, ite_eq_left ⟨h1.1, h1.2.symm⟩]
+    · rw [ite_eq_right h1, ite_eq_right fun h2 => h1 ⟨h2.1, h2.2.symm⟩]
   have hρ : ∀ a, 2 * rhoC ε a = (∑ b, if a < b ∧ ε b = ε a then (1 : ℝ) else 0) -
       ∑ b, if b < a ∧ ε b = ε a then (1 : ℝ) else 0 := by
     intro a

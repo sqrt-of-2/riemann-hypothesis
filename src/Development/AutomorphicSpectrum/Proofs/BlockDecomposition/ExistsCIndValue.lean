@@ -64,11 +64,13 @@ def IsHK (H : Subgroup G) (E : Set G) : Prop :=
   (∀ h ∈ H, ∀ g, h * g ∈ E ↔ g ∈ E) ∧
     ∃ K : Subgroup G, IsOpen (K : Set G) ∧ ∀ g, ∀ x ∈ K, g * x ∈ E ↔ g ∈ E
 
-theorem IsHK.compl {H : Subgroup G} {E : Set G} (hE : IsHK H E) : IsHK H Eᶜ := by
+omit [IsTopologicalGroup G] in
+theorem IsHK.compl [IsTopologicalGroup G] {H : Subgroup G} {E : Set G} (hE : IsHK H E) : IsHK H Eᶜ := by
   obtain ⟨h1, K, hK, h2⟩ := hE
   exact ⟨fun h hh g => not_congr (h1 h hh g), K, hK, fun g x hx => not_congr (h2 g x hx)⟩
 
-theorem IsHK.inter {H : Subgroup G} {E E' : Set G} (hE : IsHK H E) (hE' : IsHK H E') : IsHK H (E ∩ E') := by
+omit [IsTopologicalGroup G] in
+theorem IsHK.inter [IsTopologicalGroup G] {H : Subgroup G} {E E' : Set G} (hE : IsHK H E) (hE' : IsHK H E') : IsHK H (E ∩ E') := by
   obtain ⟨h1, K, hK, h2⟩ := hE
   obtain ⟨h1', K', hK', h2'⟩ := hE'
   refine ⟨fun h hh g => and_congr (h1 h hh g) (h1' h hh g), K ⊓ K', ?_, fun g x hx =>
@@ -90,7 +92,8 @@ theorem IsHK.isOpen {H : Subgroup G} {E : Set G} (hE : IsHK H E) : IsOpen E := b
   rw [e]
   exact (h2 g _ hy).2 hg
 
-theorem isHK_doubleCoset (H K : Subgroup G) (hK : IsOpen (K : Set G)) (c : G) :
+omit [IsTopologicalGroup G] in
+theorem isHK_doubleCoset [IsTopologicalGroup G] (H K : Subgroup G) (hK : IsOpen (K : Set G)) (c : G) :
     IsHK H {g | ∃ a ∈ H, ∃ x ∈ K, g = a * c * x} := by
   refine ⟨fun h hh g => ⟨?_, ?_⟩, K, hK, fun g y hy => ⟨?_, ?_⟩⟩
   · rintro ⟨a, ha, x, hx, e⟩
@@ -109,14 +112,14 @@ def stabSub {V : Type} [AddCommGroup V] [Module ℂ V] (ρ : Representation ℂ 
   carrier := {g | ρ g v = v}
   mul_mem' := by
     intro x y hx hy
-    simp only [Set.mem_setOf_eq, map_mul, Module.End.mul_apply] at *
+    simp only [Set.mem_ofPred_eq, map_mul, mul_apply_eq_comp] at *
     rw [hy, hx]
   one_mem' := by simp
   inv_mem' := by
     intro x hx
-    simp only [Set.mem_setOf_eq] at *
+    simp only [Set.mem_ofPred_eq] at *
     conv_lhs => rw [← hx]
-    rw [← Module.End.mul_apply, ← map_mul]; simp
+    rw [← mul_apply_eq_comp, ← map_mul]; simp
 
 theorem cInd_right_inv (H : Subgroup G) (σ : Representation ℂ H W) (f : cIndSpace H σ) :
     ∃ K : Subgroup G, IsOpen (K : Set G) ∧ ∀ g, ∀ x ∈ K, f.1.1.1 (g * x) = f.1.1.1 g := by
@@ -136,9 +139,9 @@ theorem exists_indicator (H : Subgroup G) (σ : Representation ℂ H W) {E : Set
     have e : f.1.1.1 ((h : G) * g) = σ h (f.1.1.1 g) := f.1.1.2 h g
     by_cases hg : g ∈ E
     · have hg' : (h : G) * g ∈ E := (h1 h h.2 g).2 hg
-      simp only [b, if_pos hg, if_pos hg', e]
+      simp only [b, ite_eq_left hg, ite_eq_left hg', e]
     · have hg' : (h : G) * g ∉ E := fun c => hg ((h1 h h.2 g).1 c)
-      simp only [b, if_neg hg, if_neg hg', map_zero]
+      simp only [b, ite_eq_right hg, ite_eq_right hg', map_zero]
   have hsm : (⟨b, hind⟩ : indSpace H σ) ∈ smoothPart (ind H σ) := by
     refine GlobalTheory.CompanionTheory.BZMirOnto.isOpen_fixed_of_subgroup (ind H σ) (K ⊓ L) (hK.inter hL) _ fun x hx => ?_
     apply Subtype.ext
@@ -146,9 +149,9 @@ theorem exists_indicator (H : Subgroup G) (σ : Representation ℂ H W) {E : Set
     show b (g * x) = b g
     by_cases hg : g ∈ E
     · have hg' : g * x ∈ E := (h2 g x hx.1).2 hg
-      simp only [b, if_pos hg, if_pos hg', hLi g x hx.2]
+      simp only [b, ite_eq_left hg, ite_eq_left hg', hLi g x hx.2]
     · have hg' : g * x ∉ E := fun c => hg ((h2 g x hx.1).1 c)
-      simp only [b, if_neg hg, if_neg hg']
+      simp only [b, ite_eq_right hg, ite_eq_right hg']
   have hc : (⟨⟨b, hind⟩, hsm⟩ : smoothPart (ind H σ)) ∈ cIndSpace H σ := by
     obtain ⟨C, hC, hf⟩ := f.2
     refine ⟨C, hC, fun g hg => hf g ?_⟩
@@ -156,9 +159,9 @@ theorem exists_indicator (H : Subgroup G) (σ : Representation ℂ H W) {E : Set
     apply hg
     show b g = 0
     by_cases hgE : g ∈ E
-    · simp only [b, if_pos hgE]; exact h0
-    · simp only [b, if_neg hgE]
-  exact ⟨⟨⟨⟨b, hind⟩, hsm⟩, hc⟩, fun g hg => if_pos hg, fun g hg => if_neg hg⟩
+    · simp only [b, ite_eq_left hgE]; exact h0
+    · simp only [b, ite_eq_right hgE]
+  exact ⟨⟨⟨⟨b, hind⟩, hsm⟩, hc⟩, fun g hg => ite_eq_left hg, fun g hg => ite_eq_right hg⟩
 
 theorem exists_cInd_value (H : Subgroup G) (σ : Representation ℂ H W) (hσ : IsSmooth σ)
     (hbase : ∀ O ∈ 𝓝 (1 : G), ∃ K : Subgroup G, IsOpen (K : Set G) ∧ IsCompact (K : Set G) ∧ (K : Set G) ⊆ O)
@@ -194,7 +197,8 @@ theorem blockIndex_false_val (m j : ℕ) (a : Fin m) : ((eGP m j ⟨false, a⟩ 
 theorem blockIndex_true_val (m j : ℕ) (b : Fin (j + 1)) : ((eGP m j ⟨true, b⟩ : Fin (m + j + 1)) : ℕ) = m + b := by
   simp [eGP, stdSum]
 
-theorem mem_mirabolicParabolic_iff (m j : ℕ) (g : Mir k (m + j)) :
+omit [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem mem_mirabolicParabolic_iff [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k] (m j : ℕ) (g : Mir k (m + j)) :
     g ∈ MirabolicParabolic k m j ↔ ∀ (b : Fin (j + 1)) (a : Fin m),
       ((g : GL (Fin (m + j + 1)) k) : Matrix (Fin (m + j + 1)) (Fin (m + j + 1)) k)
         (eGP m j ⟨true, b⟩) (eGP m j ⟨false, a⟩) = 0 := by

@@ -76,8 +76,8 @@ open GlobalTheory.WeilAdm.HaarSplit
 
 private theorem opensMeasurableSpace_pi_mixedSpace (F : Type) [Field F] [NumberField F] (κ : Type) [Fintype κ] :
     OpensMeasurableSpace (κ → mixedEmbedding.mixedSpace F) := by
-  haveI : SecondCountableTopology (mixedEmbedding.mixedSpace F) := inferInstance
-  haveI : BorelSpace (mixedEmbedding.mixedSpace F) := inferInstance
+  have : SecondCountableTopology (mixedEmbedding.mixedSpace F) := inferInstance
+  have : BorelSpace (mixedEmbedding.mixedSpace F) := inferInstance
   infer_instance
 
 theorem exists_haar (F : Type) [Field F] [NumberField F] (κ : Type) [Fintype κ]
@@ -87,20 +87,20 @@ theorem exists_haar (F : Type) [Field F] [NumberField F] (κ : Type) [Fintype κ
       ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ⊤ ∧ ∀ f : SchwartzMap (κ → mixedEmbedding.mixedSpace F) ℂ,
         ∫⁻ x, ‖GlobalTheory.WeilM.pureA F f g x‖ₑ ^ 2 ∂μA = c * ∫⁻ z, ‖f z‖ₑ ^ 2 ∂μ := by
   classical
-  haveI := opensMeasurableSpace_pi_mixedSpace F κ
-  letI : LocallyCompactSpace (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.locallyCompact_finiteAdele F
-  haveI : SecondCountableTopology (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.secondCountable_finiteAdele F
-  haveI : T2Space (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.t2Space_finiteAdeleRing_of_numberField F
-  letI : MeasurableSpace (FiniteAdeleRing (𝓞 F) F) := borel _
-  haveI : BorelSpace (FiniteAdeleRing (𝓞 F) F) := ⟨rfl⟩
-  letI mA : MeasurableSpace (κ → AdeleRing (𝓞 F) F) := borel _
-  haveI : BorelSpace (κ → AdeleRing (𝓞 F) F) := ⟨rfl⟩
+  have := opensMeasurableSpace_pi_mixedSpace F κ
+  let : LocallyCompactSpace (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.locallyCompact_finiteAdele F
+  have : SecondCountableTopology (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.secondCountable_finiteAdele F
+  have : T2Space (FiniteAdeleRing (𝓞 F) F) := GlobalTheory.AdelicUnitaryTop.t2Space_finiteAdeleRing_of_numberField F
+  let : MeasurableSpace (FiniteAdeleRing (𝓞 F) F) := borel _
+  have : BorelSpace (FiniteAdeleRing (𝓞 F) F) := ⟨rfl⟩
+  let mA : MeasurableSpace (κ → AdeleRing (𝓞 F) F) := borel _
+  have : BorelSpace (κ → AdeleRing (𝓞 F) F) := ⟨rfl⟩
   obtain ⟨ν, hν⟩ : ∃ ν : Measure (κ → FiniteAdeleRing (𝓞 F) F), ν = Measure.addHaar := ⟨_, rfl⟩
-  haveI : ν.IsAddHaarMeasure := by rw [hν]; infer_instance
-  haveI : SFinite ν := by rw [hν]; infer_instance
-  haveI : SFinite μ := inferInstance
-  haveI : MeasurableAdd (κ → FiniteAdeleRing (𝓞 F) F) := inferInstance
-  haveI : MeasurableAdd (κ → mixedEmbedding.mixedSpace F) := inferInstance
+  have : ν.IsAddHaarMeasure := by rw [hν]; infer_instance
+  have : SFinite ν := by rw [hν]; infer_instance
+  have : SFinite μ := inferInstance
+  have : MeasurableAdd (κ → FiniteAdeleRing (𝓞 F) F) := inferInstance
+  have : MeasurableAdd (κ → mixedEmbedding.mixedSpace F) := inferInstance
   let h : ((κ → mixedEmbedding.mixedSpace F) × (κ → FiniteAdeleRing (𝓞 F) F)) ≃ₜ (κ → AdeleRing (𝓞 F) F) :=
     { toEquiv := (splitE F κ).toEquiv
       continuous_toFun := continuous_splitE F κ
@@ -115,7 +115,7 @@ theorem exists_haar (F : Type) [Field F] [NumberField F] (κ : Type) [Fintype κ
     have hU : IsOpen {y | g y = g 0} := hg.1.isOpen_fiber _
     have hpos : 0 < ν {y | g y = g 0} := hU.measure_pos ν ⟨0, rfl⟩
     calc (0 : ℝ≥0∞) < ‖g 0‖ₑ ^ 2 * ν {y | g y = g 0} :=
-          ENNReal.mul_pos (pow_ne_zero _ (enorm_ne_zero.2 hg0)) hpos.ne'
+          ENNReal.mul_pos (pow_ne_zero _ (eNorm_ne_zero.2 hg0)) hpos.ne'
       _ = ∫⁻ y, {y | g y = g 0}.indicator (fun _ => ‖g 0‖ₑ ^ 2) y ∂ν :=
           (lintegral_indicator_const hU.measurableSet _).symm
       _ ≤ ∫⁻ y, ‖g y‖ₑ ^ 2 ∂ν := by
@@ -129,17 +129,17 @@ theorem exists_haar (F : Type) [Field F] [NumberField F] (κ : Type) [Fintype κ
     unfold HasFiniteIntegral at h2
     refine ne_of_lt (lt_of_le_of_lt (le_of_eq ?_) h2)
     refine lintegral_congr fun y => ?_
-    rw [enorm_pow, enorm_norm]
+    rw [eNorm_pow, eNorm_norm]
   · intro f
     rw [lintegral_map_equiv, hm]
     have hpt : ∀ p : (κ → mixedEmbedding.mixedSpace F) × (κ → FiniteAdeleRing (𝓞 F) F),
         ‖GlobalTheory.WeilM.pureA F f g (splitE F κ p)‖ₑ ^ 2 = ‖f p.1‖ₑ ^ 2 * ‖g p.2‖ₑ ^ 2 := by
       intro p
-      rw [pureA_splitE, enorm_mul, mul_pow]
+      rw [pureA_splitE, eNorm_mul, mul_pow]
     simp_rw [hpt]
     rw [mul_comm]
     exact lintegral_prod_mul (μ := μ) (ν := ν) (f := fun z => ‖f z‖ₑ ^ 2) (g := fun y => ‖g y‖ₑ ^ 2)
-      (f.continuous.measurable.enorm.pow_const 2).aemeasurable (hgc.measurable.enorm.pow_const 2).aemeasurable
+      (f.continuous.measurable.eNorm.pow_const 2).aemeasurable (hgc.measurable.eNorm.pow_const 2).aemeasurable
 
 theorem integral_sq_eq {V : Type} [TopologicalSpace V] [MeasurableSpace V] [OpensMeasurableSpace V] (μ : Measure V)
     {f : V → ℂ} (hf : Continuous f) : ∫ x, ‖f x‖ ^ 2 ∂μ = (∫⁻ x, ‖f x‖ₑ ^ 2 ∂μ).toReal := by
@@ -148,7 +148,7 @@ theorem integral_sq_eq {V : Type} [TopologicalSpace V] [MeasurableSpace V] [Open
     (Filter.Eventually.of_forall fun x => by positivity) hc.aestronglyMeasurable]
   congr 1
   refine lintegral_congr fun x => ?_
-  rw [ENNReal.ofReal_pow (norm_nonneg _), ofReal_norm_eq_enorm]
+  rw [ENNReal.ofReal_pow (norm_nonneg _), ofReal_norm]
 
 alias opensMeasurable := _root_.GlobalTheory.ArchimedeanUnitaryL2.opensMeasurableSpace_pi_mixedSpace
 
@@ -170,8 +170,8 @@ theorem integral_norm_sq_eq : ∀ {F E : Type} [Field F] [NumberField F] [Field 
     ∀ (t : ℝ) (f : SInf F (Fin a × Fin (a + a'))), ∫ x, ‖T t f x‖ ^ 2 ∂μ = ∫ x, ‖f x‖ ^ 2 ∂μ := by
   intro F E _ _ _ _ _ σ a a' B G X om om' hT γ _ T hAct μ hμ t f
   classical
-  haveI := hμ
-  haveI := opensMeasurable F (Fin a × Fin (a + a'))
+  have := hμ
+  have := opensMeasurable F (Fin a × Fin (a + a'))
   set g : (Fin a × Fin (a + a') → FiniteAdeleRing (𝓞 F) F) → ℂ :=
     (GlobalTheory.SchANonzero.intPts F (Fin a × Fin (a + a'))).indicator 1 with hgdef
   have hgSB : g ∈ GlobalTheory.WeilM.SB _ := GlobalTheory.SchANonzero.indicator_intPts_mem_SB F _

@@ -22,18 +22,18 @@ lemma sum_split (f : Fin r → ℂ) :
   have e1 : ∑ j, f j = ∑ i ∈ Finset.range r, g i := by
     rw [Finset.sum_range]
     refine Finset.sum_congr rfl fun j _ => ?_
-    simp only [hg, dif_pos j.isLt]
+    simp only [hg, dite_eq_left j.isLt]
   have e2 : ∑ i ∈ Finset.range r, g i = ∑ i ∈ Finset.range (X.p0 + (r - X.p0)), g i := by
     rw [Nat.add_sub_cancel' X.p0_le]
   rw [e1, e2, Finset.sum_range_add, Finset.sum_range, Finset.sum_range]
   congr 1
   · refine Finset.sum_congr rfl fun a _ => ?_
     have ha : (a : ℕ) < r := lt_of_lt_of_le a.isLt X.p0_le
-    simp only [hg, dif_pos ha]
+    simp only [hg, dite_eq_left ha]
     rfl
   · refine Finset.sum_congr rfl fun m _ => ?_
     have hm : X.p0 + (m : ℕ) < r := by have := m.isLt; have := X.p0_le; omega
-    simp only [hg, dif_pos hm]
+    simp only [hg, dite_eq_left hm]
 
 def nI (m : Fin (r - X.p0)) : Fin r := ⟨X.p0 + m, by have := m.isLt; have := X.p0_le; omega⟩
 
@@ -45,11 +45,11 @@ lemma L_pp (Z : X.Coord) (τ : X.Ψ) (a c : Fin X.p0) :
   have h2 : ¬ (X.p0 ≤ ((Fin.castLE X.p0_le a : Fin r) : ℕ) ∧ ((Fin.castLE X.p0_le c : Fin r) : ℕ) < X.p0) := by
     simp only [Fin.val_castLE]
     omega
-  simp only [Data.lowBlock, Matrix.of_apply, dif_neg h2, add_zero]
+  simp only [Data.lowBlock, Matrix.of_apply, dite_eq_right h2, add_zero]
   by_cases h : a = c
   · subst h
     simp
-  · rw [if_neg h, if_neg (fun e => h (Fin.castLE_injective X.p0_le e))]
+  · rw [ite_eq_right h, ite_eq_right (fun e => h (Fin.castLE_injective X.p0_le e))]
 
 lemma L_pn (Z : X.Coord) (τ : X.Ψ) (a : Fin X.p0) (m : Fin (r - X.p0)) :
     X.lowBlock Z τ (Fin.castLE X.p0_le a) (nI X m) = 0 := by
@@ -62,7 +62,7 @@ lemma L_pn (Z : X.Coord) (τ : X.Ψ) (a : Fin X.p0) (m : Fin (r - X.p0)) :
   have h2 : ¬ (X.p0 ≤ ((Fin.castLE X.p0_le a : Fin r) : ℕ) ∧ ((nI X m : Fin r) : ℕ) < X.p0) := by
     rw [Fin.val_castLE, nI_val_eq_p0_add]
     omega
-  simp only [Data.lowBlock, Matrix.of_apply, if_neg h1, dif_neg h2, add_zero]
+  simp only [Data.lowBlock, Matrix.of_apply, ite_eq_right h1, dite_eq_right h2, add_zero]
 
 lemma L_np (Z : X.Coord) (τ : X.Ψ) (m : Fin (r - X.p0)) (c : Fin X.p0) :
     X.lowBlock Z τ (nI X m) (Fin.castLE X.p0_le c) = Z τ m c := by
@@ -75,7 +75,7 @@ lemma L_np (Z : X.Coord) (τ : X.Ψ) (m : Fin (r - X.p0)) (c : Fin X.p0) :
   have h2 : X.p0 ≤ ((nI X m : Fin r) : ℕ) ∧ ((Fin.castLE X.p0_le c : Fin r) : ℕ) < X.p0 := by
     rw [Fin.val_castLE, nI_val_eq_p0_add]
     omega
-  simp only [Data.lowBlock, Matrix.of_apply, if_neg h1, dif_pos h2, zero_add]
+  simp only [Data.lowBlock, Matrix.of_apply, ite_eq_right h1, dite_eq_left h2, zero_add]
   exact congrArg₂ (Z τ) (Fin.ext (by simp [nI_val_eq_p0_add])) (Fin.ext (by simp))
 
 lemma L_nn (Z : X.Coord) (τ : X.Ψ) (m m' : Fin (r - X.p0)) :
@@ -83,7 +83,7 @@ lemma L_nn (Z : X.Coord) (τ : X.Ψ) (m m' : Fin (r - X.p0)) :
   have h2 : ¬ (X.p0 ≤ ((nI X m : Fin r) : ℕ) ∧ ((nI X m' : Fin r) : ℕ) < X.p0) := by
     rw [nI_val_eq_p0_add, nI_val_eq_p0_add]
     omega
-  simp only [Data.lowBlock, Matrix.of_apply, dif_neg h2, add_zero]
+  simp only [Data.lowBlock, Matrix.of_apply, dite_eq_right h2, add_zero]
   by_cases h : m = m'
   · subst h
     simp
@@ -92,7 +92,7 @@ lemma L_nn (Z : X.Coord) (τ : X.Ψ) (m m' : Fin (r - X.p0)) :
       have h' := congrArg Fin.val e
       rw [nI_val_eq_p0_add, nI_val_eq_p0_add] at h'
       exact h (Fin.ext (by omega))
-    rw [if_neg h, if_neg h1]
+    rw [ite_eq_right h, ite_eq_right h1]
 
 lemma sgn_p (a : Fin X.p0) : sgn X.p0 ((Fin.castLE X.p0_le a : Fin r) : ℕ) = 1 := by
   simp [ReciprocityTheory.ChartRestriction.G.FD.sgn, a.isLt]

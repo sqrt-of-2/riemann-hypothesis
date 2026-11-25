@@ -81,9 +81,8 @@ theorem d_const_zero (P : PSh) : ((chains R).obj (disc.obj P)).d (-1) 0 = 0 := b
     simp [chainsN, Fin.sum_univ_two, SimplicialObject.δ, disc]
     all_goals first
       | (erw [neg_one_smul, one_smul, add_neg_cancel])
-      | (simp only [one_smul, neg_smul]; exact add_neg_cancel _)
+      | (simp only [one_smul, neg_smul])
       | abel
-    all_goals rfl
   rw [this]; simp
 
 def proj0 (P : PSh) : (chains R).obj (disc.obj P) ⟶
@@ -108,12 +107,12 @@ abbrev W (n : ℕ) : Scheme.{0} := widePullback X (fun _ : Fin n => Y) (fun _ =>
 
 def toPb (n : ℕ) : W f (n + 1) ⟶ pullback (WidePullback.base (fun _ : Fin n => f)) f :=
   pullback.lift (WidePullback.lift (WidePullback.base _) (fun j => WidePullback.π _ j.succ) (by simp))
-    (WidePullback.π _ 0) (by simp [WidePullback.lift_π, WidePullback.lift_π_assoc, WidePullback.lift_base, WidePullback.lift_base_assoc])
+    (WidePullback.π _ 0) (by simp [])
 
 def ofPb (n : ℕ) : pullback (WidePullback.base (fun _ : Fin n => f)) f ⟶ W f (n + 1) :=
   WidePullback.lift (pullback.snd _ _ ≫ f)
     (Fin.cases (pullback.snd _ _) (fun j => pullback.fst _ _ ≫ WidePullback.π _ j))
-    (by intro j; refine Fin.cases ?_ (fun j => ?_) j <;> simp [pullback.condition, WidePullback.lift_π, WidePullback.lift_π_assoc, WidePullback.lift_base, WidePullback.lift_base_assoc])
+    (by intro j; refine Fin.cases ?_ (fun j => ?_) j <;> simp [pullback.condition])
 
 theorem toPb_ofPb (n : ℕ) : toPb f n ≫ ofPb f n = 𝟙 _ := by
   apply WidePullback.hom_ext
@@ -141,7 +140,7 @@ theorem ofPb_toPb (n : ℕ) : ofPb f n ≫ toPb f n = 𝟙 _ := by
 
 theorem base_zero_iso : IsIso (WidePullback.base (fun _ : Fin 0 => f)) :=
   ⟨⟨WidePullback.lift (𝟙 X) (fun j => j.elim0) (fun j => j.elim0), by
-    refine ⟨WidePullback.hom_ext _ _ _ (fun j => j.elim0) (by simp [WidePullback.lift_π, WidePullback.lift_π_assoc, WidePullback.lift_base, WidePullback.lift_base_assoc]), by simp⟩⟩⟩
+    refine ⟨WidePullback.hom_ext _ _ _ (fun j => j.elim0) (by simp []), by simp⟩⟩⟩
 
 theorem base_proper [IsProper f] : ∀ n : ℕ, IsProper (WidePullback.base (fun _ : Fin n => f))
   | 0 => by

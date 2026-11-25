@@ -163,13 +163,18 @@ variable {X : Type} [AddCommGroup X] [Module ℂ X]
 
 def Z0 (f : Op X) : Prop := ap f 0 = 0
 
-theorem op_ext {f g : Op X} (h : ∀ x, ap f x = ap g x) : f = g := by
+omit [AddCommGroup X] [Module ℂ X] in
+theorem op_ext [AddCommGroup X] [Module ℂ X] {f g : Op X} (h : ∀ x, ap f x = ap g x) : f = g := by
   exact funext h
 
-theorem ap_mul (f g : Op X) (x : X) : ap (f * g) x = ap f (ap g x) := rfl
-theorem ap_add (f g : Op X) (x : X) : ap (f + g) x = ap f x + ap g x := rfl
-theorem ap_zero (x : X) : ap (0 : Op X) x = 0 := rfl
-theorem ap_one (x : X) : ap (1 : Op X) x = x := rfl
+omit [AddCommGroup X] [Module ℂ X] in
+theorem ap_mul [AddCommGroup X] [Module ℂ X] (f g : Op X) (x : X) : ap (f * g) x = ap f (ap g x) := rfl
+omit [Module ℂ X] in
+theorem ap_add [Module ℂ X] (f g : Op X) (x : X) : ap (f + g) x = ap f x + ap g x := rfl
+omit [Module ℂ X] in
+theorem ap_zero [Module ℂ X] (x : X) : ap (0 : Op X) x = 0 := rfl
+omit [AddCommGroup X] [Module ℂ X] in
+theorem ap_one [AddCommGroup X] [Module ℂ X] (x : X) : ap (1 : Op X) x = x := rfl
 theorem ap_cOp (c : ℂ) (x : X) : ap (cOp c : Op X) x = c • x := rfl
 
 theorem ap_sum {ι : Type*} (s : Finset ι) (f : ι → Op X) (x : X) :
@@ -195,7 +200,8 @@ theorem mul_cOp_zero {f : Op X} (hf : Z0 f) : f * D.cOp 0 = 0 := by
 theorem cOp_mul_zero (c : ℂ) : D.cOp c * (0 : Op X) = 0 := by
   exact op_ext fun x => by rw [ap_mul, ap_zero, ap_cOp, smul_zero]
 
-theorem zero_operator_zero : Z0 (0 : Op X) := rfl
+omit [Module ℂ X] in
+theorem zero_operator_zero [Module ℂ X] : Z0 (0 : Op X) := rfl
 theorem z0_one : Z0 (1 : Op X) := rfl
 theorem z0_cOp (c : ℂ) : Z0 (cOp c : Op X) := by
   unfold Z0

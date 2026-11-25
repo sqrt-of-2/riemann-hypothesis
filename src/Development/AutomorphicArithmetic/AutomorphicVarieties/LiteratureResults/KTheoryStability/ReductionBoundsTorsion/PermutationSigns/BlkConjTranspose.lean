@@ -83,10 +83,10 @@ theorem tp_one [DecidableEq ι] : tp q (1 : Matrix ι ι ℂ) = 1 := by
   change (∏ i, (if I i = J i then (1 : ℂ) else 0)) = (if I = J then (1 : ℂ) else 0)
   by_cases h : I = J
   · subst h; simp
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     obtain ⟨i, hi⟩ : ∃ i, I i ≠ J i := by
       by_contra hc; push Not at hc; exact h (funext hc)
-    exact Finset.prod_eq_zero (Finset.mem_univ i) (if_neg hi)
+    exact Finset.prod_eq_zero (Finset.mem_univ i) (ite_eq_right hi)
 
 theorem sum4 {α β γ δ : Type} [Fintype α] [Fintype β] [Fintype γ] [Fintype δ] (f : α → β → γ → δ → ℂ) :
     ∑ a, ∑ b, ∑ c, ∑ d, f a b c d = ∑ c, ∑ d, ∑ a, ∑ b, f a b c d := by
@@ -131,11 +131,11 @@ theorem blk_mul (d e : W → Matrix (Fin m) (Fin m) ℂ) : blk d * blk e = blk f
   rw [Fintype.sum_prod_type]
   simp only
   by_cases h : x.1 = y.1
-  · rw [if_pos h, Finset.sum_eq_single x.1]
-    · simp only [if_true, h]
+  · rw [ite_eq_left h, Finset.sum_eq_single x.1]
+    · simp only [ite_true, h]
     · intro b _ hb; simp [Ne.symm hb]
     · simp
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     refine Finset.sum_eq_zero fun w _ => Finset.sum_eq_zero fun j _ => ?_
     by_cases h1 : x.1 = w
     · subst h1; simp [h]
@@ -150,7 +150,7 @@ theorem blk_transpose (d : W → Matrix (Fin m) (Fin m) ℂ) : (blk d)ᵀ = blk 
   ext x y
   simp only [blk, of_apply, transpose_apply]
   by_cases h : x.1 = y.1
-  · rw [if_pos h.symm, if_pos h, h]
+  · rw [ite_eq_left h.symm, if_pos h, h]
   · rw [if_neg (Ne.symm h), if_neg h]
 
 theorem blk_map_star (d : W → Matrix (Fin m) (Fin m) ℂ) : (blk d).map star = blk fun w => (d w).map star := by

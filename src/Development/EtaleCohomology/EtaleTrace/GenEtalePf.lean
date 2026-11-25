@@ -55,10 +55,10 @@ theorem ring_gen_etale (A B : Type) [CommRing A] [IsDomain A] [IsNoetherianRing 
     ∃ a : A, a ≠ 0 ∧ ∀ (A' B' : Type) [CommRing A'] [CommRing B'] [Algebra A A'] [Algebra B B']
       [Algebra A' B'] [Algebra A B'] [IsScalarTower A A' B'] [IsScalarTower A B B'],
       IsLocalization.Away a A' → IsLocalization.Away (algebraMap A B a) B' → Algebra.Etale A' B' := by
-  haveI : Algebra.FinitePresentation A B := Algebra.FinitePresentation.of_finiteType.1 inferInstance
+  have : Algebra.FinitePresentation A B := Algebra.FinitePresentation.of_finiteType.1 inferInstance
   obtain ⟨f, hf, hEt⟩ := Algebra.exists_etale_of_isEtaleAt (R := A) (⊥ : Ideal B)
   have hf0 : f ≠ 0 := by simpa using hf
-  obtain ⟨a, ha, g, hg⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) f).exists_nonzero_dvd
+  obtain ⟨a, ha, g, hg⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) f).exists_ne_zero_dvd
     (mem_nonZeroDivisors_of_ne_zero hf0)
   refine ⟨a, ha, fun A' B' _ _ _ _ _ _ _ _ hA hB => ?_⟩
   have hloc : Algebra.Etale A (Localization.Away (algebraMap A B a)) := by
@@ -66,14 +66,14 @@ theorem ring_gen_etale (A B : Type) [CommRing A] [IsDomain A] [IsNoetherianRing 
     refine subset_trans ?_ hEt
     rw [hg]
     exact PrimeSpectrum.basicOpen_mul_le_left _ _
-  haveI : Algebra.Etale A B' := Algebra.Etale.of_equiv
+  have : Algebra.Etale A B' := Algebra.Etale.of_equiv
     ((IsLocalization.algEquiv (Submonoid.powers (algebraMap A B a))
       (Localization.Away (algebraMap A B a)) B').restrictScalars A)
-  haveI : IsLocalization (Algebra.algebraMapSubmonoid B (Submonoid.powers a)) B' := by
+  have : IsLocalization (Algebra.algebraMapSubmonoid B (Submonoid.powers a)) B' := by
     rw [Algebra.algebraMapSubmonoid_powers]; exact hB
-  haveI : Algebra.FormallyEtale A' B' := Algebra.FormallyEtale.localization_base (Submonoid.powers a)
-  haveI : Algebra.FiniteType A A' := IsLocalization.finiteType_of_monoid_fg (Submonoid.powers a) A'
-  haveI : Algebra.FinitePresentation A' B' :=
+  have : Algebra.FormallyEtale A' B' := Algebra.FormallyEtale.localization_base (Submonoid.powers a)
+  have : Algebra.FiniteType A A' := IsLocalization.finiteType_of_monoid_fg (Submonoid.powers a) A'
+  have : Algebra.FinitePresentation A' B' :=
     Algebra.FinitePresentation.of_restrict_scalars_finitePresentation A A' B'
   exact ⟨inferInstance, inferInstance⟩
 
@@ -100,13 +100,13 @@ def EtaleOverBasic : Prop := ∀ {X P : Scheme.{0}} (π : X ⟶ P) (U : P.Opens)
 theorem GenEtale_of (h1 : GenAffineSetup) (h2 : EtaleOverBasic) : GenEtale := by
   intro k _ _ X P _ _ p r π hπ hr hfin hsurj hun
   obtain ⟨U, hU, hne, hU', hnoeth, hfinU, hinj, _, het⟩ := h1 k p r π hπ hr hfin hsurj hun
-  haveI : Nonempty U := ⟨⟨hne.some, hne.some_mem⟩⟩
-  haveI : Nonempty (π ⁻¹ᵁ U) := by
+  have : Nonempty U := ⟨⟨hne.some, hne.some_mem⟩⟩
+  have : Nonempty (π ⁻¹ᵁ U) := by
     obtain ⟨x, hx⟩ := hsurj.surj hne.some
     exact ⟨⟨x, show π x ∈ U by rw [hx]; exact hne.some_mem⟩⟩
-  letI := (π.app U).hom.toAlgebra
-  haveI : Module.Finite Γ(P, U) Γ(X, π ⁻¹ᵁ U) := hfinU
-  haveI : FaithfulSMul Γ(P, U) Γ(X, π ⁻¹ᵁ U) := (faithfulSMul_iff_algebraMap_injective _ _).2 hinj
+  let := (π.app U).hom.toAlgebra
+  have : Module.Finite Γ(P, U) Γ(X, π ⁻¹ᵁ U) := hfinU
+  have : FaithfulSMul Γ(P, U) Γ(X, π ⁻¹ᵁ U) := (faithfulSMul_iff_algebraMap_injective _ _).2 hinj
   obtain ⟨a, ha, H⟩ := LateralTheory.EtaleTrace.GenEtaleRing.ring_gen_etale Γ(P, U) Γ(X, π ⁻¹ᵁ U)
   refine ⟨P.basicOpen a, ?_, h2 π U hU hU' a H⟩
   by_contra hc

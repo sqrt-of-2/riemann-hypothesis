@@ -56,7 +56,7 @@ namespace GlobalTheory.JR.MeasExist
 
 theorem isOpen_intMatrix (r : ℕ) (k : Type) [NontriviallyNormedField k] [IsUltrametricDist k] :
     IsOpen {A : Matrix (Fin r) (Fin r) k | ∀ i j, ‖A i j‖ ≤ 1} := by
-  simp only [Set.setOf_forall]
+  simp only [Set.ofPred_forall]
   refine isOpen_iInter_of_finite fun i => isOpen_iInter_of_finite fun j => ?_
   have h : IsOpen (Metric.closedBall (0 : k) 1) := IsUltrametricDist.isOpen_closedBall _ one_ne_zero
   have hc : Continuous fun A : Matrix (Fin r) (Fin r) k => A i j := by fun_prop
@@ -65,7 +65,7 @@ theorem isOpen_intMatrix (r : ℕ) (k : Type) [NontriviallyNormedField k] [IsUlt
 
 theorem isCompact_intMatrix (r : ℕ) (k : Type) [NontriviallyNormedField k] [LocallyCompactSpace k] :
     IsCompact {A : Matrix (Fin r) (Fin r) k | ∀ i j, ‖A i j‖ ≤ 1} := by
-  haveI : ProperSpace k := ProperSpace.of_locallyCompactSpace k
+  have : ProperSpace k := ProperSpace.of_locallyCompactSpace k
   have h : IsCompact (Set.pi Set.univ fun _ : Fin r => Set.pi Set.univ fun _ : Fin r =>
       Metric.closedBall (0 : k) 1) :=
     isCompact_univ_pi fun _ => isCompact_univ_pi fun _ => isCompact_closedBall _ _
@@ -82,7 +82,7 @@ theorem isOpen_glO (r : ℕ) (k : Type) [NontriviallyNormedField k] [IsUltrametr
   have h2 := (isOpen_intMatrix r k).preimage (Units.continuous_coe_inv (M := Matrix (Fin r) (Fin r) k))
   convert h1.inter h2 using 1
   ext g
-  simp only [glO, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_preimage, forall_and]
+  simp only [glO, Set.mem_ofPred_eq, Set.mem_inter_iff, Set.mem_preimage, forall_and]
 
 theorem isCompact_glO (r : ℕ) (k : Type) [NontriviallyNormedField k] [LocallyCompactSpace k] :
     IsCompact (glO r k) := by
@@ -91,7 +91,7 @@ theorem isCompact_glO (r : ℕ) (k : Type) [NontriviallyNormedField k] [LocallyC
     (hK.prod (hK.image MulOpposite.continuous_op))
   convert h using 1
   ext g
-  simp only [glO, Set.mem_setOf_eq, Set.mem_preimage, forall_and, Units.embedProduct_apply, Set.mem_prod,
+  simp only [glO, Set.mem_ofPred_eq, Set.mem_preimage, forall_and, Units.embedProduct_apply, Set.mem_prod,
     (MulOpposite.op_injective).mem_set_image]
 
 theorem one_mem_intMatrix (r : ℕ) (k : Type) [NormedField k] (i j : Fin r) :
@@ -100,7 +100,7 @@ theorem one_mem_intMatrix (r : ℕ) (k : Type) [NormedField k] (i j : Fin r) :
 
 theorem isOpen_uO (r : ℕ) (k : Type) [NontriviallyNormedField k] [IsUltrametricDist k] [StarRing k] :
     IsOpen (uO r k) :=
-  (isOpen_intMatrix r k).preimage continuous_subtype_val
+  (isOpen_intMatrix r k).preimage continuous_subtypeVal
 
 theorem isCompact_uO (r : ℕ) (k : Type) [NontriviallyNormedField k] [LocallyCompactSpace k] [StarRing k]
     [ContinuousStar k] : IsCompact (uO r k) :=
@@ -116,13 +116,13 @@ theorem exists_haar_eq_one {G : Type} [Group G] [TopologicalSpace G] [IsTopologi
 
 theorem nonempty_meas (r : ℕ) (F E : Type) [NontriviallyNormedField F] [NontriviallyNormedField E]
     [NormedAlgebra F E] [StarRing E] [h : Unram F E] : Nonempty (Meas r F E) := by
-  haveI := h.ultraF
-  haveI := h.ultraE
-  haveI := h.lcF
-  haveI := h.lcE
-  haveI : ProperSpace F := ProperSpace.of_locallyCompactSpace F
-  haveI : ProperSpace E := ProperSpace.of_locallyCompactSpace E
-  haveI : NormedStarGroup E := ⟨fun y => (h.norm_star y).le⟩
+  have := h.ultraF
+  have := h.ultraE
+  have := h.lcF
+  have := h.lcE
+  have : ProperSpace F := ProperSpace.of_locallyCompactSpace F
+  have : ProperSpace E := ProperSpace.of_locallyCompactSpace E
+  have : NormedStarGroup E := ⟨fun y => (h.norm_star y).le⟩
   borelize (GL (Fin r) F) (↥(Matrix.unitaryGroup (Fin r) E)) F E
   obtain ⟨μG, hG, vG⟩ := exists_haar_eq_one (isCompact_glO r F) (isOpen_glO r F)
     ⟨1, fun i j => ⟨one_mem_intMatrix r F i j, by simpa using one_mem_intMatrix r F i j⟩⟩

@@ -62,22 +62,26 @@ namespace GlobalTheory.PsType.BlockTheta
 
 variable {k : Type} [Field k] [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k]
 
-theorem ev_mul_char (χ η : kˣ →* ℂˣ) (x : k) : ev (χ * η) x = ev χ x * ev η x := by
+omit [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem ev_mul_char [TopologicalSpace k] [IsNonarchimedeanLocalField k] (χ η : kˣ →* ℂˣ) (x : k) : ev (χ * η) x = ev χ x * ev η x := by
   unfold ev
   split_ifs with h
   · simp
   · simp
 
-theorem ev_one_char (x : k) : ev (1 : kˣ →* ℂˣ) x = 1 := by
+omit [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem ev_one_char [TopologicalSpace k] [IsNonarchimedeanLocalField k] (x : k) : ev (1 : kˣ →* ℂˣ) x = 1 := by
   unfold ev; split_ifs <;> simp
 
-theorem ev_at_one (χ : kˣ →* ℂˣ) : ev χ (1 : k) = 1 := by
+omit [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem ev_at_one [TopologicalSpace k] [IsNonarchimedeanLocalField k] (χ : kˣ →* ℂˣ) : ev χ (1 : k) = 1 := by
   unfold ev
   rw [dite_eq_left (by simp)]
   have : Units.mk0 (1 : k) one_ne_zero = 1 := by ext; simp
   simp [this]
 
-theorem ev_mul_of_val (χ : kˣ →* ℂˣ) {x y : k} (hx : valuation k x = 1) (hy : valuation k y = 1) :
+omit [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem ev_mul_of_val [TopologicalSpace k] [IsNonarchimedeanLocalField k] (χ : kˣ →* ℂˣ) {x y : k} (hx : valuation k x = 1) (hy : valuation k y = 1) :
     ev χ (x * y) = ev χ x * ev χ y := by
   have hxy : valuation k (x * y) = 1 := by rw [map_mul, hx, hy, one_mul]
   unfold ev
@@ -85,7 +89,8 @@ theorem ev_mul_of_val (χ : kˣ →* ℂˣ) {x y : k} (hx : valuation k x = 1) (
   congr 3
   ext; simp
 
-theorem ev_of_triv_one (χ : kˣ →* ℂˣ) (h : Triv χ 1) (x : k) : ev χ x = 1 := by
+omit [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem ev_of_triv_one [TopologicalSpace k] [IsNonarchimedeanLocalField k] (χ : kˣ →* ℂˣ) (h : Triv χ 1) (x : k) : ev χ x = 1 := by
   unfold ev
   split_ifs with hx
   · have hu : χ (Units.mk0 x fun h0 => by simp [h0] at hx) = 1 := by
@@ -96,7 +101,8 @@ theorem ev_of_triv_one (χ : kˣ →* ℂˣ) (h : Triv χ 1) (x : k) : ev χ x =
     simp [hu]
   · rfl
 
-theorem val_det_of_mem_KO {n : Type} [Fintype n] [DecidableEq n] {g : GL n k} (hg : g ∈ KO k n) :
+omit [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem val_det_of_mem_KO [TopologicalSpace k] [IsNonarchimedeanLocalField k] {n : Type} [Fintype n] [DecidableEq n] {g : GL n k} (hg : g ∈ KO k n) :
     valuation k g.val.det = 1 := by
   obtain ⟨A, rfl⟩ := hg
   have h1 : ((Matrix.GeneralLinearGroup.map (n := n) (algebraMap 𝒪[k] k)) A).val.det
@@ -169,11 +175,11 @@ theorem emb_rr (a : GL (Fin r) k) (b : GL (Fin t) k) (i j : Fin t) :
 
 def eqvL (i : Fin r) : {y : Fin r // y ≤ i} ≃ {x : Fin (r + t) // x ≤ Fin.castAdd t i} :=
   Equiv.ofBijective (fun y : {y : Fin r // y ≤ i} => (⟨Fin.castAdd t y.1, by
-      have := y.2; simp only [Fin.le_def, Fin.coe_castAdd] at this ⊢; omega⟩ :
+      have := y.2; simp only [Fin.le_def, Fin.val_castAdd] at this ⊢; omega⟩ :
         {x : Fin (r + t) // x ≤ Fin.castAdd t i})) (by
     constructor
     · rintro ⟨y, hy⟩ ⟨z, hz⟩ h
-      simp only [Subtype.mk.injEq, Fin.ext_iff, Fin.coe_castAdd] at h
+      simp only [Subtype.mk.injEq, Fin.ext_iff, Fin.val_castAdd] at h
       exact Subtype.ext (Fin.ext h)
     · rintro ⟨x, hx⟩
       have hx' : (x : ℕ) ≤ i := by simpa [Fin.le_def] using hx
@@ -183,14 +189,14 @@ theorem eqvL_val (i : Fin r) (y : {y : Fin r // y ≤ i}) : ((eqvL (t := t) i y)
 
 def eqvR (j : Fin t) : Fin r ⊕ {y : Fin t // y ≤ j} ≃ {x : Fin (r + t) // x ≤ Fin.natAdd r j} :=
   Equiv.ofBijective (Sum.elim (fun i : Fin r => (⟨Fin.castAdd t i, by
-        simp only [Fin.le_def, Fin.coe_castAdd, Fin.coe_natAdd]; omega⟩ : {x : Fin (r + t) // x ≤ Fin.natAdd r j}))
+        simp only [Fin.le_def, Fin.val_castAdd, Fin.val_natAdd]; omega⟩ : {x : Fin (r + t) // x ≤ Fin.natAdd r j}))
       (fun y : {y : Fin t // y ≤ j} => (⟨Fin.natAdd r y.1, by
-        have := y.2; simp only [Fin.le_def, Fin.coe_natAdd] at this ⊢; omega⟩ : {x : Fin (r + t) // x ≤ Fin.natAdd r j}))) (by
+        have := y.2; simp only [Fin.le_def, Fin.val_natAdd] at this ⊢; omega⟩ : {x : Fin (r + t) // x ≤ Fin.natAdd r j}))) (by
     constructor
     · intro u v h
       rcases u with y | y <;> rcases v with z | z <;>
-        simp only [Sum.elim_inl, Sum.elim_inr, Subtype.mk.injEq, Fin.ext_iff, Fin.coe_castAdd,
-          Fin.coe_natAdd] at h
+        simp only [Sum.elim_inl, Sum.elim_inr, Subtype.mk.injEq, Fin.ext_iff, Fin.val_castAdd,
+          Fin.val_natAdd] at h
       · exact congrArg Sum.inl (Fin.ext h)
       · have := y.2; omega
       · have := z.2; omega
@@ -271,8 +277,8 @@ theorem GlobalTheory.PsType.theta_emb₂_std : ∀ (k : Type) [Field k] [Valuati
   intro k _ _ _ _ r t ψ hord a ha b hb
   have hord₂ : Ordered (fun i => ψ (Fin.natAdd r i)) := by
     intro i a' b' j h1 h2 h3 x hx
-    exact hord (Fin.natAdd r i) (Fin.natAdd r a') (Fin.natAdd r b') (Fin.natAdd r j) (by rw [Fin.le_def] at h1 ⊢; simp only [Fin.coe_natAdd]; omega) (by rw [Fin.le_def] at h2 ⊢; simp only [Fin.coe_natAdd]; omega)
-      (by rw [Fin.le_def] at h3 ⊢; simp only [Fin.coe_natAdd]; omega) x hx
+    exact hord (Fin.natAdd r i) (Fin.natAdd r a') (Fin.natAdd r b') (Fin.natAdd r j) (by rw [Fin.le_def] at h1 ⊢; simp only [Fin.val_natAdd]; omega) (by rw [Fin.le_def] at h2 ⊢; simp only [Fin.val_natAdd]; omega)
+      (by rw [Fin.le_def] at h3 ⊢; simp only [Fin.val_natAdd]; omega) x hx
   have hda : valuation k a.val.det = 1 := val_det_of_mem_KO ha.1
   have hsplit : theta ψ (emb₂ k (stdSum (rfl : r + t = r + t)) (a, b)) =
       (∏ i : Fin r, ev (ψ (Fin.castAdd t i) / nxt ψ (Fin.castAdd t i)) (minor a i)) *

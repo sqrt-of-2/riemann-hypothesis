@@ -29,7 +29,7 @@ theorem nnreal_eq_of_smul_haar {V : Type} [AddCommGroup V] [TopologicalSpace V] 
   have h2 : μ C ≠ 0 := (Measure.measure_pos_of_mem_nhds μ hC0).ne'
   have h3 : (c : ℝ≥0∞) * μ C = (e : ℝ≥0∞) * μ C := by
     have h' : (c • μ) C = (e • μ) C := by rw [h]
-    rwa [Measure.smul_apply, Measure.smul_apply, ENNReal.smul_def, ENNReal.smul_def, smul_eq_mul,
+    rwa [smul_apply, smul_apply, ENNReal.smul_def, ENNReal.smul_def, smul_eq_mul,
       smul_eq_mul] at h'
   have h4 := (ENNReal.mul_left_inj h2 h1).1 h3
   exact_mod_cast h4
@@ -87,23 +87,23 @@ theorem fibre_scale_modulus_length_one : ∀ (F E : Type) [Field F] [NumberField
   intro F E _ _ _ _ _ σ hCM N J₁ hJ t ht R _ _ _ _ _ hR d b lam hlam m₁ hm₁
   have hR0 := hR
   obtain ⟨i1, i2, i3, i4, -⟩ := hR0
-  haveI := i1
-  haveI := i2
-  haveI := i3
-  haveI := i4
+  have := i1
+  have := i2
+  have := i3
+  have := i4
   obtain ⟨k1, k2, k3, k4, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hCM R
-  haveI := k1
-  haveI := k2
-  haveI := k3
-  haveI := k4
-  haveI : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
-  haveI : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
+  have := k1
+  have := k2
+  have := k3
+  have := k4
+  have : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
+  have : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
   obtain ⟨hK, hW, hH⟩ := _root_.GlobalTheory.CompanionTheory.SW.coord_measures_haar F E σ hCM R d b lam hlam
-  haveI := hK
+  have := hK
   obtain ⟨κ, hκc, -, hκ1, hκ⟩ :=
     _root_.GlobalTheory.CompanionTheory.SW.ScaleCont.fibre_scale_continuous F E σ hCM N J₁ hJ R hR 1 _ _ m₁ (hW 1 N) (hH 1) hm₁
   have hinc : Continuous (fun r : R => r ⊗ₜ[F] (1 : E)) := by
-    haveI : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R (R ⊗[F] E)
+    have : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R (R ⊗[F] E)
     have h : Continuous (fun r : R => r • (1 : R ⊗[F] E)) :=
       Continuous.smul (f := fun r : R => r) (g := fun _ => (1 : R ⊗[F] E)) continuous_id
         continuous_const

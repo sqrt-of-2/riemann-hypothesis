@@ -60,13 +60,15 @@ variable {ι : Type} [Fintype ι] [DecidableEq ι] {V : ι → Type} [∀ i, Add
 def atPlLin (w : ι) : Module.End ℂ (V w) →ₗ[ℂ] Module.End ℂ (⨂[ℂ] i, V i) :=
   (PiTensorProduct.mapMultilinear ℂ V V).toLinearMap (fun _ => LinearMap.id) w
 
-theorem atPlLin_apply (w : ι) (L : Module.End ℂ (V w)) : atPlLin w L = atPl w L := by
+omit [Fintype ι] [DecidableEq ι] V [∀ i, AddCommGroup (V i)] [∀ i, Module ℂ (V i)] in
+theorem atPlLin_apply [Fintype ι] [DecidableEq ι] {V : ι → Type} [∀ i, AddCommGroup (V i)] [∀ i, Module ℂ (V i)] (w : ι) (L : Module.End ℂ (V w)) : atPlLin w L = atPl w L := by
   simp only [atPlLin, MultilinearMap.toLinearMap_apply, PiTensorProduct.mapMultilinear_apply, atPl]
 
 theorem atPl_zero (w : ι) : atPl w (0 : Module.End ℂ (V w)) = 0 := by
   rw [← atPlLin_apply, map_zero]
 
-theorem atPl_mul (w : ι) (L L' : Module.End ℂ (V w)) : atPl w (L * L') = atPl w L * atPl w L' := by
+omit [Fintype ι] [DecidableEq ι] V [∀ i, AddCommGroup (V i)] [∀ i, Module ℂ (V i)] in
+theorem atPl_mul [Fintype ι] [DecidableEq ι] {V : ι → Type} [∀ i, AddCommGroup (V i)] [∀ i, Module ℂ (V i)] (w : ι) (L L' : Module.End ℂ (V w)) : atPl w (L * L') = atPl w L * atPl w L' := by
   unfold atPl
   rw [← PiTensorProduct.map_mul]
   congr 1
@@ -89,7 +91,7 @@ theorem heisOp_smul (r : ℝ) (c : Matrix (Ix P Q) (Ix R S) ℂ) : heisOp (r •
   apply Finset.sum_congr rfl
   intro l _
   simp only [Matrix.smul_apply, Complex.real_smul, star_mul', Complex.star_def, Complex.conj_ofReal, smul_sub, smul_smul]
-  congr 2 <;> ring
+  congr 2; ring
 
 theorem heisOp_zero : heisOp (0 : Matrix (Ix P Q) (Ix R S) ℂ) = 0 := by
   simpa using heisOp_smul (P := P) (Q := Q) (R := R) (S := S) 0 0
@@ -123,14 +125,15 @@ variable {ι : Type} [Fintype ι] [DecidableEq ι]
 def eS (w : ι) (a : Ix P Q) (b : Ix R S) (x : ℂ) : ι → Matrix (Ix P Q) (Ix R S) ℂ :=
   Pi.single w (Matrix.single a b x)
 
-theorem eS_apply (w : ι) (a : Ix P Q) (b : Ix R S) (x : ℂ) (w' : ι) (a' : Ix P Q) (b' : Ix R S) :
+omit [Fintype ι] [DecidableEq ι] in
+theorem eS_apply [Fintype ι] [DecidableEq ι] (w : ι) (a : Ix P Q) (b : Ix R S) (x : ℂ) (w' : ι) (a' : Ix P Q) (b' : Ix R S) :
     eS w a b x w' a' b' = if w' = w ∧ a' = a ∧ b' = b then x else 0 := by
   by_cases hw : w' = w
   · subst hw
     simp only [eS, Pi.single_eq_same, Matrix.single_apply, true_and]
     by_cases h : a' = a ∧ b' = b
-    · rw [if_pos h, if_pos ⟨h.1.symm, h.2.symm⟩]
-    · rw [if_neg h, if_neg (fun h' => h ⟨h'.1.symm, h'.2.symm⟩)]
+    · rw [ite_eq_left h, ite_eq_left ⟨h.1.symm, h.2.symm⟩]
+    · rw [ite_eq_right h, ite_eq_right (fun h' => h ⟨h'.1.symm, h'.2.symm⟩)]
   · simp [eS, hw]
 
 theorem sum_eS (w : ι) (a : Ix P Q) (b : Ix R S) (x : ℂ) (c : ι → Matrix (Ix P Q) (Ix R S) ℂ) :
@@ -139,7 +142,7 @@ theorem sum_eS (w : ι) (a : Ix P Q) (b : Ix R S) (x : ℂ) (c : ι → Matrix (
   rw [Finset.sum_eq_single w, Finset.sum_eq_single a, Finset.sum_eq_single b]
   · simp [eS_apply]
   all_goals first
-    | (intro y _ hy; simp [eS_apply, hy]; done)
+    | (intro y _ hy; simp [eS_apply, hy])
     | simp
 
 theorem decomp (c : ι → Matrix (Ix P Q) (Ix R S) ℂ) :
@@ -149,10 +152,10 @@ theorem decomp (c : ι → Matrix (Ix P Q) (Ix R S) ℂ) :
   simp only [Finset.sum_apply, Matrix.sum_apply, Pi.add_apply, Pi.smul_apply, Matrix.add_apply,
     Matrix.smul_apply]
   rw [Finset.sum_eq_single w, Finset.sum_eq_single a, Finset.sum_eq_single b]
-  · simp only [eS_apply, and_self, if_true, Complex.real_smul, mul_one]
+  · simp only [eS_apply, and_self, ite_true, Complex.real_smul, mul_one]
     exact (Complex.re_add_im _).symm
   all_goals first
-    | (intro y _ hy; simp [eS_apply, Ne.symm hy]; done)
+    | (intro y _ hy; simp [eS_apply, Ne.symm hy])
     | simp
 
 end GlobalTheory.RealLift.QuadFock
@@ -178,7 +181,7 @@ theorem dual {l : Type} [Fintype l] (φ : (ι → Matrix (Ix P Q) (Ix R S) ℂ) 
   simp only [e1, ← map_sum]
   congr 1
   conv_rhs => rw [decomp c]
-  simp only [Fintype.sum_prod_type, Fintype.sum_bool, cu, cv, if_true, Bool.false_eq_true, if_false, hφ, sum_eS]
+  simp only [Fintype.sum_prod_type, Fintype.sum_bool, cu, cv, ite_true, Bool.false_eq_true, ite_false, hφ, sum_eS]
   refine Finset.sum_congr rfl fun w _ => Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
   rw [smul_smul, smul_smul, lineSign_eq_sgn]
   have h2 := sgn_mul_self a b
@@ -188,27 +191,31 @@ theorem dual {l : Type} [Fintype l] (φ : (ι → Matrix (Ix P Q) (Ix R S) ℂ) 
   · simp [Complex.mul_im]
     linear_combination (c w a b).im * h2
 
-theorem cu_true_mul (Y : ι → Mat R S) (w : ι) (a : Ix P Q) (b : Ix R S) (w' : ι) :
+omit [Fintype ι] [DecidableEq ι] in
+theorem cu_true_mul [Fintype ι] [DecidableEq ι] (Y : ι → Mat R S) (w : ι) (a : Ix P Q) (b : Ix R S) (w' : ι) :
     cu (w, a, b, true) w' * (Y w')ᵀ =
       (Pi.single w ((sgn a b / 2) • (Matrix.single a b (1 : ℂ) * (Y w)ᵀ)) : ι → Matrix (Ix P Q) (Ix R S) ℂ) w' := by
   by_cases h : w' = w
   · subst h
-    simp only [cu, eS, if_true, Pi.smul_apply, Pi.single_eq_same, Matrix.smul_mul]
+    simp only [cu, eS, ite_true, Pi.smul_apply, Pi.single_eq_same, Matrix.smul_mul]
   · simp [cu, eS, h]
 
-theorem cu_false_mul (Y : ι → Mat R S) (w : ι) (a : Ix P Q) (b : Ix R S) (w' : ι) :
+omit [Fintype ι] [DecidableEq ι] in
+theorem cu_false_mul [Fintype ι] [DecidableEq ι] (Y : ι → Mat R S) (w : ι) (a : Ix P Q) (b : Ix R S) (w' : ι) :
     cu (w, a, b, false) w' * (Y w')ᵀ =
       (Pi.single w ((-(sgn a b / 2)) • (Matrix.single a b Complex.I * (Y w)ᵀ)) : ι → Matrix (Ix P Q) (Ix R S) ℂ) w' := by
   by_cases h : w' = w
   · subst h
-    simp only [cu, eS, Bool.false_eq_true, if_false, Pi.smul_apply, Pi.single_eq_same, Matrix.smul_mul]
+    simp only [cu, eS, Bool.false_eq_true, ite_false, Pi.smul_apply, Pi.single_eq_same, Matrix.smul_mul]
   · simp [cu, eS, h]
 
-theorem cv_true (w : ι) (a : Ix P Q) (b : Ix R S) :
+omit [Fintype ι] [DecidableEq ι] in
+theorem cv_true [Fintype ι] [DecidableEq ι] (w : ι) (a : Ix P Q) (b : Ix R S) :
     cv (w, a, b, true) = (Pi.single w (Matrix.single a b Complex.I) : ι → Matrix (Ix P Q) (Ix R S) ℂ) := by
   simp [cv, eS]
 
-theorem cv_false (w : ι) (a : Ix P Q) (b : Ix R S) :
+omit [Fintype ι] [DecidableEq ι] in
+theorem cv_false [Fintype ι] [DecidableEq ι] (w : ι) (a : Ix P Q) (b : Ix R S) :
     cv (w, a, b, false) = (Pi.single w (Matrix.single a b (1 : ℂ)) : ι → Matrix (Ix P Q) (Ix R S) ℂ) := by
   simp [cv, eS]
 
@@ -263,8 +270,8 @@ theorem quad_fock : (∀ (l κ : Type) [Fintype l] [DecidableEq l] [Fintype κ] 
   rw [hop, hq]
   clear H1 H2 hq hop hφ hY
 
-  simp only [ContinuousLinearMap.smul_apply, ContinuousLinearMap.coe_sum', Finset.sum_apply,
-  ContinuousLinearMap.add_apply, ContinuousLinearMap.mul_apply, LinearMap.smul_apply, LinearMap.sum_apply,
+  simp only [smul_apply, FunLike.coe_sum, Finset.sum_apply,
+  add_apply, mul_apply_eq_comp, LinearMap.smul_apply, LinearMap.sum_apply,
   LinearMap.add_apply, map_smul, map_sum, map_add, hΨ, hZ]
 
 end GlobalTheory.RealLift.QuadFock

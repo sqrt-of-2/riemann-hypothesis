@@ -30,7 +30,7 @@ theorem Hf_single {ι : Type} [Fintype ι] [DecidableEq ι] (j j' : ι) :
   by_cases h : j = j'
   · subst h
     simp [Finset.sum_ite_eq']
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     refine Finset.sum_eq_zero fun i _ => ?_
     by_cases h1 : i = j
     · subst h1
@@ -107,7 +107,7 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
   have he_in : ∀ a, InPart σ (e a) := by
     intro a j hj
     simp only [he, PiLp.single_apply]
-    rw [if_neg]
+    rw [ite_eq_right]
     rintro rfl
     exact hj rfl
   have hee : ∀ a a', Hf (e a) (e a') = if a = a' then 1 else 0 := by
@@ -116,7 +116,7 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
     rw [Hf_single]
     by_cases h : a = a'
     · simp [h]
-    · rw [if_neg, if_neg h]
+    · rw [ite_eq_right, ite_eq_right h]
       intro h2
       rw [Sigma.mk.inj_iff] at h2
       exact h (Fin.castLE_injective hi (eq_of_heq h2.2))
@@ -126,7 +126,7 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
     simp only [M, Matrix.mul_apply, Matrix.conjTranspose_apply, Matrix.of_apply, Matrix.one_apply, jof_Hf_conj]
     rw [hpars (e a) (e a') (he_in a) (he_in a'), hee]
   obtain ⟨s1, -, hs1⟩ := hx.2.2.2.2.2.1 i N X.r M hMM hNr
-  haveI : Nonempty (Fin i → Fin N) := ⟨s1⟩
+  have : Nonempty (Fin i → Fin N) := ⟨s1⟩
   obtain ⟨s0, hs0⟩ := Finite.exists_max (fun s : Fin i → Fin N => ‖(M.submatrix id s).det‖)
   set Δ := ‖(M.submatrix id s0).det‖ with hΔ
   have hΔr : (2 : ℝ) ^ (-(X.r : ℝ) / 2) ≤ Δ := hs1.trans (hs0 s1)
@@ -187,11 +187,11 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
   refine ⟨y, s, μ, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · intro j
     by_cases h : (s0 j).val < ρ
-    · simp only [s, dif_pos h]; exact hsT _
-    · simp only [s, dif_neg h]; exact hsA _ _
+    · simp only [s, dite_eq_left h]; exact hsT _
+    · simp only [s, dite_eq_right h]; exact hsA _ _
   · intro j xs hxs
     by_cases h : (s0 j).val < ρ
-    · simp only [s, μ, y, dif_pos h]
+    · simp only [s, μ, y, dite_eq_left h]
       have hR := hRpos ⟨_, h⟩
       have e1 : ζ ⟨_, h⟩ * (((2 * Real.pi * R ⟨_, h⟩ : ℝ)) : ℂ) ^ c *
           ∏ k, Hf (xs k) (((R ⟨_, h⟩ : ℂ))⁻¹ • u ⟨_, h⟩) =
@@ -206,12 +206,12 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
         linear_combination (ζ ⟨_, h⟩ * ∏ x, Hf (xs x) (u ⟨_, h⟩)) * key
       rw [e1, hnμ]
       exact hζb _ xs hxs
-    · simp only [s, μ, y, dif_neg h]
+    · simp only [s, μ, y, dite_eq_right h]
       rw [Complex.norm_natCast]
       exact hAb _ _ xs hxs
   · intro j
     by_cases h : (s0 j).val < ρ
-    · simp only [s, μ, dif_pos h]
+    · simp only [s, μ, dite_eq_left h]
       rw [hnμ]
       have hl := l2NormSq_nonneg_gaussianTorus X P.q (sT ⟨_, h⟩)
       calc P.K6⁻¹ * Real.exp (-(2 * Real.pi * Cchi (E := E) P.m * P.ph / P.q)) * X.l2 P.q (sT ⟨_, h⟩)
@@ -219,7 +219,7 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
             mul_le_mul_of_nonneg_right (mul_le_mul_of_nonneg_left (hexp _) hK6) hl
         _ ≤ (2 * Real.pi * R ⟨_, h⟩) ^ (2 * c) := hζl _
         _ = ((2 * Real.pi * R ⟨_, h⟩) ^ c) ^ 2 := by ring
-    · simp only [s, μ, dif_neg h]
+    · simp only [s, μ, dite_eq_right h]
       rw [Complex.norm_natCast]
       have hl := l2NormSq_nonneg_gaussianTorus X P.q (sA (s0 j) (not_lt.1 h))
       calc P.K6⁻¹ * Real.exp (-(2 * Real.pi * Cchi (E := E) P.m * P.ph / P.q)) *
@@ -229,12 +229,12 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
         _ ≤ (c.factorial : ℝ) ^ 2 := hAl _ _
   · intro j
     by_cases h : (s0 j).val < ρ
-    · simp only [y, dif_pos h]
+    · simp only [y, dite_eq_left h]
       have hR := hRpos ⟨_, h⟩
       rw [norm_smul, norm_inv, Complex.norm_real, Real.norm_eq_abs, abs_of_pos hR, inv_mul_le_iff₀ hR]
       have := (hc5 ⟨_, h⟩).1
       linarith
-    · simp only [y, dif_neg h]
+    · simp only [y, dite_eq_right h]
       rw [(hperp _ (not_lt.1 h)).1]
       norm_num
   ·
@@ -246,7 +246,7 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
     have hentry : ∀ a j, Hf (e a) (y j) = wv (s0 j) a + ∑ k, εc j k * wv k a := by
       intro a j
       by_cases h : (s0 j).val < ρ
-      · simp only [y, dif_pos h, jof_Hf_smul_right, map_inv₀, Complex.conj_ofReal]
+      · simp only [y, dite_eq_left h, jof_Hf_smul_right, map_inv₀, Complex.conj_ofReal]
         have hR := hRpos ⟨_, h⟩
         have hR' : (R ⟨_, h⟩ : ℂ) ≠ 0 := by exact_mod_cast hR.ne'
         have h4 := hc4 ⟨_, h⟩ (e a) (he_in a)
@@ -255,13 +255,13 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
           rw [← sum_fin_le hρN (fun s' => ε ⟨_, h⟩ s' * Hf (e a) (w s'))]
           refine Finset.sum_congr rfl fun k _ => ?_
           by_cases hk : k.val < ρ
-          · simp only [εc, wv, dif_pos h, dif_pos hk]
+          · simp only [εc, wv, dite_eq_left h, dite_eq_left hk]
             rw [hbw k hk]
-          · simp only [εc, dif_pos h, dif_neg hk, zero_mul]
+          · simp only [εc, dite_eq_left h, dite_eq_right hk, zero_mul]
         rw [← hsum]
         simp only [wv]
         rw [← hws, ← h4, div_eq_inv_mul]
-      · simp only [y, dif_neg h, εc, wv, zero_mul, Finset.sum_const_zero, add_zero]
+      · simp only [y, dite_eq_right h, εc, wv, zero_mul, Finset.sum_const_zero, add_zero]
     have hmat : (Matrix.of fun a b => Hf (EuclideanSpace.single (⟨σ, Fin.castLE hi a⟩ : Idx X.dim) (1 : ℂ))
         (y b)) = Matrix.of fun a j => (wv (s0 j) + ∑ k, εc j k • wv k) a := by
       ext a j
@@ -277,24 +277,24 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
     have hrow : ∀ j, ∑ k, ‖εc j k‖ ≤ if (s0 j).val < ρ then B else 0 := by
       intro j
       by_cases h : (s0 j).val < ρ
-      · rw [if_pos h]
+      · rw [ite_eq_left h]
         have := (hεb ⟨_, h⟩).2
         rw [← sum_fin_le hρN (fun s' => ‖ε ⟨_, h⟩ s'‖)] at this
         refine le_of_eq_of_le ?_ this
         refine Finset.sum_congr rfl fun k _ => ?_
         by_cases hk : k.val < ρ
-        · simp [εc, dif_pos h, dif_pos hk]
-        · simp [εc, dif_pos h, dif_neg hk]
-      · rw [if_neg h]
-        simp [εc, dif_neg h]
+        · simp [εc, dite_eq_left h, dite_eq_left hk]
+        · simp [εc, dite_eq_left h, dite_eq_right hk]
+      · rw [ite_eq_right h]
+        simp [εc, dite_eq_right h]
     have hprod : ∏ j, (1 + ∑ k, ‖εc j k‖) ≤ (1 + B) ^ ρ := by
       calc ∏ j, (1 + ∑ k, ‖εc j k‖)
           ≤ ∏ j, (if (s0 j).val < ρ then 1 + B else 1) := by
             refine Finset.prod_le_prod₀ (fun j _ => by positivity) fun j _ => ?_
             have := hrow j
             by_cases h : (s0 j).val < ρ
-            · simp only [h, if_true] at this ⊢; linarith
-            · simp only [h, if_false] at this ⊢; linarith
+            · simp only [h, ite_true] at this ⊢; linarith
+            · simp only [h, ite_false] at this ⊢; linarith
         _ = (1 + B) ^ (Finset.univ.filter fun j => (s0 j).val < ρ).card := by
             rw [Finset.prod_ite, Finset.prod_const_one, mul_one, Finset.prod_const]
         _ ≤ (1 + B) ^ ρ := by
@@ -302,7 +302,7 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
             have : (Finset.univ.filter fun j => (s0 j).val < ρ).card ≤ (Finset.range ρ).card := by
               apply Finset.card_le_card_of_injOn (fun j => (s0 j).val)
               · intro j hj
-                simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq] at hj
+                simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_ofPred_eq] at hj
                 simpa using hj
               · intro j _ j' _ hjj
                 exact hinj (Fin.ext hjj)
@@ -342,11 +342,11 @@ theorem block_data (hx : Ext.All) (hc : CharStatement) (ht : ColTorusStatement)
     linarith [hpert, hfac, h4, hΔr]
   · intro j
     by_cases h : (s0 j).val < ρ
-    · simp only [μ, dif_pos h]
+    · simp only [μ, dite_eq_left h]
       rw [← norm_ne_zero_iff, hnμ]
       have := hRpos ⟨_, h⟩
       positivity
-    · simp only [μ, dif_neg h]
+    · simp only [μ, dite_eq_right h]
       exact_mod_cast Nat.factorial_ne_zero c
 
 end

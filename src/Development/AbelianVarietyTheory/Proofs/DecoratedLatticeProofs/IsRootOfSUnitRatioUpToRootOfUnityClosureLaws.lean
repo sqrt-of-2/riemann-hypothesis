@@ -53,18 +53,18 @@ namespace GlobalTheory.Fam
 
 theorem padicValRat_pow_mul_pow_ne_zero_imp {r s : ℚ} (hr : r ≠ 0) (hs : s ≠ 0) (a b : ℕ) (p : ℕ) (hp : p.Prime)
     (h : padicValRat p (r ^ a * s ^ b) ≠ 0) : padicValRat p r ≠ 0 ∨ padicValRat p s ≠ 0 := by
-  haveI := Fact.mk hp
+  have := Fact.mk hp
   by_contra hc
-  push_neg at hc
+  push Not at hc
   apply h
   rw [padicValRat.mul (pow_ne_zero _ hr) (pow_ne_zero _ hs), padicValRat.pow r, padicValRat.pow s, hc.1, hc.2]
   simp
 
 theorem padicValRat_pow_div_pow_ne_zero_imp {r s : ℚ} (hr : r ≠ 0) (hs : s ≠ 0) (a b : ℕ) (p : ℕ) (hp : p.Prime)
     (h : padicValRat p (r ^ a / s ^ b) ≠ 0) : padicValRat p r ≠ 0 ∨ padicValRat p s ≠ 0 := by
-  haveI := Fact.mk hp
+  have := Fact.mk hp
   by_contra hc
-  push_neg at hc
+  push Not at hc
   apply h
   rw [padicValRat.div (pow_ne_zero _ hr) (pow_ne_zero _ hs), padicValRat.pow r, padicValRat.pow s, hc.1, hc.2]
   simp
@@ -121,9 +121,9 @@ theorem unitRatio_prod (S : ℕ → Prop) {I : Type} (s : Finset I) (x y : I →
     exact unitRatio_mul (h a (Finset.mem_insert_self a s)) (ih fun i hi => h i (Finset.mem_insert_of_mem hi))
 
 theorem unitRatio_laws : ∀ S : ℕ → Prop, (∀ y : ℂ, y ≠ 0 → UnitRatio S y y) ∧ (∀ x y x' y' : ℂ, UnitRatio S x y → UnitRatio S x' y' → UnitRatio S (x * x') (y * y') ∧ UnitRatio S (x / x') (y / y') ∧ x ≠ 0) ∧ (∀ (x y : ℂ) (n : ℕ), y ≠ 0 → 0 < n → x ^ n = y ^ n → UnitRatio S x y) ∧ ∀ (I : Type) (s : Finset I) (x y : I → ℂ), (∀ i ∈ s, UnitRatio S (x i) (y i)) → UnitRatio S (∏ i ∈ s, x i) (∏ i ∈ s, y i) :=
-  fun S => ⟨fun y hy => unitRatio_refl S hy,
-    fun x y x' y' h h' => ⟨unitRatio_mul h h', unitRatio_div h h', unitRatio_ne_zero h⟩,
-    fun x y n hy hn h => unitRatio_of_pow_eq S hy hn h,
-    fun I s x y h => unitRatio_prod S s x y h⟩
+  fun S => ⟨fun _y hy => unitRatio_refl S hy,
+    fun _x _y _x' _y' h h' => ⟨unitRatio_mul h h', unitRatio_div h h', unitRatio_ne_zero h⟩,
+    fun _x _y _n hy hn h => unitRatio_of_pow_eq S hy hn h,
+    fun _I s x y h => unitRatio_prod S s x y h⟩
 
 end GlobalTheory.Fam

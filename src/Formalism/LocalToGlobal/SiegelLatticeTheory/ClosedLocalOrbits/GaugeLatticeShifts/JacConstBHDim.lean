@@ -108,7 +108,7 @@ def LmL (k r : ℕ) : (Mat k r × (Fin r → ℂ) × Mat k r × Mat k r) →ₗ[
   map_add' p q := by
     have : tD k r (p.2.1 + q.2.1) = tD k r p.2.1 + tD k r q.2.1 := by
       unfold tD; rw [Matrix.diagonal_add]; congr 1; funext i; unfold dv
-      split_ifs <;> simp [star_add] <;> ring
+      split_ifs <;> simp [star_add]; ring
     simp only [Prod.fst_add, Prod.snd_add, this, Matrix.mul_add, Matrix.add_mul]
     abel
   map_smul' c p := by
@@ -169,8 +169,8 @@ theorem long_weyl_element_apply (i j : Fin (2 * r + k + 1)) : w0B k r i j = if i
       · intro h; apply Fin.ext; rw [← h]; simp [esI, tau, h1]
       · intro h; apply Fin.ext; rw [h]; simp [esI, tau, h1]
     by_cases h : i = tau k r j
-    · rw [if_pos (e.2 h).symm, if_pos h]; rfl
-    · rw [if_neg (fun h' => h (e.1 h'.symm)), if_neg h]
+    · rw [ite_eq_left (e.2 h).symm, ite_eq_left h]; rfl
+    · rw [ite_eq_right (fun h' => h (e.1 h'.symm)), ite_eq_right h]
   · rw [dite_eq_right h1]
     by_cases h2 : j.val ≤ r + k
     · rw [dite_eq_left h2]
@@ -178,26 +178,26 @@ theorem long_weyl_element_apply (i j : Fin (2 * r + k + 1)) : w0B k r i j = if i
       by_cases hi2 : r ≤ i.val ∧ i.val ≤ r + k
       · rw [dite_eq_left hi2, htj, Matrix.one_apply]
         by_cases h : i = j
-        · rw [if_pos (by subst h; rfl), if_pos h]
-        · rw [if_neg (fun h' => h (Fin.ext (by have := congrArg Fin.val h'; simp at this; omega))), if_neg h]
-      · rw [dite_eq_right hi2, htj, if_neg]
+        · rw [ite_eq_left (by subst h; rfl), ite_eq_left h]
+        · rw [ite_eq_right (fun h' => h (Fin.ext (by have := congrArg Fin.val h'; simp at this; omega))), ite_eq_right h]
+      · rw [dite_eq_right hi2, htj, ite_eq_right]
         intro h; apply hi2; rw [h]; exact ⟨by omega, h2⟩
     · rw [dite_eq_right h2]
       have htj : (tau k r j).val = 2 * r + k - j.val := by simp [tau]; omega
       by_cases h : i.val = 2 * r + k - j.val
-      · rw [if_pos h, if_pos (Fin.ext (by rw [htj]; exact h))]; simp
-      · rw [if_neg h, if_neg (fun h' => h (by rw [h', htj]))]
+      · rw [ite_eq_left h, ite_eq_left (Fin.ext (by rw [htj]; exact h))]; simp
+      · rw [ite_eq_right h, ite_eq_right (fun h' => h (by rw [h', htj]))]
 
 theorem w0Sq : LongWeylElementSquare := by
   intro k r
   ext i j
   rw [Matrix.mul_apply, Finset.sum_eq_single (tau k r j)]
-  · rw [long_weyl_element_apply, long_weyl_element_apply, if_pos rfl, mul_one, Matrix.one_apply]
+  · rw [long_weyl_element_apply, long_weyl_element_apply, ite_eq_left rfl, mul_one, Matrix.one_apply]
     by_cases h : i = j
-    · rw [if_pos (by rw [h, tau_tau]), if_pos h]
-    · rw [if_neg (fun h' => h (by rw [h', tau_tau])), if_neg h]
+    · rw [ite_eq_left (by rw [h, tau_tau]), ite_eq_left h]
+    · rw [ite_eq_right (fun h' => h (by rw [h', tau_tau])), ite_eq_right h]
   · intro m _ hm
-    rw [long_weyl_element_apply m j, if_neg hm, mul_zero]
+    rw [long_weyl_element_apply m j, ite_eq_right hm, mul_zero]
   · intro h; exact absurd (Finset.mem_univ _) h
 
 theorem adjoint_long_weyl_element : adjH (w0B k r) = w0B k r := by
@@ -209,13 +209,13 @@ theorem adjoint_long_weyl_element : adjH (w0B k r) = w0B k r := by
 theorem longestWeylElementGL_conj_apply_rev (M : Mat k r) (i j : Fin (2 * r + k + 1)) :
     (w0B k r * M * w0B k r) i j = M (tau k r i) (tau k r j) := by
   rw [Matrix.mul_apply, Finset.sum_eq_single (tau k r j)]
-  · rw [long_weyl_element_apply (tau k r j) j, if_pos rfl, mul_one, Matrix.mul_apply, Finset.sum_eq_single (tau k r i)]
-    · rw [long_weyl_element_apply, if_pos (tau_tau i).symm, one_mul]
+  · rw [long_weyl_element_apply (tau k r j) j, ite_eq_left rfl, mul_one, Matrix.mul_apply, Finset.sum_eq_single (tau k r i)]
+    · rw [long_weyl_element_apply, ite_eq_left (tau_tau i).symm, one_mul]
     · intro m _ hm
-      rw [long_weyl_element_apply, if_neg (fun h => hm (by rw [h, tau_tau])), zero_mul]
+      rw [long_weyl_element_apply, ite_eq_right (fun h => hm (by rw [h, tau_tau])), zero_mul]
     · intro h; exact absurd (Finset.mem_univ _) h
   · intro m _ hm
-    rw [long_weyl_element_apply m j, if_neg hm, mul_zero]
+    rw [long_weyl_element_apply m j, ite_eq_right hm, mul_zero]
   · intro h; exact absurd (Finset.mem_univ _) h
 
 end Formalism.L2.SG.Pf.BH.Sw
@@ -255,8 +255,8 @@ theorem adjH_posP (Y : Mat k r) : adjH (posP Y) = posP (adjH Y) := by
   unfold posP
   have hi := dg_le (k := k) (r := r) i; have hj := dg_le (k := k) (r := r) j
   by_cases h : dg k r i < dg k r j
-  · rw [if_pos (by rw [dg_tau, dg_tau]; omega), if_pos h, adjH_apply]
-  · rw [if_neg (by rw [dg_tau, dg_tau]; omega), if_neg h, star_zero, mul_zero, zero_mul]
+  · rw [ite_eq_left (by rw [dg_tau, dg_tau]; omega), ite_eq_left h, adjH_apply]
+  · rw [ite_eq_right (by rw [dg_tau, dg_tau]; omega), ite_eq_right h, star_zero, mul_zero, zero_mul]
 
 theorem adjH_negP (Y : Mat k r) : adjH (negP Y) = negP (adjH Y) := by
   ext i j
@@ -264,16 +264,16 @@ theorem adjH_negP (Y : Mat k r) : adjH (negP Y) = negP (adjH Y) := by
   unfold negP
   have hi := dg_le (k := k) (r := r) i; have hj := dg_le (k := k) (r := r) j
   by_cases h : dg k r j < dg k r i
-  · rw [if_pos (by rw [dg_tau, dg_tau]; omega), if_pos h, adjH_apply]
-  · rw [if_neg (by rw [dg_tau, dg_tau]; omega), if_neg h, star_zero, mul_zero, zero_mul]
+  · rw [ite_eq_left (by rw [dg_tau, dg_tau]; omega), ite_eq_left h, adjH_apply]
+  · rw [ite_eq_right (by rw [dg_tau, dg_tau]; omega), ite_eq_right h, star_zero, mul_zero, zero_mul]
 
 theorem adjH_midP (Y : Mat k r) : adjH (middlePart Y) = middlePart (adjH Y) := by
   ext i j
   rw [adjH_apply]
   unfold middlePart
   by_cases h : Mid k r i ∧ Mid k r j
-  · rw [if_pos ⟨(mid_tau j).2 h.2, (mid_tau i).2 h.1⟩, if_pos h, adjH_apply]
-  · rw [if_neg (fun h' => h ⟨(mid_tau i).1 h'.2, (mid_tau j).1 h'.1⟩), if_neg h, star_zero, mul_zero, zero_mul]
+  · rw [ite_eq_left ⟨(mid_tau j).2 h.2, (mid_tau i).2 h.1⟩, ite_eq_left h, adjH_apply]
+  · rw [ite_eq_right (fun h' => h ⟨(mid_tau i).1 h'.2, (mid_tau j).1 h'.1⟩), ite_eq_right h, star_zero, mul_zero, zero_mul]
 
 theorem adjH_w0conj (M : Mat k r) : adjH (w0B k r * M * w0B k r) = w0B k r * adjH M * w0B k r := by
   rw [adjH_mul, adjH_mul, adjoint_long_weyl_element, Matrix.mul_assoc]
@@ -286,17 +286,17 @@ theorem dv_tau (x : Fin r → ℂ) (i : Fin (2 * r + k + 1)) : star (dv k r x (t
   have hi := i.isLt
   unfold dv
   by_cases h1 : i.val < r
-  · have hv : (tau k r i).val = 2 * r + k - i.val := by rw [tau_val, if_pos (Or.inl h1)]
+  · have hv : (tau k r i).val = 2 * r + k - i.val := by rw [tau_val, ite_eq_left (Or.inl h1)]
     have ht : ¬ (tau k r i).val < r := by omega
     have ht2 : ¬ (tau k r i).val ≤ r + k := by omega
     rw [dite_eq_right ht, dite_eq_right ht2, dite_eq_left h1, star_neg, star_star]
     congr 2; apply Fin.ext; simp only; omega
   · by_cases h2 : i.val ≤ r + k
-    · have hv : (tau k r i).val = i.val := by rw [tau_val, if_neg (by omega)]
+    · have hv : (tau k r i).val = i.val := by rw [tau_val, ite_eq_right (by omega)]
       have ht : ¬ (tau k r i).val < r := by omega
       have ht2 : (tau k r i).val ≤ r + k := by omega
       rw [dite_eq_right ht, dite_eq_left ht2, dite_eq_right h1, dite_eq_left h2, star_zero, neg_zero]
-    · have hv : (tau k r i).val = 2 * r + k - i.val := by rw [tau_val, if_pos (Or.inr (by omega))]
+    · have hv : (tau k r i).val = 2 * r + k - i.val := by rw [tau_val, ite_eq_left (Or.inr (by omega))]
       have ht : (tau k r i).val < r := by omega
       rw [dite_eq_left ht, dite_eq_right h1, dite_eq_right h2, neg_neg]
       congr 2; apply Fin.ext; simp only; omega
@@ -306,10 +306,10 @@ theorem adjH_tD (x : Fin r → ℂ) : adjH (tD k r x) = -tD k r x := by
   rw [adjH_apply, Matrix.neg_apply, tD_apply, tD_apply]
   by_cases h : i = j
   · subst h
-    rw [if_pos rfl, if_pos rfl, dv_tau]
+    rw [ite_eq_left rfl, ite_eq_left rfl, dv_tau]
     calc sgn k r i * -dv k r x i * sgn k r i = -(sgn k r i * sgn k r i) * dv k r x i := by ring
       _ = -dv k r x i := by rw [sgn_mul_self]; ring
-  · rw [if_neg (fun h' => h (by rw [← tau_tau i, ← tau_tau j, h'])), if_neg h, star_zero, mul_zero, zero_mul, neg_zero]
+  · rw [ite_eq_right (fun h' => h (by rw [← tau_tau i, ← tau_tau j, h'])), ite_eq_right h, star_zero, mul_zero, zero_mul, neg_zero]
 
 theorem lm_mem {v : Mat k r × (Fin r → ℂ) × Mat k r × Mat k r} (hv : v ∈ Vs k r) : Lm k r v ∈ uH k r := by
   obtain ⟨h1, -, h3, h4⟩ : v.1 ∈ lieNS k r ∧ v.2.1 ∈ (⊤ : Submodule ℝ (Fin r → ℂ)) ∧ v.2.2.1 ∈ uWb k r ∧
@@ -365,7 +365,7 @@ theorem decomp {Y : Mat k r} (hadj : adjH Y = -Y) : negP Y + tD k r (xOf Y) + mi
   · have hne : i ≠ j := fun e => by rw [e] at h; exact lt_irrefl _ h
     have hm : ¬ (Mid k r i ∧ Mid k r j) := fun hm => by
       rw [mid_iff, mid_iff] at hm; omega
-    rw [if_neg (by omega), if_neg hne, if_neg hm, if_pos h]; ring
+    rw [ite_eq_right (by omega), ite_eq_right hne, ite_eq_right hm, ite_eq_left h]; ring
   · by_cases hm : Mid k r i
     · have hmj : Mid k r j := by rw [mid_iff] at hm ⊢; omega
       by_cases hij : i = j
@@ -374,12 +374,12 @@ theorem decomp {Y : Mat k r} (hadj : adjH Y = -Y) : negP Y + tD k r (xOf Y) + mi
           have hm2 : r ≤ i.val ∧ i.val ≤ r + k := hm
           unfold dv
           rw [dite_eq_right (by omega), dite_eq_left hm2.2]
-        rw [if_neg (lt_irrefl _), if_pos rfl, if_pos ⟨hm, hm⟩, h0]; ring
-      · rw [if_neg (by omega), if_neg hij, if_pos ⟨hm, hmj⟩, if_neg (by omega)]; ring
+        rw [ite_eq_right (lt_irrefl _), ite_eq_left rfl, ite_eq_left ⟨hm, hm⟩, h0]; ring
+      · rw [ite_eq_right (by omega), ite_eq_right hij, ite_eq_left ⟨hm, hmj⟩, ite_eq_right (by omega)]; ring
     · have hij : i = j := dg_inj h hm
       subst hij
       have hmm : ¬ (Mid k r i ∧ Mid k r i) := fun h' => hm h'.1
-      rw [if_neg (lt_irrefl _), if_pos rfl, if_neg hmm]
+      rw [ite_eq_right (lt_irrefl _), ite_eq_left rfl, ite_eq_right hmm]
       have hm' : ¬ (r ≤ i.val ∧ i.val ≤ r + k) := hm
       unfold dv xOf
       by_cases h1 : i.val < r
@@ -389,12 +389,12 @@ theorem decomp {Y : Mat k r} (hadj : adjH Y = -Y) : negP Y + tD k r (xOf Y) + mi
       · have h2 : ¬ i.val ≤ r + k := fun h2 => hm' ⟨by omega, h2⟩
         rw [dite_eq_right h1, dite_eq_right h2]
         have e : eI k r ⟨2 * r + k - i.val, by omega⟩ = tau k r i := by
-          apply Fin.ext; rw [eI_val', tau_val, if_pos (Or.inr (by omega))]
+          apply Fin.ext; rw [eI_val', tau_val, ite_eq_left (Or.inr (by omega))]
         rw [e, ← diag_star hadj]; ring
   · have hne : i ≠ j := fun e => by rw [e] at h; exact lt_irrefl _ h
     have hm : ¬ (Mid k r i ∧ Mid k r j) := fun hm => by
       rw [mid_iff, mid_iff] at hm; omega
-    rw [if_pos h, if_neg hne, if_neg hm, if_neg (by omega)]; ring
+    rw [ite_eq_left h, ite_eq_right hne, ite_eq_right hm, ite_eq_right (by omega)]; ring
 
 theorem lm_surj {Y : Mat k r} (hY : Y ∈ uH k r) : ∃ v ∈ Vs k r, Lm k r v = Y := by
   have hadj : adjH Y = -Y := eq_neg_of_add_eq_zero_left hY
@@ -405,7 +405,7 @@ theorem lm_surj {Y : Mat k r} (hY : Y ∈ uH k r) : ∃ v ∈ Vs k r, Lm k r v =
       · intro i j hij
         rw [longestWeylElementGL_conj_apply_rev]
         unfold negP
-        rw [if_neg]
+        rw [ite_eq_right]
         rw [dg_tau, dg_tau]
         have := dg_le (k := k) (r := r) i; have := dg_le (k := k) (r := r) j
         omega
@@ -415,14 +415,14 @@ theorem lm_surj {Y : Mat k r} (hY : Y ∈ uH k r) : ∃ v ∈ Vs k r, Lm k r v =
       · show adjH (middlePart Y) + middlePart Y = 0
         rw [adjH_midP, hadj, middlePart_neg, neg_add_cancel]
       · intro i j h
-        unfold middlePart; rw [if_neg h]
+        unfold middlePart; rw [ite_eq_right h]
     have m4 : -posP Y ∈ lieNS k r := by
       show -posP Y ∈ lieN k r
       refine ⟨?_, ?_⟩
       · intro i j hij
         rw [Matrix.neg_apply]
         unfold posP
-        rw [if_neg (by omega), neg_zero]
+        rw [ite_eq_right (by omega), neg_zero]
       · rw [adjH_neg, adjH_posP, hadj, posP_neg, neg_neg, add_neg_cancel]
     exact Submodule.mem_prod.2 ⟨m1, Submodule.mem_prod.2 ⟨Submodule.mem_top, Submodule.mem_prod.2 ⟨m3, m4⟩⟩⟩
   · show w0B k r * (w0B k r * negP Y * w0B k r) * w0B k r + tD k r (xOf Y) + middlePart Y - -posP Y = Y
@@ -482,8 +482,8 @@ theorem tD_sq_sum (x : Fin r → ℂ) : ∑ i, ∑ j, ‖tD k r x i j‖ ^ 2 = 2
   refine Finset.sum_congr rfl fun i _ => ?_
   simp only [tD_apply]
   rw [Finset.sum_eq_single i]
-  · rw [if_pos rfl]
-  · intro j _ hj; rw [if_neg (Ne.symm hj), norm_zero]; ring
+  · rw [ite_eq_left rfl]
+  · intro j _ hj; rw [ite_eq_right (Ne.symm hj), norm_zero]; ring
   · intro h; exact absurd (Finset.mem_univ _) h
 
 theorem conj_sq_sum (X : Mat k r) : ∑ i, ∑ j, ‖(w0B k r * X * w0B k r) i j‖ ^ 2 = ∑ i, ∑ j, ‖X i j‖ ^ 2 := by
@@ -514,7 +514,7 @@ theorem lm_norm {v : Mat k r × (Fin r → ℂ) × Mat k r × Mat k r} (hv : v �
     · have a0 : v.1 (tau k r i) (tau k r j) = 0 := f1 _ _ (by rw [dg_tau, dg_tau]; omega)
       have hne : i ≠ j := fun e => by rw [e] at h; exact lt_irrefl _ h
       have c0 : v.2.2.1 i j = 0 := h3.2 i j (fun hm => by rw [mid_iff, mid_iff] at hm; omega)
-      rw [a0, if_neg hne, c0]; simp
+      rw [a0, ite_eq_right hne, c0]; simp
     · have a0 : v.1 (tau k r i) (tau k r j) = 0 := f1 _ _ (by rw [dg_tau, dg_tau]; omega)
       have d0 : v.2.2.2 i j = 0 := f4 _ _ (by omega)
       rw [a0, d0]
@@ -524,8 +524,8 @@ theorem lm_norm {v : Mat k r × (Fin r → ℂ) × Mat k r × Mat k r} (hv : v �
           have h0 : dv k r v.2.1 i = 0 := by
             have hm2 : r ≤ i.val ∧ i.val ≤ r + k := hm
             unfold dv; rw [dite_eq_right (by omega), dite_eq_left hm2.2]
-          rw [if_pos rfl, h0]; simp
-        · rw [if_neg hij]; simp
+          rw [ite_eq_left rfl, h0]; simp
+        · rw [ite_eq_right hij]; simp
       · have hij : i = j := dg_inj h hm
         subst hij
         have c0 : v.2.2.1 i i = 0 := h3.2 i i (fun h' => hm h'.1)
@@ -533,7 +533,7 @@ theorem lm_norm {v : Mat k r × (Fin r → ℂ) × Mat k r × Mat k r} (hv : v �
     · have d0 : v.2.2.2 i j = 0 := f4 _ _ (by omega)
       have hne : i ≠ j := fun e => by rw [e] at h; exact lt_irrefl _ h
       have c0 : v.2.2.1 i j = 0 := h3.2 i j (fun hm => by rw [mid_iff, mid_iff] at hm; omega)
-      rw [d0, if_neg hne, c0]; simp
+      rw [d0, ite_eq_right hne, c0]; simp
   rw [RL_sq, RL_sq, RL_sq, RL_sq]
   simp_rw [hpt]
   simp only [Finset.sum_add_distrib]
@@ -592,9 +592,9 @@ private theorem mul_hpk_apply_lemma (A : Mat k r) (i j : Fin (2 * r + k + 1)) :
   rw [Matrix.mul_apply]
   simp_rw [Formalism.QuantumDeterminants.WeylGroupFacts.hpk_row]
   rw [Finset.sum_eq_single (tau k r j)]
-  · rw [tau_tau, if_pos rfl, sgn_tau]
+  · rw [tau_tau, ite_eq_left rfl, sgn_tau]
   · intro m _ hm
-    rw [if_neg (fun h => hm (by rw [h, tau_tau])), mul_zero]
+    rw [ite_eq_right (fun h => hm (by rw [h, tau_tau])), mul_zero]
   · simp
 
 private theorem adjH_apply_lemma_2 (X : Mat k r) (i j : Fin (2 * r + k + 1)) :

@@ -113,11 +113,11 @@ theorem okPlus (P : M.Par) (l n₀ : ℕ) (hOK : P.OK) (hu : P.u = P.u') (hl1 : 
   · obtain ⟨n, hn⟩ := hOK.int_u' i hi
     by_cases h : i = l + 1
     · refine ⟨n + n₀, ?_⟩
-      simp only [shP, uPlus, if_pos h]
+      simp only [shP, uPlus, ite_eq_left h]
       push_cast
       linarith
     · refine ⟨n, ?_⟩
-      simp only [shP, uPlus, if_neg h]
+      simp only [shP, uPlus, ite_eq_right h]
       exact hn
   · have hg := hOK.gap i hi
     simp only [Formalism.FourierDecayAlt.M.Par.lo, Formalism.FourierDecayAlt.M.Par.hi, shP, uPlus] at hg ⊢
@@ -125,13 +125,13 @@ theorem okPlus (P : M.Par) (l n₀ : ℕ) (hOK : P.OK) (hu : P.u = P.u') (hl1 : 
     simp only [max_self, min_self] at hg
     by_cases h1 : i = l
     · subst h1
-      simp only [if_true, show ¬ (i = i + 1) by omega, if_false]
+      simp only [ite_true, show ¬ (i = i + 1) by omega, ite_false]
       exact key _ _ _ _ (by linarith) (by linarith) (by linarith) (by linarith)
     · by_cases h2 : i = l + 1
       · subst h2
-        simp only [show ¬ (l + 1 + 1 = l + 1) by omega, if_false, if_true]
+        simp only [show ¬ (l + 1 + 1 = l + 1) by omega, ite_false, ite_true]
         exact key _ _ _ _ (by linarith) (by linarith) (by linarith) (by linarith)
-      · simp only [show ¬ (i + 1 = l + 1) by omega, if_false, if_neg h2]
+      · simp only [show ¬ (i + 1 = l + 1) by omega, ite_false, ite_eq_right h2]
         exact key _ _ _ _ (by linarith) (by linarith) (by linarith) (by linarith)
 
 theorem okMinus (P : M.Par) (l n₀ : ℕ) (hOK : P.OK) (hu : P.u = P.u') (hl1 : 1 ≤ l) (hlk : l < P.k)
@@ -148,11 +148,11 @@ theorem okMinus (P : M.Par) (l n₀ : ℕ) (hOK : P.OK) (hu : P.u = P.u') (hl1 :
   · obtain ⟨n, hn⟩ := hOK.int_u' i hi
     by_cases h : i = l
     · refine ⟨n - n₀, ?_⟩
-      simp only [shP, uMinus, if_pos h]
+      simp only [shP, uMinus, ite_eq_left h]
       push_cast
       linarith
     · refine ⟨n, ?_⟩
-      simp only [shP, uMinus, if_neg h]
+      simp only [shP, uMinus, ite_eq_right h]
       exact hn
   · have hg := hOK.gap i hi
     simp only [Formalism.FourierDecayAlt.M.Par.lo, Formalism.FourierDecayAlt.M.Par.hi, shP, uMinus] at hg ⊢
@@ -160,13 +160,13 @@ theorem okMinus (P : M.Par) (l n₀ : ℕ) (hOK : P.OK) (hu : P.u = P.u') (hl1 :
     simp only [max_self, min_self] at hg
     by_cases h1 : i = l
     · subst h1
-      simp only [if_true, show ¬ (i + 1 = i) by omega, if_false]
+      simp only [ite_true, show ¬ (i + 1 = i) by omega, ite_false]
       exact key _ _ _ _ (by linarith) (by linarith) (by linarith) (by linarith)
     · by_cases h2 : i + 1 = l
       · subst h2
-        simp only [show ¬ (i = i + 1) by omega, if_false, if_true]
+        simp only [show ¬ (i = i + 1) by omega, ite_false, ite_true]
         exact key _ _ _ _ (by linarith) (by linarith) (by linarith) (by linarith)
-      · simp only [if_neg h1, if_neg h2]
+      · simp only [ite_eq_right h1, ite_eq_right h2]
         exact key _ _ _ _ (by linarith) (by linarith) (by linarith) (by linarith)
 
 end

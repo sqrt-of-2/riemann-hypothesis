@@ -72,7 +72,7 @@ theorem data_casU (hgap : StdGap ε lam) (hσ : IsURepOn (UJset ε) σ) (hD : Is
     refine ⟨fun v hv => (memT v).2 (hc v hv), fun a b v hv => ?_⟩
     rw [memT] at hv ⊢
     have h1 := congrArg (fun f : Module.End ℂ D => f v) (casimir_comm hE a b)
-    simp only [Module.End.mul_apply] at h1
+    simp only [mul_apply_eq_comp] at h1
     rw [h1, hv, map_smul]
   rw [casU_eq_casimir hD x, (memT x).1 (hT hx)]
   rfl

@@ -64,24 +64,24 @@ theorem finrank_eq_pow_mul_card (R S Ω : Type) [CommRing R] [CommRing S] [IsDom
     Nat.card (S →ₐ[R] Ω) ≠ 0 ∧ ∃ e : ℕ, Module.finrank R S = p ^ e * Nat.card (S →ₐ[R] Ω) := by
   let F := FractionRing R
   let E := FractionRing S
-  letI : Algebra F E := FractionRing.liftAlgebra R E
-  letI : Algebra F Ω := FractionRing.liftAlgebra R Ω
-  haveI : IsScalarTower R F E := FractionRing.isScalarTower_liftAlgebra R E
-  haveI : IsScalarTower R F Ω := FractionRing.isScalarTower_liftAlgebra R Ω
-  haveI : FiniteDimensional F E := inferInstance
-  haveI : ExpChar F p := expChar_of_injective_algebraMap (IsFractionRing.injective R F) p
+  let : Algebra F E := FractionRing.liftAlgebra R E
+  let : Algebra F Ω := FractionRing.liftAlgebra R Ω
+  have : IsScalarTower R F E := FractionRing.isScalarTower_liftAlgebra R E
+  have : IsScalarTower R F Ω := FractionRing.isScalarTower_liftAlgebra R Ω
+  have : FiniteDimensional F E := inferInstance
+  have : ExpChar F p := expChar_of_injective_algebraMap (IsFractionRing.injective R F) p
   obtain ⟨e, he⟩ := finInsepDegree_eq_pow F E p
   have hc : Nat.card (E →ₐ[F] Ω) = Nat.card (S →ₐ[R] Ω) := by
     refine Nat.card_congr (Equiv.ofBijective
       (fun σ => (σ.restrictScalars R).comp (IsScalarTower.toAlgHom R S E)) ⟨?_, ?_⟩)
     · intro σ τ h
-      apply AlgHom.coe_ringHom_injective
+      apply AlgHom.toRingHom_injective
       exact IsFractionRing.ringHom_ext (A := S) fun x => DFunLike.congr_fun h x
     · intro g
       have hg : Function.Injective g := by
         set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in rw [injective_iff_map_eq_zero]
         have : RingHom.ker g = ⊥ := by
-          refine Ideal.eq_bot_of_comap_eq_bot (R := R) (eq_bot_iff.mpr fun x hx => ?_)
+          refine Ideal.eq_bot_of_under_eq_bot (R := R) (eq_bot_iff.mpr fun x hx => ?_)
           have hx' : g (algebraMap R S x) = 0 := hx
           rw [AlgHom.commutes] at hx'
           exact (FaithfulSMul.algebraMap_injective R Ω) (by simpa using hx')
@@ -99,14 +99,14 @@ theorem finrank_eq_pow_mul_card (R S Ω : Type) [CommRing R] [CommRing S] [IsDom
   rw [← hc, ← Field.finSepDegree_eq_of_isAlgClosed F E Ω]
   refine ⟨NeZero.ne _, e, ?_⟩
   rw [← he, mul_comm, Field.finSepDegree_mul_finInsepDegree,
-    Algebra.IsAlgebraic.finrank_of_isFractionRing R F S E]
+    IsFractionRing.finrank_eq R F S E]
 
 theorem card_fibre_eq {X Y : Scheme.{0}} (f : X ⟶ Y) [IsAffineHom f] {U : Y.Opens}
     (hU : IsAffineOpen U) (Ω : Type) [CommRing Ω] [Algebra Γ(Y, U) Ω] :
     letI := (f.app U).hom.toAlgebra
     Nat.card (Γ(X, f ⁻¹ᵁ U) →ₐ[Γ(Y, U)] Ω) = Nat.card {y : Spec (CommRingCat.of Ω) ⟶ X //
       y ≫ f = Spec.map (CommRingCat.ofHom (algebraMap Γ(Y, U) Ω)) ≫ hU.fromSpec} := by
-  letI := (f.app U).hom.toAlgebra
+  let := (f.app U).hom.toAlgebra
   have hV : IsAffineOpen (f ⁻¹ᵁ U) := hU.preimage f
   have w : hV.fromSpec ≫ f = Spec.map (f.app U) ≫ hU.fromSpec := by
     rw [← IsAffineOpen.SpecMap_appLE_fromSpec f hU hV le_rfl, Scheme.Hom.app_eq_appLE]
@@ -119,7 +119,7 @@ theorem card_fibre_eq {X Y : Scheme.{0}} (f : X ⟶ Y) [IsAffineHom f] {U : Y.Op
     exact σ.commutes x
   · intro σ τ h
     have h1 := Spec.map_injective ((cancel_mono _).mp (congrArg Subtype.val h))
-    exact AlgHom.coe_ringHom_injective (congrArg CommRingCat.Hom.hom h1)
+    exact AlgHom.toRingHom_injective (congrArg CommRingCat.Hom.hom h1)
   · rintro ⟨y, hy⟩
     obtain ⟨g, hg⟩ := Spec.map_surjective (H.lift _ _ hy.symm)
     have h1 : f.app U ≫ g = CommRingCat.ofHom (algebraMap Γ(Y, U) Ω) := by
@@ -194,13 +194,13 @@ theorem finrank_away {R S R' S' : Type} [CommRing R] [CommRing S] [CommRing R'] 
     [IsLocalization.Away f R'] [IsLocalization.Away (algebraMap R S f) S']
     (h : (algebraMap R' S').comp (algebraMap R R') = (algebraMap S S').comp (algebraMap R S)) :
     Module.finrank R' S' = Module.finrank R S := by
-  letI : Algebra R S' := ((algebraMap S S').comp (algebraMap R S)).toAlgebra
-  haveI : IsScalarTower R S S' := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsScalarTower R R' S' := IsScalarTower.of_algebraMap_eq' h.symm
+  let : Algebra R S' := ((algebraMap S S').comp (algebraMap R S)).toAlgebra
+  have : IsScalarTower R S S' := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower R R' S' := IsScalarTower.of_algebraMap_eq' h.symm
   have hle : Submonoid.powers f ≤ nonZeroDivisors R := powers_le_nonZeroDivisors_of_noZeroDivisors hf
-  haveI : IsLocalization (Algebra.algebraMapSubmonoid S (Submonoid.powers f)) S' := by
+  have : IsLocalization (Algebra.algebraMapSubmonoid S (Submonoid.powers f)) S' := by
     rw [Algebra.algebraMapSubmonoid_powers]; infer_instance
-  haveI : IsLocalizedModule (Submonoid.powers f) (IsScalarTower.toAlgHom R S S').toLinearMap :=
+  have : IsLocalizedModule (Submonoid.powers f) (IsScalarTower.toAlgHom R S S').toLinearMap :=
     (isLocalizedModule_iff_isLocalization).mpr this
   rw [IsLocalization.finrank_eq R' (Submonoid.powers f) hle,
     IsLocalizedModule.finrank_eq (Submonoid.powers f) (IsScalarTower.toAlgHom R S S').toLinearMap hle]
@@ -212,18 +212,18 @@ def rankAbove {X Y : Scheme.{0}} (ψ : X ⟶ Y) (U : Y.Opens) : ℕ :=
 theorem rankAbove_basicOpen {X Y : Scheme.{0}} [IsIntegral Y] (ψ : X ⟶ Y) [IsAffineHom ψ]
     {U : Y.Opens} (hU : IsAffineOpen U) (f : Γ(Y, U)) (hne : (Y.basicOpen f : Set Y).Nonempty) :
     rankAbove ψ (Y.basicOpen f) = rankAbove ψ U := by
-  haveI : Nonempty U := by
+  have : Nonempty U := by
     obtain ⟨x, hx⟩ := hne
     exact ⟨⟨x, Y.basicOpen_le f hx⟩⟩
   have hf : f ≠ 0 := by
     rintro rfl
     simp at hne
-  letI := (ψ.app U).hom.toAlgebra
-  letI := (ψ.app (Y.basicOpen f)).hom.toAlgebra
+  let := (ψ.app U).hom.toAlgebra
+  let := (ψ.app (Y.basicOpen f)).hom.toAlgebra
   let i : ψ ⁻¹ᵁ (Y.basicOpen f) ⟶ ψ ⁻¹ᵁ U := homOfLE (fun x hx => Y.basicOpen_le f hx)
-  letI : Algebra Γ(X, ψ ⁻¹ᵁ U) Γ(X, ψ ⁻¹ᵁ (Y.basicOpen f)) := (X.presheaf.map i.op).hom.toAlgebra
-  haveI := hU.isLocalization_basicOpen f
-  haveI : IsLocalization.Away (algebraMap Γ(Y, U) Γ(X, ψ ⁻¹ᵁ U) f) Γ(X, ψ ⁻¹ᵁ (Y.basicOpen f)) :=
+  let : Algebra Γ(X, ψ ⁻¹ᵁ U) Γ(X, ψ ⁻¹ᵁ (Y.basicOpen f)) := (X.presheaf.map i.op).hom.toAlgebra
+  have := hU.isLocalization_basicOpen f
+  have : IsLocalization.Away (algebraMap Γ(Y, U) Γ(X, ψ ⁻¹ᵁ U) f) Γ(X, ψ ⁻¹ᵁ (Y.basicOpen f)) :=
     (hU.preimage ψ).isLocalization_of_eq_basicOpen _ i (Scheme.preimage_basicOpen ψ f)
   refine finrank_away (R := Γ(Y, U)) (S := Γ(X, ψ ⁻¹ᵁ U)) (R' := Γ(Y, Y.basicOpen f))
     (S' := Γ(X, ψ ⁻¹ᵁ (Y.basicOpen f))) f hf ?_
@@ -236,12 +236,12 @@ theorem exists_mapDeg_of_isFinite : ∀ (X Y : Scheme.{0}) [IsIntegral X] [IsInt
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ y) isOpen_univ
   refine ⟨rankAbove ψ U, ?_, MapDeg.of_isFinite fun V hV hne => ?_⟩
   · obtain ⟨x, rfl⟩ := ψ.surjective y
-    haveI : Nonempty U := ⟨⟨_, hyU⟩⟩
-    haveI : Nonempty (ψ ⁻¹ᵁ U) := ⟨⟨x, hyU⟩⟩
-    letI := (ψ.app U).hom.toAlgebra
-    haveI : Module.Finite Γ(Y, U) Γ(X, ψ ⁻¹ᵁ U) := ψ.finite_app U hU
-    haveI := IsSchemeTheoreticallyDominant.of_isDominant ψ
-    haveI : FaithfulSMul Γ(Y, U) Γ(X, ψ ⁻¹ᵁ U) :=
+    have : Nonempty U := ⟨⟨_, hyU⟩⟩
+    have : Nonempty (ψ ⁻¹ᵁ U) := ⟨⟨x, hyU⟩⟩
+    let := (ψ.app U).hom.toAlgebra
+    have : Module.Finite Γ(Y, U) Γ(X, ψ ⁻¹ᵁ U) := ψ.finite_app U hU
+    have := IsSchemeTheoreticallyDominant.of_isDominant ψ
+    have : FaithfulSMul Γ(Y, U) Γ(X, ψ ⁻¹ᵁ U) :=
       (faithfulSMul_iff_algebraMap_injective _ _).mpr (ψ.app_injective U)
     exact Module.finrank_pos
   · obtain ⟨z, hz⟩ := nonempty_preirreducible_inter U.isOpen V.isOpen ⟨y, hyU⟩ hne
@@ -266,7 +266,7 @@ theorem mapDeg_eq_pow_mul_card_ker :
   have : Nonempty (α.left ⁻¹ᵁ U) := by
     obtain ⟨x, hx⟩ := α.left.surjective (genericPoint P.A.left)
     exact ⟨⟨x, show α.left x ∈ U from hx ▸ hξ⟩⟩
-  letI := (α.left.app U).hom.toAlgebra
+  let := (α.left.app U).hom.toAlgebra
   have : Module.Finite Γ(P.A.left, U) Γ(P.A.left, α.left ⁻¹ᵁ U) := α.left.finite_app U hU
   have : IsSchemeTheoreticallyDominant α.left := .of_isDominant _
   have : FaithfulSMul Γ(P.A.left, U) Γ(P.A.left, α.left ⁻¹ᵁ U) :=

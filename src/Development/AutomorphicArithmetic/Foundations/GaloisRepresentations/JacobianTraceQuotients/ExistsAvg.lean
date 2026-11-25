@@ -65,7 +65,7 @@ private theorem card_ne (T : Subgroup H) [T.FiniteIndex] : (Nat.card (H ⧸ T) :
 private theorem out_apply {T : Subgroup H} {v : V} (hv : ∀ t ∈ T, ρ t v = v) (x : H) :
     ρ (x : H ⧸ T).out v = ρ x v := by
   obtain ⟨t, ht⟩ := QuotientGroup.mk_out_eq_mul T x
-  rw [ht, map_mul, Module.End.mul_apply, hv t t.2]
+  rw [ht, map_mul, mul_apply_eq_comp, hv t t.2]
 
 private theorem mean_eq {T' T : Subgroup H} [T'.FiniteIndex] [T.FiniteIndex] (hle : T' ≤ T) {v : V}
     (hv : ∀ t ∈ T, ρ t v = v) : mean ρ T' v = mean ρ T v := by
@@ -97,7 +97,7 @@ private theorem mean_mem {T : Subgroup H} [T.FiniteIndex] {v : V} (hv : ∀ t �
   congr 1
   refine Fintype.sum_equiv (MulAction.toPerm h) _ _ ?_
   intro q
-  rw [← Module.End.mul_apply, ← map_mul]
+  rw [← mul_apply_eq_comp, ← map_mul]
   have hq : ((h * q.out : H) : H ⧸ T) = h • q := by
     rw [← smul_eq_mul, ← MulAction.Quotient.smul_mk, QuotientGroup.out_eq']
   rw [← out_apply ρ hv (h * q.out), hq]
@@ -124,7 +124,7 @@ private theorem mean_act {T : Subgroup H} [T.FiniteIndex] [T.Normal] {v : V} (hv
   congr 1
   refine Fintype.sum_equiv (Equiv.mulRight (h : H ⧸ T)) _ _ ?_
   intro q
-  rw [← Module.End.mul_apply, ← map_mul]
+  rw [← mul_apply_eq_comp, ← map_mul]
   have hq : ((q.out * h : H) : H ⧸ T) = q * (h : H ⧸ T) := by
     rw [QuotientGroup.mk_mul, QuotientGroup.out_eq']
   rw [← out_apply ρ hv (q.out * h), hq]
@@ -137,31 +137,31 @@ private theorem exists_avg (hfin : ∀ v, (stabilizerOf ρ v).FiniteIndex) : ∃
   let E : V → V := fun v => @mean H V _ _ _ ρ (stabilizerOf ρ v) (hfin v) v
   have hE : ∀ (v : V) (T : Subgroup H) [T.FiniteIndex], T ≤ stabilizerOf ρ v → E v = mean ρ T v := by
     intro v T _ hle
-    haveI := hfin v
+    have := hfin v
     exact (mean_eq ρ hle (fun t ht => mem_stabilizerOf.1 ht)).symm
   have hfx : ∀ v, ∀ t ∈ stabilizerOf ρ v, ρ t v = v := fun v t ht => mem_stabilizerOf.1 ht
   refine ⟨{ toFun := E, map_add' := ?_, map_smul' := ?_ }, ?_, ?_, ?_⟩
   · intro x y
-    haveI := hfin x
-    haveI := hfin y
-    haveI := hfin (x + y)
+    have := hfin x
+    have := hfin y
+    have := hfin (x + y)
     show E (x + y) = E x + E y
     rw [hE (x + y) (stabilizerOf ρ x ⊓ stabilizerOf ρ y ⊓ stabilizerOf ρ (x + y)) inf_le_right,
       hE x (stabilizerOf ρ x ⊓ stabilizerOf ρ y ⊓ stabilizerOf ρ (x + y)) (inf_le_left.trans inf_le_left),
       hE y (stabilizerOf ρ x ⊓ stabilizerOf ρ y ⊓ stabilizerOf ρ (x + y)) (inf_le_left.trans inf_le_right),
       mean_add]
   · intro c x
-    haveI := hfin x
-    haveI := hfin (c • x)
+    have := hfin x
+    have := hfin (c • x)
     show E (c • x) = c • E x
     rw [hE (c • x) (stabilizerOf ρ x ⊓ stabilizerOf ρ (c • x)) inf_le_right,
       hE x (stabilizerOf ρ x ⊓ stabilizerOf ρ (c • x)) inf_le_left, mean_smul]
   · intro h v
-    haveI := hfin v
+    have := hfin v
     exact mean_mem ρ (hfx v) h
   · intro h v
-    haveI := hfin v
-    haveI := hfin (ρ h v)
+    have := hfin v
+    have := hfin (ρ h v)
     have hle : (stabilizerOf ρ v).normalCore ≤ stabilizerOf ρ (ρ h v) := by
       intro t ht
       rw [mem_stabilizerOf]
@@ -169,15 +169,15 @@ private theorem exists_avg (hfin : ∀ v, (stabilizerOf ρ v).FiniteIndex) : ∃
         have := (Subgroup.normalCore_normal (stabilizerOf ρ v)).conj_mem t ht h⁻¹
         simpa using this
       have h2 := hfx v _ (Subgroup.normalCore_le _ h1)
-      calc ρ t (ρ h v) = ρ (t * h) v := by rw [map_mul, Module.End.mul_apply]
+      calc ρ t (ρ h v) = ρ (t * h) v := by rw [map_mul, mul_apply_eq_comp]
         _ = ρ (h * (h⁻¹ * t * h)) v := by rw [show h * (h⁻¹ * t * h) = t * h by group]
-        _ = ρ h (ρ (h⁻¹ * t * h) v) := by rw [map_mul, Module.End.mul_apply]
+        _ = ρ h (ρ (h⁻¹ * t * h) v) := by rw [map_mul, mul_apply_eq_comp]
         _ = ρ h v := by rw [h2]
     show E (ρ h v) = E v
     rw [hE (ρ h v) _ hle, hE v _ (Subgroup.normalCore_le _),
       mean_act ρ (fun t ht => hfx v t (Subgroup.normalCore_le _ ht)) h]
   · intro W _ _ p v hp
-    haveI := hfin v
+    have := hfin v
     exact mean_lin ρ _ p hp
 
 end Mean
@@ -187,11 +187,11 @@ theorem UpperTheory.Gal.Join.avgEx :
   intro G V _ _ _ _ _ π hsm K hK
   unfold IsSmooth at hsm
   unfold CO at hK
-  haveI : CompactSpace K := isCompact_iff_compactSpace.1 hK.1
+  have : CompactSpace K := isCompact_iff_compactSpace.1 hK.1
   let ρ : Representation ℂ K V := π.comp K.subtype
   have hfin : ∀ v, (GroundTheory.Automorphic.stabilizerOf ρ v).FiniteIndex := by
     intro v
-    haveI := Subgroup.quotient_finite_of_isOpen (GroundTheory.Automorphic.stabilizerOf ρ v) ((hsm v).preimage continuous_subtype_val)
+    have := Subgroup.quotient_finite_of_isOpen (GroundTheory.Automorphic.stabilizerOf ρ v) ((hsm v).preimage continuous_subtypeVal)
     exact Subgroup.finiteIndex_of_finite_quotient
   obtain ⟨e, he1, he2, he3⟩ := exists_avg ρ hfin
   have hfix : ∀ w, (∀ g ∈ K, π g w = w) → e w = w := by

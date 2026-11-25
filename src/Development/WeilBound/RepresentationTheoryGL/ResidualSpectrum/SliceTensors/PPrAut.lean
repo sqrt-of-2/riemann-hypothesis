@@ -65,12 +65,12 @@ theorem isAutForm_act (hF : GlobalTheory.Published.AutomorphicFormsFiniteGL) (o 
         simp only [Set.mem_ofPred_eq, Set.mem_preimage, map_mul]
         constructor
         · intro e
-          rw [Module.End.mul_apply, Module.End.mul_apply, e, ← Module.End.mul_apply, ← map_mul, inv_mul_cancel,
-            map_one, Module.End.one_apply]
+          rw [mul_apply_eq_comp, mul_apply_eq_comp, e, ← mul_apply_eq_comp, ← map_mul, inv_mul_cancel,
+            map_one, one_apply_eq_self]
         · intro e
           have := congrArg (finRep E N k) e
-          rwa [Module.End.mul_apply, Module.End.mul_apply, ← Module.End.mul_apply (finRep E N k), ← map_mul,
-            mul_inv_cancel, map_one, Module.End.one_apply] at this
+          rwa [mul_apply_eq_comp, mul_apply_eq_comp, ← mul_apply_eq_comp (finRep E N k), ← map_mul,
+            mul_inv_cancel, map_one, one_apply_eq_self] at this
       change IsOpen {k' | finRep E N k' (finRep E N k φ) = finRep E N k φ}
       rw [e]
       exact h.level.preimage ((continuous_const.mul continuous_id).mul continuous_const)
@@ -91,7 +91,7 @@ theorem isAutForm_act (hF : GlobalTheory.Published.AutomorphicFormsFiniteGL) (o 
       rw [mul_assoc, h.left]
     · exact level_of_le h.level fun k hk => by
         change finRep E N k (cptRep E N c φ) = cptRep E N c φ
-        rw [← Module.End.mul_apply, fin_cpt_comm, Module.End.mul_apply, hk]
+        rw [← mul_apply_eq_comp, fin_cpt_comm, mul_apply_eq_comp, hk]
     · have := h.kfin
       refine Submodule.finiteDimensional_of_le (S₂ := Submodule.span ℂ (Set.range fun c => cptRep E N c φ))
         (Submodule.span_le.2 ?_)
@@ -121,7 +121,7 @@ theorem isAutForm_act (hF : GlobalTheory.Published.AutomorphicFormsFiniteGL) (o 
     · exact level_of_le h.level fun k hk => by
         change finRep E N k (lie E N X φ) = lie E N X φ
         change (rt E N (finGL E N k) * lie E N X) φ = _
-        rw [← lie_rt_fin, Module.End.mul_apply]
+        rw [← lie_rt_fin, mul_apply_eq_comp]
         exact congrArg (lie E N X) hk
 
 end PositivityTheory.Rg.Rs.PrAut

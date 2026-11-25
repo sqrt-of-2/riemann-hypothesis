@@ -81,11 +81,11 @@ theorem colX_of_left_inv {g g' : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 
       intro l
       by_cases hl : l.val < j.val
       · have h0 : g' i l = 0 := by
-          rw [ih l.val (by omega) i l rfl (by omega) (by omega), if_neg]
+          rw [ih l.val (by omega) i l rfl (by omega) (by omega), ite_eq_right]
           intro hil
           subst hil
           omega
-        rw [h0, zero_mul, if_neg]
+        rw [h0, zero_mul, ite_eq_right]
         intro hlj
         subst hlj
         omega
@@ -101,7 +101,7 @@ theorem tau_val (i : Fin (2 * r + k + 1)) :
     (tau k r i).val = if i.val < r ∨ r + k < i.val then 2 * r + k - i.val else i.val := rfl
 
 theorem tau_mid (i : Fin (2 * r + k + 1)) (hi : r ≤ i.val ∧ i.val ≤ r + k) : tau k r i = i := by
-  exact Fin.ext (by rw [tau_val, if_neg (by omega)])
+  exact Fin.ext (by rw [tau_val, ite_eq_right (by omega)])
 
 theorem sgn_ne (i : Fin (2 * r + k + 1)) : sgn k r i ≠ 0 := by
   unfold sgn
@@ -112,9 +112,9 @@ theorem mul_hpk_apply (A : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) �
   have hH : ∀ l, Hpk k r l j = sgn k r l * (if tau k r l = j then 1 else 0) := fun l => by
     simpa only [Matrix.mul_one, Matrix.one_apply] using hpk_mul_apply (1 : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ) l j
   rw [Matrix.mul_apply, Finset.sum_eq_single (tau k r j)]
-  · rw [hH, tau_tau, if_pos rfl, mul_one, sgn_tau]
+  · rw [hH, tau_tau, ite_eq_left rfl, mul_one, sgn_tau]
   · intro l _ hl
-    rw [hH, if_neg (fun h => hl (by rw [← h, tau_tau])), mul_zero, mul_zero]
+    rw [hH, ite_eq_right (fun h => hl (by rw [← h, tau_tau])), mul_zero, mul_zero]
   · simp
 
 theorem inv_eq {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
@@ -140,7 +140,7 @@ theorem low_zero {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
   have := i.isLt
   have := j.isLt
   have hti : (tau k r i).val < r := by
-    rw [tau_val, if_pos (Or.inr hi)]
+    rw [tau_val, ite_eq_left (Or.inr hi)]
     omega
   have hle : (tau k r i).val ≤ (tau k r j).val := by
     rw [tau_val, tau_val]
@@ -152,26 +152,26 @@ theorem low_zero {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     rw [tau_tau, tau_tau] at h2
     subst h2
     omega
-  rw [inv_apply hs, tau_tau, tau_tau, if_neg hne] at e
+  rw [inv_apply hs, tau_tau, tau_tau, ite_eq_right hne] at e
   simpa [mul_eq_zero, sgn_ne, star_eq_zero] using e
 
 theorem hW_in {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     {i j : Fin (2 * r + k + 1)} (hi : r ≤ i.val ∧ i.val ≤ r + k) (hj : r ≤ j.val ∧ j.val ≤ r + k) :
     hW k r s i j = s i j := by
   unfold hW
-  rw [if_pos ⟨hi, hj⟩]
+  rw [ite_eq_left ⟨hi, hj⟩]
 
 theorem hW_col_out {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     (i j : Fin (2 * r + k + 1)) (hj : j.val < r ∨ r + k < j.val) :
     hW k r s i j = if i = j then 1 else 0 := by
   unfold hW
-  rw [if_neg (by omega)]
+  rw [ite_eq_right (by omega)]
 
 theorem hW_row_out {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     (i j : Fin (2 * r + k + 1)) (hi : i.val < r ∨ r + k < i.val) :
     hW k r s i j = if i = j then 1 else 0 := by
   unfold hW
-  rw [if_neg (by omega)]
+  rw [ite_eq_right (by omega)]
 
 theorem uh_apply (A : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ)
     (i j : Fin (2 * r + k + 1)) :
@@ -207,15 +207,15 @@ theorem hW_uh {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
       · rw [tau_mid p hp, hW_in hp hi, hW_in hp hj]
       · rcases (by omega : p.val < r ∨ r + k < p.val) with hp' | hp'
         · have htp : r + k < (tau k r p).val := by
-            rw [tau_val, if_pos (Or.inl hp')]
+            rw [tau_val, ite_eq_left (Or.inl hp')]
             omega
-          rw [hW_row_out p i (Or.inl hp'), if_neg (fun h => by subst h; omega), low_zero hs hX _ j htp hj.2]
+          rw [hW_row_out p i (Or.inl hp'), ite_eq_right (fun h => by subst h; omega), low_zero hs hX _ j htp hj.2]
           simp
-        · rw [hW_row_out p i (Or.inr hp'), if_neg (fun h => by subst h; omega), low_zero hs hX p i hp' hi.2]
+        · rw [hW_row_out p i (Or.inr hp'), ite_eq_right (fun h => by subst h; omega), low_zero hs hX p i hp' hi.2]
           simp
     · have hj' : j.val < r ∨ r + k < j.val := by omega
       rw [Finset.sum_eq_zero]
-      · rw [tau_mid i hi, if_neg (fun h => by subst h; omega)]
+      · rw [tau_mid i hi, ite_eq_right (fun h => by subst h; omega)]
         simp
       · intro p _
         rw [hW_col_out (tau k r p) j hj']
@@ -224,20 +224,20 @@ theorem hW_uh {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
           subst hp
           have hto : (tau k r j).val < r ∨ r + k < (tau k r j).val := by
             rw [tau_val]
-            split_ifs <;> omega
-          rw [hW_row_out (tau k r j) i hto, if_neg (fun h => by rw [← h] at hi; omega)]
+            split_ifs; omega
+          rw [hW_row_out (tau k r j) i hto, ite_eq_right (fun h => by rw [← h] at hi; omega)]
           simp
-        · rw [if_neg hpj]
+        · rw [ite_eq_right hpj]
           simp
   · have hi' : i.val < r ∨ r + k < i.val := by omega
     have hto : (tau k r i).val < r ∨ r + k < (tau k r i).val := by
       rw [tau_val]
-      split_ifs <;> omega
+      split_ifs; omega
     rw [Finset.sum_eq_single i]
-    · rw [hW_col_out i i hi', if_pos rfl, hW_row_out (tau k r i) j hto]
+    · rw [hW_col_out i i hi', ite_eq_left rfl, hW_row_out (tau k r i) j hto]
       simp
     · intro p _ hp
-      rw [hW_col_out p i hi', if_neg hp]
+      rw [hW_col_out p i hi', ite_eq_right hp]
       simp
     · intro h
       exact absurd (Finset.mem_univ _) h
@@ -264,10 +264,10 @@ theorem n_col {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
   rw [Matrix.mul_apply]
   by_cases hjr : j.val < r
   · rw [Finset.sum_eq_single j]
-    · rw [hW_col_out j j (Or.inl hjr), if_pos rfl, mul_one]
+    · rw [hW_col_out j j (Or.inl hjr), ite_eq_left rfl, mul_one]
       exact hc i j hjr (by omega)
     · intro l _ hl
-      rw [hW_col_out l j (Or.inl hjr), if_neg hl, mul_zero]
+      rw [hW_col_out l j (Or.inl hjr), ite_eq_right hl, mul_zero]
     · intro h
       exact absurd (Finset.mem_univ _) h
   · have hjm : r ≤ j.val ∧ j.val ≤ r + k := ⟨by omega, hj⟩
@@ -280,8 +280,8 @@ theorem n_col {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     by_cases hlm : r ≤ l.val ∧ l.val ≤ r + k
     · rw [hW_in hlm hjm]
     · rcases (by omega : l.val < r ∨ r + k < l.val) with hl | hl
-      · rw [hc i l hl (by omega), if_neg (fun h => by subst h; omega), zero_mul, zero_mul]
-      · rw [hW_row_out l j (Or.inr hl), if_neg (fun h => by subst h; omega), low_zero hs hX l j hl hj,
+      · rw [hc i l hl (by omega), ite_eq_right (fun h => by subst h; omega), zero_mul, zero_mul]
+      · rw [hW_row_out l j (Or.inr hl), ite_eq_right (fun h => by subst h; omega), low_zero hs hX l j hl hj,
           mul_zero]
 
 private theorem mul_inv_eq_one_of_mem_UH_Hpk {s : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}

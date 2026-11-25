@@ -87,11 +87,11 @@ theorem ddiv_monomial' (M α : σ →₀ ℕ) (c : K) :
     ddiv M (monomial α c) = monomial (α - M) (c * bin M α) := by
   rw [ddiv_monomial]
   by_cases h : M ≤ α
-  · rw [if_pos h, finsupp_prod_choose_eq_bin_of_le M α h]
-  · rw [if_neg h]
+  · rw [ite_eq_left h, finsupp_prod_choose_eq_bin_of_le M α h]
+  · rw [ite_eq_right h]
     obtain ⟨x, hx⟩ : ∃ x, α x < M x := by
       by_contra hc
-      push_neg at hc
+      push Not at hc
       apply h
       exact Finsupp.le_def.2 hc
     have h0 : (bin M α : K) = 0 := by
@@ -142,9 +142,9 @@ theorem onLetter_apply (i : L) (β : Fin r →₀ ℕ) (j : L) (a : Fin r) :
   unfold onLetter
   by_cases h : j = i
   · subst h
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     exact Finsupp.mapDomain_apply_of_injective (fun x y hxy => by simpa using hxy) β a
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     have hne : (j, a) ∉ Set.range (fun b : Fin r => (i, b)) := by
       rintro ⟨b, hb⟩
       exact h (congrArg Prod.fst hb).symm
@@ -213,7 +213,7 @@ theorem der' (hDER : DER K v p) (hD : DVRHyp v p) (r g : ℕ) (M : Fin r →₀ 
       monomial (ρ' ρf t + p ^ g • (δ ρf t + (divE (p ^ g) η - κ ρf t)))
         (cf ρf t * bin (κ ρf t) (divE (p ^ g) η)) := by
     intro t
-    rw [ddiv_monomial', monomial_mul, expand_monomial', monomial_mul, one_mul, one_mul]
+    rw [ddiv_monomial', MvPolynomial.monomial_mul_monomial, expand_monomial', MvPolynomial.monomial_mul_monomial, one_mul, one_mul]
   have hsum : (∑ s : (Σ ρf : Fin r → Fin (p ^ g), Fin (n ρf)),
       if (fun a => (s.1 a : ℕ)) = (fun a => η a % p ^ g) then
         monomial (ρ' s.1 s.2 + p ^ g • (δ s.1 s.2 + (divE (p ^ g) η - κ s.1 s.2)))

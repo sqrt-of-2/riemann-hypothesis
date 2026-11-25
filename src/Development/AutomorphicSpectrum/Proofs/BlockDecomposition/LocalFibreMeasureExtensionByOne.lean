@@ -92,7 +92,7 @@ theorem isFibreFamily_restrict {V X Y : Type} [TopologicalSpace V] [MeasurableSp
   obtain ⟨h1, h2, h3⟩ := h
   refine ⟨fun b => ?_, fun φ hφ => ?_, fun φ hc hs ht => ?_⟩
   · by_cases hb : b ∈ B
-    · simp only [hb, if_true]
+    · simp only [hb, ite_true]
       refine measure_mono_null (Set.compl_subset_compl.2 fun v (hv : v ∈ f ⁻¹' {ι b} ∩ W) => ⟨hv.1, ?_⟩) (h1 b)
       exact (hUB v b hv.1).2 hb
     · simp [hb]
@@ -104,26 +104,26 @@ theorem isFibreFamily_restrict {V X Y : Type} [TopologicalSpace V] [MeasurableSp
       have : ∀ᵐ v ∂(fib b), v ∈ f ⁻¹' {ι b} ∩ W := mem_ae_iff.2 (h1 b)
       filter_upwards [this] with v hv using hv.1
     by_cases hb : b ∈ B
-    · simp only [hb, if_true]
+    · simp only [hb, ite_true]
       refine lintegral_congr_ae ?_
       filter_upwards [hae] with v hv
       exact Set.indicator_of_mem ((hUB v b hv).2 hb) φ
-    · simp only [hb, if_false, lintegral_zero_measure]
+    · simp only [hb, ite_false, lintegral_zero_measure]
       refine (lintegral_congr_ae (g := fun _ => 0) ?_).trans lintegral_zero
       filter_upwards [hae] with v hv
       exact Set.indicator_of_notMem (fun hvU => hb ((hUB v b hv).1 hvU)) φ
   · obtain ⟨k1, k2⟩ := h3 φ hc hs (ht.trans hUW)
     refine ⟨fun b hb => ?_, ?_⟩
-    · simpa only [hb, if_true] using k1 b (Set.mem_univ b)
-    · exact (k2.mono (Set.subset_univ B)).congr fun b hb => by simp only [hb, if_true]
+    · simpa only [hb, ite_true] using k1 b (Set.mem_univ b)
+    · exact (k2.mono (Set.subset_univ B)).congr fun b hb => by simp only [hb, ite_true]
 
 theorem stageData_of_stageDataF : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [NumberField E] [Algebra F E] (σ : E →ₐ[F] E) (M : ℕ) (J : Matrix (Fin M) (Fin M) E) (t : F) (n : ℕ) (R : Type) [CommRing R] [Algebra F R] [TopologicalSpace R] [MeasurableSpace R] [BorelSpace R] (d : ℕ) (b : Module.Basis (Fin d) F E) (lam : Measure R) (m₁ : HermR R σ 1 → Measure (Fin 1 → Fin (M + 1) → R ⊗[F] E)) (m' : HermR R σ n → Measure (Fin n → Fin M → R ⊗[F] E)) (s : (Fin 1 → Fin (M + 1) → R ⊗[F] E) → HA R σ (blockOne (algebraMap F E t) J)) (B₀ : Set R) (a : R → Rˣ) (κ₁ cm : Rˣ → ℝ≥0), HermitianMeasureData σ J t n b lam m₁ m' s B₀ a κ₁ cm → ∃ m₀ : HermR R σ n → Measure (Fin n → Fin M → R ⊗[F] E), StageData σ J t n b lam m₁ m₀ s B₀ a κ₁ cm := by
   intro F E _ _ _ _ _ σ M J t n R _ _ _ _ _ d b lam m₁ m' s B₀ a κ₁ cm D
   obtain ⟨iTR, iLC, iSC, iT2, -⟩ := id D.hR
-  haveI := iTR; haveI := iLC; haveI := iSC; haveI := iT2
+  have := iTR; have := iLC; have := iSC; have := iT2
   obtain ⟨kTR, kLC, kSC, kT2, -, -, -, kB, -, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ D.hCM R
-  haveI := kTR; haveI := kLC; haveI := kSC; haveI := kT2
-  haveI := kB n M
+  have := kTR; have := kLC; have := kSC; have := kT2
+  have := kB n M
   obtain ⟨-, -, -, -, hg⟩ := _root_.GlobalTheory.CompanionTheory.SW.HermTop.herm_top F E σ D.hCM R n
   obtain ⟨g, gc, hgg⟩ := hg M J D.hJ
   have hopen : IsOpen (Unt σ R n) := by
@@ -133,11 +133,11 @@ theorem stageData_of_stageDataF : ∀ (F E : Type) [Field F] [NumberField F] [Fi
       ext x
       simp [IsUnit]
     have hc : Continuous fun S : HermR R σ n => (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det :=
-      continuous_subtype_val.matrix_det
+      continuous_subtypeVal.matrix_det
     exact hu.preimage hc
   have hset : {X | IsUnit (gramR R σ J X).det} = g ⁻¹' (Unt σ R n) := by
     ext X
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, Unt, hgg X]
+    simp only [Set.mem_ofPred_eq, Set.mem_preimage, Unt, hgg X]
   have hmeas : MeasurableSet {X : Fin n → Fin M → R ⊗[F] E | IsUnit (gramR R σ J X).det} := by
     rw [hset]
     exact (hopen.preimage gc).measurableSet
@@ -145,7 +145,7 @@ theorem stageData_of_stageDataF : ∀ (F E : Type) [Field F] [NumberField F] [Fi
     {X | IsUnit (gramR R σ J X).det} {X | LinearIndependent (R ⊗[F] E) X} (coordHerm R σ b lam n)
     {S | IsUnit (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det} m'
     (fun X hX => linearIndependent_of_isUnit_gram R σ J X hX) hmeas
-    (fun X S hX => by simp only [Set.mem_setOf_eq, hX]) D.hm'
+    (fun X S hX => by simp only [Set.mem_ofPred_eq, hX]) D.hm'
   exact ⟨_, { hCM := D.hCM, hJ := D.hJ, ht := D.ht, hR := D.hR, hlam := D.hlam, hm₁ := D.hm₁, hm' := hfam,
               hs := D.hs, hsec := D.hsec, hcpt := D.hcpt, hB₀ := D.hB₀, htB := D.htB, hac := D.hac,
               hoff := D.hoff, hsq := D.hsq, ha1 := D.ha1, hκc := D.hκc, hκ1 := D.hκ1, hscale := D.hscale,

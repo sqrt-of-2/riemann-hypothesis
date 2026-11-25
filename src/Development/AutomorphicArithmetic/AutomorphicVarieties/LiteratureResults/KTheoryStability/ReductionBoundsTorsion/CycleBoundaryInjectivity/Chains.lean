@@ -82,7 +82,7 @@ def eC (n : ℕ) : ℝ ⊗[ℤ] ((Fin n → G) →₀ ℤ) ≃ₗ[ℝ] Chn G n :
 omit [Group G] in
 theorem eC_single (n : ℕ) (r : ℝ) (g : Fin n → G) (a : ℤ) :
     eC G n (r ⊗ₜ Finsupp.single g a) = Finsupp.single g ((a : ℝ) * r) := by
-  letI := Classical.decEq (Fin n → G)
+  let := Classical.decEq (Fin n → G)
   ext i
   rw [eC, TensorProduct.finsuppScalarRight_apply_tmul_apply, zsmul_eq_mul]
   by_cases h : g = i
@@ -104,7 +104,7 @@ theorem bd_eC (m : ℕ) :
     LinearMap.baseChange_tmul, eC_single, bdZ_single, tmul_add, tmul_sum, map_add, map_sum,
     bd, Finsupp.linearCombination_single, smul_add, Finset.smul_sum, Finsupp.smul_single,
     smul_eq_mul, mul_one]
-    congr 1 <;> (try funext j) <;> congr 1 <;> push_cast <;> ring_nf
+    congr 1; congr 1; push_cast; ring_nf
 
 theorem cmap_eC {H : Type} [Group H] (f : G →* H) (n : ℕ) :
     cmap f n ∘ₗ (eC G n).toLinearMap =

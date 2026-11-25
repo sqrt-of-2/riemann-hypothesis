@@ -98,14 +98,14 @@ theorem vc_commV (E : Fin n → Fin n → Module.End ℂ M) (hE : IsGlRep E) (a 
     funext c
     rw [ReciprocityTheory.ChartRestriction.DS.Lap.LemK.TensK.tensV_apply', ReciprocityTheory.ChartRestriction.DS.Lap.LemK.TensK.tensV_apply', map_add (f := _)]
     congr 1
-    · rw [← Module.End.mul_apply, casimir_comm hE, Module.End.mul_apply]
+    · rw [← mul_apply_eq_comp, casimir_comm hE, mul_apply_eq_comp]
     · split_ifs <;> simp
   show eeV E * tensV E a b = tensV E a b * eeV E
   refine LinearMap.ext fun g => ?_
-  rw [Module.End.mul_apply, Module.End.mul_apply]
+  rw [mul_apply_eq_comp, mul_apply_eq_comp]
   have h2 : (2 : ℂ) • eeV E (tensV E a b g) = (2 : ℂ) • tensV E a b (eeV E g) := by
     rw [← map_smul (tensV E a b) (2 : ℂ) (eeV E g), key, key, map_sub, map_sub, map_smul, ← hpi,
-      ← Module.End.mul_apply (casimir (tensV E)), casimir_comm hT a b, Module.End.mul_apply]
+      ← mul_apply_eq_comp (casimir (tensV E)), casimir_comm hT a b, mul_apply_eq_comp]
   exact smul_right_injective (Fin n → M) two_ne_zero h2
 
 theorem vc_commVd (E : Fin n → Fin n → Module.End ℂ M) (hE : IsGlRep E) (a b : Fin n) :
@@ -122,14 +122,14 @@ theorem vc_commVd (E : Fin n → Fin n → Module.End ℂ M) (hE : IsGlRep E) (a
     funext c
     rw [ReciprocityTheory.ChartRestriction.DS.Lap.LemK.TensK.tensVd_apply', ReciprocityTheory.ChartRestriction.DS.Lap.LemK.TensK.tensVd_apply', map_sub]
     congr 1
-    · rw [← Module.End.mul_apply, casimir_comm hE, Module.End.mul_apply]
+    · rw [← mul_apply_eq_comp, casimir_comm hE, mul_apply_eq_comp]
     · split_ifs <;> simp
   show eeVd E * tensVd E a b = tensVd E a b * eeVd E
   refine LinearMap.ext fun g => ?_
-  rw [Module.End.mul_apply, Module.End.mul_apply]
+  rw [mul_apply_eq_comp, mul_apply_eq_comp]
   have h2 : (2 : ℂ) • eeVd E (tensVd E a b g) = (2 : ℂ) • tensVd E a b (eeVd E g) := by
     rw [← map_smul (tensVd E a b) (2 : ℂ) (eeVd E g), key, key, map_sub, map_sub, map_smul, ← hpi,
-      ← Module.End.mul_apply (casimir (tensVd E)), casimir_comm hT a b, Module.End.mul_apply]
+      ← mul_apply_eq_comp (casimir (tensVd E)), casimir_comm hT a b, mul_apply_eq_comp]
   exact smul_right_injective (Fin n → M) two_ne_zero h2
 
 theorem vc_gen_top (E : Fin n → Fin n → Module.End ℂ M) (φ : M)
@@ -178,13 +178,13 @@ theorem vc_genV (E : Fin n → Fin n → Module.End ℂ M) (lam : Fin n → ℝ)
       ∑ d ∈ univ.filter (fun d => t < d), tensV E t d (Pi.single d φ) := by
   funext e
   rw [Pi.sub_apply, vc_eeV_single, Finset.sum_apply]
-  simp only [vc_tensV_single, Pi.add_apply, if_true, Pi.smul_apply, Pi.single_apply]
+  simp only [vc_tensV_single, Pi.add_apply, ite_true, Pi.smul_apply, Pi.single_apply]
   rw [Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.sum_const]
   rcases lt_trichotomy e t with h | rfl | h
   · simp [h.ne, hlow t e h, not_lt.mpr h.le]
   · have hc : (univ.filter fun d : Fin n => e < d).card = n - 1 - e := by
       rw [filter_lt_eq_Ioi, Fin.card_Ioi]
-    simp only [if_true, lt_irrefl, Finset.mem_filter, Finset.mem_univ, true_and, if_false, zero_add, hc, hd]
+    simp only [ite_true, lt_irrefl, Finset.mem_filter, Finset.mem_univ, true_and, ite_false, zero_add, hc, hd]
     rw [← Nat.cast_smul_eq_nsmul ℂ, ← sub_smul]
     congr 1
     have he : 1 + (e : ℕ) ≤ n := by have := e.isLt; omega
@@ -200,13 +200,13 @@ theorem vc_genVd (E : Fin n → Fin n → Module.End ℂ M) (lam : Fin n → ℝ
       -∑ d ∈ univ.filter (fun d => d < t), tensVd E d t (Pi.single d φ) := by
   funext e
   rw [Pi.sub_apply, vc_eeVd_single, Pi.neg_apply, Finset.sum_apply]
-  simp only [vc_tensVd_single, Pi.sub_apply, if_true, Pi.smul_apply, Pi.single_apply]
+  simp only [vc_tensVd_single, Pi.sub_apply, ite_true, Pi.smul_apply, Pi.single_apply]
   rw [Finset.sum_sub_distrib, Finset.sum_ite_eq, Finset.sum_const]
   rcases lt_trichotomy e t with h | rfl | h
   · simp [h.ne, h]
   · have hc : (univ.filter fun d : Fin n => d < e).card = e := by
       rw [filter_gt_eq_Iio, Fin.card_Iio]
-    simp only [if_true, lt_irrefl, Finset.mem_filter, Finset.mem_univ, true_and, if_false, zero_sub, hc, hd,
+    simp only [ite_true, lt_irrefl, Finset.mem_filter, Finset.mem_univ, true_and, ite_false, zero_sub, hc, hd,
       neg_neg]
     rw [← Nat.cast_smul_eq_nsmul ℂ, ← neg_smul, ← sub_smul]
     congr 1

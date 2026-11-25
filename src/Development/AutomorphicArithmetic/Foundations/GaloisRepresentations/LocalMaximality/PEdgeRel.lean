@@ -125,7 +125,7 @@ private theorem ah_cocycle (α : Finset ι → E)
         ext y
         by_cases hy : y = i <;> simp [hy, hiJ]
       unfold ah
-      rw [if_pos hdi, hset, smul_smul, smul_smul]
+      rw [ite_eq_left hdi, hset, smul_smul, smul_smul]
       congr 1
       rw [cs_eq, cs_eq, tS_union hd, sg_left J hi]
       linear_combination (-(tS I i * shS (I.erase i) J)) * tS_sq J i
@@ -139,7 +139,7 @@ private theorem ah_cocycle (α : Finset ι → E)
         ext y
         by_cases hy : y = j <;> simp [hy, hjI]
       unfold ah
-      rw [if_pos hdj, hset, smul_smul, smul_smul, smul_smul]
+      rw [ite_eq_left hdj, hset, smul_smul, smul_smul, smul_smul]
       congr 1
       rw [cs_eq, cs_eq, tS_union hd, sg_right I hj]
       linear_combination (-(tS J j * shS I (J.erase j))) * tS_mul_uS hjI
@@ -157,14 +157,14 @@ private theorem ah_cocycle (α : Finset ι → E)
         GlobalTheory.cubeSign I x • ah α (I.erase x) J := by
       refine Finset.sum_eq_single_of_mem x hxI fun i _ hne => ?_
       unfold ah
-      rw [if_neg, smul_zero]
+      rw [ite_eq_right, smul_zero]
       intro hdi
       exact Finset.disjoint_left.1 hdi (Finset.mem_erase.2 ⟨hne.symm, hxI⟩) hxJ
     have e2 : ∑ j ∈ J, GlobalTheory.cubeSign J j • ah α I (J.erase j) =
         GlobalTheory.cubeSign J x • ah α I (J.erase x) := by
       refine Finset.sum_eq_single_of_mem x hxJ fun j _ hne => ?_
       unfold ah
-      rw [if_neg, smul_zero]
+      rw [ite_eq_right, smul_zero]
       intro hdj
       exact Finset.disjoint_left.1 hdj hxI (Finset.mem_erase.2 ⟨hne.symm, hxJ⟩)
     rw [e1, e2]
@@ -177,7 +177,7 @@ private theorem ah_cocycle (α : Finset ι → E)
         ext y
         by_cases hy : y = x <;> simp [hy, hxI]
       unfold ah
-      rw [if_pos hd2, if_pos hd3, s1, s2, smul_smul, smul_smul, smul_smul, ← add_smul]
+      rw [ite_eq_left hd2, ite_eq_left hd3, s1, s2, smul_smul, smul_smul, smul_smul, ← add_smul]
       have hnot : x ∉ I.erase x := fun h' => Finset.ne_of_mem_erase h' rfl
       obtain ⟨n, hn⟩ : ∃ n, I.card = n + 1 :=
         Nat.exists_eq_succ_of_ne_zero (Finset.card_ne_zero_of_mem hxI)
@@ -194,7 +194,7 @@ private theorem ah_cocycle (α : Finset ι → E)
           ((-1 : ℤ) ^ (n + 1) * shS (I.erase x) (J.erase x)) * h2
       rw [hz, zero_smul]
     · unfold ah
-      rw [if_neg hd2, if_neg (fun h' => hd2 (hsym.1 h'))]
+      rw [ite_eq_right hd2, ite_eq_right (fun h' => hd2 (hsym.1 h'))]
       simp
 
 private theorem sum_single (I : Finset ι) (x : E) :
@@ -204,7 +204,7 @@ private theorem sum_single (I : Finset ι) (x : E) :
     simp [GlobalTheory.cubeSign_singleton]
   · apply Finset.sum_eq_zero
     intro i hi
-    rw [if_neg, smul_zero]
+    rw [ite_eq_right, smul_zero]
     intro he
     apply h
     have h3 := Finset.card_erase_of_mem hi
@@ -241,7 +241,7 @@ theorem UpperTheory.Gal.productCup_of_system.edgeRel_of :
     · have e : I.card = p + 1 := by omega
       rw [e, pow_succ, mul_neg_one, neg_smul]
     · have h0 := hC I
-      rw [if_neg hI] at h0
+      rw [ite_eq_right hI] at h0
       have h1 : α I = 0 := by simpa using h0
       simp [h1]
   obtain ⟨c, hc⟩ : ∃ c : Finset (ι ⊕ₗ ι) → E, ∀ s, c s =
@@ -256,27 +256,27 @@ theorem UpperTheory.Gal.productCup_of_system.edgeRel_of :
     rw [hc, hl, hr]
     have hcardU := (hU ι ι E (fun _ => 1) (fun _ => 0) I J).2.2.2.1
     by_cases hIJ : I.Nonempty ∧ J.Nonempty
-    · rw [if_pos hIJ]
+    · rw [ite_eq_left hIJ]
       unfold ah
       by_cases hd : Disjoint I J
-      · rw [if_pos hd]
+      · rw [ite_eq_left hd]
         have hα' := hC (I ∪ J)
         by_cases hcd : (I ∪ J).Nonempty ∧ (((I ∪ J).card : ℕ) : ℤ) = (p : ℤ) + 1
-        · rw [if_pos hcd] at hα'
+        · rw [ite_eq_left hcd] at hα'
           have hk : (((uni I J).card : ℕ) : ℤ) = (p : ℤ) + 2 - 1 := by
             rw [hcardU, ← Finset.card_union_of_disjoint hd]
             have := hcd.2
             omega
-          rw [if_pos hk]
-          simp only [mixF, hl, hr, if_pos hIJ]
+          rw [ite_eq_left hk]
+          simp only [mixF, hl, hr, ite_eq_left hIJ]
           exact neg_mem (zsmul_mem hα' _)
-        · rw [if_neg hcd] at hα'
+        · rw [ite_eq_right hcd] at hα'
           have h0 : α (I ∪ J) = 0 := by simpa using hα'
           rw [h0, smul_zero, neg_zero]
           exact Submodule.zero_mem _
-      · rw [if_neg hd, neg_zero]
+      · rw [ite_eq_right hd, neg_zero]
         exact Submodule.zero_mem _
-    · rw [if_neg hIJ]
+    · rw [ite_eq_right hIJ]
       exact Submodule.zero_mem _
   · dsimp only
     funext s

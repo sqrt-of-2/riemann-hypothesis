@@ -97,8 +97,8 @@ theorem exists_measure_of_eq {X Y : Type} [Group X] [Group Y] [TopologicalSpace 
       ∀ f : X × Y → ℂ, @integral _ _ _ _ m (@Measure.restrict _ m μ F) f =
         @integral _ _ _ _ Prod.instMeasurableSpace ((μ₁.prod μ₂).restrict F) f := by
   subst e
-  haveI : SigmaFinite μ₁ := sigmaFinite_of_locallyFinite
-  haveI : SigmaFinite μ₂ := sigmaFinite_of_locallyFinite
+  have : SigmaFinite μ₁ := sigmaFinite_of_locallyFinite
+  have : SigmaFinite μ₂ := sigmaFinite_of_locallyFinite
   exact ⟨μ₁.prod μ₂, ⟨inferInstance, inferInstance, inferInstance, inferInstance⟩, hF, fun _ => rfl⟩
 
 theorem isMulRightInvariant_GA (E : Type) [Field E] [NumberField E] [_root_.NumberField.IsTotallyComplex E] (a : ℕ)
@@ -107,23 +107,23 @@ theorem isMulRightInvariant_GA (E : Type) [Field E] [NumberField E] [_root_.Numb
   obtain ⟨ν, h1, h2⟩ := GlobalTheory.CompanionTheory.AdelicHaar.exists_haar_rightInvariant E a
   have e : m = CuspidalL2GL.measurableSpace_GA E a := hm.measurable_eq
   subst e
-  haveI := CuspidalL2GL.t2Space_GA E a
-  haveI := CuspidalL2GL.locallyCompactSpace_GA E a
-  haveI := CuspidalL2GL.secondCountableTopology_GA E a
-  letI := h2
+  have := CuspidalL2GL.t2Space_GA E a
+  have := CuspidalL2GL.locallyCompactSpace_GA E a
+  have := CuspidalL2GL.secondCountableTopology_GA E a
+  let := h2
   rw [Measure.isMulLeftInvariant_eq_smul μ ν]
   exact MeasureTheory.isMulRightInvariant_smul (μ := ν) _
 
 theorem prodDom : RatProper → ProdDom := by
   intro _ E _ _ _ a b _ _ _ _ μ₁ _ μ₂ _ F₁ F₂ h₁ h₂
-  haveI := CuspidalL2GL.locallyCompactSpace_GA E a
-  haveI := CuspidalL2GL.locallyCompactSpace_GA E b
-  haveI := CuspidalL2GL.secondCountableTopology_GA E a
-  haveI := CuspidalL2GL.secondCountableTopology_GA E b
-  haveI := isMulRightInvariant_GA E a μ₁
-  haveI := isMulRightInvariant_GA E b μ₂
-  haveI : SigmaFinite μ₁ := sigmaFinite_of_locallyFinite
-  haveI : SigmaFinite μ₂ := sigmaFinite_of_locallyFinite
+  have := CuspidalL2GL.locallyCompactSpace_GA E a
+  have := CuspidalL2GL.locallyCompactSpace_GA E b
+  have := CuspidalL2GL.secondCountableTopology_GA E a
+  have := CuspidalL2GL.secondCountableTopology_GA E b
+  have := isMulRightInvariant_GA E a μ₁
+  have := isMulRightInvariant_GA E b μ₂
+  have : SigmaFinite μ₁ := sigmaFinite_of_locallyFinite
+  have : SigmaFinite μ₂ := sigmaFinite_of_locallyFinite
   obtain ⟨μ, hh, hf, hi⟩ := exists_measure_of_eq μ₁ μ₂ (ratH E a b) (F₁ ×ˢ F₂)
     (isFundamentalDomain_range_prodMap μ₁ μ₂ (ratGL E a) (ratGL E b) F₁ F₂ h₁ h₂) (borelH E a b)
     Prod.borelSpace.measurable_eq

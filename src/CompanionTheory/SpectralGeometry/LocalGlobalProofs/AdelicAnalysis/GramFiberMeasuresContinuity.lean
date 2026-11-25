@@ -28,31 +28,31 @@ theorem null_of_fibres_null {V X Y : Type} [TopologicalSpace V] [MeasurableSpace
 
 theorem fibre_loc_fin : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [NumberField E] [Algebra F E] (σ : E →ₐ[F] E), IsCMExt F E σ → ∀ (M : ℕ) (J : Matrix (Fin M) (Fin M) E), IsHermND σ J → ∀ (R : Type) [CommRing R] [Algebra F R] [TopologicalSpace R] [MeasurableSpace R] [BorelSpace R], IsLocR R → ∀ (n : ℕ), ∀ (μ : Measure (Fin n → Fin M → R ⊗[F] E)) (ν : Measure (HermR R σ n)) (m : HermR R σ n → Measure (Fin n → Fin M → R ⊗[F] E)), μ.IsAddHaarMeasure → ν.IsAddHaarMeasure → IsGramFib R σ J n μ ν m → ∀ S : HermR R σ n, IsLocallyFiniteMeasure (m S) ∧ ∀ U : Set (Fin n → Fin M → R ⊗[F] E), IsOpen U → (∃ X ∈ U, gramR R σ J X = S ∧ IsUnit (gramR R σ J X).det) → m S U ≠ 0 := by
   intro F E _ _ _ _ _ σ hσ M J hJ R _ _ _ _ _ hR n μ ν m hμ hν hm S
-  haveI : IsTopologicalRing R := hR.1
-  haveI : LocallyCompactSpace R := hR.2.1
-  haveI : SecondCountableTopology R := hR.2.2.1
-  haveI : T2Space R := hR.2.2.2.1
+  have : IsTopologicalRing R := hR.1
+  have : LocallyCompactSpace R := hR.2.1
+  have : SecondCountableTopology R := hR.2.2.1
+  have : T2Space R := hR.2.2.2.1
   obtain ⟨tK1, tK2, tK3, tK4, -, -, -, tK8, -, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hσ R
-  haveI := tK1
-  haveI := tK2
-  haveI := tK3
-  haveI := tK4
-  haveI : BorelSpace (Fin n → Fin M → R ⊗[F] E) := tK8 n M
+  have := tK1
+  have := tK2
+  have := tK3
+  have := tK4
+  have : BorelSpace (Fin n → Fin M → R ⊗[F] E) := tK8 n M
   obtain ⟨h1, h2, h3, h4, h5⟩ := HermTop.herm_top F E σ hσ R n
-  haveI := h1
-  haveI := h2
-  haveI := h3
-  haveI := h4
+  have := h1
+  have := h2
+  have := h3
+  have := h4
   obtain ⟨g, hgc, hg⟩ := h5 M J hJ
   have hKU := _root_.GlobalTheory.CompanionTheory.SW.KUnits.units_val_isOpenEmbedding F E σ hσ R hR
   have hBo : IsOpen {S : HermR R σ n | IsUnit (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det} := by
     have hdet : Continuous fun S : HermR R σ n => (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det :=
-      continuous_subtype_val.matrix_det
+      continuous_subtypeVal.matrix_det
     exact hKU.isOpen_range.preimage hdet
   have hUeq : {X | IsUnit (gramR R σ J X).det} =
       g ⁻¹' {S : HermR R σ n | IsUnit (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det} := by
     ext X
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, hg]
+    simp only [Set.mem_ofPred_eq, Set.mem_preimage, hg]
   have hfib : Formalism.MainNotions.GlobalTheoryTheory.GenusMassVolumes.IsFibreFamily μ (gramR R σ J) Subtype.val
       (g ⁻¹' {S : HermR R σ n | IsUnit (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det}) ν
       {S : HermR R σ n | IsUnit (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det} m := by
@@ -88,7 +88,7 @@ theorem fibre_loc_fin : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [Nu
       have hmeas : Measurable fun X : Fin n → Fin M → R ⊗[F] E =>
           rmul R X ((gs S' : GL (Fin n) (R ⊗[F] E)) : Matrix (Fin n) (Fin n) (R ⊗[F] E)) :=
         (hr.comp (Continuous.prodMk continuous_id continuous_const)).measurable
-      rw [e, Measure.smul_apply, Measure.map_apply hmeas hU'o.measurableSet]
+      rw [e, smul_apply, Measure.map_apply hmeas hU'o.measurableSet]
       have hsub : (fun X : Fin n → Fin M → R ⊗[F] E =>
           rmul R X ((gs S' : GL (Fin n) (R ⊗[F] E)) : Matrix (Fin n) (Fin n) (R ⊗[F] E))) ⁻¹'
             (g ⁻¹' B₁ ∩ T ⁻¹' U) ⊆

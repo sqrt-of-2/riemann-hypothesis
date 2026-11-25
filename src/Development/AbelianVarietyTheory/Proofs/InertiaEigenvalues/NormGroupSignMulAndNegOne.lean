@@ -82,7 +82,7 @@ theorem neg_one_mem_norm_of_valuation_eq : ∀ (F E : Type) [Field F] [Valuative
   have he : ramificationIndex F E = 1 := by
     have hd : ((ramificationIndex F E : ℕ) : ℤ) ∣ 1 := ⟨ord x, hord⟩
     exact_mod_cast Int.eq_one_of_dvd_one (by positivity) hd
-  haveI : IsUnramified F E := (isUnramified_iff F E).2 he
+  have : IsUnramified F E := (isUnramified_iff F E).2 he
   obtain ⟨w, hw⟩ := normIntegerUnits_surjective (K := F) (L := E) (-1)
   refine ⟨((w : 𝒪[E]) : E), ?_⟩
   have := congrArg (fun u : 𝒪[F]ˣ => ((u : 𝒪[F]) : F)) hw
@@ -111,7 +111,7 @@ namespace GlobalTheory.JR.WeilQuad.NormSign
 theorem exists_valuativeRel_of_normed : ∀ (F : Type) [NontriviallyNormedField F] [IsUltrametricDist F] [LocallyCompactSpace F],
     ∃ _ : ValuativeRel F, IsNonarchimedeanLocalField F ∧ ∀ x y : F, x ≤ᵥ y ↔ ‖x‖ ≤ ‖y‖ := by
   intro F _ _ _
-  letI rel : ValuativeRel F := ValuativeRel.ofValuation (NormedField.valuation (K := F))
+  let rel : ValuativeRel F := ValuativeRel.ofValuation (NormedField.valuation (K := F))
   have hc : (NormedField.valuation (K := F)).Compatible := Valuation.Compatible.ofValuation _
   refine ⟨rel, ?_, fun x y => Iff.rfl⟩
   refine { toIsValuativeTopology := ?_, toLocallyCompactSpace := inferInstance, toIsNontrivial := ?_ }
@@ -133,7 +133,7 @@ theorem norm_algebraMap_of_isPushout : ∀ (F E K L : Type) [Field F] [Field E] 
     [Algebra K L] [Algebra E L] [IsScalarTower F K L] [IsScalarTower F E L] [FiniteDimensional F E],
     Algebra.IsPushout F E K L → ∀ z : E, Algebra.norm K (algebraMap E L z) = algebraMap F K (Algebra.norm F z) := by
   intro F E K L _ _ _ _ _ _ _ _ _ _ _ _ h z
-  haveI := h.symm
+  have := h.symm
   have he : Algebra.IsPushout.equiv F K E L ((1 : K) ⊗ₜ[F] z) = algebraMap E L z := by
     simp [Algebra.IsPushout.equiv_tmul]
   rw [← he, Algebra.norm_eq_of_algEquiv, norm_one_tmul]
@@ -142,8 +142,8 @@ theorem mul_norm_of_not_norm (K L : Type) [Field K] [ValuativeRel K] [Topologica
     [IsNonarchimedeanLocalField K] [CharZero K] [Field L] [Algebra K L] (h2 : Module.finrank K L = 2)
     (s t : Kˣ) (hs : ¬ ∃ y : L, Algebra.norm K y = s) (ht : ¬ ∃ y : L, Algebra.norm K y = t) :
     ∃ y : L, Algebra.norm K y = ((s * t : Kˣ) : K) := by
-  haveI : Algebra.IsQuadraticExtension K L := ⟨h2⟩
-  haveI : FiniteDimensional K L := Module.finite_of_finrank_eq_succ h2
+  have : Algebra.IsQuadraticExtension K L := ⟨h2⟩
+  have : FiniteDimensional K L := Module.finite_of_finrank_eq_succ h2
   have hN := GroundTheory.Automorphic.natCard_quotient_range_normUnits_eq_two (F := K) (E := L)
   have ht' : t ∉ (GroundTheory.LocalField.normUnits K L).range := fun h =>
     ht ((GroundTheory.Automorphic.mem_range_normUnits_iff t).1 h)
@@ -161,29 +161,29 @@ theorem norms_of_isField {F E : Type} [NontriviallyNormedField F] [NontriviallyN
     A.NL 0 = 0 ∧
     (∀ s t : A.Kˣ, (¬ ∃ y, A.NL y = s) → (¬ ∃ y, A.NL y = t) → ∃ y, A.NL y = ((s * t : A.Kˣ) : A.K)) ∧
       ∃ y, A.NL y = ((-1 : A.Kˣ) : A.K) := by
-  letI : Field A.K := hK.toField
-  letI : Field A.L := hL.toField
-  haveI := hU.ultraF
-  haveI := hU.ultraE
-  haveI := hU.lcF
-  haveI := hU.lcE
-  haveI := hU.charZero
-  haveI : FiniteDimensional F E := Module.finite_of_finrank_eq_succ hU.finrank_eq
+  let : Field A.K := hK.toField
+  let : Field A.L := hL.toField
+  have := hU.ultraF
+  have := hU.ultraE
+  have := hU.lcF
+  have := hU.lcE
+  have := hU.charZero
+  have : FiniteDimensional F E := Module.finite_of_finrank_eq_succ hU.finrank_eq
   have hKL : Module.finrank A.K A.L = 2 := by
-    haveI := A.push.symm
+    have := A.push.symm
     rw [← (Algebra.IsPushout.equiv F A.K E A.L).toLinearEquiv.finrank_eq, Module.finrank_baseChange,
       hU.finrank_eq]
-  haveI : CharZero A.K := charZero_of_injective_algebraMap (algebraMap F A.K).injective
+  have : CharZero A.K := charZero_of_injective_algebraMap (algebraMap F A.K).injective
   obtain ⟨vF, hFloc, hFv⟩ := exists_valuativeRel_of_normed F
   refine ⟨?_, ?_⟩
-  · haveI : FiniteDimensional A.K A.L := Module.finite_of_finrank_eq_succ hKL
+  · have : FiniteDimensional A.K A.L := Module.finite_of_finrank_eq_succ hKL
     exact Algebra.norm_zero (R := A.K) (S := A.L)
   constructor
   · intro s t hs ht
     obtain ⟨vK, tK, hKloc, -⟩ := GroundTheory.LocalField.exists_isNonarchimedeanLocalField_valuativeExtension F A.K
     exact @mul_norm_of_not_norm A.K A.L _ vK tK hKloc _ _ _ hKL s t hs ht
   · obtain ⟨vE, hEloc, hEv⟩ := exists_valuativeRel_of_normed E
-    haveI : ValuativeExtension F E := ⟨by
+    have : ValuativeExtension F E := ⟨by
       intro a b
       rw [hEv, hFv, norm_algebraMap', norm_algebraMap']⟩
     obtain ⟨z, hz⟩ := _root_.GlobalTheory.neg_one_mem_norm_of_valuation_eq F E (fun y => by
@@ -198,8 +198,8 @@ theorem omega_mul_neg_one : ∀ (F E : Type) [NontriviallyNormedField F] [Nontri
   intro F E _ _ _ _ _ A ψ x μ ω h
   obtain ⟨hK, hL, -, -, hω⟩ := h
   obtain ⟨hzero, hprod, hneg⟩ := norms_of_isField A hK hL
-  letI : Field A.K := hK.toField
-  letI : Field A.L := hL.toField
+  let : Field A.K := hK.toField
+  let : Field A.L := hL.toField
   have hmul : ∀ s t : A.Kˣ, (∃ y, A.NL y = s) → (∃ y, A.NL y = t) → ∃ y, A.NL y = ((s * t : A.Kˣ) : A.K) := by
     rintro s t ⟨y, hy⟩ ⟨y', hy'⟩
     exact ⟨y * y', by simp only [Et.NL] at hy hy' ⊢; rw [map_mul, hy, hy', Units.val_mul]⟩
@@ -222,14 +222,14 @@ theorem omega_mul_neg_one : ∀ (F E : Type) [NontriviallyNormedField F] [Nontri
     split_ifs with hs
     · exact (hω s).1 hs
     · exact (hω s).2 hs
-  refine ⟨fun s t => ?_, by rw [hval, if_pos hneg]⟩
+  refine ⟨fun s t => ?_, by rw [hval, ite_eq_left hneg]⟩
   rw [hval s, hval t, hval (s * t)]
   by_cases hs : ∃ y, A.NL y = s <;> by_cases ht : ∃ y, A.NL y = t
-  · rw [if_pos hs, if_pos ht, if_pos (hmul s t hs ht)]; ring
-  · rw [if_pos hs, if_neg ht, if_neg (fun h => ht (hdiv s t hs h))]; ring
+  · rw [ite_eq_left hs, ite_eq_left ht, ite_eq_left (hmul s t hs ht)]; ring
+  · rw [ite_eq_left hs, ite_eq_right ht, ite_eq_right (fun h => ht (hdiv s t hs h))]; ring
   · have hst : ¬ ∃ y, A.NL y = ((s * t : A.Kˣ) : A.K) := fun h => hs (hdiv t s ht (by rwa [mul_comm]))
-    rw [if_neg hs, if_pos ht, if_neg hst]; ring
-  · rw [if_neg hs, if_neg ht, if_pos (hprod s t hs ht)]; ring
+    rw [ite_eq_right hs, ite_eq_left ht, ite_eq_right hst]; ring
+  · rw [ite_eq_right hs, ite_eq_right ht, ite_eq_left (hprod s t hs ht)]; ring
 
 end GlobalTheory.JR.WeilQuad.NormSign
 end -- clump:auto

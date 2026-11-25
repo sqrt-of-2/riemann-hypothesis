@@ -21,10 +21,10 @@ theorem ell_col (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) (g : Mat k r) :
   unfold ell
   refine Finset.sum_congr rfl fun a _ => ?_
   by_cases h : a.val + 1 < r
-  · rw [dif_pos h]
+  · rw [dite_eq_left h]
     first
       | simp [fvec, h, bvec]
-  · rw [dif_neg h]
+  · rw [dite_eq_right h]
     simp [fvec, h]
 
 section Lv2
@@ -84,7 +84,7 @@ private lemma liftVec_apply_sh (v : Fin (2 * r' + k + 1) → ℂ) (q : Fin (2 * 
     simp only [sh, Fin.val_mk]
     omega
   simp only [liftVec]
-  rw [dif_pos h1]
+  rw [dite_eq_left h1]
   exact congrArg v (Fin.ext (by simp [sh]))
 
 theorem hpk_lv (v : Fin (2 * r' + k + 1) → ℂ) :
@@ -94,11 +94,11 @@ theorem hpk_lv (v : Fin (2 * r' + k + 1) → ℂ) :
   refine (sum_eq_sum_sh_of_zero_at_edges _ ?_).trans ?_
   · intro j hj
     have h0 : ¬(1 ≤ j.val ∧ j.val < 2 * r' + k + 1 + 1) := by omega
-    simp only [liftVec, dif_neg h0, mul_zero]
+    simp only [liftVec, dite_eq_right h0, mul_zero]
   · simp only [liftVec_apply_sh]
     by_cases hp : p.val = 0 ∨ p.val = 2 * (1 + r') + k
     · have h0 : ¬(1 ≤ p.val ∧ p.val < 2 * r' + k + 1 + 1) := by omega
-      simp only [hpk_out p hp, zero_mul, Finset.sum_const_zero, liftVec, dif_neg h0]
+      simp only [hpk_out p hp, zero_mul, Finset.sum_const_zero, liftVec, dite_eq_right h0]
     · have hp' : p = sh ⟨p.val - 1, by have := p.isLt; omega⟩ := by
         ext
         simp only [sh, Fin.val_mk]
@@ -114,7 +114,7 @@ theorem herm_lv (v w : Fin (2 * r' + k + 1) → ℂ) :
   refine (sum_eq_sum_sh_of_zero_at_edges _ ?_).trans ?_
   · intro p hp
     have h0 : ¬(1 ≤ p.val ∧ p.val < 2 * r' + k + 1 + 1) := by omega
-    simp only [liftVec, dif_neg h0, mul_zero]
+    simp only [liftVec, dite_eq_right h0, mul_zero]
   · simp only [liftVec_apply_sh]
 
 theorem hermitianForm_liftVec_firstVector (v : Fin (2 * r' + k + 1) → ℂ) : herm (Hpk k (1 + r')) (liftVec k 1 r' v) (e0 k r') = 0 := by
@@ -148,7 +148,7 @@ private lemma lev_apply_sh_sh (m : Mat k r') (p q : Fin (2 * r' + k + 1)) :
     simp only [sh, Fin.val_mk]
     omega
   simp only [ιLev]
-  rw [dif_pos hp, dif_pos hq]
+  rw [dite_eq_left hp, dite_eq_left hq]
   exact congrArg₂ m (Fin.ext (by simp [sh])) (Fin.ext (by simp [sh]))
 
 private lemma lev_mulVec_liftVec_eq_liftVec_mulVec (m : Mat k r') (w : Fin (2 * r' + k + 1) → ℂ) :
@@ -158,7 +158,7 @@ private lemma lev_mulVec_liftVec_eq_liftVec_mulVec (m : Mat k r') (w : Fin (2 * 
   refine (sum_eq_sum_sh_of_zero_at_edges _ ?_).trans ?_
   · intro j hj
     have h0 : ¬(1 ≤ j.val ∧ j.val < 2 * r' + k + 1 + 1) := by omega
-    simp only [liftVec, dif_neg h0, mul_zero]
+    simp only [liftVec, dite_eq_right h0, mul_zero]
   · simp only [liftVec_apply_sh]
     by_cases hp : p.val = 0 ∨ p.val = 2 * (1 + r') + k
     · have h0 : ¬(1 ≤ p.val ∧ p.val < 2 * r' + k + 1 + 1) := by omega
@@ -170,8 +170,8 @@ private lemma lev_mulVec_liftVec_eq_liftVec_mulVec (m : Mat k r') (w : Fin (2 * 
           have := q.isLt
           simp only [sh, Fin.val_mk] at hp
           omega
-        simp only [ιLev, dif_neg h0, if_neg hne]
-      simp only [hz, zero_mul, Finset.sum_const_zero, liftVec, dif_neg h0]
+        simp only [ιLev, dite_eq_right h0, ite_eq_right hne]
+      simp only [hz, zero_mul, Finset.sum_const_zero, liftVec, dite_eq_right h0]
     · have hp' : p = sh ⟨p.val - 1, by have := p.isLt; omega⟩ := by
         ext
         simp only [sh, Fin.val_mk]
@@ -206,7 +206,7 @@ private lemma liftVec_bvec_eq_bvec_sh (i : Fin (2 * r' + k + 1)) :
       have := i.isLt
       simp only [sh, Fin.val_mk] at hp
       omega
-    simp only [liftVec, dif_neg h0, bvec, Pi.single_apply, if_neg hne]
+    simp only [liftVec, dite_eq_right h0, bvec, Pi.single_apply, ite_eq_right hne]
   · have hp' : p = sh ⟨p.val - 1, by have := p.isLt; omega⟩ := by
       ext
       simp only [sh, Fin.val_mk]
@@ -218,11 +218,11 @@ theorem fvec_lift (z1 : Fin (2 * r' + k + 1) → ℂ) (a : Fin (1 + r')) :
     fvec k (1 + r') (liftVec k 1 r' z1) ⟨a.val + 1, by omega⟩ = liftVec k 1 r' (fvec k r' z1 ⟨a.val, by omega⟩) := by
   by_cases ha : a.val < r'
   · have h1 : a.val + 1 < 1 + r' := by omega
-    simp only [fvec, dif_pos h1, dif_pos ha]
+    simp only [fvec, dite_eq_left h1, dite_eq_left ha]
     rw [eI_succ a.val h1]
     exact (liftVec_bvec_eq_bvec_sh _).symm
   · have h1 : ¬ a.val + 1 < 1 + r' := by omega
-    simp only [fvec, dif_neg h1, dif_neg ha]
+    simp only [fvec, dite_eq_right h1, dite_eq_right ha]
 
 private lemma liftVec_apply_eI_zero_eq_zero (v : Fin (2 * r' + k + 1) → ℂ) (h : 0 < 1 + r') :
     liftVec k 1 r' v (eI k (1 + r') ⟨0, h⟩) = 0 := by
@@ -262,7 +262,7 @@ theorem z_lift (z : Fin (2 * (1 + r') + k + 1) → ℂ) (hz : inWb k (1 + r') z)
   by_cases hp : p.val = 0 ∨ p.val = 2 * (1 + r') + k
   · have h0 : ¬(1 ≤ p.val ∧ p.val < 2 * r' + k + 1 + 1) := by omega
     rw [hz p (by omega)]
-    simp only [liftVec, dif_neg h0]
+    simp only [liftVec, dite_eq_right h0]
   · have hp' : p = sh ⟨p.val - 1, by have := p.isLt; omega⟩ := by
       ext
       simp only [sh, Fin.val_mk]

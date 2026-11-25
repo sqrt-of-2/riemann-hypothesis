@@ -61,7 +61,7 @@ open LateralTheory.EWeil.AcycPf
 private lemma exact_filtered (R : Type) [CommRing R] (J : Type 1) [Category.{0} J] [IsFiltered J] :
     HasExactColimitsOfShape J (ModuleCat.{1} (ULift.{1} R)) := by
   let e : J ≌ ULiftHom.{1} J := ULiftHom.equiv
-  haveI : IsFiltered (ULiftHom.{1} J) := IsFiltered.of_equivalence e
+  have : IsFiltered (ULiftHom.{1} J) := IsFiltered.of_equivalence e
   exact HasExactColimitsOfShape.of_domain_equivalence (ModuleCat.{1} (ULift.{1} R)) e.symm
 
 private lemma mono_of_isColimit {J : Type 1} [Category.{0} J] {A : Type 2} [Category.{1} A] [Abelian A]
@@ -85,12 +85,12 @@ private lemma lan_mono {C D : Type 1} [Category.{0} C] [Category.{0} D] (G : C �
   have hφ : ∀ c, Mono (φ.app c) := fun c => inferInstance
   have key : ∀ X, Mono (((G.op.lan : _ ⥤ Dᵒᵖ ⥤ A).map φ).app X) := by
     intro X
-    haveI : IsFiltered (CostructuredArrow G.op X) :=
+    have : IsFiltered (CostructuredArrow G.op X) :=
       IsFiltered.of_equivalence (structuredArrowOpEquivalence G (unop X))
-    haveI := hA (CostructuredArrow G.op X)
-    haveI : ∀ j, Mono ((Functor.whiskerLeft (CostructuredArrow.proj G.op X) φ).app j) :=
+    have := hA (CostructuredArrow G.op X)
+    have : ∀ j, Mono ((Functor.whiskerLeft (CostructuredArrow.proj G.op X) φ).app j) :=
       fun j => hφ _
-    haveI : Mono (Functor.whiskerLeft (CostructuredArrow.proj G.op X) φ) :=
+    have : Mono (Functor.whiskerLeft (CostructuredArrow.proj G.op X) φ) :=
       NatTrans.mono_of_mono_app _
     refine mono_of_isColimit (Functor.whiskerLeft (CostructuredArrow.proj G.op X) φ)
       (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit G.op P X)
@@ -117,26 +117,26 @@ set_option backward.isDefEq.respectTransparency false in
 private lemma incl_cont (S : Scheme.{0}) :
     (incl S).IsContinuous S.smallEtaleTopology (Scheme.etaleTopology.over S) := by
   have := incl_flat S
-  haveI : (incl S).Full := inferInstanceAs (Scheme.Etale.forget S).Full
-  haveI : (incl S).Faithful := inferInstanceAs (Scheme.Etale.forget S).Faithful
-  haveI : (incl S).LocallyCoverDense (Scheme.etaleTopology.over S) :=
+  have : (incl S).Full := inferInstanceAs (Scheme.Etale.forget S).Full
+  have : (incl S).Faithful := inferInstanceAs (Scheme.Etale.forget S).Faithful
+  have : (incl S).LocallyCoverDense (Scheme.etaleTopology.over S) :=
     Scheme.locallyCoverDense_of_le (P := @Etale) S le_rfl
   rw [Functor.isContinuous_iff_coverPreserving]
   exact Functor.coverPreserving_restrictedTopology (incl S) (Scheme.etaleTopology.over S)
 
 private lemma restr_inj : RestrInj := by
   intro R _ S G _
-  haveI := incl_cont S
+  have := incl_cont S
   let adj := Functor.sheafPullbackConstruction.sheafAdjunctionContinuous (incl S)
     (ModuleCat.{1} (ULift.{1} R)) S.smallEtaleTopology (Scheme.etaleTopology.over S)
-  haveI : (Functor.sheafPullbackConstruction.sheafPullback (incl S) (ModuleCat.{1} (ULift.{1} R))
+  have : (Functor.sheafPullbackConstruction.sheafPullback (incl S) (ModuleCat.{1} (ULift.{1} R))
       S.smallEtaleTopology (Scheme.etaleTopology.over S)).PreservesMonomorphisms := by
     constructor
     intro X Y f hf
-    haveI := incl_flat S
-    haveI : Mono ((sheafToPresheaf S.smallEtaleTopology (ModuleCat.{1} (ULift.{1} R))).map f) :=
+    have := incl_flat S
+    have : Mono ((sheafToPresheaf S.smallEtaleTopology (ModuleCat.{1} (ULift.{1} R))).map f) :=
       inferInstance
-    haveI : Mono (((incl S).op.lan : _ ⥤ (Over S)ᵒᵖ ⥤ ModuleCat.{1} (ULift.{1} R)).map
+    have : Mono (((incl S).op.lan : _ ⥤ (Over S)ᵒᵖ ⥤ ModuleCat.{1} (ULift.{1} R)).map
         ((sheafToPresheaf S.smallEtaleTopology (ModuleCat.{1} (ULift.{1} R))).map f)) :=
       lan_mono (incl S) (fun J _ _ _ => exact_filtered R J) _
     exact (presheafToSheaf (Scheme.etaleTopology.over S) (ModuleCat.{1} (ULift.{1} R))).map_mono _

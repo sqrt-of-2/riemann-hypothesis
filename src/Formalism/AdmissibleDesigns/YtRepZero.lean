@@ -187,11 +187,11 @@ def latY [Module.Finite O M] [Module.Free O M] [NoZeroSMulDivisors O M] (ρM : R
     rintro _ ⟨m, rfl⟩
     exact ⟨ρM (ι g) m, (locRep_mkK ρM (ι g) m).symm⟩
   fg := by
-    haveI := finite_MOY (eO := eO) (M := M)
-    haveI : Module.Finite Ow ↥(latTY e eO (M := M) heO) := Module.Finite.equiv (latEquivY heO mkK_injY)
+    have := finite_MOY (eO := eO) (M := M)
+    have : Module.Finite Ow ↥(latTY e eO (M := M) heO) := Module.Finite.equiv (latEquivY heO mkK_injY)
     exact (Module.Finite.iff_fg).1 inferInstance
   free := by
-    haveI := free_MOY (eO := eO) (M := M)
+    have := free_MOY (eO := eO) (M := M)
     exact Module.Free.of_equiv (latEquivY heO mkK_injY)
   span := by
     rw [eq_top_iff]
@@ -287,10 +287,10 @@ theorem ext_of_baer [IsPrincipalIdealRing O] [NoZeroSMulDivisors O N] {Q : Type}
     (hdiv : ∀ a : O, a ≠ 0 → ∀ y : Q, ∃ q : Q, eO a • q = y) (g₀ : N →+ Q)
     (hg : ∀ (a : O) (n : N), g₀ (a • n) = eO a • g₀ n) :
     ∃ φ : TrV e (MK (O := O) (N × O)) →ₗ[Ow] Q, ∀ n : N, φ (trY e (mkK (O := O) (n, (0 : O)))) = g₀ n := by
-  letI : Module O Q := Module.compHom Q eO.toRingHom
+  let : Module O Q := Module.compHom Q eO.toRingHom
   have hB : Module.Baer O Q := baer_of_div fun a ha y => hdiv a ha y
   let f : N →ₗ[O] MK (O := O) (N × O) := mkK ∘ₗ LinearMap.inl O N O
-  haveI := nzsd_prod (O := O) (N := N)
+  have := nzsd_prod (O := O) (N := N)
   have hf : Function.Injective f := mkK_injY.comp LinearMap.inl_injective
   let g : N →ₗ[O] Q := { toFun := g₀, map_add' := g₀.map_add, map_smul' := fun a n => hg a n }
   obtain ⟨h, hh⟩ := hB.extension_property f hf g
@@ -365,15 +365,15 @@ theorem nzsdY [NoZeroSMulDivisors O A] : NoZeroSMulDivisors O ↥(Ymod r χ E) :
     (fun _ _ => rfl)
 
 theorem finY [Module.Finite O A] : Module.Finite O ↥(Ymod r χ E) := by
-  haveI : IsNoetherian O A := isNoetherian_of_isNoetherianRing_of_finite O A
+  have : IsNoetherian O A := isNoetherian_of_isNoetherianRing_of_finite O A
   let f : ↥(Ymod r χ E) →ₗ[O] A :=
     { toFun := fun y => (y : A), map_add' := fun _ _ => rfl, map_smul' := fun _ _ => rfl }
   exact Module.Finite.of_injective f Subtype.val_injective
 
 theorem freeY [Module.Finite O A] [NoZeroSMulDivisors O A] : Module.Free O (↥(Ymod r χ E) × O) := by
-  haveI := finY (O := O) r χ E
-  haveI := nzsdY (O := O) r χ E
-  haveI := nzsd_prod (O := O) (N := ↥(Ymod r χ E))
+  have := finY (O := O) r χ E
+  have := nzsdY (O := O) r χ E
+  have := nzsd_prod (O := O) (N := ↥(Ymod r χ E))
   exact Module.free_of_finite_type_torsion_free'
 
 theorem ytRep_zero (g : GG) (y : ↥(Ymod r χ E)) : ytRep O r χ E g (y, 0) = (uElt r χ g • y, 0) :=
@@ -423,7 +423,7 @@ theorem ytG_psi [Module.Finite O A] [NoZeroSMulDivisors O A] (hfd : FiniteDimens
     (Cd : CoefDict PD LL Ow eO M r χ Dw eG e') :
     PsiExt eO r χ E Dw eG (ytG Qp heO r χ E Dw eG hfd hcont) Cd := by
   intro ψ hψe
-  haveI := nzsdY (O := O) r χ E
+  have := nzsdY (O := O) r χ E
   obtain ⟨φ, hφ⟩ := ext_of_baer (e := e) (eO := eO) heO (N := ↥(Ymod r χ E)) (Q := Cd.Ce.V ⧸ Cd.Ce.L.T)
     (div_quot heO Cd.Ce.L.T) (Cd.u.toAddMonoidHom.comp ψ.toAddMonoidHom)
     (fun a n => by

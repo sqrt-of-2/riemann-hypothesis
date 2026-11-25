@@ -68,7 +68,7 @@ theorem sigPar_step (D : D7) (τ : D.what₂.Tau) (i : ℕ) (hi : i + 1 < D.R.k 
   unfold DV.sigPar
   by_cases h1 : i + 1 < D.R.k - 1
   · have h0 : i < D.R.k - 1 := by omega
-    rw [dif_pos h1, dif_pos h0]
+    rw [dite_eq_left h1, dite_eq_left h0]
     exact eventually_abs_le_half_add_of_doubling_bounds ((D.hc τ).v ⟨i + 1, h1⟩) ((D.hc τ).u ⟨i + 1, by omega⟩) ((D.hc τ).v ⟨i, h0⟩)
       ((D.hc τ).v_int ⟨i + 1, h1⟩) ((D.hc τ).u_half ⟨i + 1, by omega⟩) ((D.hc τ).v_int ⟨i, h0⟩)
       ((D.hc τ).u_gt_v ⟨i + 1, h1⟩) ((D.hc τ).v_gt_u ⟨i, h0⟩)
@@ -76,7 +76,7 @@ theorem sigPar_step (D : D7) (τ : D.what₂.Tau) (i : ℕ) (hi : i + 1 < D.R.k 
     · have hb : i + 1 - (D.R.k - 1) < D.R.m := by omega
       have hk : 0 < D.R.k := by omega
       have hm : 0 < D.R.m := by omega
-      rw [dif_neg h1, dif_pos hb, dif_pos h0]
+      rw [dite_eq_right h1, dite_eq_left hb, dite_eq_left h0]
       have e1 : (⟨i + 1 - (D.R.k - 1), hb⟩ : Fin D.R.m) = ⟨0, hm⟩ :=
         Fin.ext (show i + 1 - (D.R.k - 1) = 0 by omega)
       rw [e1]
@@ -92,7 +92,7 @@ theorem sigPar_step (D : D7) (τ : D.what₂.Tau) (i : ℕ) (hi : i + 1 < D.R.k 
         ((D.hc τ).u_last_gt hk hm) hu2
     · have hb1 : i + 1 - (D.R.k - 1) < D.R.m := by omega
       have hb0 : i - (D.R.k - 1) < D.R.m := by omega
-      rw [dif_neg h1, dif_pos hb1, dif_neg h0, dif_pos hb0]
+      rw [dite_eq_right h1, dite_eq_left hb1, dite_eq_right h0, dite_eq_left hb0]
       have g1 := (D.hc τ).gap_be ⟨i - (D.R.k - 1), hb0⟩
       have g2 : ((D.R.t : ℚ) + 3) / 2 ≤
           (D.hc τ).b ⟨i - (D.R.k - 1) + 1, by omega⟩ - (D.hc τ).e ⟨i - (D.R.k - 1), hb0⟩ :=
@@ -123,7 +123,7 @@ theorem aMinusQ_step (D : D7) (j : ℕ) (τ : D.what₂.Tau) (c : ℕ) (hc : j +
     DV.aMinusQ D j τ c ≤ DV.aMinusQ D j τ (c + 1) := by
   have h0 : j + c < D.R.m := by omega
   unfold DV.aMinusQ
-  rw [dif_pos h0, dif_pos hc]
+  rw [dite_eq_left h0, dite_eq_left hc]
   have g1 := (D.hc τ).gap_be ⟨j + c, h0⟩
   have g2 : ((D.R.t : ℚ) + 3) / 2 ≤ (D.hc τ).b ⟨j + (c + 1), hc⟩ - (D.hc τ).e ⟨j + c, h0⟩ :=
     (D.hc τ).gap_eb ⟨j + c, h0⟩ (show j + c + 1 < D.R.m by omega)

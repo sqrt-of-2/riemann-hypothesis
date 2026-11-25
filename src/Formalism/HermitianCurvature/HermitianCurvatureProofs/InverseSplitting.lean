@@ -101,7 +101,7 @@ lemma inv_step (w : Equiv.Perm (Fin m)) (l : Matrix (Fin m) (Fin m) ℂ) (hl : l
         simp [hl.2 i]
       · have hlt : i < j := by
           have hv : i.val ≠ j.val := fun e => hij (Fin.ext e)
-          rw [Fin.lt_iff_val_lt_val]
+          rw [Fin.lt_def]
           omega
         rw [Matrix.one_apply_ne hij, hl.1 i j hlt]
   | succ n ih =>
@@ -115,15 +115,15 @@ lemma inv_step (w : Equiv.Perm (Fin m)) (l : Matrix (Fin m) (Fin m) ℂ) (hl : l
     refine ⟨fun i j h => ?_, fun i => ?_, fun i j h => ?_, fun i j h hw => ?_,
       fun i j h hw => ?_, fun i j h => ?_⟩
     · have hv : ¬ i.val = j.val + n + 1 := by
-        rw [Fin.lt_iff_val_lt_val] at h
+        rw [Fin.lt_def] at h
         omega
-      rw [hA', hB', if_neg hv, if_neg hv]
+      rw [hA', hB', ite_eq_right hv, ite_eq_right hv]
       exact hup i j h
     · have hv : ¬ i.val = i.val + n + 1 := by omega
-      rw [hA', hB', if_neg hv, if_neg hv]
+      rw [hA', hB', ite_eq_right hv, ite_eq_right hv]
       exact hdiag i
     · have hv : ¬ i.val = j.val + n + 1 := by omega
-      rw [hA', hB', if_neg hv, if_neg hv]
+      rw [hA', hB', ite_eq_right hv, ite_eq_right hv]
       exact hfar i j (by omega)
     · rw [hA']
       split_ifs with hv
@@ -146,20 +146,20 @@ lemma inv_step (w : Equiv.Perm (Fin m)) (l : Matrix (Fin m) (Fin m) ℂ) (hl : l
           by_cases hkj : k = j
           · subst hkj
             have hv : ¬ k.val = k.val + n + 1 := by omega
-            rw [hB' k k, if_neg hv, (hdiag k).2, hAij, if_pos rfl, if_neg hji]
+            rw [hB' k k, ite_eq_right hv, (hdiag k).2, hAij, ite_eq_left rfl, ite_eq_right hji]
             simp
           by_cases hki : k = i
           · subst hki
             have hv : ¬ k.val = k.val + n + 1 := by omega
-            rw [hA' k k, if_neg hv, (hdiag k).1, hBij, if_neg hkj, if_pos rfl]
+            rw [hA' k k, ite_eq_right hv, (hdiag k).1, hBij, ite_eq_right hkj, ite_eq_left rfl]
             simp
           have hv1 : ¬ i.val = k.val + n + 1 := fun e => hkj (Fin.ext (by omega))
           have hv2 : ¬ k.val = j.val + n + 1 := fun e => hki (Fin.ext (by omega))
-          rw [hA' i k, hB' k j, if_neg hv1, if_neg hv2, if_neg hkj, if_neg hki]
+          rw [hA' i k, hB' k j, ite_eq_right hv1, ite_eq_right hv2, ite_eq_right hkj, ite_eq_right hki]
           simp
         rw [Finset.sum_congr rfl fun k _ => hterm k, Finset.sum_add_distrib, Finset.sum_add_distrib,
-          Finset.sum_ite_eq' Finset.univ j, Finset.sum_ite_eq' Finset.univ i, if_pos (Finset.mem_univ _),
-          if_pos (Finset.mem_univ _), ← Matrix.mul_apply, hA', hB', if_pos hgap, if_pos hgap]
+          Finset.sum_ite_eq' Finset.univ j, Finset.sum_ite_eq' Finset.univ i, ite_eq_left (Finset.mem_univ _),
+          ite_eq_left (Finset.mem_univ _), ← Matrix.mul_apply, hA', hB', ite_eq_left hgap, ite_eq_left hgap]
         split_ifs <;> ring
       ·
         have hle : i.val ≤ j.val + n := by omega
@@ -167,19 +167,19 @@ lemma inv_step (w : Equiv.Perm (Fin m)) (l : Matrix (Fin m) (Fin m) ℂ) (hl : l
         refine Finset.sum_congr rfl fun k _ => ?_
         by_cases hk1 : i.val = k.val + n + 1
         · have hkj : k < j := by
-            rw [Fin.lt_iff_val_lt_val]
+            rw [Fin.lt_def]
             omega
           have hv2 : ¬ k.val = j.val + n + 1 := by omega
-          rw [hB' k j, if_neg hv2, (hup k j hkj).2]
+          rw [hB' k j, ite_eq_right hv2, (hup k j hkj).2]
           simp
-        · rw [hA' i k, if_neg hk1]
+        · rw [hA' i k, ite_eq_right hk1]
           by_cases hk2 : k.val = j.val + n + 1
           · have hik : i < k := by
-              rw [Fin.lt_iff_val_lt_val]
+              rw [Fin.lt_def]
               omega
             rw [(hup i k hik).1]
             simp
-          · rw [hB' k j, if_neg hk2]
+          · rw [hB' k j, ite_eq_right hk2]
 
 end InverseSplitting
 
@@ -201,7 +201,7 @@ theorem lower_triangular_splitting : C2.LowSplit := by
     ext a b
     rw [Matrix.mul_apply]
     simp only [hQ, C2.monoP, Matrix.of_apply, ite_mul, zero_mul, mul_ite, mul_zero,
-      Finset.sum_ite_eq', Finset.mem_univ, if_true]
+      Finset.sum_ite_eq', Finset.mem_univ, ite_true]
     by_cases hab : a = b
     · subst hab
       simp [hd a]
@@ -213,7 +213,7 @@ theorem lower_triangular_splitting : C2.LowSplit := by
     intro X a b
     rw [hPinv, Matrix.mul_apply]
     simp only [Matrix.mul_apply, hQ, C2.monoP, Matrix.of_apply, ite_mul, zero_mul, mul_ite,
-      mul_zero, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+      mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   have I := inv_step w l hl m
   set A := (lsStep w l m).1 with hAdef
   set B := (lsStep w l m).2 with hBdef

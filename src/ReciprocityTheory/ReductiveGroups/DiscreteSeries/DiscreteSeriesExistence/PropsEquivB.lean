@@ -117,24 +117,24 @@ theorem kRel_resE (hE : IsGlRep E) : KRel ε (resE E V hst) := by
   intro a b c d hab hcd
   apply LinearMap.ext; intro v; apply Subtype.ext
   have h := LinearMap.congr_fun (hE a b c d) (v : M)
-  simp only [LinearMap.sub_apply, Module.End.mul_apply] at h ⊢
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp] at h ⊢
   by_cases h1 : b = c <;> by_cases h2 : d = a
   · subst h1; subst h2
-    rw [if_pos rfl, if_pos rfl] at h ⊢
+    rw [ite_eq_left rfl, ite_eq_left rfl] at h ⊢
     simp only [Submodule.coe_sub, coe_resE hab, coe_resE hcd, coe_resE (rfl : ε d = ε d),
       coe_resE (rfl : ε b = ε b)]
     exact h
   · subst h1
-    rw [if_pos rfl, if_neg h2] at h ⊢
+    rw [ite_eq_left rfl, ite_eq_right h2] at h ⊢
     simp only [LinearMap.zero_apply, Submodule.coe_sub, Submodule.coe_zero, coe_resE hab, coe_resE hcd,
       coe_resE (hab.trans hcd)] at h ⊢
     exact h
   · subst h2
-    rw [if_neg h1, if_pos rfl] at h ⊢
+    rw [ite_eq_right h1, ite_eq_left rfl] at h ⊢
     simp only [LinearMap.zero_apply, Submodule.coe_sub, Submodule.coe_zero, coe_resE hab, coe_resE hcd,
       coe_resE (hcd.trans hab)] at h ⊢
     exact h
-  · rw [if_neg h1, if_neg h2] at h ⊢
+  · rw [ite_eq_right h1, ite_eq_right h2] at h ⊢
     simp only [LinearMap.zero_apply, Submodule.coe_sub, Submodule.coe_zero, coe_resE hab,
       coe_resE hcd] at h ⊢
     exact h
@@ -195,7 +195,7 @@ theorem actM_pow_coe {Z : Matrix (Fin n) (Fin n) ℂ} (hZ : inK ε Z) (v : V) (m
   induction m with
   | zero => rw [pow_zero, pow_zero]; rfl
   | succ m ih =>
-    rw [pow_succ', Module.End.mul_apply, ih, actM_coe (hst := hst) hZ, pow_succ', Module.End.mul_apply]
+    rw [pow_succ', mul_apply_eq_comp, ih, actM_coe (hst := hst) hZ, pow_succ', mul_apply_eq_comp]
 
 end Restrict
 
@@ -218,7 +218,7 @@ theorem orbit_hasSum (hσ : IsURepOn (UJset ε) σ) (hD : IsDerivedOn ε σ D E)
   have hsum := hasSum_orbit_of_bound hσ hD hZ.1 (v : D) (fun m => C ^ m * ‖(v : D)‖)
     (fun m => hC (v : D) v.2 m) 0 1 hs
   rw [exp_zero_smul, hσ.1.1] at hsum
-  simp only [Complex.ofReal_one, one_smul, ContinuousLinearMap.one_apply] at hsum
+  simp only [Complex.ofReal_one, one_smul, one_apply_eq_self] at hsum
   convert hsum using 1
   funext m
   rw [actM_pow_coe (hst := hst) hZ v m]
@@ -253,7 +253,7 @@ theorem phi_K (hσ : IsURepOn (UJset ε) σ) (hD : IsDerivedOn ε σ D E) {V : S
     | zero => intro v; rw [pow_zero, pow_zero]; rfl
     | succ m ih =>
       intro v
-      rw [pow_succ', Module.End.mul_apply, hZc, ih, pow_succ', Module.End.mul_apply]
+      rw [pow_succ', mul_apply_eq_comp, hZc, ih, pow_succ', mul_apply_eq_comp]
   let ι₁ : V →L[ℂ] H := D.subtypeL.comp V.subtypeL
   let ι₂ : V₂ →L[ℂ] H₂ := D₂.subtypeL.comp V₂.subtypeL
   have hi : Topology.IsInducing ι₁ :=

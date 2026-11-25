@@ -67,24 +67,24 @@ theorem exists_lieComb_image {R R' : Type} [CommRing R] [CommRing R'] (A B : Out
 
 def blockEquiv {T : Type} (p : T → Prop) [DecidablePred p] (a b : ℕ) {α β : Type} (s : α ≃ {t // p t})
     (s' : β ≃ {t // ¬ p t}) : (Σ t, Fin (if p t then a else b)) ≃ (Fin a × α) ⊕ (Fin b × β) where
-  toFun z := if h : p z.1 then Sum.inl (z.2.cast (if_pos h), s.symm ⟨z.1, h⟩)
-    else Sum.inr (z.2.cast (if_neg h), s'.symm ⟨z.1, h⟩)
+  toFun z := if h : p z.1 then Sum.inl (z.2.cast (ite_eq_left h), s.symm ⟨z.1, h⟩)
+    else Sum.inr (z.2.cast (ite_eq_right h), s'.symm ⟨z.1, h⟩)
   invFun
-    | Sum.inl q => ⟨(s q.2).1, q.1.cast (if_pos (s q.2).2).symm⟩
-    | Sum.inr q => ⟨(s' q.2).1, q.1.cast (if_neg (s' q.2).2).symm⟩
+    | Sum.inl q => ⟨(s q.2).1, q.1.cast (ite_eq_left (s q.2).2).symm⟩
+    | Sum.inr q => ⟨(s' q.2).1, q.1.cast (ite_eq_right (s' q.2).2).symm⟩
   left_inv := by
     rintro ⟨t, i⟩
     by_cases h : p t
-    · simp only [dif_pos h]
+    · simp only [dite_eq_left h]
       refine Sigma.ext (by simp) ?_
       exact (Fin.heq_ext_iff (by simp)).2 rfl
-    · simp only [dif_neg h]
+    · simp only [dite_eq_right h]
       refine Sigma.ext (by simp) ?_
       exact (Fin.heq_ext_iff (by simp)).2 rfl
   right_inv := by
     rintro (q | q)
-    · simp [dif_pos (s q.2).2]
-    · simp [dif_neg (s' q.2).2]
+    · simp [dite_eq_left (s q.2).2]
+    · simp [dite_eq_right (s' q.2).2]
 
 theorem exists_lamLetters_isGood : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] [StarRing (𝓞 E)] (H : Host E) (l : Level H) (c : Coeff l) (nΨ n' f : ℕ) (o : LamObj c nΨ n') (La : ℝ), LamObjGood o f La → ∃ L : LamLetters o, L.IsGood ∧ ∀ b : E →+* ℂ, (b (H.rt : E) = H.rt0 → L.m b = nΨ) ∧ (b (H.rt : E) ≠ H.rt0 → L.m b = n') := by
   intro E _ _ _ _ H l c nΨ n' f o La hg
@@ -111,9 +111,9 @@ theorem exists_lamLetters_isGood : ∀ (E : Type) [Field E] [NumberField E] [IsC
     have : κ.symm ((ε.trans κ) ⟨b, i⟩) = ε ⟨b, i⟩ := by simp
     simp only [this]
     by_cases h : p b
-    · have e1 : ε ⟨b, i⟩ = Sum.inl (i.cast (if_pos h), o.τΨ.symm ⟨b, h⟩) := dif_pos h
+    · have e1 : ε ⟨b, i⟩ = Sum.inl (i.cast (ite_eq_left h), o.τΨ.symm ⟨b, h⟩) := dite_eq_left h
       rw [e1]; simp
-    · have e1 : ε ⟨b, i⟩ = Sum.inr (i.cast (if_neg h), o.τ'.symm ⟨b, h⟩) := dif_neg h
+    · have e1 : ε ⟨b, i⟩ = Sum.inr (i.cast (ite_eq_right h), o.τ'.symm ⟨b, h⟩) := dite_eq_right h
       rw [e1]; simp
   · intro k
     refine ⟨w (κ.symm k), ?_, hu _⟩
@@ -127,6 +127,6 @@ theorem exists_lamLetters_isGood : ∀ (E : Type) [Field E] [NumberField E] [IsC
     generalize κ.symm k = q
     cases q <;> rfl
   · intro b
-    exact ⟨fun h => if_pos h, fun h => if_neg h⟩
+    exact ⟨fun h => ite_eq_left h, fun h => ite_eq_right h⟩
 
 end GlobalTheory.LamF

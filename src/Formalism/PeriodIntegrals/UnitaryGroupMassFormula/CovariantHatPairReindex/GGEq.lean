@@ -81,11 +81,11 @@ theorem sgnL_eq_sum {r : ℕ} {α : Type*} [DecidableEq α] (x e : Fin r → α)
   simp only [Matrix.of_apply]
   rw [Finset.prod_boole]
   by_cases h : x = e ∘ σ.symm
-  · rw [if_pos h, if_pos]
+  · rw [ite_eq_left h, ite_eq_left]
     intro i _
     rw [h]
     simp
-  · rw [if_neg h, if_neg]
+  · rw [ite_eq_right h, ite_eq_right]
     intro H
     apply h
     funext j
@@ -97,8 +97,8 @@ theorem sum_sgnL {r : ℕ} {α : Type*} [Fintype α] [DecidableEq α] {M : Type*
     ∑ x, sgnL x e • g x = ∑ π : Equiv.Perm (Fin r), ((Equiv.Perm.sign π : ℤ) : ℂ) • g (e ∘ π) := by
   simp_rw [sgnL_eq_sum, Finset.sum_smul, mul_ite, mul_one, mul_zero, ite_smul, zero_smul]
   rw [Finset.sum_comm]
-  simp only [Finset.sum_ite_eq', Finset.mem_univ, if_true]
-  exact Fintype.sum_equiv (Equiv.inv _) _ _ (fun σ => by simp [Equiv.Perm.sign_inv, Equiv.Perm.inv_def])
+  simp only [Finset.sum_ite_eq', Finset.mem_univ, ite_true]
+  exact Fintype.sum_equiv (Equiv.inv _) _ _ (fun σ => by simp [Equiv.Perm.inv_def])
 
 theorem sum_sgnL_alt {r : ℕ} {α : Type*} [Fintype α] [DecidableEq α] {M : Type*} [AddCommGroup M]
     [Module ℂ M] (e : Fin r → α) (F : (Fin r → α) → M)
@@ -154,15 +154,15 @@ theorem skip_two_of_lt {m : ℕ} (j : Fin (m + 2)) (j' : Fin (m + 1)) (h : Fin.c
     (fun k : Fin m => j.succAbove (j'.succAbove k)) = skip2 (Fin.castSucc j') j := by
   funext k
   apply Fin.ext
-  simp only [skip2, Fin.succAbove, Fin.lt_def, Fin.coe_castSucc] at h ⊢
-  split_ifs <;> (try simp only [Fin.coe_castSucc, Fin.val_succ] at *) <;> omega
+  simp only [skip2, Fin.succAbove, Fin.lt_def, Fin.val_castSucc] at h ⊢
+  split_ifs <;> (try simp only [Fin.val_castSucc, Fin.val_succ] at *) <;> omega
 
 theorem skip_two_of_ge {m : ℕ} (j : Fin (m + 2)) (j' : Fin (m + 1)) (h : j ≤ Fin.castSucc j') :
     (fun k : Fin m => j.succAbove (j'.succAbove k)) = skip2 j j'.succ := by
   funext k
   apply Fin.ext
-  simp only [skip2, Fin.succAbove, Fin.lt_def, Fin.le_def, Fin.coe_castSucc, Fin.val_succ] at h ⊢
-  split_ifs <;> (try simp only [Fin.coe_castSucc, Fin.val_succ] at *) <;> omega
+  simp only [skip2, Fin.succAbove, Fin.lt_def, Fin.le_def, Fin.val_castSucc, Fin.val_succ] at h ⊢
+  split_ifs <;> (try simp only [Fin.val_castSucc, Fin.val_succ] at *) <;> omega
 
 theorem sum_two {m : ℕ} {α : Type*} [Fintype α] [DecidableEq α] {M : Type*} [AddCommGroup M]
     [Module ℂ M] (e : Fin (m + 2) → α) (F : (Fin m → α) → M)
@@ -221,20 +221,20 @@ theorem reindex_pairs {m : ℕ} {M : Type*} [AddCommGroup M] [Module ℂ M]
         (β j * β' i)) • F (skip2 i j) else 0),
       Fin.sum_univ_succ (f := fun i' => if j < i' then ((-1 : ℂ) ^ ((j : ℕ) + (i' : ℕ)) *
         (β j * β' i')) • F (skip2 j i') else 0)]
-    simp only [not_lt.mpr (Fin.le_last j), Fin.not_lt_zero, if_false, add_zero, zero_add]
+    simp only [not_lt.mpr (Fin.le_last j), Fin.not_lt_zero, ite_false, add_zero, zero_add]
     rw [← Finset.sum_sub_distrib]
     refine Finset.sum_congr rfl fun j' _ => ?_
     by_cases h : Fin.castSucc j' < j
     · have h' : ¬ j < j'.succ := by
         rw [← Fin.le_castSucc_iff]
         exact not_le.mpr h
-      rw [if_pos h, if_neg h', sub_zero, Fin.succAbove_of_castSucc_lt _ _ h, skip_two_of_lt j j' h,
+      rw [ite_eq_left h, ite_eq_right h', sub_zero, Fin.succAbove_of_castSucc_lt _ _ h, skip_two_of_lt j j' h,
         Fin.val_castSucc]
       congr 1
       ring
     · have hle : j ≤ Fin.castSucc j' := not_lt.mp h
       have h' : j < j'.succ := Fin.le_castSucc_iff.mp hle
-      rw [if_neg h, if_pos h', zero_sub, Fin.succAbove_of_le_castSucc _ _ hle, skip_two_of_ge j j' hle,
+      rw [ite_eq_right h, ite_eq_left h', zero_sub, Fin.succAbove_of_le_castSucc _ _ hle, skip_two_of_ge j j' hle,
         Fin.val_succ, ← neg_smul]
       congr 1
       ring
@@ -321,11 +321,11 @@ theorem GG_eq {m : ℕ} {M : Type*} [AddCommGroup M] [Module ℂ M]
   rw [Finset.smul_sum, Finset.smul_sum]
   refine Finset.sum_congr rfl fun i' _ => ?_
   by_cases hi : i < i'
-  · simp only [hi, if_true, true_and, h2, Finset.smul_sum, smul_smul]
+  · simp only [hi, ite_true, true_and, h2, Finset.smul_sum, smul_smul]
     refine Finset.sum_congr rfl fun j _ => ?_
     refine Finset.sum_congr rfl fun j' _ => ?_
     by_cases hj : j < j'
-    · simp only [hj, if_true, smul_smul]
+    · simp only [hj, ite_true, smul_smul]
       congr 1
       rw [pow_add, pow_add, pow_add, pow_add]
       ring

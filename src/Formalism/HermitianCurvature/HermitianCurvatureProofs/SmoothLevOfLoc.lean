@@ -103,26 +103,26 @@ theorem hmat_zb (h : C.LPt) (s : ℕ) (τ : ℂ) (hl : D.IsLocPt (h ++ [(s, τ)]
         · intro e; rw [e]
         · intro e; exact Fin.ext e
       by_cases h3 : D.ptPartner h a' = q
-      · rw [if_pos (heq.2 (by rw [hpa, if_pos h1]; exact h3)), if_pos (heqh.2 h3), hdq, if_pos h2]
+      · rw [ite_eq_left (heq.2 (by rw [hpa, ite_eq_left h1]; exact h3)), ite_eq_left (heqh.2 h3), hdq, ite_eq_left h2]
         rfl
-      · rw [if_neg (fun e => h3 (by rw [heq] at e; rw [hpa, if_pos h1] at e; exact e)),
-          if_neg (fun e => h3 (heqh.1 e))]
-    · rw [dite_eq_right h2, if_neg]
+      · rw [ite_eq_right (fun e => h3 (by rw [heq] at e; rw [hpa, ite_eq_left h1] at e; exact e)),
+          ite_eq_right (fun e => h3 (heqh.1 e))]
+    · rw [dite_eq_right h2, ite_eq_right]
       intro e
-      rw [heq, hpa, if_pos h1] at e
+      rw [heq, hpa, ite_eq_left h1] at e
       omega
   · rw [dite_eq_right h1]
     by_cases h3 : D.ptSize h ≤ q ∧ a' < D.ptSize h + s ∧ q < D.ptSize h + s ∧
         (a' - D.ptSize h) + (q - D.ptSize h) + 1 = s
-    · rw [if_pos h3, if_pos (heq.2 (by rw [hpa, if_neg h1]; omega)), hdq, if_neg (by omega)]
-    · rw [if_neg h3, if_neg]
+    · rw [ite_eq_left h3, ite_eq_left (heq.2 (by rw [hpa, ite_eq_right h1]; omega)), hdq, ite_eq_right (by omega)]
+    · rw [ite_eq_right h3, ite_eq_right]
       intro e
-      rw [heq, hpa, if_neg h1] at e
+      rw [heq, hpa, ite_eq_right h1] at e
       apply h3
       omega
 
 theorem one_mem_Sset (k r : ℕ) (z : Fin (2 * r + k + 1) → ℂ) : (1 : B.Mat k r) ∈ Sset k r z := by
-  simp only [Sset, Set.mem_setOf_eq]
+  simp only [Sset, Set.mem_ofPred_eq]
   refine ⟨1, ?_, 1, ?_, (Matrix.mul_one 1).symm⟩
   · simp [Formalism.QuantumDeterminants.UWset, Formalism.QuantumDeterminants.UH]
   · simp [Formalism.QuantumDeterminants.Nset, Formalism.QuantumDeterminants.UH, Matrix.one_apply]

@@ -45,11 +45,11 @@ theorem binomFn_sub (N : ℕ) (t : ℤ) :
     binomFn (N + 1) t - binomFn (N + 1) (t - 1) = binomFn N t := by
   unfold binomFn
   rcases lt_trichotomy t 0 with h | rfl | h
-  · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+  · rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega)]
     simp
   · simp
   · obtain ⟨u, rfl⟩ : ∃ u : ℕ, t = u + 1 := ⟨(t - 1).toNat, by omega⟩
-    rw [if_pos (by omega), if_pos (by omega), if_pos (by omega)]
+    rw [ite_eq_left (by omega), ite_eq_left (by omega), ite_eq_left (by omega)]
     have h1 : ((u : ℤ) + 1).toNat = u + 1 := by omega
     have h2 : ((u : ℤ) + 1 - 1).toNat = u := by omega
     have h3 := Nat.choose_succ_succ (u + N + 1) N
@@ -97,10 +97,10 @@ theorem hilbFn_projectiveSpace (F : Type*) [Field F] (N : ℕ) (m : Unit → ℤ
     hilbFn (⊥ : Ideal (MRing (ProjIdx N) F)) m = binomFn N (m ()) := by
   unfold hilbFn binomFn
   by_cases hm : 0 ≤ m ()
-  · rw [if_pos (fun k => hm), if_pos hm]
+  · rw [ite_eq_left (fun k => hm), ite_eq_left hm]
     have : (fun k => (m k).toNat) = fun _ : Unit => (m ()).toNat := rfl
     rw [this, finrank_gradedPiece_projectiveSpace]
-  · rw [if_neg (fun h => hm (h ())), if_neg hm]
+  · rw [ite_eq_right (fun h => hm (h ())), ite_eq_right hm]
 
 theorem foldr_diffStep_binomFn (j N : ℕ) :
     (List.replicate j (1 : Unit → ℤ)).foldr diffStep (fun m => binomFn (N + j) (m ())) =

@@ -64,16 +64,16 @@ open IsLocalRing
 open IsLocalRing in
 theorem _root_.GlobalTheory.exists_arithFrobenius_absGalois (V K : Type) [CommRing V] [IsDomain V] [IsDiscreteValuationRing V] [Field K] [CharZero K] [Algebra V K] [IsFractionRing V K] (hfin : Finite (IsLocalRing.ResidueField V)) (Ω : Type) [Field Ω] [Algebra K Ω] [IsAlgClosure K Ω] [Algebra V Ω] [IsScalarTower V K Ω] [IsLocalRing (integralClosure V Ω)] : ∃ φ : Ω ≃ₐ[K] Ω, ∀ x : integralClosure V Ω, ∃ y : integralClosure V Ω, (y : Ω) = φ x ∧ y - x ^ Nat.card (IsLocalRing.ResidueField V) ∈ IsLocalRing.maximalIdeal (integralClosure V Ω) := by
   classical
-  haveI : Algebra.IsIntegral K Ω := inferInstance
-  letI : TopologicalSpace (integralClosure V Ω) := ⊥
-  haveI : DiscreteTopology (integralClosure V Ω) := ⟨rfl⟩
-  haveI : ContinuousSMul (Ω ≃ₐ[K] Ω) (integralClosure V Ω) := by
+  have : Algebra.IsIntegral K Ω := inferInstance
+  let : TopologicalSpace (integralClosure V Ω) := ⊥
+  have : DiscreteTopology (integralClosure V Ω) := ⟨rfl⟩
+  have : ContinuousSMul (Ω ≃ₐ[K] Ω) (integralClosure V Ω) := by
     rw [continuousSMul_iff_stabilizer_isOpen]
     intro x
     convert stabilizer_isOpen_of_isIntegral (K := K) (L := Ω) (x : Ω) using 2
     ext g
     simp [MulAction.mem_stabilizer_iff, Subtype.ext_iff]
-  haveI : Algebra.IsInvariant V (integralClosure V Ω) (Ω ≃ₐ[K] Ω) := by
+  have : Algebra.IsInvariant V (integralClosure V Ω) (Ω ≃ₐ[K] Ω) := by
     refine ⟨fun x hx => ?_⟩
     have hmem : (x : Ω) ∈ IntermediateField.fixedField (⊤ : Subgroup (Ω ≃ₐ[K] Ω)) := by
       rintro ⟨g, -⟩
@@ -87,17 +87,17 @@ theorem _root_.GlobalTheory.exists_arithFrobenius_absGalois (V K : Type) [CommRi
     obtain ⟨v, hv⟩ := IsIntegrallyClosed.isIntegral_iff.mp hint
     refine ⟨v, Subtype.ext ?_⟩
     simp [IsScalarTower.algebraMap_apply V K Ω, hv, hk]
-  haveI : (maximalIdeal (integralClosure V Ω)).LiesOver (maximalIdeal V) := by
+  have : (maximalIdeal (integralClosure V Ω)).LiesOver (maximalIdeal V) := by
     refine ⟨(IsLocalRing.eq_maximalIdeal ?_).symm⟩
     exact Ideal.isMaximal_under_of_isIntegral_of_isMaximal (R := V)
       (maximalIdeal (integralClosure V Ω))
-  letI : Fintype (V ⧸ maximalIdeal V) := @Fintype.ofFinite _ hfin
-  letI : Field (V ⧸ maximalIdeal V) := Ideal.Quotient.field _
-  letI : Field (integralClosure V Ω ⧸ maximalIdeal (integralClosure V Ω)) :=
+  let : Fintype (V ⧸ maximalIdeal V) := @Fintype.ofFinite _ hfin
+  let : Field (V ⧸ maximalIdeal V) := Ideal.Quotient.field _
+  let : Field (integralClosure V Ω ⧸ maximalIdeal (integralClosure V Ω)) :=
     Ideal.Quotient.field _
-  haveI : Algebra.IsIntegral (V ⧸ maximalIdeal V)
+  have : Algebra.IsIntegral (V ⧸ maximalIdeal V)
       (integralClosure V Ω ⧸ maximalIdeal (integralClosure V Ω)) := inferInstance
-  haveI : Algebra.IsAlgebraic (V ⧸ maximalIdeal V)
+  have : Algebra.IsAlgebraic (V ⧸ maximalIdeal V)
       (integralClosure V Ω ⧸ maximalIdeal (integralClosure V Ω)) := Algebra.IsIntegral.isAlgebraic
   obtain ⟨g, hg⟩ := Ideal.Quotient.stabilizerHom_surjective_of_profinite (G := Ω ≃ₐ[K] Ω)
     (maximalIdeal V) (maximalIdeal (integralClosure V Ω))

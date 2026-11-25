@@ -66,22 +66,22 @@ variable {n : ℕ}
 theorem emb_cc_A (g : GL (Fin n) ℂ) (i j : Fin n) :
     ((embGL ℂ n (n + 1) rfl g : GL (Fin (n + 1)) ℂ) : Matrix (Fin (n + 1)) (Fin (n + 1)) ℂ)
       (Fin.castSucc i) (Fin.castSucc j) = g i j := by
-  simp [embGL, blkHom, Matrix.reindexAlgEquiv_apply]
+  simp [embGL, blkHom, Matrix.coe_reindexAlgEquiv]
 
 theorem emb_cl_A (g : GL (Fin n) ℂ) (i : Fin n) :
     ((embGL ℂ n (n + 1) rfl g : GL (Fin (n + 1)) ℂ) : Matrix (Fin (n + 1)) (Fin (n + 1)) ℂ)
       (Fin.castSucc i) (Fin.last n) = 0 := by
-  simp [embGL, blkHom, Matrix.reindexAlgEquiv_apply]
+  simp [embGL, blkHom, Matrix.coe_reindexAlgEquiv]
 
 theorem emb_lc_A (g : GL (Fin n) ℂ) (i : Fin n) :
     ((embGL ℂ n (n + 1) rfl g : GL (Fin (n + 1)) ℂ) : Matrix (Fin (n + 1)) (Fin (n + 1)) ℂ)
       (Fin.last n) (Fin.castSucc i) = 0 := by
-  simp [embGL, blkHom, Matrix.reindexAlgEquiv_apply]
+  simp [embGL, blkHom, Matrix.coe_reindexAlgEquiv]
 
 theorem emb_ll_A (g : GL (Fin n) ℂ) :
     ((embGL ℂ n (n + 1) rfl g : GL (Fin (n + 1)) ℂ) : Matrix (Fin (n + 1)) (Fin (n + 1)) ℂ)
       (Fin.last n) (Fin.last n) = 1 := by
-  simp [embGL, blkHom, Matrix.reindexAlgEquiv_apply]
+  simp [embGL, blkHom, Matrix.coe_reindexAlgEquiv]
 
 theorem det_emb_unitri_A (g : GL (Fin n) ℂ) (hl : ∀ i j, j < i → g i j = 0) (hd : ∀ i, g i i = 1) :
     Matrix.GeneralLinearGroup.det (embGL ℂ n (n + 1) rfl g) = 1 := by
@@ -121,13 +121,13 @@ theorem fixed_rowOp_A (lam : DomWeight (n + 1)) (mu : DomWeight n) (f : MvPolyno
     eval (lhwline_rowOp (Fin.castSucc a) (Fin.castSucc b) t x) f = eval x f := by
   have hl : ∀ i j, j < i → ((elemGL_A a b hab.ne t : GL (Fin n) ℂ) : Matrix (Fin n) (Fin n) ℂ) i j = 0 := by
     intro i j hji
-    rw [elemGL_apply_A, if_neg (ne_of_gt hji), if_neg]
+    rw [elemGL_apply_A, ite_eq_right (ne_of_gt hji), ite_eq_right]
     · simp
     · rintro ⟨rfl, rfl⟩
       exact lt_asymm hab hji
   have hd : ∀ i, ((elemGL_A a b hab.ne t : GL (Fin n) ℂ) : Matrix (Fin n) (Fin n) ℂ) i i = 1 := by
     intro i
-    rw [elemGL_apply_A, if_pos rfl, if_neg]
+    rw [elemGL_apply_A, ite_eq_left rfl, ite_eq_right]
     · simp
     · rintro ⟨rfl, h⟩
       exact hab.ne h.symm
@@ -144,24 +144,24 @@ theorem fixed_rowOp_A (lam : DomWeight (n + 1)) (mu : DomWeight n) (f : MvPolyno
   induction ρ using Fin.lastCases with
   | last =>
     simp only [emb_cl_A, emb_ll_A, zero_mul, Finset.sum_const_zero, one_mul, zero_add]
-    rw [if_neg (Fin.castSucc_lt_last b).ne']
+    rw [ite_eq_right (Fin.castSucc_lt_last b).ne']
   | cast ρ =>
     simp only [emb_cc_A, emb_lc_A, zero_mul, add_zero, elemGL_apply_A, add_mul, Finset.sum_add_distrib,
       ite_mul, one_mul, zero_mul]
-    rw [Finset.sum_ite_eq' Finset.univ ρ, if_pos (Finset.mem_univ _)]
+    rw [Finset.sum_ite_eq' Finset.univ ρ, ite_eq_left (Finset.mem_univ _)]
     by_cases hρ : ρ = b
     · subst hρ
-      rw [if_pos rfl]
+      rw [ite_eq_left rfl]
       rw [Finset.sum_eq_single a]
       · simp
       · intro c _ hc
-        rw [if_neg (fun h => hc h.1.symm)]
+        rw [ite_eq_right (fun h => hc h.1.symm)]
       · simp
-    · rw [if_neg (fun h => hρ (Fin.castSucc_injective _ h))]
+    · rw [ite_eq_right (fun h => hρ (Fin.castSucc_injective _ h))]
       rw [Finset.sum_eq_zero]
       · simp
       · intro c _
-        rw [if_neg (fun h => hρ h.2.symm)]
+        rw [ite_eq_right (fun h => hρ h.2.symm)]
 
 theorem weight_row_A {r c : ℕ} (m : Fin r × Fin c →₀ ℕ) (ρ : Fin r) :
     Finsupp.weight (rowW r c) m ρ = ∑ s : Fin c, m (ρ, s) := by

@@ -102,8 +102,8 @@ lemma sum_minorWeights_indicator {U : Matrix (Fin n) (Fin n) ℂ} (hU : U ∈ Ma
       intro j
       by_cases hjk : j = k
       · subst hjk; simp; ring
-      · rw [if_neg hjk, if_neg (Ne.symm hjk)]; ring
-    simp only [hj, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, if_true, dm_unit hU, dm_one_sub]
+      · rw [ite_eq_right hjk, ite_eq_right (Ne.symm hjk)]; ring
+    simp only [hj, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, ite_true, dm_unit hU, dm_one_sub]
     simp [Matrix.mul_apply, v]
   rw [lead, dite_eq_left hi, hsub, Matrix.det_one_add_replicateCol_mul_replicateRow] at h
   have hdot : star v ⬝ᵥ v = dmK U i k k := by
@@ -144,11 +144,11 @@ lemma sum_minorWeights_indicator_pair {U : Matrix (Fin n) (Fin n) ℂ} (hU : U �
       intro j
       by_cases hjk : j = k
       · have hjl : j ≠ l := hjk ▸ hkl
-        rw [if_pos hjk, if_neg hjl, if_pos hjk.symm, if_neg (Ne.symm hjl), hjk]; ring
+        rw [ite_eq_left hjk, ite_eq_right hjl, ite_eq_left hjk.symm, ite_eq_right (Ne.symm hjl), hjk]; ring
       · by_cases hjl : j = l
-        · rw [if_neg hjk, if_pos hjl, if_neg (Ne.symm hjk), if_pos hjl.symm, hjl]; ring
-        · rw [if_neg hjk, if_neg hjl, if_neg (Ne.symm hjk), if_neg (Ne.symm hjl)]; ring
-    simp only [hj, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, if_true, dm_unit hU,
+        · rw [ite_eq_right hjk, ite_eq_left hjl, ite_eq_right (Ne.symm hjk), ite_eq_left hjl.symm, hjl]; ring
+        · rw [ite_eq_right hjk, ite_eq_right hjl, ite_eq_right (Ne.symm hjk), ite_eq_right (Ne.symm hjl)]; ring
+    simp only [hj, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, ite_true, dm_unit hU,
       dm_one_sub]
     simp [Matrix.mul_apply, W, Fin.sum_univ_two]
   have hK : ∀ c c' : Fin 2, (Wᴴ * W) c c' = dmK U i (![k, l] c) (![k, l] c') := by
@@ -172,9 +172,9 @@ lemma dm_m {U : Matrix (Fin n) (Fin n) ℂ} (hU : U ∈ Matrix.unitaryGroup (Fin
       intro m J
       unfold dmInd
       split_ifs <;> simp
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     simp only [hsq, sum_minorWeights_indicator hU hi]
     ring
-  · rw [sum_minorWeights_indicator_pair hU hi k l hkl, if_neg hkl, add_zero]
+  · rw [sum_minorWeights_indicator_pair hU hi k l hkl, ite_eq_right hkl, add_zero]
 
 end ReciprocityTheory.ChartRestriction.DS.S7

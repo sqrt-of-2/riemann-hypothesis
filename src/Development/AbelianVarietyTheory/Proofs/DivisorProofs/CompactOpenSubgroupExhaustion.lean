@@ -60,15 +60,15 @@ open GlobalTheory.SplitWeil GlobalTheory.SplitWeil.FourierPi ValuativeRel
 theorem good_of_addEquiv {X Y : Type} [AddCommGroup X] [TopologicalSpace X] [AddCommGroup Y] [TopologicalSpace Y]
     (f : X ≃+ Y) (hf : Continuous f) (hg : Continuous f.symm) (h : Good Y) : Good X := by
   let H : X ≃ₜ Y := { toEquiv := f.toEquiv, continuous_toFun := hf, continuous_invFun := hg }
-  haveI := h.grp; haveI := h.t2; haveI := h.lc; haveI := h.sc
+  have := h.grp; have := h.t2; have := h.lc; have := h.sc
   refine ⟨?_, H.isEmbedding.t2Space, H.isClosedEmbedding.locallyCompactSpace, H.isInducing.secondCountableTopology,
     ?_, ?_⟩
-  · haveI : ContinuousAdd X := by
+  · have : ContinuousAdd X := by
       refine ⟨?_⟩
       have : (fun p : X × X => p.1 + p.2) = fun p => f.symm (f p.1 + f p.2) := by
         funext p; simp
       rw [this]; exact hg.comp ((hf.comp continuous_fst).add (hf.comp continuous_snd))
-    haveI : ContinuousNeg X := by
+    have : ContinuousNeg X := by
       refine ⟨?_⟩
       have : (fun x : X => -x) = fun x => f.symm (-f x) := by funext x; simp
       rw [this]; exact hg.comp hf.neg
@@ -99,10 +99,12 @@ def boxSub (n : Type) [Fintype n] [DecidableEq n] (s : Fˣ) : AddSubgroup (n →
   add_mem' := fun ha hb i _ => add_mem_cball (ha i trivial) (hb i trivial)
   neg_mem' := fun ha i _ => neg_mem_cball (ha i trivial)
 
-theorem cball_mono {s t : Fˣ} (h : valuation F (s : F) ≤ valuation F (t : F)) : cball s ⊆ cball t :=
+omit [TopologicalSpace F] [IsNonarchimedeanLocalField F] in
+theorem cball_mono [TopologicalSpace F] [IsNonarchimedeanLocalField F] {s t : Fˣ} (h : valuation F (s : F) ≤ valuation F (t : F)) : cball s ⊆ cball t :=
   fun x hx => show valuation F x ≤ valuation F (t : F) from le_trans hx h
 
-theorem mem_some_cball (y : F) : ∃ s : Fˣ, y ∈ cball s := by
+omit [TopologicalSpace F] [IsNonarchimedeanLocalField F] in
+theorem mem_some_cball [TopologicalSpace F] [IsNonarchimedeanLocalField F] (y : F) : ∃ s : Fˣ, y ∈ cball s := by
   by_cases hy : y = 0
   · exact ⟨1, by simp [cball, hy]⟩
   · exact ⟨Units.mk0 y hy, by simp [cball]⟩
@@ -115,8 +117,8 @@ theorem mem_some_box (n : Type) [Fintype n] [DecidableEq n] (x : n → F) : ∃ 
     exact ⟨u j, fun i _ => cball_mono (hj i) (hu i)⟩
 
 theorem good_pi (n : Type) [Fintype n] [DecidableEq n] : Good (n → F) := by
-  haveI := secondCountable F
-  haveI := t2Space F
+  have := secondCountable F
+  have := t2Space F
   refine ⟨inferInstance, inferInstance, inferInstance, inferInstance, ?_, ?_⟩
   · intro K hK
     obtain ⟨s, hs⟩ := hK.elim_directed_cover (fun s : Fˣ => box n s) (fun s => isOpen_box s)
@@ -136,7 +138,7 @@ theorem GlobalTheory.KSp.good_of_finiteDimensional : ∀ (F : Type) [Field F] [C
     [IsNonarchimedeanLocalField F] (V : Type) [AddCommGroup V] [Module F V] [FiniteDimensional F V]
     [TopologicalSpace V] [IsModuleTopology F V], Good V := by
   intro F _ _ _ _ _ V _ _ _ _ _
-  haveI := IsModuleTopology.topologicalAddGroup F V
+  have := IsModuleTopology.isTopologicalAddGroup F V
   let b := Module.finBasis F V
   let e := b.equivFun
   exact GlobalTheory.KSp.GoodSpace.good_of_addEquiv e.toAddEquiv

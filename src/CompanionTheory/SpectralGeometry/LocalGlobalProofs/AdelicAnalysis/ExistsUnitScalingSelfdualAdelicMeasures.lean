@@ -69,7 +69,7 @@ omit [NumberField F] [NumberField E] [IsTopologicalRing R] [LocallyCompactSpace 
 theorem coordK_preimage (hc : IsHomeomorph (cf (F := F) (E := E) R b)) (lam : Measure R)
     (T : Set (Fin d → R)) :
     coordK R b lam (cf R b ⁻¹' T) = Measure.pi (fun _ => lam) T := by
-  haveI : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
+  have : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
   have he : MeasurableEmbedding (cf (F := F) (E := E) R b) := hc.homeomorph.measurableEmbedding
   have := he.comap_apply (Measure.pi fun _ : Fin d => lam) (cf R b ⁻¹' T)
   rw [Set.image_preimage_eq _ hc.surjective] at this
@@ -79,10 +79,10 @@ theorem map_coordW (hCM : IsCMExt F E σ) (hc : IsHomeomorph (cf (F := F) (E := 
     (lam : Measure R) (hlam : lam.IsAddHaarMeasure) (n M : ℕ) :
     (coordW R b lam n M).map (tupE hc n M) = Measure.pi fun _ : (Fin M × Fin d) × Fin n => lam := by
   obtain ⟨h1, h2, h3, h4, -, -, -, hB, -, -⟩ := GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hCM R
-  haveI := h1; haveI := h2; haveI := h3; haveI := h4
-  haveI : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
-  haveI := hB n M
-  haveI := (GlobalTheory.CompanionTheory.SW.coord_measures_haar F E σ hCM R d b lam hlam).1
+  have := h1; have := h2; have := h3; have := h4
+  have : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
+  have := hB n M
+  have := (GlobalTheory.CompanionTheory.SW.coord_measures_haar F E σ hCM R d b lam hlam).1
   have hm : Measurable (tupE hc n M) := (map_continuous (tupE hc n M)).measurable
   symm
   refine Measure.pi_eq fun s hs => ?_
@@ -148,9 +148,9 @@ theorem sdW_iff (hCM : IsCMExt F E σ) {M : ℕ} (J : Matrix (Fin M) (Fin M) E)
     (μ : Measure (Fin n → Fin M → R ⊗[F] E)) :
     SdW F E σ M J R ψR n μ ↔ μ = cc • coordW R b lam n M := by
   obtain ⟨h1, h2, h3, h4, -, -, hcc, hBor, -, -⟩ := GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hCM R
-  haveI := h1
-  haveI : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
-  haveI := hBor n M
+  have := h1
+  have : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
+  have := hBor n M
   have hc : IsHomeomorph (cf (F := F) (E := E) R b) := hcc d b
   set e := tupE hc n M with he
   have hm : Measurable e := (map_continuous e).measurable
@@ -195,12 +195,12 @@ theorem sdW_coord : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [Number
     ((Fin M × Fin d) × Fin n) (Matrix.blockDiagonal fun _ : Fin n => B) hsym' hdet'
   refine ⟨cinf, c, hU, ?_, fun v => ?_⟩
   · obtain ⟨t1, t2, t3, t4, -⟩ := GlobalTheory.CompanionTheory.SW.isLocR_Ainf F hCM.1
-    haveI := t1; haveI := t2; haveI := t3; haveI := t4
-    haveI : BorelSpace (Ainf F) := ⟨rfl⟩
+    have := t1; have := t2; have := t3; have := t4
+    have : BorelSpace (Ainf F) := ⟨rfl⟩
     exact fun μ => sdW_iff hCM J B (hR' (Ainf F)).1 laminf hinf.1 (psiInf F ψ) n cinf h1 μ
   · obtain ⟨t1, t2, t3, t4, -⟩ := GlobalTheory.CompanionTheory.SW.LocFv.isLocR_Fv F v
-    haveI := t1; haveI := t2; haveI := t3; haveI := t4
-    haveI : BorelSpace (Fv F v) := ⟨rfl⟩
+    have := t1; have := t2; have := t3; have := t4
+    have : BorelSpace (Fv F v) := ⟨rfl⟩
     exact fun μ => sdW_iff hCM J B (hR' (Fv F v)).1 (lam v) (hv v).1 (psiV F ψ v) n (c v) (h2 v) μ
 
 end GlobalTheory.CompanionTheory.SW.SdTuples

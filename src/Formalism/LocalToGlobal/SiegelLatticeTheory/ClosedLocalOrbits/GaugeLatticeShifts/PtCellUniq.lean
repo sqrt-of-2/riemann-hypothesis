@@ -88,7 +88,7 @@ theorem upU_mul {A B : Matrix (Fin N) (Fin N) K} (hA : UpU A) (hB : UpU B) : UpU
 
 theorem loU_inv {L : Matrix (Fin N) (Fin N) K} (h : LoU L) : LoU L⁻¹ := by
   have hu : IsUnit L.det := by rw [loU_det h]; exact isUnit_one
-  haveI := invertibleOfIsUnitDet L hu
+  have := invertibleOfIsUnitDet L hu
   have hbt : L⁻¹.BlockTriangular OrderDual.toDual := blockTriangular_inv_of_blockTriangular (loU_bt h)
   intro i j
   refine ⟨fun hij => hbt hij, fun hij => ?_⟩
@@ -104,7 +104,7 @@ theorem loU_inv {L : Matrix (Fin N) (Fin N) K} (h : LoU L) : LoU L⁻¹ := by
 
 theorem upU_inv {U : Matrix (Fin N) (Fin N) K} (h : UpU U) : UpU U⁻¹ := by
   have hu : IsUnit U.det := by rw [upU_det h]; exact isUnit_one
-  haveI := invertibleOfIsUnitDet U hu
+  have := invertibleOfIsUnitDet U hu
   have hbt : U⁻¹.BlockTriangular id := blockTriangular_inv_of_blockTriangular (upU_bt h)
   intro i j
   refine ⟨fun hij => hbt hij, fun hij => ?_⟩
@@ -211,24 +211,25 @@ theorem ptEntry_eq (bs : List (K × ℕ)) (i j : ℕ) (hi : i < (bs.map Prod.snd
     simp only [List.map_cons, List.sum_cons] at hi
     by_cases his : i < s
     · by_cases hjs : j < s
-      · simp only [ptEntry, pperm, pval, his, hjs, and_self, if_true]
+      · simp only [ptEntry, pperm, pval, his, hjs, and_self, ite_true]
         by_cases h : i + j + 1 = s
-        · rw [if_pos h, if_pos (by omega)]
-        · rw [if_neg h, if_neg (by omega)]
+        · rw [ite_eq_left h, ite_eq_left (by omega)]
+        · rw [ite_eq_right h, ite_eq_right (by omega)]
       · have hn : ¬ (s ≤ i ∧ s ≤ j) := by omega
-        simp only [ptEntry, pperm, pval, his, hjs, and_false, if_false, if_true, hn]
-        rw [if_neg (by omega)]
+        simp only [ptEntry, pperm, pval, his, hjs, and_false, ite_false, ite_true, hn]
+        rw [ite_eq_right (by omega)]
     · by_cases hjs : s ≤ j
       · have hsi : s ≤ i := by omega
-        simp only [ptEntry, pperm, pval, his, false_and, if_false, hsi, hjs, and_self, if_true]
+        simp only [ptEntry, pperm, pval, his, false_and, ite_false, hsi, hjs, and_self, ite_true]
         rw [ih (i - s) (j - s) (by omega)]
         by_cases h : j - s = pperm bs (i - s)
-        · rw [if_pos h, if_pos (by omega)]
-        · rw [if_neg h, if_neg (by omega)]
-      · simp only [ptEntry, pperm, pval, his, false_and, if_false, hjs, and_false]
-        rw [if_neg (by omega)]
+        · rw [ite_eq_left h, ite_eq_left (by omega)]
+        · rw [ite_eq_right h, ite_eq_right (by omega)]
+      · simp only [ptEntry, pperm, pval, his, false_and, ite_false, hjs, and_false]
+        rw [ite_eq_right (by omega)]
 
-theorem pperm_lt (bs : List (K × ℕ)) (hpos : ∀ b ∈ bs, 1 ≤ b.2) (i : ℕ) (hi : i < (bs.map Prod.snd).sum) :
+omit [Field K] in
+theorem pperm_lt [Field K] (bs : List (K × ℕ)) (hpos : ∀ b ∈ bs, 1 ≤ b.2) (i : ℕ) (hi : i < (bs.map Prod.snd).sum) :
     pperm bs i < (bs.map Prod.snd).sum := by
   induction bs generalizing i with
   | nil => simp at hi
@@ -243,7 +244,8 @@ theorem pperm_lt (bs : List (K × ℕ)) (hpos : ∀ b ∈ bs, 1 ≤ b.2) (i : �
     · have := ih hpos' (i - s) (by omega)
       omega
 
-theorem pperm_pperm (bs : List (K × ℕ)) (hpos : ∀ b ∈ bs, 1 ≤ b.2) (i : ℕ) (hi : i < (bs.map Prod.snd).sum) :
+omit [Field K] in
+theorem pperm_pperm [Field K] (bs : List (K × ℕ)) (hpos : ∀ b ∈ bs, 1 ≤ b.2) (i : ℕ) (hi : i < (bs.map Prod.snd).sum) :
     pperm bs (pperm bs i) = i := by
   induction bs generalizing i with
   | nil => simp at hi
@@ -252,11 +254,11 @@ theorem pperm_pperm (bs : List (K × ℕ)) (hpos : ∀ b ∈ bs, 1 ≤ b.2) (i :
     simp only [List.map_cons, List.sum_cons] at hi
     have hpos' : ∀ b ∈ bs, 1 ≤ b.2 := fun b hb => hpos b (by simp [hb])
     by_cases h : i < s
-    · simp only [pperm, h, if_true]
-      rw [if_pos (by omega)]
+    · simp only [pperm, h, ite_true]
+      rw [ite_eq_left (by omega)]
       omega
-    · simp only [pperm, h, if_false]
-      rw [if_neg (by omega), Nat.add_sub_cancel_left, ih hpos' (i - s) (by omega)]
+    · simp only [pperm, h, ite_false]
+      rw [ite_eq_right (by omega), Nat.add_sub_cancel_left, ih hpos' (i - s) (by omega)]
       omega
 
 theorem pval_ne (bs : List (K × ℕ)) (ht : ∀ b ∈ bs, b.1 ≠ 0) (i : ℕ) (hi : i < (bs.map Prod.snd).sum) :
@@ -300,17 +302,17 @@ theorem blocks_eq_of (bs : List (K × ℕ)) (cs : List (K × ℕ)) (hb : ∀ b �
       simp only [List.map_cons, List.sum_cons] at hsum hp hv
       have h0 := hp 0 (by omega)
       have v0 := hv 0 (by omega)
-      simp only [pperm, pval, show 0 < s by omega, show 0 < s' by omega, if_true] at h0 v0
+      simp only [pperm, pval, show 0 < s by omega, show 0 < s' by omega, ite_true] at h0 v0
       have hss : s = s' := by omega
       subst hss
       subst v0
       have htail : bs = cs := by
         refine ih cs hb' hc' (by omega) (fun i hi => ?_) (fun i hi => ?_)
         · have := hp (s + i) (by omega)
-          simp only [pperm, show ¬ (s + i < s) by omega, if_false, Nat.add_sub_cancel_left] at this
+          simp only [pperm, show ¬ (s + i < s) by omega, ite_false, Nat.add_sub_cancel_left] at this
           omega
         · have := hv (s + i) (by omega)
-          simpa only [pval, show ¬ (s + i < s) by omega, if_false, Nat.add_sub_cancel_left] using this
+          simpa only [pval, show ¬ (s + i < s) by omega, ite_false, Nat.add_sub_cancel_left] using this
       rw [htail]
 
 def pinv (p : Point K N) (a : Fin N) : Fin N :=

@@ -74,7 +74,8 @@ noncomputable def cutPrime (A : ValuationSubring Ω) (M : IntermediateField F Ω
 instance (A : ValuationSubring Ω) (M : IntermediateField F Ω) : (cutPrime A M).IsPrime :=
   Ideal.comap_isPrime _ _
 
-theorem mem_cutPrime_iff (A : ValuationSubring Ω) (M : IntermediateField F Ω) (z : 𝓞 M) :
+omit [NumberField F] [Field Ω] [Algebra F Ω] in
+theorem mem_cutPrime_iff [NumberField F] [Field Ω] [Algebra F Ω] (A : ValuationSubring Ω) (M : IntermediateField F Ω) (z : 𝓞 M) :
     z ∈ cutPrime A M ↔ A.valuation ((z : M) : Ω) < 1 := by
   rw [cutPrime, Ideal.mem_comap, ValuationSubring.valuation_lt_one_iff]
   rfl
@@ -91,24 +92,24 @@ theorem inertia_apply_eq [IsGalois F Ω] {S : Set (HeightOneSpectrum (𝓞 F))}
     {σ : G F Ω} (hσ : σ ∈ Inertia (F := F) A) {x : Ω} (hx : x ∈ maxUnramifiedOutside F Ω S) :
     σ x = x := by
   classical
-  haveI hM : IsGalois F (maxUnramifiedOutside F Ω S) := isGalois_maxUnramifiedOutside S
-  haveI : FiniteDimensional F (IntermediateField.adjoin F ({x} : Set Ω)) :=
+  have hM : IsGalois F (maxUnramifiedOutside F Ω S) := isGalois_maxUnramifiedOutside S
+  have : FiniteDimensional F (IntermediateField.adjoin F ({x} : Set Ω)) :=
     IntermediateField.adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
   set E : IntermediateField F Ω := IntermediateField.normalClosure F (IntermediateField.adjoin F ({x} : Set Ω)) Ω with hE
-  haveI : FiniteDimensional F E := normalClosure.is_finiteDimensional F (IntermediateField.adjoin F ({x} : Set Ω)) Ω
-  haveI : Normal F E := normalClosure.normal F (IntermediateField.adjoin F ({x} : Set Ω)) Ω
-  haveI : Algebra.IsSeparable F E := Algebra.IsSeparable.of_algHom F Ω E.val
-  haveI : IsGalois F E := ⟨⟩
+  have : FiniteDimensional F E := normalClosure.is_finiteDimensional F (IntermediateField.adjoin F ({x} : Set Ω)) Ω
+  have : Normal F E := normalClosure.normal F (IntermediateField.adjoin F ({x} : Set Ω)) Ω
+  have : Algebra.IsSeparable F E := Algebra.IsSeparable.of_algHom F Ω E.val
+  have : IsGalois F E := ⟨⟩
   have hxE : x ∈ E := IntermediateField.le_normalClosure (IntermediateField.adjoin F ({x} : Set Ω)) (IntermediateField.mem_adjoin_simple_self F x)
   have hEM : E ≤ maxUnramifiedOutside F Ω S := by
     rw [hE, IntermediateField.normalClosure_le_iff_of_normal]
     exact IntermediateField.adjoin_simple_le_iff.2 hx
   have hEun : IsUnramifiedOutside S E := (isUnramifiedOutside_iff_le_maxUnramifiedOutside S).2 hEM
-  haveI hPl : (cutPrime A E).LiesOver v.asIdeal := cutPrime_liesOver hA E
-  haveI : NumberField E := NumberField.of_module_finite F E
-  haveI : Module.Finite (𝓞 F) (𝓞 E) := Module.Finite.of_restrictScalars_finite ℤ (𝓞 F) (𝓞 E)
-  haveI : Algebra.FiniteType (𝓞 F) (𝓞 E) := Algebra.FiniteType.of_restrictScalars_finiteType ℤ (𝓞 F) (𝓞 E)
-  haveI : IsGaloisGroup Gal(E/F) (𝓞 F) (𝓞 E) := IsGaloisGroup.of_isFractionRing (G := Gal(E/F)) (A := 𝓞 F) (B := 𝓞 E) (K := F) (L := E)
+  have hPl : (cutPrime A E).LiesOver v.asIdeal := cutPrime_liesOver hA E
+  have : NumberField E := NumberField.of_module_finite F E
+  have : Module.Finite (𝓞 F) (𝓞 E) := Module.Finite.of_restrictScalars_finite ℤ (𝓞 F) (𝓞 E)
+  have : Algebra.FiniteType (𝓞 F) (𝓞 E) := Algebra.FiniteType.of_restrictScalars_finiteType ℤ (𝓞 F) (𝓞 E)
+  have : IsGaloisGroup Gal(E/F) (𝓞 F) (𝓞 E) := IsGaloisGroup.of_isFractionRing (G := Gal(E/F)) (A := 𝓞 F) (B := 𝓞 E) (K := F) (L := E)
   have he : (cutPrime A E).ramificationIdx (𝓞 F) = 1 :=
     Algebra.IsUnramifiedIn.ramificationIdx_eq_one (hEun v hv) hPl
   have hcard : Nat.card ((cutPrime A E).inertia Gal(E/F)) = 1 := by
@@ -130,7 +131,7 @@ theorem inertia_apply_eq [IsGalois F Ω] {S : Set (HeightOneSpectrum (𝓞 F))}
     rw [hc]
     exact hσ2 _ (A.valuation_le_one ⟨_, hy⟩)
   have hσ'1 : σ' = 1 := by
-    haveI hsub : Subsingleton ((cutPrime A E).inertia Gal(E/F)) := (Nat.card_eq_one_iff_unique.1 hcard).1
+    have hsub : Subsingleton ((cutPrime A E).inertia Gal(E/F)) := (Nat.card_eq_one_iff_unique.1 hcard).1
     have := Subsingleton.elim (⟨σ', hmem⟩ : (cutPrime A E).inertia Gal(E/F)) ⟨1, Subgroup.one_mem _⟩
     exact congrArg Subtype.val this
   have h1 := AlgEquiv.restrictNormal_commutes σ E ⟨x, hxE⟩
@@ -141,9 +142,9 @@ theorem NS_le_fixingSubgroup : ∀ (F Ω : Type) [Field F] [NumberField F] [Fiel
     [IsAlgClosure F Ω] (S : Set (HeightOneSpectrum (𝓞 F))),
     NS Ω S ≤ (maxUnramifiedOutside F Ω S).fixingSubgroup := by
   intro F Ω _ _ _ _ _ S
-  haveI : IsGalois F Ω := ⟨⟩
-  haveI hM : IsGalois F (maxUnramifiedOutside F Ω S) := isGalois_maxUnramifiedOutside S
-  haveI : (maxUnramifiedOutside F Ω S).fixingSubgroup.Normal :=
+  have : IsGalois F Ω := ⟨⟩
+  have hM : IsGalois F (maxUnramifiedOutside F Ω S) := isGalois_maxUnramifiedOutside S
+  have : (maxUnramifiedOutside F Ω S).fixingSubgroup.Normal :=
     (InfiniteGalois.normal_iff_isGalois _).2 hM
   have hsub : (⋃ v ∈ Sᶜ, ⋃ A ∈ {A : ValuationSubring Ω | IsPlaceOver A v}, Inertia (F := F) A) ⊆
       ((maxUnramifiedOutside F Ω S).fixingSubgroup : Set (G F Ω)) := by

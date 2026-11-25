@@ -30,27 +30,27 @@ lemma muK_univ_ne_top (ε : Fin n → Bool) : muK ε Set.univ ≠ ⊤ := ((ENNRe
 
 instance dk_isProb (ε : Fin n → Bool) : IsProbabilityMeasure (dk ε) := by
   rw [dk_def]
-  letI : IsFiniteMeasure (muK ε) := ⟨(muK_univ_ne_top ε).lt_top⟩
-  letI : NeZero (muK ε) := ⟨Measure.measure_univ_ne_zero.mp (muK_univ_ne_zero ε)⟩
+  let : IsFiniteMeasure (muK ε) := ⟨(muK_univ_ne_top ε).lt_top⟩
+  let : NeZero (muK ε) := ⟨Measure.measure_univ_ne_zero.mp (muK_univ_ne_zero ε)⟩
   exact isProbabilityMeasureSMul (μ := muK ε)
 
 instance dk_left (ε : Fin n → Bool) : (dk ε).IsMulLeftInvariant := by
   rw [dk_def]
-  letI := kf_isHaar ε
+  let := kf_isHaar ε
   exact MeasureTheory.isMulLeftInvariant_smul (μ := muK ε) (muK ε Set.univ)⁻¹
 
 instance dk_right (ε : Fin n → Bool) : (dk ε).IsMulRightInvariant := by
   rw [dk_def]
-  letI := muK_rightInvariant ε
+  let := muK_rightInvariant ε
   exact MeasureTheory.isMulRightInvariant_smul (μ := muK ε) (muK ε Set.univ)⁻¹
 
 lemma muK_inv (ε : Fin n → Bool) : Measure.map (fun x : KG ε => x⁻¹) (muK ε) = muK ε := by
-  haveI := muK_rightInvariant ε
+  have := muK_rightInvariant ε
   set ν := Measure.map (fun x : KG ε => x⁻¹) (muK ε) with hν
-  haveI : ν.IsMulLeftInvariant := by
+  have : ν.IsMulLeftInvariant := by
     change (muK ε).inv.IsMulLeftInvariant
     infer_instance
-  haveI : IsFiniteMeasure ν := by rw [hν]; infer_instance
+  have : IsFiniteMeasure ν := by rw [hν]; infer_instance
   have e := Measure.isMulInvariant_eq_smul_of_compactSpace ν (muK ε)
   have huniv : ν Set.univ = muK ε Set.univ := by
     rw [hν, Measure.map_apply measurable_inv MeasurableSet.univ, Set.preimage_univ]
@@ -120,7 +120,7 @@ lemma schur (T : KType ε Λ) (A : T.V →L[ℂ] T.V) (hA : ∀ k, T.op k * A = 
       intro k v hv
       rw [Module.End.mem_eigenspace_iff] at hv ⊢
       have e := congrArg (fun B : T.V →L[ℂ] T.V => B v) (hA k)
-      simp only [ContinuousLinearMap.mul_apply] at e
+      simp only [mul_apply_eq_comp] at e
       change A (T.op k v) = c • T.op k v
       rw [← e]
       change T.op k ((A : T.V →ₗ[ℂ] T.V) v) = _

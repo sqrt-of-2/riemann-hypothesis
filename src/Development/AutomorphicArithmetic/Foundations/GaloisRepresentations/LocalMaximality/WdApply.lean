@@ -63,17 +63,17 @@ private theorem wd_ctrH {κ E : Type} [LinearOrder κ] [AddCommGroup E] [Module 
     (l : κ) (c : Finset κ → E) (t : Finset κ) :
     wd w (ctrH l c) t + ctrH l (wd w c) t = w l (c t) := by
   by_cases hi : l ∈ t
-  · have h0 : ctrH l (wd w c) t = 0 := if_pos hi
+  · have h0 : ctrH l (wd w c) t = 0 := ite_eq_left hi
     rw [h0, add_zero, wd_apply', Finset.sum_eq_single l]
     · have h1 : ctrH l c (t.erase l) = GlobalTheory.cubeSign t l • c t := by
         simp only [ctrH]
-        rw [if_neg (by simp), Finset.insert_erase hi]
+        rw [ite_eq_right (by simp), Finset.insert_erase hi]
       rw [h1, map_zsmul, smul_smul, GlobalTheory.cubeSign_mul_self, one_smul]
     · intro j _ hji
-      have h1 : ctrH l c (t.erase j) = 0 := if_pos (Finset.mem_erase.2 ⟨Ne.symm hji, hi⟩)
+      have h1 : ctrH l c (t.erase j) = 0 := ite_eq_left (Finset.mem_erase.2 ⟨Ne.symm hji, hi⟩)
       rw [h1, map_zero, smul_zero]
     · intro h; exact absurd hi h
-  · have h0 : ctrH l (wd w c) t = GlobalTheory.cubeSign (insert l t) l • wd w c (insert l t) := if_neg hi
+  · have h0 : ctrH l (wd w c) t = GlobalTheory.cubeSign (insert l t) l • wd w c (insert l t) := ite_eq_right hi
     rw [h0, wd_apply' w c (insert l t), Finset.sum_insert hi, Finset.erase_insert hi, smul_add, smul_smul,
       GlobalTheory.cubeSign_mul_self, one_smul, Finset.smul_sum, wd_apply']
     have key : ∀ j ∈ t, GlobalTheory.cubeSign t j • w j (ctrH l c (t.erase j)) +
@@ -82,7 +82,7 @@ private theorem wd_ctrH {κ E : Type} [LinearOrder κ] [AddCommGroup E] [Module 
       have hij : l ≠ j := fun h => hi (h ▸ hj)
       have h2 : ctrH l c (t.erase j) =
           GlobalTheory.cubeSign (insert l (t.erase j)) l • c (insert l (t.erase j)) :=
-        if_neg (fun h => hi (Finset.mem_of_mem_erase h))
+        ite_eq_right (fun h => hi (Finset.mem_of_mem_erase h))
       rw [h2, map_zsmul, ← Finset.erase_insert_of_ne hij, smul_smul, smul_smul, ← add_smul]
       have h1 := GlobalTheory.cubeSign_mul_erase (t := insert l t) (i := l) (j := j) (Finset.mem_insert_self _ _)
         (Finset.mem_insert_of_mem hj) hij
@@ -110,7 +110,7 @@ theorem UpperTheory.Gal.productCup_of_system.htpy_of :
     fun s => (Submodule.mem_pi.1 hcC') s (Set.mem_univ _)
   have hcomm : ∀ (p q : S) (x : E), act p (act q x) = act q (act p x) := by
     intro p q x
-    rw [← Module.End.mul_apply, ← map_mul, mul_comm, map_mul, Module.End.mul_apply]
+    rw [← mul_apply_eq_comp, ← map_mul, mul_comm, map_mul, mul_apply_eq_comp]
   have hstep : ∀ l t, wd (fun l => act (r l)) (ctrH l c) t = act (r l) (c t) := by
     intro l t
     have := wd_ctrH (fun l => act (r l)) l c t
@@ -124,24 +124,24 @@ theorem UpperTheory.Gal.productCup_of_system.htpy_of :
         Submodule.pi Set.univ (fun s : Finset κ => if (s.card : ℤ) = n - 1 then M else ⊥) := by
       refine Submodule.mem_pi.2 fun s _ => ?_
       by_cases hs : (s.card : ℤ) = n - 1
-      · rw [if_pos hs]
+      · rw [ite_eq_left hs]
         refine Submodule.sum_mem _ fun l _ => hS _ (ha l) _ ?_
         by_cases hl : l ∈ s
-        · have : ctrH l c s = 0 := if_pos hl
+        · have : ctrH l c s = 0 := ite_eq_left hl
           rw [this]; exact M.zero_mem
-        · have h1 : ctrH l c s = GlobalTheory.cubeSign (insert l s) l • c (insert l s) := if_neg hl
+        · have h1 : ctrH l c s = GlobalTheory.cubeSign (insert l s) l • c (insert l s) := ite_eq_right hl
           rw [h1]
           have h2 := hmem (insert l s)
-          rw [if_pos (by rw [Finset.card_insert_of_notMem hl]; push_cast; omega)] at h2
+          rw [ite_eq_left (by rw [Finset.card_insert_of_notMem hl]; push_cast; omega)] at h2
           exact zsmul_mem h2 _
-      · rw [if_neg hs]
+      · rw [ite_eq_right hs]
         refine (Submodule.mem_bot _).2 (Finset.sum_eq_zero fun l _ => ?_)
         by_cases hl : l ∈ s
-        · have : ctrH l c s = 0 := if_pos hl
+        · have : ctrH l c s = 0 := ite_eq_left hl
           rw [this, map_zero]
-        · have h1 : ctrH l c s = GlobalTheory.cubeSign (insert l s) l • c (insert l s) := if_neg hl
+        · have h1 : ctrH l c s = GlobalTheory.cubeSign (insert l s) l • c (insert l s) := ite_eq_right hl
           have h2 := hmem (insert l s)
-          rw [if_neg (by rw [Finset.card_insert_of_notMem hl]; push_cast; omega),
+          rw [ite_eq_right (by rw [Finset.card_insert_of_notMem hl]; push_cast; omega),
             Submodule.mem_bot] at h2
           rw [h1, h2, smul_zero, map_zero]
     exact this
@@ -160,4 +160,4 @@ theorem UpperTheory.Gal.productCup_of_system.htpy_of :
       rw [map_zsmul, hcomm]
     rw [Finset.sum_congr rfl fun l _ => this l, LinearMap.sum_apply]
     refine Finset.sum_congr rfl fun l _ => ?_
-    rw [map_mul, Module.End.mul_apply]
+    rw [map_mul, mul_apply_eq_comp]

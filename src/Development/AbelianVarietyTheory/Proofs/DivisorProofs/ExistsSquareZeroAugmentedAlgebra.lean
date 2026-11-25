@@ -84,13 +84,13 @@ end
 open GlobalTheory.Obs.TrivAug in
 theorem GlobalTheory.Obs.exists_aug : ∀ (R R₀ : Type) [CommRing R] [CommRing R₀] (I : Ideal R) (hI : I ^ 2 = 0) (π : R →+* R₀) (hπ : Function.Surjective π) (hk : RingHom.ker π = I), ∃ (R₁ : Type) (_ : CommRing R₁) (_ : Algebra R₀ R₁), Nonempty (Aug I π R₁) := by
   intro R R₀ _ _ I hI π hπ hk
-  letI : Module R₀ I := modI hI hπ hk
-  letI : Module R₀ᵐᵒᵖ I := modOpI hI hπ hk
-  haveI : IsCentralScalar R₀ I := ⟨fun r m => by
+  let : Module R₀ I := modI hI hπ hk
+  let : Module R₀ᵐᵒᵖ I := modOpI hI hπ hk
+  have : IsCentralScalar R₀ I := ⟨fun r m => by
     apply Subtype.ext
     show Function.surjInv hπ (MulOpposite.unop (MulOpposite.op r)) * (m : R) = Function.surjInv hπ r * m
     rfl⟩
-  haveI : IsScalarTower R₀ R₀ᵐᵒᵖ I := ⟨fun r s m => by
+  have : IsScalarTower R₀ R₀ᵐᵒᵖ I := ⟨fun r s m => by
     apply Subtype.ext
     show Function.surjInv hπ (MulOpposite.unop (r • s)) * (m : R) = Function.surjInv hπ r * (Function.surjInv hπ (MulOpposite.unop s) * m)
     rw [← _root_.mul_assoc]

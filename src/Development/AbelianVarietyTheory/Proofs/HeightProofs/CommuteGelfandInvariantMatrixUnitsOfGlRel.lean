@@ -68,7 +68,7 @@ theorem pow_entry_commutator {A : Type} [Ring A] {n : ℕ} (E : Fin n → Fin n 
     clear hE
     simp only [pow_zero, Matrix.one_apply]
     by_cases h1 : c = e <;> by_cases h2 : b = c <;> by_cases h3 : e = a <;>
-      simp only [h1, h2, h3, if_true, if_false, mul_one, one_mul, mul_zero, zero_mul, sub_self] <;>
+      simp only [h1, h2, h3, ite_true, ite_false, mul_one, one_mul, mul_zero, zero_mul, sub_self] <;>
       subst_vars <;> simp_all <;> intro h <;> subst h <;> simp_all
   | succ m ih =>
     have hs : ∀ x y : Fin n, ((Matrix.of E) ^ (m + 1)) x y
@@ -82,8 +82,8 @@ theorem pow_entry_commutator {A : Type} [Ring A] {n : ℕ} (E : Fin n → Fin n 
     rw [hs, hs, hs, Finset.mul_sum, Finset.sum_mul, ← Finset.sum_sub_distrib]
     simp_rw [key, ih, hE a b]
     simp only [sub_mul, mul_sub, Finset.sum_add_distrib, Finset.sum_sub_distrib, ite_mul, mul_ite,
-      zero_mul, mul_zero, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, if_true]
-    split_ifs <;> simp <;> abel
+      zero_mul, mul_zero, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
+    split_ifs <;> simp; abel
 
 alias target := _root_.GlobalTheory.PowEntryCommutator.pow_entry_commutator
 
@@ -143,7 +143,7 @@ theorem commute_gelfA : ∀ (A : Type) [Ring A] [Algebra ℂ A] (n : ℕ) (E : F
   intro A _ _ n E hE k a b
   rw [← sub_eq_zero, gelfA_eq_sum_pow, Finset.mul_sum, Finset.sum_mul, ← Finset.sum_sub_distrib]
   simp only [_root_.GlobalTheory.PowEntryCommutator.pow_entry_commutator E hE, Finset.sum_sub_distrib, Finset.sum_ite_eq, Finset.sum_ite_eq',
-    Finset.mem_univ, if_true, sub_self]
+    Finset.mem_univ, ite_true, sub_self]
 
 end GlobalTheory.SmoothForms
 end -- clump:auto

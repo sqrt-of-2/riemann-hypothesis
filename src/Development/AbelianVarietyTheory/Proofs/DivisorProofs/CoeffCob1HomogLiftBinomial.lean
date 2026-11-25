@@ -124,7 +124,7 @@ theorem pascal (N A E : ℕ) (h : A + E = N + 1) :
     · have hA : A = N := by omega
       subst hA
       simp
-    · simp only [le_add_iff_nonneg_left, zero_le, if_true, Nat.add_sub_cancel]
+    · simp only [le_add_iff_nonneg_left, zero_le, ite_true, Nat.add_sub_cancel]
       rw [Nat.choose_succ_succ']
 
 theorem prod_split {d : ℕ} (f g : Fin d → ℕ) (j : Fin d) (hfg : ∀ s, s ≠ j → f s = g s) :
@@ -150,7 +150,7 @@ theorem coeff_prod_addLaw (d n : ℕ) : ∀ α : Fin d →₀ ℕ, α.degree = n
         ext k; have := DFunLike.congr_fun h0 k; simp at this; simp [this.2]
       subst ha he
       simp
-    · rw [if_neg h0, if_neg]
+    · rw [ite_eq_right h0, ite_eq_right]
       intro hs; apply h0
       ext k
       have h1 := DFunLike.congr_fun hs (Sum.inl k)
@@ -179,7 +179,7 @@ theorem coeff_prod_addLaw (d n : ℕ) : ∀ α : Fin d →₀ ℕ, α.degree = n
     rw [hP, map_add (f := _), coeff_mul_monomial, coeff_mul_monomial]
     simp only [single_inl_le, single_inr_le, sumElim_sub_inl, sumElim_sub_inr, ih α ha, mul_one]
     by_cases hae : a + e = α + Finsupp.single j 1
-    · rw [if_pos hae]
+    · rw [ite_eq_left hae]
       have hj' := DFunLike.congr_fun hae j
       simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same] at hj'
       have key := pascal (α j) (a j) (e j) hj'
@@ -198,15 +198,15 @@ theorem coeff_prod_addLaw (d n : ℕ) : ∀ α : Fin d →₀ ℕ, α.degree = n
         simp
       rw [e3, ← key, add_mul]
       by_cases h1 : 1 ≤ a j <;> by_cases h2 : 1 ≤ e j
-      · rw [if_pos h1, if_pos h2, if_pos ((sub_add_iff a e α j h1).2 hae),
-          if_pos ((add_sub_iff a e α j h2).2 hae), e1, e2, if_pos h1, if_pos h2]
+      · rw [ite_eq_left h1, ite_eq_left h2, ite_eq_left ((sub_add_iff a e α j h1).2 hae),
+          ite_eq_left ((add_sub_iff a e α j h2).2 hae), e1, e2, ite_eq_left h1, ite_eq_left h2]
         push_cast; ring
-      · rw [if_pos h1, if_neg h2, if_pos ((sub_add_iff a e α j h1).2 hae), e1, if_pos h1, if_neg h2]
+      · rw [ite_eq_left h1, ite_eq_right h2, ite_eq_left ((sub_add_iff a e α j h1).2 hae), e1, ite_eq_left h1, ite_eq_right h2]
         push_cast; ring
-      · rw [if_neg h1, if_pos h2, if_pos ((add_sub_iff a e α j h2).2 hae), e2, if_neg h1, if_pos h2]
+      · rw [ite_eq_right h1, ite_eq_left h2, ite_eq_left ((add_sub_iff a e α j h2).2 hae), e2, ite_eq_right h1, ite_eq_left h2]
         push_cast; ring
       · omega
-    · rw [if_neg hae]
+    · rw [ite_eq_right hae]
       have t1 : (if 1 ≤ a j then (if a - Finsupp.single j 1 + e = α then
           ((∏ s, (α s).choose ((a - Finsupp.single j 1 : Fin d →₀ ℕ) s) : ℕ) : R) else 0) else 0) = 0 := by
         split_ifs with h1 h2
@@ -268,19 +268,19 @@ theorem coeff_cob1_additive_law_binomial (d : ℕ) (f : MvPowerSeries (Fin d) R)
   congr 1
   congr 1
   · rw [finsum_eq_single _ (a + e)]
-    · rw [coeff_prod_addLaw d _ _ rfl a e, if_pos rfl, smul_eq_mul, mul_comm]
+    · rw [coeff_prod_addLaw d _ _ rfl a e, ite_eq_left rfl, smul_eq_mul, mul_comm]
     · intro δ hδ
-      rw [coeff_prod_addLaw d _ δ rfl a e, if_neg (fun h => hδ h.symm), smul_zero]
+      rw [coeff_prod_addLaw d _ δ rfl a e, ite_eq_right (fun h => hδ h.symm), smul_zero]
   · by_cases he : e = 0
-    · rw [if_pos he, finsum_eq_single _ a]
+    · rw [ite_eq_left he, finsum_eq_single _ a]
       · simp [he]
       · intro δ hδ; simp [hδ]
-    · rw [if_neg he]; simp [he]
+    · rw [ite_eq_right he]; simp [he]
   · by_cases ha : a = 0
-    · rw [if_pos ha, finsum_eq_single _ e]
+    · rw [ite_eq_left ha, finsum_eq_single _ e]
       · simp [ha]
       · intro δ hδ; simp [hδ]
-    · rw [if_neg ha]; simp [ha]
+    · rw [ite_eq_right ha]; simp [ha]
 
 theorem coeff_inl {B O : Type} [CommRing B] [CommRing O] {θ : B →+* O} {d : ℕ}
     {μ : Fin d → MvPowerSeries (Fin d ⊕ Fin d) B} (h : IsLift θ μ) (i j : Fin d) :
@@ -308,7 +308,7 @@ theorem coeff_lift_low {B O : Type} [CommRing B] [CommRing O] {θ : B →+* O} {
       then 1 else 0 := by
   classical
   rcases Nat.le_one_iff_eq_zero_or_eq_one.1 hα with h0 | h1
-  · rw [(Finsupp.degree_eq_zero_iff α).1 h0, coeff_zero_eq_constantCoeff_apply, h.const, if_neg]
+  · rw [(Finsupp.degree_eq_zero_iff α).1 h0, coeff_zero_eq_constantCoeff_apply, h.const, ite_eq_right]
     rintro (h | h) <;> exact Finsupp.single_ne_zero.2 one_ne_zero h.symm
   · obtain ⟨s, rfl⟩ := GlobalTheory.Katz.LowLaw.eq_single_of_degree_eq_one h1
     rcases s with j | j

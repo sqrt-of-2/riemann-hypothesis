@@ -69,8 +69,8 @@ theorem exists_coord_tens (F E : Type) [Field F] [NumberField F] [IsTotallyReal 
   let R := Ainf F
   let b := Module.Free.chooseBasis R (R ⊗[F] E)
   let eL : (R ⊗[F] E) ≃ₗ[R] (Module.Free.ChooseBasisIndex R (R ⊗[F] E) → R) := b.equivFun
-  haveI : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
-  haveI : ContinuousAdd (R ⊗[F] E) := IsModuleTopology.toContinuousAdd R (R ⊗[F] E)
+  have : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
+  have : ContinuousAdd (R ⊗[F] E) := IsModuleTopology.toContinuousAdd R (R ⊗[F] E)
   let e0 : R ⊗[F] E ≃ₜ (Module.Free.ChooseBasisIndex R (R ⊗[F] E) → R) :=
     { toEquiv := eL.toEquiv
       continuous_toFun := IsModuleTopology.continuous_of_linearMap eL.toLinearMap
@@ -90,25 +90,25 @@ end Zero
 theorem measure_fundamentalDomain_pos (F E : Type) [Field F] [NumberField F] [Field E] [NumberField E]
     [Algebra F E] (σ : E →ₐ[F] E) (M : ℕ) (J : Matrix (Fin M) (Fin M) E) (μ) (hμ : IsHaarH F E σ M J μ)
     (𝓕) (h : IsFDH F E σ M J μ 𝓕) : 0 < μ 𝓕 := by
-  haveI : μ.IsHaarMeasure := hμ
-  haveI : Countable E := (Module.Free.chooseBasis ℚ E).equivFun.toEquiv.injective.countable
-  haveI : Countable (Matrix (Fin M) (Fin M) E) := inferInstanceAs (Countable (Fin M → Fin M → E))
-  haveI : Countable (GL (Fin M) E) := Units.val_injective.countable
-  haveI : Countable (HFin (AF F) σ J) := by
+  have : μ.IsHaarMeasure := hμ
+  have : Countable E := (Module.Free.chooseBasis ℚ E).equivFun.toEquiv.injective.countable
+  have : Countable (Matrix (Fin M) (Fin M) E) := inferInstanceAs (Countable (Fin M → Fin M → E))
+  have : Countable (GL (Fin M) E) := Units.val_injective.countable
+  have : Countable (HFin (AF F) σ J) := by
     have : ((HFin (AF F) σ J : Subgroup (GL (Fin M) (AF F ⊗[F] E))) :
         Set (GL (Fin M) (AF F ⊗[F] E))).Countable := by
       unfold HFin; rw [Subgroup.coe_map]; exact (Set.to_countable _).image _
     exact this
-  haveI : Countable (HFinIn (AF F) σ J) := by
+  have : Countable (HFinIn (AF F) σ J) := by
     have : Function.Injective (fun x : HFinIn (AF F) σ J => (⟨x.1.1, x.2⟩ : HFin (AF F) σ J)) := by
       intro x y hxy
       exact Subtype.ext (Subtype.ext (congrArg (fun z : HFin (AF F) σ J => z.1) hxy))
     exact this.countable
-  haveI : IsModuleTopology (AF F) (AF F ⊗[F] E) := ⟨rfl⟩
-  haveI : IsTopologicalRing (AF F ⊗[F] E) := IsModuleTopology.isTopologicalRing (AF F) _
-  haveI : IsTopologicalGroup (HA (AF F) σ J) := inferInstanceAs (IsTopologicalGroup (HR (AF F) σ J))
-  haveI : BorelSpace (HA (AF F) σ J) := ⟨rfl⟩
-  haveI : SMulInvariantMeasure (HFinIn (AF F) σ J) (HA (AF F) σ J) μ :=
+  have : IsModuleTopology (AF F) (AF F ⊗[F] E) := ⟨rfl⟩
+  have : IsTopologicalRing (AF F ⊗[F] E) := IsModuleTopology.isTopologicalRing (AF F) _
+  have : IsTopologicalGroup (HA (AF F) σ J) := inferInstanceAs (IsTopologicalGroup (HR (AF F) σ J))
+  have : BorelSpace (HA (AF F) σ J) := ⟨rfl⟩
+  have : SMulInvariantMeasure (HFinIn (AF F) σ J) (HA (AF F) σ J) μ :=
     ⟨fun c s hs => measure_preimage_mul μ (show HA (AF F) σ J from c.1) s⟩
   exact pos_iff_ne_zero.2 (IsFundamentalDomain.measure_ne_zero (NeZero.ne μ) h)
 

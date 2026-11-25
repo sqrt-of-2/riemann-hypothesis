@@ -27,13 +27,13 @@ theorem pair_apply_hw {E : Fin n → Fin n → Module.End ℂ M} (hE : IsGlRep E
   rcases lt_trichotomy a b with h | rfl | h
   ·
     have hc := congrArg (fun f : Module.End ℂ M => f v) (hE a b b a)
-    simp only [if_true, LinearMap.sub_apply, Module.End.mul_apply, hab h, map_zero,
+    simp only [ite_true, LinearMap.sub_apply, mul_apply_eq_comp, hab h, map_zero,
       sub_zero] at hc
-    rw [Module.End.mul_apply, hc, hd, hd]
+    rw [mul_apply_eq_comp, hc, hd, hd]
     simp [hwTerm, h, h.ne, sub_smul]
-  · rw [Module.End.mul_apply, hd, map_smul, hd, smul_smul]
+  · rw [mul_apply_eq_comp, hd, map_smul, hd, smul_smul]
     simp [hwTerm]
-  · rw [Module.End.mul_apply, hba h, map_zero]
+  · rw [mul_apply_eq_comp, hba h, map_zero]
     simp [hwTerm, h.ne', not_lt.2 h.le]
 
 theorem sum_pair_hw {E : Fin n → Fin n → Module.End ℂ M} (hE : IsGlRep E) {μ : Fin n → ℝ}
@@ -69,7 +69,7 @@ theorem sum_hwTerm (S : Fin n → Fin n → Prop) [DecidableRel S] (hrefl : ∀ 
     rw [← Finset.sum_add_distrib]
     refine Finset.sum_congr rfl fun a _ => ?_
     rw [Finset.sum_filter]
-    simp only [hpt a, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+    simp only [hpt a, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
 
   have hR : nsq (μ + r) - nsq r = ∑ a, μ a * μ a + ∑ a, ∑ b, ((if a < b ∧ S a b then μ a else 0) -
         (if b < a ∧ S a b then μ a else 0)) := by
@@ -92,8 +92,8 @@ theorem sum_hwTerm (S : Fin n → Fin n → Prop) [DecidableRel S] (hrefl : ∀ 
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
   by_cases h : b < a ∧ S a b
-  · rw [if_pos h, if_pos ⟨h.1, hS a b h.2⟩]
-  · rw [if_neg h, if_neg fun h' => h ⟨h'.1, hS b a h'.2⟩]
+  · rw [ite_eq_left h, ite_eq_left ⟨h.1, hS a b h.2⟩]
+  · rw [ite_eq_right h, ite_eq_right fun h' => h ⟨h'.1, hS b a h'.2⟩]
 
 section Alg
 

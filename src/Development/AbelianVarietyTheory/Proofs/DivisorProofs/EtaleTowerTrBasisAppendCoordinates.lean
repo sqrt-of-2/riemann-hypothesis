@@ -61,19 +61,19 @@ def dualHom {k K L : Type} [Field k] [Field K] [Field L] [Algebra k K] (f : K �
     (d : Derivation k K K) : K →+* DualNumber L where
   toFun a := TrivSqZeroExt.inl (f a) + TrivSqZeroExt.inr (f (d a))
   map_one' := by ext <;> simp
-  map_mul' a c := by ext <;> simp [Derivation.leibniz] <;> ring
+  map_mul' a c := by ext <;> simp [Derivation.leibniz]; ring
   map_zero' := by ext <;> simp
   map_add' a c := by ext <;> simp
 
 theorem exists_basis {K : Type} [Field K] (c : ℂ →+* K) {n : ℕ} (x : Fin n → K) (hx : TrBasis c x) :
     letI := c.toAlgebra
     ∃ b : Module.Basis (Fin n) K Ω[K⁄ℂ], ∀ i, b i = KaehlerDifferential.D ℂ K (x i) := by
-  letI := c.toAlgebra
+  let := c.toAlgebra
   have hx' : IsTranscendenceBasis ℂ x := hx
-  haveI : Algebra.IsAlgebraic (IntermediateField.adjoin ℂ (Set.range x)) K := hx'.isAlgebraic_field
-  haveI : CharZero (IntermediateField.adjoin ℂ (Set.range x)) :=
+  have : Algebra.IsAlgebraic (IntermediateField.adjoin ℂ (Set.range x)) K := hx'.isAlgebraic_field
+  have : CharZero (IntermediateField.adjoin ℂ (Set.range x)) :=
     charZero_of_injective_algebraMap (algebraMap ℂ _).injective
-  haveI : Algebra.IsSeparable (IntermediateField.adjoin ℂ (Set.range x)) K := inferInstance
+  have : Algebra.IsSeparable (IntermediateField.adjoin ℂ (Set.range x)) K := inferInstance
   exact exists_basis_kaehler_of_algebraicIndependent hx'.1
 
 theorem exists_derivation {L P : Type} [Field L] [CommRing P] [Algebra P L] [Algebra ℂ L]
@@ -81,7 +81,7 @@ theorem exists_derivation {L P : Type} [Field L] [CommRing P] [Algebra P L] [Alg
     (hfst : (TrivSqZeroExt.fstHom L L L).toRingHom.comp g = algebraMap P L)
     (hc : ∀ a : ℂ, ∃ p : P, algebraMap P L p = algebraMap ℂ L a ∧ (g p).snd = 0) :
     ∃ D : Derivation ℂ L L, ∀ p, D (algebraMap P L p) = (g p).snd := by
-  letI : Algebra P (DualNumber L) := g.toAlgebra
+  let : Algebra P (DualNumber L) := g.toAlgebra
   let f : DualNumber L →ₐ[P] L :=
     { (TrivSqZeroExt.fstHom L L L).toRingHom with
       commutes' := fun p => RingHom.congr_fun hfst p }
@@ -139,11 +139,11 @@ theorem trBasis_append : ∀ {K L : Type} [Field K] [Field L] (cK : ℂ →+* K)
     TrBasis cL (Fin.append (fun i => (τ i : L)) (fun i => (ι (x i) : L))) := by
   intro K L _ _ cK cL n r R T ι ψ τ x h hx
   classical
-  letI := cK.toAlgebra
-  letI := cL.toAlgebra
+  let := cK.toAlgebra
+  let := cL.toAlgebra
   obtain ⟨b, hb⟩ := exists_basis cK _ hx
   have hιinj : Function.Injective ι := Function.LeftInverse.injective h.retr
-  haveI : IsFractionRing R K := IsFractionRing.of_field R K fun z => by
+  have : IsFractionRing R K := IsFractionRing.of_field R K fun z => by
     obtain ⟨a, ha, c, hcR, hc0, e⟩ := h.base.frac z
     exact ⟨⟨a, ha⟩, ⟨c, hcR⟩, by show z = a / c; rw [eq_div_iff hc0]; exact e⟩
   let j : R →+* L := T.subtype.comp ι
@@ -154,15 +154,15 @@ theorem trBasis_append : ∀ {K L : Type} [Field K] [Field L] (cK : ℂ →+* K)
     (hι' ⟨cK a, h.base.const_mem a⟩).trans (h.const a)
   let P := MvPolynomial (Fin r) R
   let eP : P →+* T := MvPolynomial.eval₂Hom ι τ
-  letI : Algebra P T := eP.toAlgebra
-  haveI : Algebra.FormallyEtale P T := h.etale
-  haveI : IsFractionRing T L := IsFractionRing.of_field T L fun z => by
+  let : Algebra P T := eP.toAlgebra
+  have : Algebra.FormallyEtale P T := h.etale
+  have : IsFractionRing T L := IsFractionRing.of_field T L fun z => by
     obtain ⟨a, ha, c, hcT, hc0, e⟩ := h.top.frac z
     exact ⟨⟨a, ha⟩, ⟨c, hcT⟩, by show z = a / c; rw [eq_div_iff hc0]; exact e⟩
-  haveI : Algebra.FormallyEtale T L := .of_isLocalization (nonZeroDivisors T)
-  letI : Algebra P L := (T.subtype.comp eP).toAlgebra
-  haveI : IsScalarTower P T L := IsScalarTower.of_algebraMap_eq fun _ => rfl
-  haveI : Algebra.FormallyEtale P L := .comp P T L
+  have : Algebra.FormallyEtale T L := .of_isLocalization (nonZeroDivisors T)
+  let : Algebra P L := (T.subtype.comp eP).toAlgebra
+  have : IsScalarTower P T L := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  have : Algebra.FormallyEtale P L := .comp P T L
   have hPC : ∀ a : R, algebraMap P L (MvPolynomial.C a) = (ι a : L) := fun a =>
     congrArg Subtype.val (MvPolynomial.eval₂Hom_C ι τ a)
   have hPX : ∀ i, algebraMap P L (MvPolynomial.X i) = (τ i : L) := fun i =>
@@ -203,7 +203,7 @@ theorem trBasis_append : ∀ {K L : Type} [Field K] [Field L] (cK : ℂ →+* K)
     rw [← hb, Module.Basis.coord_apply, Module.Basis.repr_self, Finsupp.single_apply]
     by_cases hkk : k = k'
     · subst hkk; simp
-    · rw [if_neg (Ne.symm hkk), if_neg hkk]
+    · rw [ite_eq_right (Ne.symm hkk), ite_eq_right hkk]
   let Dfam : Fin (r + n) → Derivation ℂ L L :=
     Fin.addCases (fun i => Dof 0 (Pi.single i 1)) (fun k => Dof (dK k) 0)
   have hval : ∀ m m', Dfam m (y m') = if m = m' then 1 else 0 := by
@@ -215,25 +215,25 @@ theorem trBasis_append : ∀ {K L : Type} [Field K] [Field L] (cK : ℂ →+* K)
         simp only [Dfam, hy, Fin.addCases_left, Fin.append_left, hDof2, Pi.single_apply]
         by_cases hii : i = i'
         · subst hii; simp
-        · rw [if_neg (Ne.symm hii), if_neg]
+        · rw [ite_eq_right (Ne.symm hii), ite_eq_right]
           intro e; exact hii (Fin.castAdd_injective _ _ e)
       | right k' =>
         have hne : Fin.castAdd n i ≠ Fin.natAdd r k' := by
           rw [Ne, Fin.ext_iff]; simp; omega
-        simp only [Dfam, hy, Fin.addCases_left, Fin.append_right, hDof1, if_neg hne]
+        simp only [Dfam, hy, Fin.addCases_left, Fin.append_right, hDof1, ite_eq_right hne]
         simp
     | right k =>
       induction m' using Fin.addCases with
       | left i' =>
         have hne : Fin.natAdd r k ≠ Fin.castAdd n i' := by
           rw [Ne, Fin.ext_iff]; simp; omega
-        simp only [Dfam, hy, Fin.addCases_right, Fin.append_left, hDof2, if_neg hne]
+        simp only [Dfam, hy, Fin.addCases_right, Fin.append_left, hDof2, ite_eq_right hne]
         simp
       | right k' =>
         simp only [Dfam, hy, Fin.addCases_right, Fin.append_right, hDof1, hdK]
         by_cases hkk : k = k'
         · subst hkk; simp
-        · rw [if_neg hkk, if_neg, map_zero]
+        · rw [ite_eq_right hkk, ite_eq_right, map_zero]
           intro e; exact hkk (Fin.natAdd_injective _ _ e)
   have hlin : LinearIndependent L (fun m => KaehlerDifferential.D ℂ L (y m)) := by
     let F : Ω[L⁄ℂ] →ₗ[L] (Fin (r + n) → L) :=
@@ -251,8 +251,8 @@ theorem trBasis_append : ∀ {K L : Type} [Field K] [Field L] (cK : ℂ →+* K)
     have h2 : ∀ k, D (ι (x k) : L) = 0 := fun k => by
       have := hD0 (Fin.natAdd r k); rwa [hy, Fin.append_right] at this
     have hK : ∀ a : K, D (ι' a) = 0 := by
-      letI : Algebra K L := ι'.toAlgebra
-      haveI : IsScalarTower ℂ K L := IsScalarTower.of_algebraMap_eq fun a => (hcst a).symm
+      let : Algebra K L := ι'.toAlgebra
+      have : IsScalarTower ℂ K L := IsScalarTower.of_algebraMap_eq fun a => (hcst a).symm
       let D' : Derivation ℂ K L := Derivation.mk'
         { toFun := fun a => D (ι' a)
           map_add' := fun a c => by simp only [map_add (f := _)]
@@ -288,10 +288,10 @@ theorem trBasis_append : ∀ {K L : Type} [Field K] [Field L] (cK : ℂ →+* K)
     have e := congrArg (fun E : Derivation ℂ L L => E l) hD
     simpa using e
   have hess : Algebra.EssFiniteType ℂ L := by
-    letI : Algebra ℂ T := (cL.codRestrict T h.top.const_mem).toAlgebra
-    haveI : Algebra.EssFiniteType ℂ T := h.top.essFiniteType
-    haveI : IsScalarTower ℂ T L := IsScalarTower.of_algebraMap_eq fun _ => rfl
-    haveI : Algebra.EssFiniteType T L := .of_isLocalization L (nonZeroDivisors T)
+    let : Algebra ℂ T := (cL.codRestrict T h.top.const_mem).toAlgebra
+    have : Algebra.EssFiniteType ℂ T := h.top.essFiniteType
+    have : IsScalarTower ℂ T L := IsScalarTower.of_algebraMap_eq fun _ => rfl
+    have : Algebra.EssFiniteType T L := .of_isLocalization L (nonZeroDivisors T)
     exact .comp ℂ T L
   have hrank : Algebra.trdeg ℂ L ≤ Cardinal.mk (Fin (r + n)) := by
     rw [← rank_kaehler_eq_trdeg, ← rank_top, ← hspan]

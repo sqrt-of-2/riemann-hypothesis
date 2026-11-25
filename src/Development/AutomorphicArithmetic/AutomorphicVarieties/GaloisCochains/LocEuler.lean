@@ -65,7 +65,7 @@ private theorem card_H0dual {R k Γ Γ' M : Type} [Field R] [Field k] [Finite k]
     (ρ : Representation k Γ M) (ρ' : Representation R Γ' M) (e : Γ' ≃* Γ) (h : ∀ g m, ρ' g m = ρ (e g) m)
     (χ : Γ →* kˣ) (χ' : Γ' →* Rˣ) (hχ : ∀ g, (χ (e g) : k) = algebraMap R k (χ' g)) :
     Nat.card (Loc.H0dual χ ρ) = Nat.card (Loc.H0dual χ' ρ') := by
-  haveI : Finite R := Finite.of_injective _ (algebraMap R k).injective
+  have : Finite R := Finite.of_injective _ (algebraMap R k).injective
   let T : Module.Dual k M →+ Module.Dual R M :=
     { toFun := fun f => (Algebra.trace R k).comp (f.restrictScalars R)
       map_zero' := by ext; simp
@@ -79,7 +79,7 @@ private theorem card_H0dual {R k Γ Γ' M : Type} [Field R] [Field k] [Finite k]
     have := hT f (a • m)
     rw [hf, f.map_smul, smul_eq_mul, mul_comm] at this
     exact this.symm
-  haveI : Finite (Module.Dual R M) := DFunLike.finite _
+  have : Finite (Module.Dual R M) := DFunLike.finite _
   have hbij : Function.Bijective T := hinj.bijective_of_nat_card_le (by
     rw [Module.natCard_eq_pow_finrank (K := R) (V := Dual R M), Module.natCard_eq_pow_finrank (K := k) (V := Dual k M),
       Subspace.dual_finrank_eq, Subspace.dual_finrank_eq, ← Module.natCard_eq_pow_finrank,
@@ -106,13 +106,13 @@ private theorem card_twDual {R Γ M : Type} [CommRing R] [Group Γ] [AddCommGrou
   · intro hy g m
     have e := congrArg (fun φ : TDual R M => φ (ρ g m)) (hy g)
     simp only [MonoidHom.comp_apply, MonoidHom.id_apply, twDual_apply] at e
-    rw [← Module.End.mul_apply, ← map_mul, inv_mul_cancel, map_one, Module.End.one_apply] at e
+    rw [← mul_apply_eq_comp, ← map_mul, inv_mul_cancel, map_one, one_apply_eq_self] at e
     exact e.symm
   · intro hy g
     refine LinearMap.ext fun m => ?_
     simp only [MonoidHom.comp_apply, MonoidHom.id_apply]
     have := hy g (ρ g⁻¹ m)
-    rw [← Module.End.mul_apply, ← map_mul, mul_inv_cancel, map_one, Module.End.one_apply] at this
+    rw [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self] at this
     exact this.symm
 
 theorem UpperTheory.V.GC.locEuler :
@@ -121,12 +121,12 @@ theorem UpperTheory.V.GC.locEuler :
     (((l : ℕ) : 𝓞 F) ∉ v.asIdeal → finrank k (H1 ρ) = finrank k (H0 ρ) + finrank k (H2 ρ)) ∧ finrank k (H2 ρ) = finrank k (Loc.H0dual ((cycF F Ω l k).comp (Dec (F := F) A).subtype) ρ) := by
   intro hF hT hE0 F Ω _ _ _ _ _ l _ w A hAw k _ _ hc M _ _ _ _ _ ρ hρ
   have hl : l.Prime := Fact.out
-  haveI : Fact (l ^ 1).Prime := ⟨by rwa [pow_one]⟩
-  haveI : CharP k (l ^ 1) := by rwa [pow_one]
-  letI : Algebra (ZMod (l ^ 1)) k := ZMod.algebra k (l ^ 1)
-  letI : Module (ZMod (l ^ 1)) M := Module.compHom M (algebraMap (ZMod (l ^ 1)) k)
-  haveI : IsScalarTower (ZMod (l ^ 1)) k M := IsScalarTower.of_algebraMap_smul fun _ _ => rfl
-  haveI : Finite M := Module.finite_of_finite k
+  have : Fact (l ^ 1).Prime := ⟨by rwa [pow_one]⟩
+  have : CharP k (l ^ 1) := by rwa [pow_one]
+  let : Algebra (ZMod (l ^ 1)) k := ZMod.algebra k (l ^ 1)
+  let : Module (ZMod (l ^ 1)) M := Module.compHom M (algebraMap (ZMod (l ^ 1)) k)
+  have : IsScalarTower (ZMod (l ^ 1)) k M := IsScalarTower.of_algebraMap_smul fun _ _ => rfl
+  have : Finite M := Module.finite_of_finite k
   let ρ' : Representation (ZMod (l ^ 1)) ↥(Dec (F := F) A) M := Loc.resCoef (ZMod (l ^ 1)) ρ
   have h : ∀ g m, ρ' g m = ρ (MulEquiv.refl _ g) m := fun _ _ => rfl
   have hρ' : ContAction ρ' := hρ
@@ -136,8 +136,8 @@ theorem UpperTheory.V.GC.locEuler :
   obtain ⟨-, f1, f2, -⟩ := hF F Ω l 1 M A ρ' w one_pos hAw hρ'
   obtain ⟨⟨inv⟩, -, -, -, hb⟩ := hT F Ω l 1 M A ρ' w one_pos hAw hρ'
   have hE := hE0 F Ω l 1 M A ρ' w one_pos hAw hρ'
-  haveI : Finite (H1 ρ) := Finite.of_equiv _ e1.symm
-  haveI : Finite (H2 ρ) := Finite.of_equiv _ e2.symm
+  have : Finite (H1 ρ) := Finite.of_equiv _ e1.symm
+  have : Finite (H2 ρ) := Finite.of_equiv _ e2.symm
   have hk : 1 < Nat.card k := Finite.one_lt_card
   refine ⟨Module.Finite.of_finite, Module.Finite.of_finite, fun hw => ?_, fun hw => ?_, ?_⟩
   · apply Nat.pow_right_injective hk
@@ -154,13 +154,13 @@ theorem UpperTheory.V.GC.locEuler :
   · apply Nat.pow_right_injective hk
     beta_reduce
     let χ := (cycMod F Ω l 1).comp (Dec (F := F) A).subtype
-    haveI : Finite (Module.Dual k M) := DFunLike.finite _
-    haveI : Finite (TDual (ZMod (l ^ 1)) M) := (DFunLike.finite _ : Finite (M →ₗ[ZMod (l ^ 1)] ZMod (l ^ 1)))
+    have : Finite (Module.Dual k M) := DFunLike.finite _
+    have : Finite (TDual (ZMod (l ^ 1)) M) := (DFunLike.finite _ : Finite (M →ₗ[ZMod (l ^ 1)] ZMod (l ^ 1)))
     let B : Type := H0 ((twDual χ ρ').comp (MonoidHom.id _))
     let E : H2 ρ' ≃ Module.Dual (ZMod (l ^ 1)) B :=
       (Equiv.ofBijective _ hb).trans (LinearEquiv.congrRight inv).toEquiv
-    haveI : Finite B := Subtype.finite
-    haveI := hc
+    have : Finite B := Subtype.finite
+    have := hc
     have hχ : ∀ g, ((((cycF F Ω l k).comp (Dec (F := F) A).subtype) (MulEquiv.refl _ g) : kˣ) : k) =
         algebraMap (ZMod (l ^ 1)) k (χ g) := fun g =>
       RingHom.congr_fun (Subsingleton.elim (ZMod.castHom (dvd_pow_self l one_ne_zero) k)

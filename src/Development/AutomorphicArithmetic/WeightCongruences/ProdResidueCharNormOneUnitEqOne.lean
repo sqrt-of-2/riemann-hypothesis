@@ -54,13 +54,13 @@ open scoped Pointwise
 private theorem exists_nat_residue {L : Type} [Field L] [NumberField L] {p : ℕ} (hp : p.Prime)
     (v : HeightOneSpectrum (𝓞 L)) (hv : ((p : ℕ) : 𝓞 L) ∈ v.asIdeal) (hn : Ideal.absNorm v.asIdeal = p)
     (x : 𝓞 L) : ∃ a : ℕ, Ideal.Quotient.mk v.asIdeal x = (a : 𝓞 L ⧸ v.asIdeal) := by
-  haveI : Fact p.Prime := ⟨hp⟩
-  haveI : v.asIdeal.IsMaximal := v.isMaximal
-  haveI : CharP (𝓞 L ⧸ v.asIdeal) p := (CharP.charP_iff_prime_eq_zero hp).2 (by
+  have : Fact p.Prime := ⟨hp⟩
+  have : v.asIdeal.IsMaximal := v.isMaximal
+  have : CharP (𝓞 L ⧸ v.asIdeal) p := (CharP.charP_iff_prime_eq_zero hp).2 (by
     rw [← map_natCast (Ideal.Quotient.mk v.asIdeal)]; exact Ideal.Quotient.eq_zero_iff_mem.2 hv)
   have hcard : Nat.card (𝓞 L ⧸ v.asIdeal) = p := by
     rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, hn]
-  haveI : Finite (𝓞 L ⧸ v.asIdeal) := Nat.finite_of_card_ne_zero (by rw [hcard]; exact hp.ne_zero)
+  have : Finite (𝓞 L ⧸ v.asIdeal) := Nat.finite_of_card_ne_zero (by rw [hcard]; exact hp.ne_zero)
   have hinj : Function.Injective (ZMod.castHom (dvd_refl p) (𝓞 L ⧸ v.asIdeal)) :=
     (ZMod.castHom (dvd_refl p) _).injective
   have hbij := hinj.bijective_of_nat_card_le (by rw [hcard, Nat.card_zmod])
@@ -77,11 +77,11 @@ private theorem stab_trivial {K L : Type} [Field K] [NumberField K] [Field L] [N
     (hn : Ideal.absNorm w.asIdeal = p) (h2 : ((p : ℕ) : 𝓞 L) ∉ w.asIdeal ^ 2)
     (σ : L ≃ₐ[K] L) (hσ : σ • w.asIdeal = w.asIdeal) : σ = 1 := by
   have : IsGaloisGroup (L ≃ₐ[K] L) (𝓞 K) (𝓞 L) := IsGaloisGroup.of_isFractionRing _ _ _ K L
-  haveI := w.isPrime
+  have := w.isPrime
   let Q := w.under (𝓞 K)
-  haveI := Q.isPrime
-  haveI := Q.isMaximal
-  haveI : w.asIdeal.LiesOver Q.asIdeal := ⟨rfl⟩
+  have := Q.isPrime
+  have := Q.isMaximal
+  have : w.asIdeal.LiesOver Q.asIdeal := ⟨rfl⟩
   have hin : σ ∈ w.asIdeal.inertia (L ≃ₐ[K] L) := by
     intro x
     obtain ⟨a, ha⟩ := exists_nat_residue hp w hv hn x
@@ -121,7 +121,7 @@ theorem UpperTheory.prod_residue_char_norm_one_unit_eq_one :
         ∏ w ∈ S, θ w (Units.map (Ideal.Quotient.mk w.asIdeal).toMonoidHom u) = 1 := by
   intro K L _ _ _ _ _ _ p hp Q S memS hs ω θ hθ ζ hζ
   classical
-  haveI : Fact p.Prime := ⟨hp⟩
+  have : Fact p.Prime := ⟨hp⟩
   have : IsGaloisGroup (L ≃ₐ[K] L) (𝓞 K) (𝓞 L) := IsGaloisGroup.of_isFractionRing _ _ _ K L
   have overp : ∀ w ∈ S, ((p : ℕ) : 𝓞 L) ∈ w.asIdeal := by
     intro w hw
@@ -142,15 +142,15 @@ theorem UpperTheory.prod_residue_char_norm_one_unit_eq_one :
         Ideal.Quotient.eq_zero_iff_mem.2 (overp w hw), zero_mul]
     have hu : IsUnit (Ideal.Quotient.mk w.asIdeal (ζ : 𝓞 L)) := ζ.isUnit.map _
     rw [ha w hw, h0] at hu
-    haveI : w.asIdeal.IsMaximal := w.isMaximal
+    have : w.asIdeal.IsMaximal := w.isMaximal
     exact not_isUnit_zero hu
 
   have hσ : ∀ w ∈ S, ∃ σ : L ≃ₐ[K] L, σ • w.asIdeal = w₀.asIdeal := by
     intro w hw
-    haveI := w.isPrime
-    haveI := w₀.isPrime
-    haveI : w.asIdeal.LiesOver Q.asIdeal := ⟨congrArg HeightOneSpectrum.asIdeal ((memS w).1 hw).symm⟩
-    haveI : w₀.asIdeal.LiesOver Q.asIdeal := ⟨congrArg HeightOneSpectrum.asIdeal ((memS w₀).1 hw₀).symm⟩
+    have := w.isPrime
+    have := w₀.isPrime
+    have : w.asIdeal.LiesOver Q.asIdeal := ⟨congrArg HeightOneSpectrum.asIdeal ((memS w).1 hw).symm⟩
+    have : w₀.asIdeal.LiesOver Q.asIdeal := ⟨congrArg HeightOneSpectrum.asIdeal ((memS w₀).1 hw₀).symm⟩
     exact Ideal.exists_smul_eq_of_isGaloisGroup Q.asIdeal w.asIdeal w₀.asIdeal (L ≃ₐ[K] L)
   choose! σ hσw using hσ
 
@@ -171,7 +171,7 @@ theorem UpperTheory.prod_residue_char_norm_one_unit_eq_one :
         apply HeightOneSpectrum.ext
         rw [eq_inv_smul_iff.2 (hσw w₁ h₁), eq_inv_smul_iff.2 (hσw w₂ h₂), h']
       · intro τ _
-        haveI := w₀.isPrime
+        have := w₀.isPrime
         have hne : τ⁻¹ • w₀.asIdeal ≠ ⊥ := by
           intro h
           apply w₀.ne_bot
@@ -199,8 +199,8 @@ theorem UpperTheory.prod_residue_char_norm_one_unit_eq_one :
     rw [map_prod, map_one]
     exact (Finset.prod_congr rfl fun τ _ => h' τ).trans h.symm
 
-  haveI : w₀.asIdeal.IsMaximal := w₀.isMaximal
-  haveI : CharP (𝓞 L ⧸ w₀.asIdeal) p := (CharP.charP_iff_prime_eq_zero hp).2 (by
+  have : w₀.asIdeal.IsMaximal := w₀.isMaximal
+  have : CharP (𝓞 L ⧸ w₀.asIdeal) p := (CharP.charP_iff_prime_eq_zero hp).2 (by
     rw [← map_natCast (Ideal.Quotient.mk w₀.asIdeal)]; exact Ideal.Quotient.eq_zero_iff_mem.2 (overp w₀ hw₀))
   have hmod : ∏ w ∈ S, ((a w : ℕ) : ZMod p) = 1 := by
     apply (ZMod.castHom (dvd_refl p) (𝓞 L ⧸ w₀.asIdeal)).injective
@@ -214,16 +214,16 @@ theorem UpperTheory.prod_residue_char_norm_one_unit_eq_one :
     if h : (a w).Coprime p then ZMod.unitOfCoprime (a w) h else 1
   have hval : ∀ w ∈ S, θ w (Units.map (Ideal.Quotient.mk w.asIdeal).toMonoidHom ζ) = ω (u w) := by
     intro w hw
-    simp only [u, dif_pos (hcop w hw)]
+    simp only [u, dite_eq_left (hcop w hw)]
     obtain ⟨b, hb, hθb⟩ := hθ w hw (a w) (hcop w hw)
     rw [← hθb]
     congr 1
     apply Units.ext
-    rw [hb, Units.coe_map, RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe, ha w hw, map_natCast]
+    rw [hb, Units.coe_map, RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, ha w hw, map_natCast]
   rw [Finset.prod_congr rfl hval, ← map_prod]
   have hu1 : ∏ w ∈ S, u w = 1 := by
     apply Units.ext
     rw [Units.coe_prod, Units.val_one, ← hmod]
     refine Finset.prod_congr rfl fun w hw => ?_
-    simp only [u, dif_pos (hcop w hw), ZMod.coe_unitOfCoprime]
+    simp only [u, dite_eq_left (hcop w hw), ZMod.coe_unitOfCoprime]
   rw [hu1, map_one]

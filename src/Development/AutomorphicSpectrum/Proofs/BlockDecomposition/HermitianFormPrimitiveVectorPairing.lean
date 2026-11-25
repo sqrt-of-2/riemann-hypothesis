@@ -55,12 +55,12 @@ namespace GlobalTheory.CompanionTheory.WeilSiegel.FreePartner
 
 theorem isReduced_tens (F E : Type) [Field F] [NumberField F] [Field E] [NumberField E] [Algebra F E]
     (R : Type) [CommRing R] [Algebra F R] [IsReduced R] : IsReduced (R ⊗[F] E) := by
-  haveI : FiniteDimensional F E := Module.Finite.of_restrictScalars_finite ℚ F E
-  haveI : Algebra.FormallyEtale F E := Algebra.FormallyEtale.of_isSeparable F E
-  haveI : Algebra.FormallySmooth F E := inferInstance
-  haveI : Algebra.FinitePresentation F E := Algebra.FinitePresentation.of_finiteType.mp inferInstance
-  haveI : Algebra.Smooth F E := ⟨inferInstance, inferInstance⟩
-  haveI : Algebra.Smooth R (R ⊗[F] E) := inferInstance
+  have : FiniteDimensional F E := Module.Finite.of_restrictScalars_finite ℚ F E
+  have : Algebra.FormallyEtale F E := Algebra.FormallyEtale.of_isSeparable F E
+  have : Algebra.FormallySmooth F E := inferInstance
+  have : Algebra.FinitePresentation F E := Algebra.FinitePresentation.of_finiteType.mp inferInstance
+  have : Algebra.Smooth F E := ⟨inferInstance, inferInstance⟩
+  have : Algebra.Smooth R (R ⊗[F] E) := inferInstance
   exact GlobalTheory.isReduced_algebra_of_smooth_of_isReduced R (R ⊗[F] E)
 
 theorem isUnit_det_JR {F E : Type} [Field F] [Field E] [Algebra F E] (R : Type) [CommRing R]
@@ -75,11 +75,11 @@ theorem isUnit_det_JR {F E : Type} [Field F] [Field E] [Algebra F E] (R : Type) 
 theorem exists_partner : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [NumberField E] [Algebra F E] (σ : E →ₐ[F] E), IsCMExt F E σ → ∀ (M : ℕ) (J : Matrix (Fin M) (Fin M) E), IsHermND σ J → ∀ (R : Type) [CommRing R] [Algebra F R] [TopologicalSpace R] [MeasurableSpace R] [BorelSpace R], IsLocR R → ∀ x : Fin M → R ⊗[F] E, LinearIndependent (R ⊗[F] E) (fun _ : Fin 1 => x) → ∃ y : Fin M → R ⊗[F] E, hR R σ J x y = 1 := by
   intro F E _ _ _ _ _ σ hσ M J hJ R _ _ _ _ _ hloc x hx
   obtain ⟨-, -, -, -, hA, hRed, -, -⟩ := hloc
-  haveI := hA
-  haveI := hRed
-  haveI : FiniteDimensional F E := Module.Finite.of_restrictScalars_finite ℚ F E
-  haveI : IsArtinianRing (R ⊗[F] E) := IsArtinianRing.of_finite R _
-  haveI : IsReduced (R ⊗[F] E) := isReduced_tens F E R
+  have := hA
+  have := hRed
+  have : FiniteDimensional F E := Module.Finite.of_restrictScalars_finite ℚ F E
+  have : IsArtinianRing (R ⊗[F] E) := IsArtinianRing.of_finite R _
+  have : IsReduced (R ⊗[F] E) := isReduced_tens F E R
   have hinv : ∀ z : R ⊗[F] E, sigR R σ (sigR R σ z) = z :=
     HermTop.sigR_sigR R (HermTop.sigma_sigma hσ)
   have hlip := FreeOpen.lip_of_artinian_reduced (R ⊗[F] E)

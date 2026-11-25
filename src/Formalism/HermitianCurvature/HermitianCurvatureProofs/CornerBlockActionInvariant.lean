@@ -71,7 +71,7 @@ theorem liftVec_eB (u : Fin (2 * ρ + k + 1) → ℂ) (x : U.Ix k p ρ) :
     simp only [liftVec, Sum.elim_inl]
     rw [dite_eq_right]
     simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inl, finSumFinEquiv_apply_left,
-      finCongr_apply, Fin.coe_cast, Fin.coe_castAdd]
+      finCongr_apply, Fin.val_cast, Fin.val_castAdd]
     omega
   · have hb := b.isLt
     simp only [liftVec, Sum.elim_inl, Sum.elim_inr]
@@ -79,15 +79,15 @@ theorem liftVec_eB (u : Fin (2 * ρ + k + 1) → ℂ) (x : U.Ix k p ρ) :
     · congr 1
       ext
       simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inl, finSumFinEquiv_apply_left,
-      finSumFinEquiv_apply_right, finCongr_apply, Fin.coe_cast, Fin.coe_castAdd, Fin.coe_natAdd]
+      finSumFinEquiv_apply_right, finCongr_apply, Fin.val_cast, Fin.val_castAdd, Fin.val_natAdd]
       omega
     · simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inl, finSumFinEquiv_apply_left,
-      finSumFinEquiv_apply_right, finCongr_apply, Fin.coe_cast, Fin.coe_castAdd, Fin.coe_natAdd]
+      finSumFinEquiv_apply_right, finCongr_apply, Fin.val_cast, Fin.val_castAdd, Fin.val_natAdd]
       omega
   · have hc := c.isLt
     simp only [liftVec, Sum.elim_inr]
     rw [dite_eq_right]
-    simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inr, finSumFinEquiv_apply_right, finCongr_apply, Equiv.refl_apply, Fin.coe_cast, Fin.coe_natAdd]
+    simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inr, finSumFinEquiv_apply_right, finCongr_apply, Equiv.refl_apply, Fin.val_cast, Fin.val_natAdd]
     omega
 
 theorem inWb_liftVec {z : Fin (2 * ρ + k + 1) → ℂ} (hz : inWb k ρ z) : inWb k (p + ρ) (liftVec k p ρ z) := by
@@ -100,28 +100,28 @@ theorem inWb_liftVec {z : Fin (2 * ρ + k + 1) → ℂ} (hz : inWb k ρ z) : inW
 theorem eI_X (a : Fin p) : eI k (p + ρ) (Fin.castAdd ρ a) = U.eB k p ρ (Sum.inl (Sum.inl a)) := by
   ext
   simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inl, finSumFinEquiv_apply_left,
-      finCongr_apply, Fin.coe_cast, Fin.coe_castAdd, eI]
+      finCongr_apply, Fin.val_cast, Fin.val_castAdd, eI]
 
 theorem eI_V (a : Fin ρ) : eI k (p + ρ) (Fin.natAdd p a) = U.eB k p ρ (Sum.inl (Sum.inr (eI k ρ a))) := by
   ext
   simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inl, finSumFinEquiv_apply_left,
-      finSumFinEquiv_apply_right, finCongr_apply, Fin.coe_cast, Fin.coe_castAdd, Fin.coe_natAdd, eI]
+      finSumFinEquiv_apply_right, finCongr_apply, Fin.val_cast, Fin.val_castAdd, Fin.val_natAdd, eI]
 
 theorem eI_V' (a : ℕ) (ha : a < ρ) (h : p + a < p + ρ) :
     eI k (p + ρ) ⟨p + a, h⟩ = U.eB k p ρ (Sum.inl (Sum.inr (eI k ρ ⟨a, ha⟩))) := by
   ext
   simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inl, finSumFinEquiv_apply_left,
-      finSumFinEquiv_apply_right, finCongr_apply, Fin.coe_cast, Fin.coe_castAdd, Fin.coe_natAdd, eI]
+      finSumFinEquiv_apply_right, finCongr_apply, Fin.val_cast, Fin.val_castAdd, Fin.val_natAdd, eI]
 
 theorem eI_X' (a : ℕ) (ha : a < p) (h : a < p + ρ) :
     eI k (p + ρ) ⟨a, h⟩ = U.eB k p ρ (Sum.inl (Sum.inl ⟨a, ha⟩)) := by
   ext
   simp only [U.eB, Equiv.trans_apply, Equiv.sumCongr_apply, Sum.map_inl, finSumFinEquiv_apply_left,
-      finCongr_apply, Fin.coe_cast, Fin.coe_castAdd, eI]
+      finCongr_apply, Fin.val_cast, Fin.val_castAdd, eI]
 
 private theorem embG_eB_inl_inl_apply_eq_ite (y : B.Mat k ρ) (a : Fin p) (x : U.Ix k p ρ) :
     U.embG k p ρ y (U.eB k p ρ (Sum.inl (Sum.inl a))) (U.eB k p ρ x) = if x = Sum.inl (Sum.inl a) then 1 else 0 := by
-  rcases x with (a' | b') | c' <;> simp [U.embG, Ux6.block3_apply, Matrix.one_apply] <;> (try split_ifs) <;> simp_all
+  rcases x with (a' | b') | c' <;> simp [U.embG, Ux6.block3_apply, Matrix.one_apply]; (try split_ifs) <;> simp_all
 
 private theorem embG_mulVec_liftVec_eB_apply (y : B.Mat k ρ) (z : Fin (2 * ρ + k + 1) → ℂ) (x : U.Ix k p ρ) :
     (U.embG k p ρ y *ᵥ liftVec k p ρ z) (U.eB k p ρ x) =
@@ -153,7 +153,7 @@ theorem ell_embG (z : Fin (2 * ρ + k + 1) → ℂ) (y : B.Mat k ρ) :
     rw [eI_X a]
     split_ifs with h
     · obtain ⟨x, hx⟩ := (U.eB k p ρ).surjective (eI k (p + ρ) ⟨(Fin.castAdd ρ a).val + 1, h⟩)
-      rw [← hx, embG_eB_inl_inl_apply_eq_ite, if_neg]
+      rw [← hx, embG_eB_inl_inl_apply_eq_ite, ite_eq_right]
       rintro rfl
       have := congrArg Fin.val hx
       simp [U.eB, eI] at this
@@ -188,7 +188,7 @@ theorem ell_muP (z : Fin (2 * ρ + k + 1) → ℂ) (hz : inWb k ρ z) (q : Matri
         have hV' : eI k (p + ρ) ⟨(Fin.castAdd ρ a).val + 1, h'⟩ =
             U.eB k p ρ (Sum.inl (Sum.inr (eI k ρ ⟨0, hρ⟩))) := by
           ext
-          simp [U.eB, eI] <;> omega
+          simp [U.eB, eI]; omega
         rw [hV']
         simp [U.muP, Ux6.block3_apply]
       · rw [muP_mulVec_liftVec_eB_apply]

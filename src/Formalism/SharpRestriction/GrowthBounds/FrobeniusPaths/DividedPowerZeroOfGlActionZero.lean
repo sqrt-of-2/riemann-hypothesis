@@ -133,12 +133,12 @@ theorem abs_entry_le_total {N n : ℕ} (mu : Fin (N + 1) → Fin n → ℤ) (i :
 
 theorem canonical_column_positive {N n : ℕ} {mu : Fin (N + 1) → Fin n → ℤ} (hd : Dominant (pEnd mu)) {c : ℤ} (hc : 1 ≤ c) :
     Ican mu c = univ.filter fun m => c ≤ pEnd mu m := by
-  unfold Ican; rw [if_pos hc]
+  unfold Ican; rw [ite_eq_left hc]
   exact Finset.filter_congr fun m _ => column_height_lt_iff hd c m
 
 theorem canonical_column_nonpositive {N n : ℕ} {mu : Fin (N + 1) → Fin n → ℤ} (hd : Dominant (pEnd mu)) {c : ℤ} (hc : ¬ 1 ≤ c) :
     Ican mu c = univ.filter fun m => ¬ c ≤ pEnd mu m := by
-  unfold Ican; rw [if_neg hc]
+  unfold Ican; rw [ite_eq_right hc]
   refine Finset.filter_congr fun m _ => ?_
   rw [← column_height_lt_iff hd c m, not_lt]
 
@@ -146,8 +146,8 @@ theorem tableau_column_canonical_eq {N n : ℕ} {mu : Fin (N + 1) → Fin n → 
     tabCol (Ican mu) c = univ.filter fun m => c ≤ pEnd mu m := by
   unfold tabCol
   by_cases hc : 1 ≤ c
-  · rw [if_pos hc, canonical_column_positive hd hc]
-  · rw [if_neg hc, canonical_column_nonpositive hd hc]
+  · rw [ite_eq_left hc, canonical_column_positive hd hc]
+  · rw [ite_eq_right hc, canonical_column_nonpositive hd hc]
     ext m; simp
 
 theorem canonical_tableau_standard {N n : ℕ} {mu : Fin (N + 1) → Fin n → ℤ} (hd : Dominant (pEnd mu)) : IsSt mu (Ican mu) := by
@@ -172,8 +172,8 @@ theorem canonical_tableau_standard {N n : ℕ} {mu : Fin (N + 1) → Fin n → �
       rcases hc with hc | hc <;> omega
   · intro c
     by_cases h1 : 1 ≤ c
-    · rw [canonical_column_positive hd h1, if_pos h1]; rfl
-    · rw [canonical_column_nonpositive hd h1, if_neg h1]
+    · rw [canonical_column_positive hd h1, ite_eq_left h1]; rfl
+    · rw [canonical_column_nonpositive hd h1, ite_eq_right h1]
       have := Finset.card_filter_add_card_filter_not (s := (univ : Finset (Fin n))) (fun m => c ≤ pEnd mu m)
       rw [Finset.card_univ, Fintype.card_fin] at this
       unfold colH
@@ -220,9 +220,9 @@ theorem derivation_divided_power_term (sg : ι → R) (src dst : ι → σ) (hs 
     by_cases hv : src l = v
     · subst hv
       have h3 := hd l l
-      simp only [h1, h2, h3, if_true, if_false]
+      simp only [h1, h2, h3, ite_true, ite_false]
       omega
-    · simp only [hv, if_false]
+    · simp only [hv, ite_false]
       omega
   have he : dividedPowerShiftedExponent src dst m f (src l) = m (src l) - f l := by
     simp [dividedPowerShiftedExponent, h1, h2]
@@ -247,13 +247,13 @@ theorem derivation_divided_power_term (sg : ι → R) (src dst : ι → σ) (hs 
     linear_combination (-(sg l ^ f l * sg l * Er)) * hc
   simp only [dividedPowerDerivation, dividedPowerTerm, LinearMap.smul_apply, LinearMap.comp_apply, LinearMap.mulLeft_apply,
     Derivation.coeFn_coe, pderiv_monomial]
-  rw [X, monomial_mul, hexp, one_mul, smul_monomial, smul_eq_mul, hcf, ← nsmul_eq_mul, map_nsmul]
+  rw [X, MvPolynomial.monomial_mul_monomial, hexp, one_mul, smul_monomial, smul_eq_mul, hcf, ← nsmul_eq_mul, map_nsmul]
 
 theorem antidiagonal_sum_reindex {N : Type*} [AddCommMonoid N] (s : Finset ι) (k : ℕ) (l : ι) (hl : l ∈ s)
     (F : (ι →₀ ℕ) → N) :
     ∑ g ∈ Finset.finsuppAntidiag s (k + 1), (g l) • F g =
       ∑ f ∈ Finset.finsuppAntidiag s k, (f l + 1) • F (f + Finsupp.single l 1) := by
-  apply Formalism.MainNotions.G.GLWeightTheory.finsuppAntidiag_succ_reindex <;> assumption
+  apply Formalism.MainNotions.G.GLWeightTheory.finsuppAntidiag_succ_reindex; assumption
 
 theorem derivation_sum_divided_power (sg : ι → R) (src dst : ι → σ) (hs : Function.Injective src) (hd : ∀ l l', dst l' ≠ src l)
     (s : Finset ι) (m : σ →₀ ℕ) (k : ℕ) :
@@ -437,7 +437,7 @@ theorem divided_power_zero_of_gl_action_zero {ι : Type*} [Fintype ι] {n : ℕ}
     divPow R LL S a b k (MvPolynomial.map (Int.castRingHom R) G) = 0 := by
   have h1 : ((glAct ℤ LL S a b : Module.End ℤ (MvPolynomial (ι × Fin n) ℤ)) ^ k) G = 0 := by
     obtain ⟨k', rfl⟩ : ∃ k', k = k' + 1 := ⟨k - 1, by omega⟩
-    rw [pow_succ, Module.End.mul_apply, hG, map_zero]
+    rw [pow_succ, mul_apply_eq_comp, hG, map_zero]
   rw [gl_action_pow_eq_factorial_smul LL S a b hab k, LinearMap.smul_apply] at h1
   have h2 : divPow ℤ LL S a b k G = 0 := by
     rcases smul_eq_zero.1 h1 with h | h
@@ -474,7 +474,7 @@ theorem exterior_sign_insert (a b : Fin n) (J : Finset (Fin n)) :
   · rw [Finset.insert_eq_of_mem ha]; simp [ha]
   · rw [Finset.filter_insert]
     by_cases hb : b < a
-    · rw [if_pos hb, Finset.card_insert_of_notMem (by simp [ha]), if_pos ⟨ha, hb⟩, pow_succ]; ring
+    · rw [ite_eq_left hb, Finset.card_insert_of_notMem (by simp [ha]), if_pos ⟨ha, hb⟩, pow_succ]; ring
     · rw [if_neg hb, if_neg (by tauto), one_mul]
 
 def exteriorWedge (P : Type*) [CommRing P] {n : ℕ} (m : Fin n) : Module.End P (Finset (Fin n) → P) where

@@ -94,14 +94,15 @@ theorem fd_yt {w : HeightOneSpectrum (𝓞 D.host.E)} {hw : w ∈ placesOver D.h
   first
   | exact FiniteDimensional.of_injective φ hφ
 
+omit hT2Core in
 private theorem continuous_of_injective_linearMap_comp {K V W G : Type*} [Field K] [TopologicalSpace K]
     {_a : AddCommMonoid V} {_m : Module K V} [TopologicalSpace V] [ContinuousAdd V] [IsModuleTopology K V]
     {_aw : AddCommMonoid W} {_mw : Module K W} [TopologicalSpace W] [IsModuleTopology K W]
     [TopologicalSpace G] (φ : V →ₗ[K] W) (hφ : Function.Injective φ) (f : G → V)
     (hf : Continuous fun g => φ (f g)) : Continuous f := by
-  letI : AddCommGroup V := Module.addCommMonoidToAddCommGroup K
-  letI : AddCommGroup W := Module.addCommMonoidToAddCommGroup K
-  haveI : ContinuousSMul K V := by
+  let : AddCommGroup V := Module.addCommMonoidToAddCommGroup K
+  let : AddCommGroup W := Module.addCommMonoidToAddCommGroup K
+  have : ContinuousSMul K V := by
     first
     | exact inferInstance
   obtain ⟨ψ, hψ⟩ := LinearMap.exists_leftInverse_of_injective φ (LinearMap.ker_eq_bot.mpr hφ)
@@ -135,7 +136,7 @@ theorem msW_eq {w : HeightOneSpectrum (𝓞 D.host.E)} (hw : w ∈ placesOver D.
   first
   | (simp only [MsW, TruncatedSeriesCountingIdentities.locC, TruncatedSeriesCountingIdentities.chi1C, rTwO, twistM, mapM, Formalism.MainNotions.N.Br.loc, Formalism.MainNotions.N.Br.locChi,
       Formalism.MainNotions.N.Br.locM, Formalism.MainNotions.N.Br.locO, Formalism.MainNotions.N.Br.chiG, MonoidHom.coe_comp, Function.comp_apply,
-      MonoidHom.coe_mk, OneHom.coe_mk, RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe,
+      MonoidHom.coe_mk, OneHom.coe_mk, RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass,
       RingEquiv.toRingHom_eq_coe, RingEquiv.coe_toRingHom,
       RingHom.mapMatrix_apply, Matrix.map_apply, Matrix.smul_apply, smul_eq_mul, MonoidHom.inv_apply,
       Units.coe_map_inv, map_mul]
@@ -152,8 +153,8 @@ theorem ytPsi_rec (hfin : Module.Finite (D.nd.O i) Dd.R') {w : HeightOneSpectrum
           ↥(OL (TruncatedSeriesCountingIdentities.CoefExt.self i w hw).LL) (selfO i hw) (Mc i Dd c) Dd.r Dd.χ (Dw i dc (idx i dc w))
           (eW i dc hw) ((c : ℕ) - 1)) :
     PsiExt (selfO i hw) Dd.r Dd.χ Dd.E (Dw i dc (idx i dc w)) (eW i dc hw) (ytY hfin hemb hc) Cd := by
-  haveI := hfin
-  haveI := nzsd_R' i Dd
+  have := hfin
+  have := nzsd_R' i Dd
   first
   | apply ytG_psi
 
@@ -179,8 +180,8 @@ theorem ytTarget_of (hfin : Module.Finite (D.nd.O i) Dd.R') (hF : TruncatedSerie
     [∀ k, SMulCommClass Dd.R' (D.nd.O i) (blockRestrictedRepresentationType (Formalism.MainNotions.N.RepresentationBoundsCohomology.blk D.R) Dd.ρk k)] (c : Fin (D.R.t + 1)) :
     YtTarget i dc r π Dd hw c := by
   intro Cd
-  haveI := hfin
-  haveI := nzsd_R' i Dd
+  have := hfin
+  have := nzsd_R' i Dd
   have hMs : ∀ x, IsCrys (Br.PD D.loc D.nbr i w hw) (matRep (MsW i r hw x)) := fun x => by
     rw [msW_eq hw x]
     exact (hG2 w hw (TruncatedSeriesCountingIdentities.CoefExt.self i w hw)).2 x

@@ -28,9 +28,9 @@ noncomputable section
 theorem det_of_key {m α : Type*} [Fintype m] [DecidableEq m] [LinearOrder α] {R : Type*} [CommRing R]
     (M : Matrix m m R) (κ : m → α) (hκ : Function.Injective κ)
     (h : ∀ i j, κ i < κ j → M i j = 0) : M.det = ∏ i, M i i := by
-  letI : LinearOrder m := LinearOrder.lift' (fun i => OrderDual.toDual (κ i))
+  let : LinearOrder m := LinearOrder.lift' (fun i => OrderDual.toDual (κ i))
     (fun a b hab => hκ (OrderDual.toDual.injective hab))
-  exact Matrix.det_of_upperTriangular (fun i j hij => h i j hij)
+  exact Matrix.det_of_isUpperTriangular (fun i j hij => h i j hij)
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {r : ℕ}
 
@@ -156,7 +156,7 @@ lemma toMatrix_luD_diag (w : Ix ι r → ℂ) (i : Ix ι r) :
       by_cases hbk : b < k <;> simp [Pi.single_apply, sl, up, hbk]
     · simp [Pi.single_apply, up, hka]
   rw [Finset.sum_congr rfl (fun k _ => hs1 k), Finset.sum_congr rfl (fun k _ => hs2 k)]
-  simp only [Finset.sum_ite_eq', Finset.mem_univ, if_true]
+  simp only [Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   split_ifs <;> simp
 
 theorem det_luD (w : Ix ι r → ℂ) :
@@ -172,7 +172,7 @@ lemma hasFDerivAt_entry1 (w : Ix ι r → ℂ) (τ : ι) (a k : Fin r) :
     HasFDerivAt (fun v : Ix ι r → ℂ => (1 + sl v τ) a k)
       (if k < a then ContinuousLinearMap.proj (R := ℝ) (φ := fun _ : Ix ι r => ℂ) (τ, a, k) else 0) w := by
   by_cases hk : k < a
-  · rw [if_pos hk]
+  · rw [ite_eq_left hk]
     have hf : (fun v : Ix ι r → ℂ => (1 + sl v τ) a k) =
         fun v => (1 : Matrix (Fin r) (Fin r) ℂ) a k + v (τ, a, k) := by
       funext v

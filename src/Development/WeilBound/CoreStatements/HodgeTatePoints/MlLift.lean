@@ -61,15 +61,15 @@ theorem spMap_field_pt {R K : Type} [CommRing R] [Field K] (δ : R →+* K) (z :
 
 theorem preimm_frac {O F : Type} [CommRing O] [Field F] (β : O →+* F)
     (h : letI := β.toAlgebra; IsFractionRing O F) : IsPreimmersion (spMap β) := by
-  letI := β.toAlgebra
-  haveI := h
+  let := β.toAlgebra
+  have := h
   exact IsPreimmersion.of_isLocalization (nonZeroDivisors O)
 
 theorem lift_frac {O F : Type} [CommRing O] [Field F] (β : O →+* F)
     (h : letI := β.toAlgebra; IsFractionRing O F) {X : Scheme.{0}} (s : X ⟶ Sp O) {K : Type} [Field K]
     (x : Sp K ⟶ X) (hx : Set.range x ⊆ Set.range (pullback.fst s (spMap β))) :
     ∃ y : Sp K ⟶ pullback s (spMap β), y ≫ pullback.fst _ _ = x := by
-  haveI : IsPreimmersion (spMap β) := preimm_frac β h
+  have : IsPreimmersion (spMap β) := preimm_frac β h
   obtain ⟨⟨p, a⟩, rfl⟩ := (X.SpecToEquivOfField K).symm.surjective x
   have hp : p ∈ Set.range (pullback.fst s (spMap β)) := by
     apply hx
@@ -84,7 +84,7 @@ theorem lift_frac {O F : Type} [CommRing O] [Field F] (β : O →+* F)
     intro b
     obtain ⟨c, hc⟩ := h1 b
     exact ⟨X.residue _ c, hc⟩
-  haveI : IsIso (Scheme.Hom.residueFieldMap (pullback.fst s (spMap β)) q) := by
+  have : IsIso (Scheme.Hom.residueFieldMap (pullback.fst s (spMap β)) q) := by
     rw [ConcreteCategory.isIso_iff_bijective]
     exact ⟨(Scheme.Hom.residueFieldMap (pullback.fst s (spMap β)) q).hom.injective, hsurj⟩
   refine ⟨Spec.map (inv (Scheme.Hom.residueFieldMap (pullback.fst s (spMap β)) q) ≫ a) ≫
@@ -95,8 +95,8 @@ theorem lift_frac {O F : Type} [CommRing O] [Field F] (β : O →+* F)
 
 theorem lift_generic_point : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] (H : Host E) (D : Datum H) (l : Geo.Tor.Level H) (Xo : Moduli D l) (c : Coeff l) (O : Type) [CommRing O] (β : O →+* c.F) (Y : Model Xo c β), (letI := β.toAlgebra; IsFractionRing O c.F) → ∀ (K : Type) [Field K] (x : Sp K ⟶ Y.X), Set.range x ⊆ Set.range Y.j → ∃ y : Sp K ⟶ Xo.XF c, y ≫ Y.j = x := by
   intro E _ _ _ H D l Xo c O _ β Y h K _ x hx
-  haveI : IsPreimmersion (spMap β) := preimm_frac β h
-  haveI := Y.jQ_open
+  have : IsPreimmersion (spMap β) := preimm_frac β h
+  have := Y.jQ_open
   have hx' : Set.range x ⊆ Set.range (pullback.fst Y.s (spMap β)) := by
     refine hx.trans ?_
     rintro _ ⟨w, rfl⟩
@@ -131,23 +131,23 @@ theorem mem_of_dense_of_max {X : Type} [TopologicalSpace X] [TopologicalSpace.No
 
 private theorem isLocallyNoetherian_of_closedImmersion_pSpace (O F : Type) [CommRing O] [Field F] (β : O →+* F) (X : Scheme.{0}) (s : X ⟶ Sp O)
     (hp : IsProjOver s) : TopologicalSpace.NoetherianSpace ↥(pullback (C := Scheme.{0}) s (spMap β)) := by
-  haveI : IsProper s := projProper O X s hp
-  haveI : IsLocallyNoetherian (pullback s (spMap β)) :=
+  have : IsProper s := projProper O X s hp
+  have : IsLocallyNoetherian (pullback s (spMap β)) :=
     LocallyOfFiniteType.isLocallyNoetherian (pullback.snd s (spMap β))
-  haveI : CompactSpace ↥(pullback (C := Scheme.{0}) s (spMap β)) :=
+  have : CompactSpace ↥(pullback (C := Scheme.{0}) s (spMap β)) :=
     QuasiCompact.compactSpace_of_compactSpace (pullback.snd s (spMap β))
-  haveI : IsNoetherian (pullback s (spMap β)) := {}
+  have : IsNoetherian (pullback s (spMap β)) := {}
   infer_instance
 
 theorem generic_points_range : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] (H : Host E) (D : Datum H) (l : Geo.Tor.Level H) (Xo : Moduli D l) (c : Coeff l) (O : Type) [CommRing O] (β : O →+* c.F) (Y : Model Xo c β), IsDomain O → (letI := β.toAlgebra; IsFractionRing O c.F) → genericPoints Y.X ⊆ Set.range Y.j := by
   intro E _ _ _ H D l Xo c O _ β Y hO h v hv
-  haveI : IsPreimmersion (spMap β) := preimm_frac β h
-  haveI := Y.flat
-  haveI := Y.jQ_open
-  haveI := isLocallyNoetherian_of_closedImmersion_pSpace O c.F β Y.X Y.s Y.proj
+  have : IsPreimmersion (spMap β) := preimm_frac β h
+  have := Y.flat
+  have := Y.jQ_open
+  have := isLocallyNoetherian_of_closedImmersion_pSpace O c.F β Y.X Y.s Y.proj
   have hβ : Function.Injective β := by
-    letI := β.toAlgebra
-    haveI := h
+    let := β.toAlgebra
+    have := h
     exact IsFractionRing.injective O c.F
   let z0 : Sp c.F := IsLocalRing.closedPoint c.F
   have hgen : (spMap β z0).asIdeal = ⊥ := by

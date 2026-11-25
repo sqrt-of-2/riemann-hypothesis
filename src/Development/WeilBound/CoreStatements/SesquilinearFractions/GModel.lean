@@ -104,19 +104,19 @@ def rho {O : Type} [CommRing O] (act : OAct O G) (M : LieModel G x E) : O →+* 
   map_one' := by
     ext e
     apply M.inj
-    letI := act.hom 1
+    let := act.hom 1
     show M.pt (diff M (act.act 1) e) = M.pt e
     rw [diff_spec, act.one, Category.comp_id]
   map_mul' a b := by
     ext e
     apply M.inj
-    letI := act.hom a; letI := act.hom b; letI := act.hom (a * b)
+    let := act.hom a; let := act.hom b; let := act.hom (a * b)
     show M.pt (diff M (act.act (a * b)) e) = M.pt (diff M (act.act a) (diff M (act.act b) e))
     rw [diff_spec, diff_spec, diff_spec, mul_comm, act.mul, Category.assoc]
   map_zero' := by
     ext e
     apply M.inj
-    letI := act.hom 0
+    let := act.hom 0
     show M.pt (diff M (act.act 0) e) = M.pt 0
     have h0 : act.act 0 = 1 := by
       have := act.add 0 0
@@ -126,12 +126,12 @@ def rho {O : Type} [CommRing O] (act : OAct O G) (M : LieModel G x E) : O →+* 
   map_add' a b := by
     ext e
     apply M.inj
-    letI := act.hom a; letI := act.hom b; letI := act.hom (a + b)
+    let := act.hom a; let := act.hom b; let := act.hom (a + b)
     show M.pt (diff M (act.act (a + b)) e) = M.pt (diff M (act.act a) e + diff M (act.act b) e)
     rw [diff_spec, M.add, diff_spec, diff_spec, act.add, comp_mul]
 
 theorem rho_isActOf {O : Type} [CommRing O] (act : OAct O G) (M : LieModel G x E) : M.IsActOf act.act (rho act M) :=
-  fun a e => by letI := act.hom a; exact diff_spec M (act.act a) e
+  fun a e => by let := act.hom a; exact diff_spec M (act.act a) e
 
 end PositivityTheory.Xgf.TransportLieModel
 
@@ -140,20 +140,20 @@ namespace PositivityTheory.Xgf
 open TransportLieModel in
 theorem lie_model_action_base_change : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] (H : Host E) (S : Scheme.{0}) (t : SAB H S) (R : Type) [CommRing R] [IsLocalRing R] (x : Sp R ⟶ S), ∃ (n : ℕ) (M : LieModel t.G x (Fin n → R)) (ρ : 𝓞 E →+* Module.End R (Fin n → R)), M.IsActOf t.act.act ρ ∧ ∀ (R' : Type) [CommRing R'] (f : R →+* R') (x' : Sp R' ⟶ S), x' = spMap f ≫ x → ∃ (M' : LieModel t.G x' (Fin n → R')) (ρ' : 𝓞 E →+* Module.End R' (Fin n → R')), M'.IsActOf t.act.act ρ' ∧ (∀ u, (M'.pt (f ∘ u)).left = spMap (dualMap f) ≫ (M.pt u).left) ∧ ∀ a u, ρ' a (f ∘ u) = f ∘ ρ a u := by
   intro E _ _ _ H S t R _ _ x
-  letI := t.grp
-  haveI := t.comm
-  haveI : Smooth t.G.hom := t.semi.smooth
+  let := t.grp
+  have := t.comm
+  have : Smooth t.G.hom := t.semi.smooth
   obtain ⟨L, _, _, ⟨M0⟩⟩ := lieModel_exists S t.G R x
   obtain ⟨hfin, hproj⟩ := _root_.GlobalTheory.CompanionTheory.Ar.lieModel_finite_projective S t.G R x L M0
-  haveI := hfin
-  haveI := hproj
-  haveI : Module.Free R L := Module.free_of_flat_of_isLocalRing
+  have := hfin
+  have := hproj
+  have : Module.Free R L := Module.free_of_flat_of_isLocalRing
   let b := Module.finBasis R L
   let M := transport M0 b.equivFun
   refine ⟨Module.finrank R L, M, rho t.act M, rho_isActOf t.act M, ?_⟩
   intro R' _ f x' hx'
   subst hx'
-  letI : Algebra R R' := f.toAlgebra
+  let : Algebra R R' := f.toAlgebra
   obtain ⟨T', _, _, _, _, M1, j, hj, hbc⟩ := FlagFib.lieModel_liftBaseChange S t.G R R' x L M0
   let b' := hbc.basis b
   let M' : LieModel t.G (spMap f ≫ x) (Fin (Module.finrank R L) → R') := transport M1 b'.equivFun

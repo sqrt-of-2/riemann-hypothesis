@@ -160,14 +160,14 @@ private theorem UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.inner
       (hsm w).preimage (continuous_const.mul continuous_id)
     convert h1 using 1
     ext g
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, map_mul, Module.End.mul_apply]
+    simp only [Set.mem_ofPred_eq, Set.mem_preimage, map_mul, mul_apply_eq_comp]
     constructor
     · intro h
-      rw [h, ← Module.End.mul_apply, ← map_mul]
+      rw [h, ← mul_apply_eq_comp, ← map_mul]
       simp
     · intro h
       have h2 := congrArg (ρ x) h
-      rw [← Module.End.mul_apply (ρ x), ← map_mul] at h2
+      rw [← mul_apply_eq_comp (ρ x), ← map_mul] at h2
       simpa using h2
   obtain ⟨t, -, ht⟩ := hK.elim_nhds_subcover (fun x : H => {g : H | ρ g w = ρ x w})
     (fun x _ => (hopen x).mem_nhds rfl)
@@ -193,18 +193,18 @@ private theorem UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.inner
     · intro y hy
       obtain ⟨l, hl, rfl⟩ := (hO y).mp hy
       refine (hO _).mpr ⟨k * l, K.mul_mem hk hl, ?_⟩
-      rw [map_mul, Module.End.mul_apply]
+      rw [map_mul, mul_apply_eq_comp]
     · intro y hy
       obtain ⟨l, hl, rfl⟩ := (hO y).mp hy
       refine (hO _).mpr ⟨k⁻¹ * l, K.mul_mem (K.inv_mem hk) hl, ?_⟩
-      rw [map_mul, Module.End.mul_apply]
+      rw [map_mul, mul_apply_eq_comp]
     · intro y _
       show ρ k⁻¹ (ρ k y) = y
-      rw [← Module.End.mul_apply, ← map_mul]
+      rw [← mul_apply_eq_comp, ← map_mul]
       simp
     · intro y _
       show ρ k (ρ k⁻¹ y) = y
-      rw [← Module.End.mul_apply, ← map_mul]
+      rw [← mul_apply_eq_comp, ← map_mul]
       simp
     · intro y _
       rfl
@@ -234,7 +234,7 @@ theorem UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.isSemisimple 
     rw [Submodule.mem_orthogonal] at hv ⊢
     intro w hw
     have h1 : ρ g (ρ g⁻¹ w) = w := by
-      rw [← Module.End.mul_apply, ← map_mul]
+      rw [← mul_apply_eq_comp, ← map_mul]
       simp
     rw [← h1, hun]
     exact hv _ (W.apply_mem_toSubmodule g⁻¹ hw)
@@ -252,7 +252,7 @@ theorem UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.isSemisimple 
         mul_mem' := by
           intro a b ha hb
           show ρ (a * b) v = v
-          rw [map_mul, Module.End.mul_apply, show ρ b v = v from hb, show ρ a v = v from ha]
+          rw [map_mul, mul_apply_eq_comp, show ρ b v = v from hb, show ρ a v = v from ha]
         one_mem' := by
           show ρ 1 v = v
           simp
@@ -260,17 +260,17 @@ theorem UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.isSemisimple 
           intro a ha
           show ρ a⁻¹ v = v
           have h2 : ρ a⁻¹ (ρ a v) = v := by
-            rw [← Module.End.mul_apply, ← map_mul]
+            rw [← mul_apply_eq_comp, ← map_mul]
             simp
           rwa [show ρ a v = v from ha] at h2 }
     let K : Subgroup H := K₀ ⊓ S
     have hKo : IsOpen (K : Set H) := hK₀o.inter (hadm.1 v)
     have hKc : IsCompact (K : Set H) :=
       hK₀c.of_isClosed_subset (Subgroup.isClosed_of_isOpen K hKo) (fun _ h => h.1)
-    haveI : FiniteDimensional ℂ ↥(UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.fixed ρ K) := hadm.2 K hKo hKc
+    have : FiniteDimensional ℂ ↥(UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.fixed ρ K) := hadm.2 K hKo hKc
     let A : Submodule ℂ V := W.toSubmodule ⊓ UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.fixed ρ K
-    haveI : FiniteDimensional ℂ ↥A := Submodule.finiteDimensional_inf_right _ _
-    haveI : CompleteSpace ↥A := FiniteDimensional.complete ℂ ↥A
+    have : FiniteDimensional ℂ ↥A := Submodule.finiteDimensional_inf_right _ _
+    have : CompleteSpace ↥A := FiniteDimensional.completeSpace ℂ ↥A
     obtain ⟨a, ha, u, hu, hv⟩ := A.exists_add_mem_mem_orthogonal v
     have hafix : ∀ k ∈ K, ρ k a = a := UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.mem_fixed.mp ha.2
     have hufix : ∀ k ∈ K, ρ k u = u := by
@@ -318,10 +318,11 @@ theorem isSemisimple (ha : IsAdmissible ρ) (hu : ∀ g x y, ⟪ρ g x, ρ g y�
     (ho : IsOpen (K₀ : Set H)) (hc : IsCompact (K₀ : Set H)) : ρ.IsSemisimpleRepresentation :=
   _root_.UpperTheory.Reformulated.B.AdmissibleSmoothRepresentations.isSemisimple ha hu ho hc
 
-theorem mem_irrSum {W X : Type} [AddCommGroup W] [Module ℂ W] [AddCommGroup X] [Module ℂ X] {σ : Representation ℂ H W}
+omit [IsTopologicalGroup H] in
+theorem mem_irrSum [IsTopologicalGroup H] {W X : Type} [AddCommGroup W] [Module ℂ W] [AddCommGroup X] [Module ℂ X] {σ : Representation ℂ H W}
     {ρ : Representation ℂ H X} {C : Submodule ℂ X} (h1 : σ.IsSemisimpleRepresentation) (h2 : IsAdmissible σ)
     {f : W →ₗ[ℂ] X} (hf : f ∈ homInto σ ρ C) (s : W) : f s ∈ irrSum ρ C := by
-  haveI := (Representation.isSemisimpleRepresentation_iff_isSemisimpleModule_asModule σ).1 h1
+  have := (Representation.isSemisimpleRepresentation_iff_isSemisimpleModule_asModule σ).1 h1
   have hs : σ.asModuleEquiv.symm s ∈ sSup {m : Submodule (MonoidAlgebra ℂ H) σ.asModule |
       IsSimpleModule (MonoidAlgebra ℂ H) m} := by
     rw [IsSemisimpleModule.sSup_simples_eq_top]
@@ -332,7 +333,7 @@ theorem mem_irrSum {W X : Type} [AddCommGroup W] [Module ℂ W] [AddCommGroup X]
     obtain ⟨U, rfl⟩ := Subrepresentation.subrepresentationSubmoduleOrderIso.surjective m
     have hU : U.toRepresentation.IsIrreducible := by
       rw [Representation.irreducible_iff_isSimpleModule_asModule]
-      haveI : IsSimpleModule (MonoidAlgebra ℂ H) U.asSubmodule := hm
+      have : IsSimpleModule (MonoidAlgebra ℂ H) U.asSubmodule := hm
       exact IsSimpleModule.congr (GlobalTheory.RepCount.subEquiv U)
     exact GlobalTheory.RepCount.apply_mem_irrSum hU
       (GlobalTheory.RepCount.isAdmissible_of_injective U.toSubmodule.subtype (fun _ _ => rfl) Subtype.val_injective h2)
@@ -381,14 +382,14 @@ theorem isDecomp_of_form {X : Type} [AddCommGroup X] [Module ℂ X] (ρ : Repres
         exact Subtype.ext_iff
       rw [this]
       exact v.2.2
-    · haveI := hf K hK
+    · have := hf K hK
       refine FiniteDimensional.of_injective (A.toSubmodule.subtype.restrict (p := fixed A.toRepresentation K)
         (q := C ⊓ fixed ρ K) fun v hv => ⟨v.2.1, fun k => congrArg Subtype.val (hv k)⟩) fun a b h => ?_
       have h' : (a.1 : X) = b.1 := congrArg (fun z : ↥(C ⊓ fixed ρ K) => (z : X)) h
       exact Subtype.ext (Subtype.ext h')
   have hs : A.toRepresentation.IsSemisimpleRepresentation := by
-    letI := cd.toNormedAddCommGroup
-    letI := InnerProductSpace.ofCore cd.toCore
+    let := cd.toNormedAddCommGroup
+    let := InnerProductSpace.ofCore cd.toCore
     exact isSemisimple ha (fun g a b => hi g _ a.2.1 _ b.2.1) ho hc
   exact mem_irrSum hs ha (f := A.toSubmodule.subtype) ⟨fun s => s.2.1, fun _ _ => rfl⟩ ⟨x, hx, hx'⟩
 
@@ -420,7 +421,7 @@ theorem finiteDimensional_fixed (hP : GlobalTheory.Published.HarishChandraFinite
   obtain ⟨N, hN, e⟩ := isOpen_induced_iff.1 hK
   have hmem : ∀ k : GfC V, (k : GA D V) ∈ N ↔ k ∈ K := fun k => Set.ext_iff.1 e k
   obtain ⟨U, hU, hUN⟩ := GlobalTheory.Mem.SmallSub.exists_open_subgroup_finite_subset D V N (hN.mem_nhds ((hmem 1).2 K.one_mem))
-  haveI := GlobalTheory.MultFinite.hcFinite (M := M) (J := N ∩ GfC V) (χ := fun _ => 1) hP hθ
+  have := GlobalTheory.MultFinite.hcFinite (M := M) (J := N ∩ GfC V) (χ := fun _ => 1) hP hθ
     ⟨U, hU, fun k hk hf => ⟨⟨hUN k hk hf, hf⟩, rfl⟩⟩
   refine Submodule.finiteDimensional_of_le (S₂ := Mult θ M (N ∩ GfC V) fun _ => 1) fun T hT => Submodule.subset_span ?_
   have h := (GlobalTheory.MultMem.mem_mult_iff ..).1 hT.1
@@ -433,9 +434,9 @@ theorem exists_compact_open (V : HSp D) : ∃ K : Subgroup (GfC V), IsOpen (K : 
   obtain ⟨_, _, -⟩ := GlobalTheory.Ker.CongTop.adelicUnitary_top_cong D V
   obtain ⟨N, hN, h1⟩ := exists_compact_mem_nhds (1 : GA D V)
   obtain ⟨U, hU, hUN⟩ := GlobalTheory.Mem.SmallSub.exists_open_subgroup_finite_subset D V N h1
-  refine ⟨U.subgroupOf (GfC V), hU.preimage continuous_subtype_val, ?_⟩
+  refine ⟨U.subgroupOf (GfC V), hU.preimage continuous_subtypeVal, ?_⟩
   refine ((GlobalTheory.Ker.CongTop.isClosed_GfC V).isClosedEmbedding_subtypeVal.isCompact_preimage hN).of_isClosed_subset
-    ((U.isClosed_of_isOpen hU).preimage continuous_subtype_val) fun k hk => hUN k hk k.2
+    ((U.isClosed_of_isOpen hU).preimage continuous_subtypeVal) fun k hk => hUN k hk k.2
 
 theorem cuspDecomp : GlobalTheory.Published.HarishChandraFinite → GlobalTheory.Published.CuspRapidDecay → ∀ D : D7, CuspDecomp D := by
   intro hP hQ D θ hθ V S M

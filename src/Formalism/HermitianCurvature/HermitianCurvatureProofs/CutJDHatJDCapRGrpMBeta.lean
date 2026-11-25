@@ -77,14 +77,14 @@ theorem w1_mulVec_eq_self_of_eI_esI_eq_zero (b : Fin r) (c : ℂ) (v : Fin (2 * 
     (h2 : v (esI k r b) = 0) : Q.w1 k r b c *ᵥ v = v := by
   funext p
   rw [Matrix.mulVec, dotProduct, Finset.sum_eq_single (Formalism.FourierDecayAlt.P.Qx3.sw k b p)]
-  · rw [Formalism.FourierDecayAlt.P.Qx3.w1_apply, if_pos (Formalism.FourierDecayAlt.P.Qx3.sw_sw b p).symm]
+  · rw [Formalism.FourierDecayAlt.P.Qx3.w1_apply, ite_eq_left (Formalism.FourierDecayAlt.P.Qx3.sw_sw b p).symm]
     rcases Formalism.FourierDecayAlt.P.Qx3.tri b p with h | h | ⟨h1', h2'⟩
     · subst h; rw [Formalism.FourierDecayAlt.P.Qx3.sw_e, h2, h1, mul_zero]
     · subst h; rw [Formalism.FourierDecayAlt.P.Qx3.sw_es, h1, h2, mul_zero]
     · rw [Formalism.FourierDecayAlt.P.Qx3.sw_o b h1' h2', Formalism.FourierDecayAlt.P.Qx3.dd_o b c h1' h2', one_mul]
   · intro q _ hq
     have : p ≠ Formalism.FourierDecayAlt.P.Qx3.sw k b q := fun h => hq (by rw [h, Formalism.FourierDecayAlt.P.Qx3.sw_sw])
-    rw [Formalism.FourierDecayAlt.P.Qx3.w1_apply, if_neg this, zero_mul]
+    rw [Formalism.FourierDecayAlt.P.Qx3.w1_apply, ite_eq_right this, zero_mul]
   · intro h; exact absurd (Finset.mem_univ _) h
 
 theorem wl_fixv (c : Fin r → ℂ) (L : List (Fin r)) (v : Fin (2 * r + k + 1) → ℂ)
@@ -104,12 +104,12 @@ theorem wl_es (c : Fin r → ℂ) (L : List (Fin r)) (hL : L.Nodup) (a : Fin r) 
     rw [List.map_cons, List.prod_cons, ← Matrix.mulVec_mulVec, ih hL.2]
     by_cases hab : a = b
     · subst hab
-      rw [if_neg hL.1, w1_mulVec_bvec_esI, if_pos List.mem_cons_self]
+      rw [ite_eq_right hL.1, w1_mulVec_bvec_esI, ite_eq_left List.mem_cons_self]
     · have hmem : (a ∈ b :: L) ↔ a ∈ L := by simp [hab]
       by_cases h1 : a ∈ L
-      · rw [if_pos h1, if_pos (hmem.2 h1), Matrix.mulVec_smul, Formalism.FourierDecayAlt.P.Qx3.reflection_fixes_basis_vector b _
+      · rw [ite_eq_left h1, ite_eq_left (hmem.2 h1), Matrix.mulVec_smul, Formalism.FourierDecayAlt.P.Qx3.reflection_fixes_basis_vector b _
           (fun h => hab (eI_inj h)) (fun h => _root_.Formalism.FourierDecayAlt.P.Dx2.DF.eI_ne_esI a b h)]
-      · rw [if_neg h1, if_neg (fun h => h1 (hmem.1 h)), Formalism.FourierDecayAlt.P.Qx3.reflection_fixes_basis_vector b _
+      · rw [ite_eq_right h1, ite_eq_right (fun h => h1 (hmem.1 h)), Formalism.FourierDecayAlt.P.Qx3.reflection_fixes_basis_vector b _
           (fun h => _root_.Formalism.FourierDecayAlt.P.Dx2.DF.eI_ne_esI b a h.symm) (fun h => hab (esI_inj h))]
 
 theorem wc_list (c : Fin r → ℂ) : Q.wCell k r (Fin.last r) c =
@@ -123,7 +123,7 @@ theorem wc_mem (a : Fin r) : a ∈ ((List.finRange r).filter fun a : Fin r => a.
 
 theorem W_es (c : Fin r → ℂ) (a : Fin r) :
     Q.wCell k r (Fin.last r) c *ᵥ bvec (esI k r a) = (star (c a))⁻¹ • bvec (eI k r a) := by
-  rw [wc_list, wl_es c _ wc_nodup, if_pos (wc_mem a)]
+  rw [wc_list, wl_es c _ wc_nodup, ite_eq_left (wc_mem a)]
 
 theorem W_fix (c : Fin r → ℂ) (v : Fin (2 * r + k + 1) → ℂ) (hv : ∀ b, v (eI k r b) = 0 ∧ v (esI k r b) = 0) :
     Q.wCell k r (Fin.last r) c *ᵥ v = v := by
@@ -246,7 +246,7 @@ theorem arow_zero (c : Fin r → ℂ) (h0 : 0 < k + 1) :
     Arow c (colsV k r ⟨0, h0⟩) ⟨0, h0⟩ = Matrix.diagonal fun p => if h : p.val < r then c ⟨p.val, h⟩ else 1 := by
   ext p q
   simp only [Arow, Matrix.of_apply, Matrix.diagonal_apply, colsV, eI, wI, Fin.ext_iff, Nat.not_lt_zero,
-    if_false]
+    ite_false]
   split_ifs <;> first | rfl | omega
 
 end dets
@@ -261,15 +261,15 @@ theorem arow_succ (c : Fin r → ℂ) (t : ℕ) (ht : t + 1 < k + 1) :
   simp only [Matrix.submatrix_apply, id, Equiv.swap_apply_def]
   by_cases h1 : p = (⟨r, by omega⟩ : Fin (2 * r + k + 1))
   · subst h1
-    simp only [if_true]
+    simp only [ite_true]
     simp only [Arow, Matrix.of_apply, colsV, wI, Fin.ext_iff]
     split_ifs <;> first | rfl | omega
   · by_cases h2 : p = (⟨r + 1 + t, by omega⟩ : Fin (2 * r + k + 1))
     · subst h2
-      simp only [if_neg h1, if_true]
+      simp only [ite_eq_right h1, ite_true]
       simp only [Arow, Matrix.of_apply, colsV, wI, Fin.ext_iff]
       split_ifs <;> first | rfl | omega
-    · simp only [if_neg h1, if_neg h2]
+    · simp only [ite_eq_right h1, ite_eq_right h2]
       have h1' : p.val ≠ r := fun h => h1 (Fin.ext h)
       have h2' : p.val ≠ r + 1 + t := fun h => h2 (Fin.ext h)
       simp only [Arow, Matrix.of_apply, colsV, wI, Fin.ext_iff]
@@ -296,8 +296,8 @@ theorem det_arow_ne (c : Fin r → ℂ) (J : Fin (r + k) → Fin (2 * r + k + 1)
     refine det_prop (p := ⟨(J j).val, by omega⟩) (p' := ⟨r + 1 + j.val, by omega⟩)
       (by simp only [ne_eq, Fin.ext_iff]; omega) (c ⟨(J j).val, hj⟩) ?_
     funext q
-    simp only [Arow, Matrix.of_apply, Pi.smul_apply, smul_eq_mul, dif_pos hj,
-      dif_neg (show ¬ (r + 1 + j.val < r) by omega), dif_neg (show ¬ (r + 1 + j.val = r) by omega), hJj]
+    simp only [Arow, Matrix.of_apply, Pi.smul_apply, smul_eq_mul, dite_eq_left hj,
+      dite_eq_right (show ¬ (r + 1 + j.val < r) by omega), dite_eq_right (show ¬ (r + 1 + j.val = r) by omega), hJj]
     have : eI k r ⟨(J j).val, hj⟩ = J j := Fin.ext rfl
     rw [this]
     split_ifs <;> simp
@@ -308,9 +308,9 @@ theorem det_arow_ne (c : Fin r → ℂ) (J : Fin (r + k) → Fin (2 * r + k + 1)
       refine Matrix.det_zero_of_row_eq (i := ⟨r, by omega⟩) (j := ⟨r + 1 + j.val, by omega⟩)
         (by simp only [ne_eq, Fin.ext_iff]; omega) ?_
       funext q
-      simp only [Arow, Matrix.of_apply, dif_neg (show ¬ (r < r) by omega),
-        dif_neg (show ¬ (r + 1 + j.val < r) by omega), dif_neg (show ¬ (r + 1 + j.val = r) by omega), hJj, hj]
-      exact dif_pos trivial
+      simp only [Arow, Matrix.of_apply, dite_eq_right (show ¬ (r < r) by omega),
+        dite_eq_right (show ¬ (r + 1 + j.val < r) by omega), dite_eq_right (show ¬ (r + 1 + j.val = r) by omega), hJj, hj]
+      exact dite_eq_left trivial
     · push Not at hB
       exfalso
       apply hne
@@ -331,7 +331,7 @@ theorem det_arow_ne (c : Fin r → ℂ) (J : Fin (r + k) → Fin (2 * r + k + 1)
       have hrange : Set.range J = Set.range (colsV k r t) := by
         have := congrArg (fun s : Finset (Fin (2 * r + k + 1)) => (s : Set (Fin (2 * r + k + 1)))) heq
         simpa [Finset.coe_image] using this
-      exact (hJ.range_inj (colsV_strictMono t)).1 hrange
+      exact (hJ.range_inj_of_wellFoundedLT (colsV_strictMono t)).1 hrange
 
 end dets3
 
@@ -344,13 +344,13 @@ theorem arow_update (c : Fin r → ℂ) (J : Fin (r + k) → Fin (2 * r + k + 1)
   ext p q
   rw [Matrix.updateRow_apply]
   by_cases hp : p = (⟨r, by omega⟩ : Fin (2 * r + k + 1))
-  · rw [if_pos hp]
+  · rw [ite_eq_left hp]
     subst hp
-    simp only [Arow, Matrix.of_apply, dif_neg (lt_irrefl r), bvec, Pi.single_apply]
-    rw [dif_pos trivial]
-  · rw [if_neg hp]
+    simp only [Arow, Matrix.of_apply, dite_eq_right (lt_irrefl r), bvec, Pi.single_apply]
+    rw [dite_eq_left trivial]
+  · rw [ite_eq_right hp]
     have hp' : p.val ≠ r := fun h => hp (Fin.ext h)
-    simp only [Arow, Matrix.of_apply, dif_neg hp']
+    simp only [Arow, Matrix.of_apply, dite_eq_right hp']
 
 theorem yrow_sum (hg : g ∈ Q.Glev k r (Fin.last r)) {z : Fin (2 * r + k + 1) → ℂ} (hz : inWb k r z) :
     (fun q => herm (Hpk k r) (g *ᵥ bvec q) z) =
@@ -361,9 +361,9 @@ theorem yrow_sum (hg : g ∈ Q.Glev k r (Fin.last r)) {z : Fin (2 * r + k + 1) �
   by_cases hq : r ≤ q.val ∧ q.val ≤ r + k
   · obtain ⟨t0, rfl⟩ : ∃ t0 : Fin (k + 1), q = wI k r t0 :=
       ⟨⟨q.val - r, by omega⟩, Fin.ext (by simp only [wI]; omega)⟩
-    rw [Finset.sum_eq_single t0 (fun t _ ht => if_neg (fun h => ht (by
-      simp only [wI, Fin.ext_iff] at h; exact Fin.ext (by omega)))) (fun h => absurd (Finset.mem_univ _) h), if_pos rfl]
-  · rw [Finset.sum_eq_zero (fun t _ => if_neg (fun h => hq (by
+    rw [Finset.sum_eq_single t0 (fun t _ ht => ite_eq_right (fun h => ht (by
+      simp only [wI, Fin.ext_iff] at h; exact Fin.ext (by omega)))) (fun h => absurd (Finset.mem_univ _) h), ite_eq_left rfl]
+  · rw [Finset.sum_eq_zero (fun t _ => ite_eq_right (fun h => hq (by
       rw [h]; simp only [wI]; have := t.isLt; omega)))]
     by_cases h1 : q.val < r
     · have : q = eI k r ⟨q.val, h1⟩ := Fin.ext rfl
@@ -384,17 +384,17 @@ theorem alJ_cell (hc : c ∈ OmX r) (hg : g ∈ Q.Glev k r (Fin.last r)) {z : Fi
     ext p q
     rw [Matrix.updateRow_apply]
     by_cases hp : p = (⟨r, by omega⟩ : Fin (2 * r + k + 1))
-    · rw [if_pos hp]
+    · rw [ite_eq_left hp]
       subst hp
-      simp only [Matrix.of_apply, rowV, dif_neg (lt_irrefl r)]
-      rw [dif_pos trivial]
+      simp only [Matrix.of_apply, rowV, dite_eq_right (lt_irrefl r)]
+      rw [dite_eq_left trivial]
       exact herm_wCell_last_mul_mulVec_eq_of_inWb hc hz (bvec q)
-    · rw [if_neg hp]
+    · rw [ite_eq_right hp]
       have hp' : p.val ≠ r := fun h => hp (Fin.ext h)
       simp only [Matrix.of_apply, rowV, Arow]
       by_cases h1 : p.val < r
-      · rw [dif_pos h1, dif_pos h1, row_e hc hg]
-      · rw [dif_neg h1, dif_neg h1, dif_neg hp', dif_neg hp']
+      · rw [dite_eq_left h1, dite_eq_left h1, row_e hc hg]
+      · rw [dite_eq_right h1, dite_eq_right h1, dite_eq_right hp', dite_eq_right hp']
   unfold alJ
   rw [hM, det_updateRow_sum' _ _ Finset.univ]
   refine Finset.sum_congr rfl fun t _ => ?_
@@ -410,8 +410,8 @@ theorem alJ_val (hc : c ∈ OmX r) (hg : g ∈ Q.Glev k r (Fin.last r)) {z : Fin
   by_cases h : J = colsV k r s
   · subst h
     have hd : (Arow c (colsV k r s) s).det = (-1) ^ (s : ℕ) * ∏ a, c a := det_arow_colsV c s.val s.isLt
-    rw [hd, if_pos rfl, mul_one]
-  · rw [det_arow_ne c J hJ s h, if_neg h, mul_zero, mul_zero]
+    rw [hd, ite_eq_left rfl, mul_one]
+  · rw [det_arow_ne c J hJ s h, ite_eq_right h, mul_zero, mul_zero]
 
 end cell
 
@@ -437,9 +437,9 @@ theorem mirror_residue_beta_holds : JDRvBeta := by
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl fun s _ => ?_
     rw [Finset.sum_eq_single (colsV k r s)]
-    · rw [if_pos rfl, mul_one]
+    · rw [ite_eq_left rfl, mul_one]
     · intro J _ hJ
-      rw [if_neg hJ, mul_zero, mul_zero, zero_smul]
+      rw [ite_eq_right hJ, mul_zero, mul_zero, zero_smul]
     · intro h
       exact absurd (RvB.colsV_mem_jSet s) h
   have hR : NLv k r z z' 0 (Q.uC k r (Fin.last r) Y - 1) f (Q.wCell k r (Fin.last r) c * g) =

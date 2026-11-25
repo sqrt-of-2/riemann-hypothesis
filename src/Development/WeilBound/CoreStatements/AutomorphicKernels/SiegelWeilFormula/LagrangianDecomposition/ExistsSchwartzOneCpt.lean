@@ -102,7 +102,7 @@ theorem continuous_sumElim_zero (X : Type) [TopologicalSpace X] [Zero X] (κ' κ
 
 theorem sb_slice {κ' κ'' : Type} {g : (κ' ⊕ κ'' → Af F) → ℂ} (hg : g ∈ SB (κ' ⊕ κ'' → Af F)) :
     (fun x : κ' → Af F => g (Sum.elim x 0)) ∈ SB (κ' → Af F) := by
-  haveI : T2Space (Af F) := GlobalTheory.AdelicUnitaryTop.t2Space_finiteAdeleRing_of_numberField F
+  have : T2Space (Af F) := GlobalTheory.AdelicUnitaryTop.t2Space_finiteAdeleRing_of_numberField F
   have hc := continuous_sumElim_zero (Af F) κ' κ''
   have hemb : IsClosedEmbedding fun x : κ' → Af F => (Sum.elim x 0 : κ' ⊕ κ'' → Af F) :=
     Function.LeftInverse.isClosedEmbedding (f := fun y : κ' ⊕ κ'' → Af F => y ∘ Sum.inl)
@@ -170,12 +170,12 @@ theorem exists_one (κ'' : Type) [Fintype κ''] : ∃ φ₀ ∈ schA F κ'', φ�
   have hmem : pureA F f₀ g₀ ∈ schA F κ'' := GlobalTheory.CharInvForm.mem_schA f₀ hg₀
   have h0 : pureA F f₀ g₀ 0 = 1 := by rw [GlobalTheory.CharInvForm.pureA_zero, hf₀, hg₀1, one_mul]
   refine ⟨pureA F f₀ g₀, hmem, h0, fun μ'' hμ => ?_⟩
-  haveI : SecondCountableTopology (AF F) := GlobalTheory.AdelicUnitaryTop.secondCountable_adele F
-  haveI : LocallyCompactSpace (AF F) := GlobalTheory.AdelicUnitaryTop.locallyCompact_adele F
-  haveI : T2Space (AF F) := GlobalTheory.AdelicUnitaryTop.t2Space_adeleRing_numberField F
-  letI m2 : MeasurableSpace (κ'' → AF F) := borel _
-  haveI : BorelSpace (κ'' → AF F) := ⟨rfl⟩
-  haveI := hμ
+  have : SecondCountableTopology (AF F) := GlobalTheory.AdelicUnitaryTop.secondCountable_adele F
+  have : LocallyCompactSpace (AF F) := GlobalTheory.AdelicUnitaryTop.locallyCompact_adele F
+  have : T2Space (AF F) := GlobalTheory.AdelicUnitaryTop.t2Space_adeleRing_numberField F
+  let m2 : MeasurableSpace (κ'' → AF F) := borel _
+  have : BorelSpace (κ'' → AF F) := ⟨rfl⟩
+  have := hμ
   set φ₀ := pureA F f₀ g₀ with hφ₀
   have hc : Continuous φ₀ := continuous_of_mem hmem
 
@@ -213,7 +213,7 @@ theorem exists_one (κ'' : Type) [Fintype κ''] : ∃ φ₀ ∈ schA F κ'', φ�
       · rw [Set.indicator_of_mem hx]
         have : (1 / 2 : ℝ) < ‖φ₀ x‖ := hx
         have hle : ENNReal.ofReal (1 / 2) ≤ ‖φ₀ x‖ₑ := by
-          rw [← ofReal_norm_eq_enorm]
+          rw [← ofReal_norm]
           exact ENNReal.ofReal_le_ofReal this.le
         exact pow_le_pow_left₀ bot_le hle 2
       · rw [Set.indicator_of_notMem hx]
@@ -223,7 +223,7 @@ theorem exists_one (κ'' : Type) [Fintype κ''] : ∃ φ₀ ∈ schA F κ'', φ�
     have hKm : MeasurableSet K := hK.isClosed.measurableSet
     refine ne_of_lt (lt_of_le_of_lt (lintegral_mono (g := K.indicator fun _ => ENNReal.ofReal C ^ 2) fun x => ?_) ?_)
     · by_cases hx : x ∈ K
-      · rw [Set.indicator_of_mem hx, ← ofReal_norm_eq_enorm]
+      · rw [Set.indicator_of_mem hx, ← ofReal_norm]
         exact pow_le_pow_left₀ bot_le (ENNReal.ofReal_le_ofReal (hC x)) 2
       · rw [Set.indicator_of_notMem hx, hzero x hx]
         simp
@@ -236,20 +236,20 @@ theorem box_norm {κ' κ'' : Type} [Fintype κ'] [Fintype κ''] (μ' : @Measure 
     ∃ μ : @Measure (κ' ⊕ κ'' → AF F) (borel _), @Measure.IsAddHaarMeasure _ _ _ (borel _) μ ∧
       ∀ φ' ∈ schA F κ', ∀ φ'' ∈ schA F κ'',
         ∫⁻ x, ‖boxFun φ' φ'' x‖ₑ ^ 2 ∂μ = (∫⁻ x, ‖φ' x‖ₑ ^ 2 ∂μ') * ∫⁻ x, ‖φ'' x‖ₑ ^ 2 ∂μ'' := by
-  haveI : SecondCountableTopology (AF F) := GlobalTheory.AdelicUnitaryTop.secondCountable_adele F
-  haveI : LocallyCompactSpace (AF F) := GlobalTheory.AdelicUnitaryTop.locallyCompact_adele F
-  haveI : T2Space (AF F) := GlobalTheory.AdelicUnitaryTop.t2Space_adeleRing_numberField F
-  letI m1 : MeasurableSpace (κ' → AF F) := borel _
-  haveI : BorelSpace (κ' → AF F) := ⟨rfl⟩
-  letI m2 : MeasurableSpace (κ'' → AF F) := borel _
-  haveI : BorelSpace (κ'' → AF F) := ⟨rfl⟩
-  letI m3 : MeasurableSpace (κ' ⊕ κ'' → AF F) := borel _
-  haveI : BorelSpace (κ' ⊕ κ'' → AF F) := ⟨rfl⟩
-  haveI : MeasurableAdd (κ' → AF F) := ContinuousAdd.measurableAdd
-  haveI : MeasurableAdd (κ'' → AF F) := ContinuousAdd.measurableAdd
-  haveI := h'
-  haveI := h''
-  haveI : (μ'.prod μ'').IsAddHaarMeasure := Measure.prod.instIsAddHaarMeasure μ' μ''
+  have : SecondCountableTopology (AF F) := GlobalTheory.AdelicUnitaryTop.secondCountable_adele F
+  have : LocallyCompactSpace (AF F) := GlobalTheory.AdelicUnitaryTop.locallyCompact_adele F
+  have : T2Space (AF F) := GlobalTheory.AdelicUnitaryTop.t2Space_adeleRing_numberField F
+  let m1 : MeasurableSpace (κ' → AF F) := borel _
+  have : BorelSpace (κ' → AF F) := ⟨rfl⟩
+  let m2 : MeasurableSpace (κ'' → AF F) := borel _
+  have : BorelSpace (κ'' → AF F) := ⟨rfl⟩
+  let m3 : MeasurableSpace (κ' ⊕ κ'' → AF F) := borel _
+  have : BorelSpace (κ' ⊕ κ'' → AF F) := ⟨rfl⟩
+  have : MeasurableAdd (κ' → AF F) := ContinuousAdd.measurableAdd
+  have : MeasurableAdd (κ'' → AF F) := ContinuousAdd.measurableAdd
+  have := h'
+  have := h''
+  have : (μ'.prod μ'').IsAddHaarMeasure := Measure.prod.instIsAddHaarMeasure μ' μ''
   let e : ((κ' → AF F) × (κ'' → AF F)) ≃+ (κ' ⊕ κ'' → AF F) :=
     { toFun := fun p => Sum.elim p.1 p.2
       invFun := fun x => (x ∘ Sum.inl, x ∘ Sum.inr)
@@ -269,14 +269,14 @@ theorem box_norm {κ' κ'' : Type} [Fintype κ'] [Fintype κ''] (μ' : @Measure 
   rw [hint]
   have e1 : ∀ p : (κ' → AF F) × (κ'' → AF F), ‖boxFun φ' φ'' (e p)‖ₑ ^ 2 = ‖φ' p.1‖ₑ ^ 2 * ‖φ'' p.2‖ₑ ^ 2 := by
     intro p
-    rw [show boxFun φ' φ'' (e p) = φ' p.1 * φ'' p.2 from rfl, enorm_mul, mul_pow]
+    rw [show boxFun φ' φ'' (e p) = φ' p.1 * φ'' p.2 from rfl, eNorm_mul, mul_pow]
   simp_rw [e1]
-  exact lintegral_prod_mul ((continuous_of_mem hφ').measurable.enorm.pow_const 2).aemeasurable
-    ((continuous_of_mem hφ'').measurable.enorm.pow_const 2).aemeasurable
+  exact lintegral_prod_mul ((continuous_of_mem hφ').measurable.eNorm.pow_const 2).aemeasurable
+    ((continuous_of_mem hφ'').measurable.eNorm.pow_const 2).aemeasurable
 
 end SliceP
 
-theorem sliceFacts : SliceFacts := fun F _ _ κ' κ'' _ _ =>
+theorem sliceFacts : SliceFacts := fun _F _ _ _κ' κ'' _ _ =>
   ⟨SliceP.slice_mem, SliceP.slice_adm, SliceP.exists_one κ'', fun μ' μ'' h' h'' => SliceP.box_norm μ' μ'' h' h''⟩
 
 end PositivityTheory.SiegelWeilFormula.Ald

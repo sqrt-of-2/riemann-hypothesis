@@ -104,16 +104,16 @@ private theorem generic_finite (A B : Type) [CommRing A] [IsDomain A] [CommRing 
       exact h1
     intro b
     exact hle (hs ▸ Algebra.mem_top)
-  haveI : Algebra.IsIntegral A' B' := ⟨fun x => by
+  have : Algebra.IsIntegral A' B' := ⟨fun x => by
     obtain ⟨⟨b, ⟨_, n, rfl⟩⟩, hx⟩ := IsLocalization.surj (Submonoid.powers (algebraMap A B y)) x
     refine hcancel n x ?_
     simp only [map_pow, hyy] at hx
     rw [hx]
     exact hB1 b⟩
-  haveI : Algebra.FiniteType B B' := IsLocalization.finiteType_of_monoid_fg
+  have : Algebra.FiniteType B B' := IsLocalization.finiteType_of_monoid_fg
     (Submonoid.powers (algebraMap A B y)) B'
-  haveI : Algebra.FiniteType A B' := Algebra.FiniteType.trans (S := B) inferInstance inferInstance
-  haveI : Algebra.FiniteType A' B' := Algebra.FiniteType.of_restrictScalars_finiteType A A' B'
+  have : Algebra.FiniteType A B' := Algebra.FiniteType.trans (S := B) inferInstance inferInstance
+  have : Algebra.FiniteType A' B' := Algebra.FiniteType.of_restrictScalars_finiteType A A' B'
   exact Algebra.IsIntegral.finite
 
 private theorem generic_free (A B : Type) [CommRing A] [IsDomain A] [IsNoetherianRing A] [CommRing B]
@@ -122,23 +122,23 @@ private theorem generic_free (A B : Type) [CommRing A] [IsDomain A] [IsNoetheria
       [Algebra A' B'] [Algebra A B'] [IsScalarTower A A' B'] [IsScalarTower A B B'],
       IsLocalization.Away (a * c) A' → IsLocalization.Away (algebraMap A B (a * c)) B' →
       Module.Free A' B' := by
-  haveI : Module.FinitePresentation A B := Module.finitePresentation_of_finite A B
+  have : Module.FinitePresentation A B := Module.finitePresentation_of_finite A B
   obtain ⟨r, hr, hfree, -⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
     (nonZeroDivisors A) (LocalizedModule.mkLinearMap (nonZeroDivisors A) B) (FractionRing A)
   refine ⟨r, nonZeroDivisors.ne_zero hr, fun c A' B' _ _ _ _ _ _ _ _ hA hB => ?_⟩
   have hu : IsUnit (algebraMap A A' r) :=
     isUnit_of_mul_isUnit_left (y := algebraMap A A' c)
       (by rw [← map_mul]; exact IsLocalization.Away.algebraMap_isUnit (r * c))
-  letI : Algebra (Localization.Away r) A' := (IsLocalization.Away.lift r hu).toAlgebra
-  haveI : IsScalarTower A (Localization.Away r) A' :=
+  let : Algebra (Localization.Away r) A' := (IsLocalization.Away.lift r hu).toAlgebra
+  have : IsScalarTower A (Localization.Away r) A' :=
     IsScalarTower.of_algebraMap_eq fun x => (IsLocalization.Away.lift_eq r hu x).symm
-  haveI : Module.Free (Localization.Away r) (TensorProduct A (Localization.Away r) B) :=
+  have : Module.Free (Localization.Away r) (TensorProduct A (Localization.Away r) B) :=
     Module.Free.of_equiv (IsLocalizedModule.isBaseChange (Submonoid.powers r) (Localization.Away r)
       (LocalizedModule.mkLinearMap (Submonoid.powers r) B)).equiv.symm
-  haveI : Module.Free A' (TensorProduct A A' B) :=
+  have : Module.Free A' (TensorProduct A A' B) :=
     Module.Free.of_equiv
       (TensorProduct.AlgebraTensorModule.cancelBaseChange A (Localization.Away r) A' A' B)
-  haveI : IsLocalization (Algebra.algebraMapSubmonoid B (Submonoid.powers (r * c))) B' := by
+  have : IsLocalization (Algebra.algebraMapSubmonoid B (Submonoid.powers (r * c))) B' := by
     rw [Algebra.algebraMapSubmonoid_powers]; exact hB
   exact Module.Free.of_equiv (IsLocalizedModule.isBaseChange (Submonoid.powers (r * c)) A'
     (IsScalarTower.toAlgHom A B B').toLinearMap).equiv
@@ -149,23 +149,23 @@ private theorem generic_etale (A B : Type) [CommRing A] [IsDomain A] [IsNoetheri
       [Algebra A' B'] [Algebra A B'] [IsScalarTower A A' B'] [IsScalarTower A B B'],
       IsLocalization.Away (a * c) A' → IsLocalization.Away (algebraMap A B (a * c)) B' →
       Algebra.Etale A' B' := by
-  haveI : Algebra.FinitePresentation A B := Algebra.FinitePresentation.of_finiteType.1 inferInstance
-  letI : Algebra (FractionRing A) (FractionRing B) := FractionRing.liftAlgebra A (FractionRing B)
-  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) := inferInstance
-  haveI : Algebra.FormallyEtale (FractionRing A) (FractionRing B) :=
+  have : Algebra.FinitePresentation A B := Algebra.FinitePresentation.of_finiteType.1 inferInstance
+  let : Algebra (FractionRing A) (FractionRing B) := FractionRing.liftAlgebra A (FractionRing B)
+  have : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) := inferInstance
+  have : Algebra.FormallyEtale (FractionRing A) (FractionRing B) :=
     Algebra.FormallyEtale.of_isSeparable _ _
-  haveI : Algebra.FormallyEtale A (FractionRing A) :=
+  have : Algebra.FormallyEtale A (FractionRing A) :=
     Algebra.FormallyEtale.of_isLocalization (nonZeroDivisors A)
-  haveI : Algebra.FormallyEtale A (FractionRing B) :=
+  have : Algebra.FormallyEtale A (FractionRing B) :=
     Algebra.FormallyEtale.comp A (FractionRing A) (FractionRing B)
-  haveI : IsLocalization (⊥ : Ideal B).primeCompl (FractionRing B) := by
+  have : IsLocalization (⊥ : Ideal B).primeCompl (FractionRing B) := by
     rw [Ideal.primeCompl_bot]; infer_instance
-  haveI : Algebra.IsEtaleAt A (⊥ : Ideal B) :=
+  have : Algebra.IsEtaleAt A (⊥ : Ideal B) :=
     Algebra.FormallyEtale.of_equiv ((IsLocalization.algEquiv (⊥ : Ideal B).primeCompl (FractionRing B)
       (Localization.AtPrime (⊥ : Ideal B))).restrictScalars A)
   obtain ⟨f, hf, het⟩ := Algebra.exists_etale_of_isEtaleAt (R := A) (⊥ : Ideal B)
   have hf0 : f ≠ 0 := by simpa using hf
-  obtain ⟨a, ha, hfa⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) f).exists_nonzero_dvd
+  obtain ⟨a, ha, hfa⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) f).exists_ne_zero_dvd
     (mem_nonZeroDivisors_of_ne_zero hf0)
   refine ⟨a, ha, fun c A' B' _ _ _ _ _ _ _ _ hA hB => ?_⟩
   have h1 : Algebra.Etale A (Localization.Away (algebraMap A B (a * c))) := by
@@ -174,14 +174,14 @@ private theorem generic_etale (A B : Type) [CommRing A] [IsDomain A] [IsNoetheri
     obtain ⟨g, hg⟩ := hfa
     rw [map_mul, hg, mul_assoc]
     exact PrimeSpectrum.basicOpen_mul_le_left _ _
-  haveI : Algebra.Etale A B' :=
+  have : Algebra.Etale A B' :=
     Algebra.Etale.of_equiv ((IsLocalization.algEquiv (Submonoid.powers (algebraMap A B (a * c)))
       (Localization.Away (algebraMap A B (a * c))) B').restrictScalars A)
-  haveI : Algebra.FormallyEtale A' B' :=
+  have : Algebra.FormallyEtale A' B' :=
     Algebra.FormallyEtale.localization_base (Submonoid.powers (a * c))
-  haveI : Algebra.FiniteType A A' := IsLocalization.finiteType_of_monoid_fg
+  have : Algebra.FiniteType A A' := IsLocalization.finiteType_of_monoid_fg
     (Submonoid.powers (a * c)) A'
-  haveI : Algebra.FinitePresentation A' B' :=
+  have : Algebra.FinitePresentation A' B' :=
     Algebra.FinitePresentation.of_restrict_scalars_finitePresentation A A' B'
   exact ⟨inferInstance, inferInstance⟩
 
@@ -190,8 +190,8 @@ private theorem isFractionRing_evaluation (X : Scheme.{0}) [IsIntegral X] {U : X
     letI := (X.evaluation U x hxU).hom.toAlgebra
     IsFractionRing Γ(X, U) (X.residueField x) := by
   subst hx
-  letI := (X.evaluation U _ hxU).hom.toAlgebra
-  haveI : Nonempty U := ⟨⟨_, hxU⟩⟩
+  let := (X.evaluation U _ hxU).hom.toAlgebra
+  have : Nonempty U := ⟨⟨_, hxU⟩⟩
   have := functionField_isFractionRing_of_isAffineOpen X U hU
   let φ : X.functionField →+* X.residueField (genericPoint X) := (X.residue _).hom
   let e : X.functionField ≃ₐ[Γ(X, U)] X.residueField (genericPoint X) :=
@@ -207,28 +207,28 @@ private theorem inj_alg_rank {X Y : Scheme.{0}} [IsIntegral X] [IsIntegral Y] (f
     FaithfulSMul Γ(X, U) Γ(Y, V) ∧ Algebra.IsAlgebraic Γ(X, U) Γ(Y, V) ∧
       Module.finrank Γ(X, U) Γ(Y, V) = f.residueDegree (genericPoint Y) := by
   have hxU : f (genericPoint Y) ∈ U := e hyV
-  letI := (f.appLE U V e).hom.toAlgebra
-  letI := (X.evaluation U _ hxU).hom.toAlgebra
-  letI : Algebra Γ(Y, V) (Y.residueField (genericPoint Y)) :=
+  let := (f.appLE U V e).hom.toAlgebra
+  let := (X.evaluation U _ hxU).hom.toAlgebra
+  let : Algebra Γ(Y, V) (Y.residueField (genericPoint Y)) :=
     (Y.evaluation V _ hyV).hom.toAlgebra
-  letI := (f.residueFieldMap (genericPoint Y)).hom.toAlgebra
-  letI : Algebra Γ(X, U) (Y.residueField (genericPoint Y)) :=
+  let := (f.residueFieldMap (genericPoint Y)).hom.toAlgebra
+  let : Algebra Γ(X, U) (Y.residueField (genericPoint Y)) :=
     (f.appLE U V e ≫ Y.evaluation V _ hyV).hom.toAlgebra
-  haveI : IsScalarTower Γ(X, U) Γ(Y, V) (Y.residueField (genericPoint Y)) :=
+  have : IsScalarTower Γ(X, U) Γ(Y, V) (Y.residueField (genericPoint Y)) :=
     IsScalarTower.of_algebraMap_eq' rfl
   have hnat : X.evaluation U _ hxU ≫ f.residueFieldMap (genericPoint Y) =
       f.appLE U V e ≫ Y.evaluation V _ hyV := by
     rw [Scheme.evaluation_naturality f _ hxU]
     simp [Scheme.Hom.appLE, Scheme.evaluation]
-  haveI : IsScalarTower Γ(X, U) (X.residueField (f (genericPoint Y)))
+  have : IsScalarTower Γ(X, U) (X.residueField (f (genericPoint Y)))
       (Y.residueField (genericPoint Y)) :=
     IsScalarTower.of_algebraMap_eq' congr($(hnat).hom).symm
-  haveI := isFractionRing_evaluation X hU h hxU
-  haveI := isFractionRing_evaluation Y hV rfl hyV
-  haveI : FiniteDimensional (X.residueField (f (genericPoint Y))) (Y.residueField (genericPoint Y)) :=
+  have := isFractionRing_evaluation X hU h hxU
+  have := isFractionRing_evaluation Y hV rfl hyV
+  have : FiniteDimensional (X.residueField (f (genericPoint Y))) (Y.residueField (genericPoint Y)) :=
     Module.finite_of_finrank_pos (Nat.pos_of_ne_zero hδ)
-  haveI : Nonempty U := ⟨⟨_, hxU⟩⟩
-  haveI : Nonempty V := ⟨⟨_, hyV⟩⟩
+  have : Nonempty U := ⟨⟨_, hxU⟩⟩
+  have : Nonempty V := ⟨⟨_, hyV⟩⟩
   have hinj : Function.Injective (algebraMap Γ(X, U) (Y.residueField (genericPoint Y))) := by
     rw [IsScalarTower.algebraMap_eq Γ(X, U) (X.residueField (f (genericPoint Y)))]
     exact (f.residueFieldMap (genericPoint Y)).hom.injective.comp
@@ -238,7 +238,7 @@ private theorem inj_alg_rank {X Y : Scheme.{0}} [IsIntegral X] [IsIntegral Y] (f
   · rw [faithfulSMul_iff_algebraMap_injective]
     rw [IsScalarTower.algebraMap_eq Γ(X, U) Γ(Y, V)] at hinj
     exact Function.Injective.of_comp (f := algebraMap Γ(Y, V) (Y.residueField (genericPoint Y))) hinj
-  · haveI : Algebra.IsAlgebraic Γ(X, U) (Y.residueField (genericPoint Y)) :=
+  · have : Algebra.IsAlgebraic Γ(X, U) (Y.residueField (genericPoint Y)) :=
       (IsFractionRing.comap_isAlgebraic_iff (K := X.residueField (f (genericPoint Y)))).2 inferInstance
     exact Algebra.IsAlgebraic.of_injective
       (IsScalarTower.toAlgHom Γ(X, U) Γ(Y, V) (Y.residueField (genericPoint Y)))
@@ -249,9 +249,9 @@ private theorem preimage_eq_of_finite {X Y : Scheme.{0}} [IsIntegral Y] (π : Y 
     {U : X.Opens} {V : Y.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V)
     (hyV : genericPoint Y ∈ V) (e : V ≤ π ⁻¹ᵁ U) (hfin : (π.appLE U V e).hom.Finite) :
     π ⁻¹ᵁ U = V := by
-  haveI : IsAffine U := hU
-  haveI : IsAffine V := hV
-  haveI : IsFinite (π.resLE U V e) := by
+  have : IsAffine U := hU
+  have : IsAffine V := hV
+  have : IsFinite (π.resLE U V e) := by
     rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite)]
     refine ⟨inferInstance, ?_⟩
     rw [Scheme.Hom.appTop, Scheme.Hom.resLE_app_top]
@@ -259,9 +259,9 @@ private theorem preimage_eq_of_finite {X Y : Scheme.{0}} [IsIntegral Y] (π : Y 
     refine RingHom.Finite.comp (RingHom.Finite.comp ?_ hfin) ?_
     · exact RingHom.Finite.of_surjective _ (ConcreteCategory.bijective_of_isIso _).2
     · exact RingHom.Finite.of_surjective _ (ConcreteCategory.bijective_of_isIso _).2
-  haveI : IsFinite (Y.homOfLE e ≫ π ∣_ U) := this
-  haveI : IsFinite (Y.homOfLE e) := IsFinite.of_comp _ (π ∣_ U)
-  haveI : Nonempty (π ⁻¹ᵁ U : Y.Opens) := ⟨⟨_, e hyV⟩⟩
+  have : IsFinite (Y.homOfLE e ≫ π ∣_ U) := this
+  have : IsFinite (Y.homOfLE e) := IsFinite.of_comp _ (π ∣_ U)
+  have : Nonempty (π ⁻¹ᵁ U : Y.Opens) := ⟨⟨_, e hyV⟩⟩
   have hcl : IsClopen (Set.range (Y.homOfLE e)) :=
     ⟨(Y.homOfLE e).isClosedMap.isClosed_range, (Y.homOfLE e).isOpenEmbedding.isOpen_range⟩
   have huniv := hcl.eq_univ ⟨_, ⟨⟨_, hyV⟩, rfl⟩⟩
@@ -286,7 +286,7 @@ private theorem shrink {X Y : Scheme.{0}} [IsIntegral X] [IsIntegral Y] (π : Y 
     ∃ U : X.Opens, IsAffineOpen U ∧ genericPoint X ∈ U ∧ IsAffineOpen (π ⁻¹ᵁ U) ∧
       (letI := (π.appLE U (π ⁻¹ᵁ U) le_rfl).hom.toAlgebra
        Module.Finite Γ(X, U) Γ(Y, π ⁻¹ᵁ U) ∧ P Γ(X, U) Γ(Y, π ⁻¹ᵁ U)) := by
-  letI : Algebra Γ(X, U₀) Γ(Y, V₀) := (π.appLE U₀ V₀ hVle).hom.toAlgebra
+  let : Algebra Γ(X, U₀) Γ(Y, V₀) := (π.appLE U₀ V₀ hVle).hom.toAlgebra
   have hUU₀ : X.basicOpen a ≤ U₀ := X.basicOpen_le _
   have hUa : IsAffineOpen (X.basicOpen a) := hU₀.basicOpen _
   have hxU : genericPoint X ∈ X.basicOpen a := by
@@ -301,13 +301,13 @@ private theorem shrink {X Y : Scheme.{0}} [IsIntegral X] [IsIntegral Y] (π : Y 
   have hVa : IsAffineOpen V := hV₀.basicOpen _
   have hyV : genericPoint Y ∈ V := by
     rw [hVe]; exact ⟨hyV₀, show π (genericPoint Y) ∈ U from hg ▸ hxU⟩
-  letI iA : Algebra Γ(X, U₀) Γ(X, U) := (X.presheaf.map (homOfLE hUU₀).op).hom.toAlgebra
-  letI iB : Algebra Γ(Y, V₀) Γ(Y, V) := (Y.presheaf.map (homOfLE hVV₀).op).hom.toAlgebra
-  letI iAB : Algebra Γ(X, U) Γ(Y, V) := (π.appLE U V hVU).hom.toAlgebra
-  letI iAB' : Algebra Γ(X, U₀) Γ(Y, V) := (π.appLE U₀ V (hVV₀.trans hVle)).hom.toAlgebra
-  haveI : IsScalarTower Γ(X, U₀) Γ(X, U) Γ(Y, V) := IsScalarTower.of_algebraMap_eq'
+  let iA : Algebra Γ(X, U₀) Γ(X, U) := (X.presheaf.map (homOfLE hUU₀).op).hom.toAlgebra
+  let iB : Algebra Γ(Y, V₀) Γ(Y, V) := (Y.presheaf.map (homOfLE hVV₀).op).hom.toAlgebra
+  let iAB : Algebra Γ(X, U) Γ(Y, V) := (π.appLE U V hVU).hom.toAlgebra
+  let iAB' : Algebra Γ(X, U₀) Γ(Y, V) := (π.appLE U₀ V (hVV₀.trans hVle)).hom.toAlgebra
+  have : IsScalarTower Γ(X, U₀) Γ(X, U) Γ(Y, V) := IsScalarTower.of_algebraMap_eq'
     (congrArg CommRingCat.Hom.hom (π.map_appLE hVU (homOfLE hUU₀).op).symm)
-  haveI : IsScalarTower Γ(X, U₀) Γ(Y, V₀) Γ(Y, V) := IsScalarTower.of_algebraMap_eq'
+  have : IsScalarTower Γ(X, U₀) Γ(Y, V₀) Γ(Y, V) := IsScalarTower.of_algebraMap_eq'
     (congrArg CommRingCat.Hom.hom (π.appLE_map hVle (homOfLE hVV₀).op).symm)
   have hlA : IsLocalization.Away a Γ(X, U) :=
     hU₀.isLocalization_of_eq_basicOpen _ (homOfLE hUU₀) rfl
@@ -347,11 +347,11 @@ theorem _root_.GlobalTheory.T.exists_affine_etale_finite_nbhd_generic : ∀ {k :
       rw [hg]; exact hxU₀
     obtain ⟨V₀, hV₀, hyV₀, hVle⟩ :=
       TopologicalSpace.Opens.isBasis_iff_nbhd.1 Y.isBasis_affineOpens hyU₀
-    haveI : Nonempty U₀ := ⟨⟨_, hxU₀⟩⟩
-    letI : Algebra Γ(X, U₀) Γ(Y, V₀) := (π.appLE U₀ V₀ hVle).hom.toAlgebra
-    haveI : Algebra.FiniteType Γ(X, U₀) Γ(Y, V₀) :=
+    have : Nonempty U₀ := ⟨⟨_, hxU₀⟩⟩
+    let : Algebra Γ(X, U₀) Γ(Y, V₀) := (π.appLE U₀ V₀ hVle).hom.toAlgebra
+    have : Algebra.FiniteType Γ(X, U₀) Γ(Y, V₀) :=
       HasRingHomProperty.appLE @LocallyOfFiniteType π hlft ⟨U₀, hU₀⟩ ⟨V₀, hV₀⟩ hVle
-    haveI : Algebra.IsAlgebraic Γ(X, U₀) Γ(Y, V₀) :=
+    have : Algebra.IsAlgebraic Γ(X, U₀) Γ(Y, V₀) :=
       (GenFinEt.inj_alg_rank π hg hδ hU₀ hV₀ hyV₀ hVle).2.1
     obtain ⟨a, ha, H⟩ := GenFinEt.generic_finite Γ(X, U₀) Γ(Y, V₀)
     exact GenFinEt.shrink π hg hU₀ hV₀ hyV₀ hVle (fun _ _ _ _ _ => True) a ha
@@ -363,13 +363,13 @@ theorem _root_.GlobalTheory.T.exists_affine_etale_finite_nbhd_generic : ∀ {k :
       IsAffineOpen (π ⁻¹ᵁ U) ∧ (letI := (π.appLE U (π ⁻¹ᵁ U) le_rfl).hom.toAlgebra
        Module.Finite Γ(X, U) Γ(Y, π ⁻¹ᵁ U) ∧ Module.Free Γ(X, U) Γ(Y, π ⁻¹ᵁ U) ∧
         Algebra.Etale Γ(X, U) Γ(Y, π ⁻¹ᵁ U)) := by
-    haveI : Nonempty U₁ := ⟨⟨_, hxU₁⟩⟩
-    haveI : Nonempty (π ⁻¹ᵁ U₁ : Y.Opens) := ⟨⟨_, hyV₁⟩⟩
-    letI : Algebra Γ(X, U₁) Γ(Y, π ⁻¹ᵁ U₁) := (π.appLE U₁ (π ⁻¹ᵁ U₁) le_rfl).hom.toAlgebra
-    haveI : IsNoetherianRing Γ(X, U₁) := IsLocallyNoetherian.component_noetherian ⟨U₁, hU₁⟩
-    haveI : CharZero Γ(X, U₁) :=
+    have : Nonempty U₁ := ⟨⟨_, hxU₁⟩⟩
+    have : Nonempty (π ⁻¹ᵁ U₁ : Y.Opens) := ⟨⟨_, hyV₁⟩⟩
+    let : Algebra Γ(X, U₁) Γ(Y, π ⁻¹ᵁ U₁) := (π.appLE U₁ (π ⁻¹ᵁ U₁) le_rfl).hom.toAlgebra
+    have : IsNoetherianRing Γ(X, U₁) := IsLocallyNoetherian.component_noetherian ⟨U₁, hU₁⟩
+    have : CharZero Γ(X, U₁) :=
       ((resG X (le_top : U₁ ≤ ⊤)).charZero_iff (map_injective_of_isIntegral X _)).1 hX.charZero
-    haveI : FaithfulSMul Γ(X, U₁) Γ(Y, π ⁻¹ᵁ U₁) :=
+    have : FaithfulSMul Γ(X, U₁) Γ(Y, π ⁻¹ᵁ U₁) :=
       (GenFinEt.inj_alg_rank π hg hδ hU₁ hV₁ hyV₁ le_rfl).1
     obtain ⟨a, ha, Ha⟩ := GenFinEt.generic_free Γ(X, U₁) Γ(Y, π ⁻¹ᵁ U₁)
     obtain ⟨b, hb, Hb⟩ := GenFinEt.generic_etale Γ(X, U₁) Γ(Y, π ⁻¹ᵁ U₁)
@@ -377,7 +377,7 @@ theorem _root_.GlobalTheory.T.exists_affine_etale_finite_nbhd_generic : ∀ {k :
       (fun A' B' _ _ _ => Module.Free A' B' ∧ Algebra.Etale A' B') (a * b) (mul_ne_zero ha hb)
       fun A' B' _ _ _ _ _ _ _ _ hA hB => ⟨?_, Ha b A' B' hA hB,
         Hb a A' B' (by rw [mul_comm]; exact hA) (by rw [mul_comm]; exact hB)⟩
-    haveI : IsLocalization (Algebra.algebraMapSubmonoid Γ(Y, π ⁻¹ᵁ U₁) (Submonoid.powers (a * b))) B' := by
+    have : IsLocalization (Algebra.algebraMapSubmonoid Γ(Y, π ⁻¹ᵁ U₁) (Submonoid.powers (a * b))) B' := by
       rw [Algebra.algebraMapSubmonoid_powers]; exact hB
     exact Module.Finite.of_isLocalization Γ(X, U₁) Γ(Y, π ⁻¹ᵁ U₁) (Submonoid.powers (a * b))
   have hyV : genericPoint Y ∈ π ⁻¹ᵁ U := by

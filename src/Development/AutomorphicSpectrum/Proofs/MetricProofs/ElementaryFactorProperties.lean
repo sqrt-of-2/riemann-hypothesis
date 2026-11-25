@@ -58,19 +58,19 @@ variable {N : ℕ}
 
 theorem shear_above {ca cb : Fin N} (hab : ca < cb) (t : ℂ) {x y : Fin N} (hxy : x < y) :
     (1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ) x y = 0 := by
-  rw [SchurCalc.elem_apply, if_neg hxy.ne, if_neg, add_zero]
+  rw [SchurCalc.elem_apply, ite_eq_right hxy.ne, ite_eq_right, add_zero]
   rintro ⟨rfl, rfl⟩
   exact lt_asymm hab hxy
 
 theorem shear_diag {ca cb : Fin N} (hab : ca < cb) (t : ℂ) (x : Fin N) :
     (1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ) x x = 1 := by
-  rw [SchurCalc.elem_apply, if_pos rfl, if_neg, add_zero]
+  rw [SchurCalc.elem_apply, ite_eq_left rfl, ite_eq_right, add_zero]
   rintro ⟨rfl, h⟩
   exact hab.ne h
 
 theorem det_shear {ca cb : Fin N} (hab : ca < cb) (t : ℂ) :
     (1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ).det = 1 := by
-  rw [Matrix.det_of_lowerTriangular _ (fun x y h => shear_above hab t h)]
+  rw [Matrix.det_of_isLowerTriangular _ (fun x y h => shear_above hab t h)]
   exact Finset.prod_eq_one fun x _ => shear_diag hab t x
 
 theorem minor_shear {ca cb : Fin N} (hab : ca < cb) (t : ℂ) (S : Finset (Fin N)) :
@@ -78,13 +78,13 @@ theorem minor_shear {ca cb : Fin N} (hab : ca < cb) (t : ℂ) (S : Finset (Fin N
   have ht : ((1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ).submatrix (S.orderEmbOfFin rfl)
       (S.orderEmbOfFin rfl)).BlockTriangular OrderDual.toDual :=
     fun x y h => shear_above hab t ((S.orderEmbOfFin rfl).strictMono h)
-  rw [MinorCalc.minorIJ_eq_det _ S S _ rfl rfl, Matrix.det_of_lowerTriangular _ ht]
+  rw [MinorCalc.minorIJ_eq_det _ S S _ rfl rfl, Matrix.det_of_isLowerTriangular _ ht]
   exact Finset.prod_eq_one fun x _ => shear_diag hab t _
 
 theorem support_shear {ca cb : Fin N} (t : ℂ) {S : Finset (Fin N)} (hS : ca ∈ S → cb ∈ S) (k c : Fin N)
     (hc : c ∈ S) (hk : k ∉ S) : (1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ) k c = 0 := by
   have hne : k ≠ c := fun e => hk (e ▸ hc)
-  rw [SchurCalc.elem_apply, if_neg hne, if_neg, add_zero]
+  rw [SchurCalc.elem_apply, ite_eq_right hne, ite_eq_right, add_zero]
   rintro ⟨rfl, rfl⟩
   exact hk (hS hc)
 
@@ -116,9 +116,9 @@ theorem shear_main : ∀ (N j : ℕ) (a b ca cb : Fin N) (t : ℂ), j ≤ N → 
   unfold lastCol at hca
   have hblock : (ca : ℕ) < N - j ↔ (cb : ℕ) < N - j := by
     rcases hcase with h | h
-    · rw [if_pos (by omega)] at hca
+    · rw [ite_eq_left (by omega)] at hca
       omega
-    · rw [if_neg (by omega)] at hca
+    · rw [ite_eq_right (by omega)] at hca
       omega
   have hw : ca ∈ wIdx N j → cb ∈ wIdx N j := by
     simp only [wIdx, Finset.mem_filter, Finset.mem_univ, true_and]
@@ -132,13 +132,13 @@ theorem shear_main : ∀ (N j : ℕ) (a b ca cb : Fin N) (t : ℂ), j ≤ N → 
     have hi2 := i.2
     simp only [stepCols, Finset.mem_filter, Finset.mem_univ, true_and]
     rcases hcase with h | h
-    · rw [if_pos (by omega)] at hca
+    · rw [ite_eq_left (by omega)] at hca
       split_ifs <;> omega
-    · rw [if_neg (by omega)] at hca
+    · rw [ite_eq_right (by omega)] at hca
       split_ifs <;> omega
   refine ⟨?_, det_shear hab t, ?_, ?_⟩
   · intro p q hpq
-    rw [SchurCalc.elem_apply, if_neg (fun e => hpq (by rw [e])), if_neg, add_zero]
+    rw [SchurCalc.elem_apply, ite_eq_right (fun e => hpq (by rw [e])), ite_eq_right, add_zero]
     rintro ⟨rfl, rfl⟩
     exact hpq hblock.symm
   · intro h i

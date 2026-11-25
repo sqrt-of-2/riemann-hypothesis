@@ -47,18 +47,21 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {K : Type*} [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
   {L : Type*} [NormedAddCommGroup L] [InnerProductSpace 𝕜 L] [CompleteSpace L]
 
-theorem enorm_inner_le (x y : H) : ‖⟪x, y⟫_𝕜‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
+omit [CompleteSpace H] in
+theorem enorm_inner_le [CompleteSpace H] (x y : H) : ‖⟪x, y⟫_𝕜‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
   rw [← ofReal_norm, ← ofReal_norm, ← ofReal_norm, ← ENNReal.ofReal_mul (norm_nonneg _)]
   exact ENNReal.ofReal_le_ofReal (norm_inner_le_norm x y)
 
-theorem enorm_inner_comm (x y : H) : ‖⟪x, y⟫_𝕜‖ₑ = ‖⟪y, x⟫_𝕜‖ₑ := by
+omit [CompleteSpace H] in
+theorem enorm_inner_comm [CompleteSpace H] (x y : H) : ‖⟪x, y⟫_𝕜‖ₑ = ‖⟪y, x⟫_𝕜‖ₑ := by
   rw [← ofReal_norm, ← ofReal_norm, norm_inner_symm]
 
 theorem enorm_apply_le (A : H →L[𝕜] K) (x : H) : ‖A x‖ₑ ≤ ‖A‖ₑ * ‖x‖ₑ := by
   rw [← ofReal_norm, ← ofReal_norm, ← ofReal_norm, ← ENNReal.ofReal_mul (norm_nonneg _)]
   exact ENNReal.ofReal_le_ofReal (A.le_opNorm x)
 
-theorem enorm_sq_eq_tsum {ι : Type*} (b : HilbertBasis ι 𝕜 H) (x : H) :
+omit [CompleteSpace H] in
+theorem enorm_sq_eq_tsum [CompleteSpace H] {ι : Type*} (b : HilbertBasis ι 𝕜 H) (x : H) :
     ‖x‖ₑ ^ 2 = ∑' i, ‖⟪b i, x⟫_𝕜‖ₑ ^ 2 := by
   have hp : (0 : ℝ) < (2 : ℝ≥0∞).toReal := by norm_num
   have h1 := lp.norm_rpow_eq_tsum hp (b.repr x)
@@ -76,7 +79,7 @@ theorem tsum_enorm_sq_eq_adjoint {ι κ : Type*} (b : HilbertBasis ι 𝕜 H)
     ∑' i, ‖T (b i)‖ₑ ^ 2 = ∑' j, ‖(T†) (c j)‖ₑ ^ 2 := by
   calc ∑' i, ‖T (b i)‖ₑ ^ 2 = ∑' i, ∑' j, ‖⟪c j, T (b i)⟫_𝕜‖ₑ ^ 2 := by
         congr 1; ext i; exact enorm_sq_eq_tsum c _
-    _ = ∑' j, ∑' i, ‖⟪c j, T (b i)⟫_𝕜‖ₑ ^ 2 := ENNReal.tsum_comm
+    _ = ∑' j, ∑' i, ‖⟪c j, T (b i)⟫_𝕜‖ₑ ^ 2 := tsum_comm
     _ = ∑' j, ∑' i, ‖⟪b i, (T†) (c j)⟫_𝕜‖ₑ ^ 2 := by
         congr 1; ext j; congr 1; ext i
         rw [← adjoint_inner_left, enorm_inner_comm]

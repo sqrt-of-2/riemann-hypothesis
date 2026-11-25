@@ -58,7 +58,7 @@ private theorem blockW_apply_of_bl (h : Matrix (Fin k) (Fin k) ℂ) {i j : Fin (
       h ⟨i.val - r, by unfold bl at hi; omega⟩ ⟨j.val - r, by unfold bl at hj; omega⟩ := by
   have hi' : r ≤ i.val ∧ i.val < r + k := hi
   have hj' : r ≤ j.val ∧ j.val < r + k := hj
-  simp only [Formalism.MainNotions.S.blockW, dif_pos hi', dif_pos hj']
+  simp only [Formalism.MainNotions.S.blockW, dite_eq_left hi', dite_eq_left hj']
 
 theorem bw_ee (h : Matrix (Fin k) (Fin k) ℂ) (q q' : Fin k) :
     Formalism.MainNotions.S.blockW k r h (eB k r q) (eB k r q') = h q q' := by
@@ -75,13 +75,13 @@ theorem bw_col (h : Matrix (Fin k) (Fin k) ℂ) (i : Fin (2 * r + k + 1)) {j : F
       intro e
       subst e
       exact hj' hi
-    simp only [Formalism.MainNotions.S.blockW, dif_pos hi, dif_neg hj', if_neg hne]
-  · simp only [Formalism.MainNotions.S.blockW, dif_neg hi]
+    simp only [Formalism.MainNotions.S.blockW, dite_eq_left hi, dite_eq_right hj', ite_eq_right hne]
+  · simp only [Formalism.MainNotions.S.blockW, dite_eq_right hi]
 
 theorem bw_row (h : Matrix (Fin k) (Fin k) ℂ) {i : Fin (2 * r + k + 1)} (j : Fin (2 * r + k + 1))
     (hi : ¬ bl k r i) : Formalism.MainNotions.S.blockW k r h i j = if i = j then 1 else 0 := by
   have hi' : ¬ (r ≤ i.val ∧ i.val < r + k) := hi
-  simp only [Formalism.MainNotions.S.blockW, dif_neg hi']
+  simp only [Formalism.MainNotions.S.blockW, dite_eq_right hi']
 
 theorem bw_off (h : Matrix (Fin k) (Fin k) ℂ) {i j : Fin (2 * r + k + 1)}
     (hi : ¬ bl k r i) (hj : bl k r j) : Formalism.MainNotions.S.blockW k r h i j = 0 := by
@@ -90,13 +90,13 @@ theorem bw_off (h : Matrix (Fin k) (Fin k) ℂ) {i j : Fin (2 * r + k + 1)}
     intro e
     subst e
     exact hi hj
-  simp only [Formalism.MainNotions.S.blockW, dif_neg hi', if_neg hne]
+  simp only [Formalism.MainNotions.S.blockW, dite_eq_right hi', ite_eq_right hne]
 
 theorem bw_off' (h : Matrix (Fin k) (Fin k) ℂ) {i j : Fin (2 * r + k + 1)}
     (hi : bl k r i) (hj : ¬ bl k r j) : Formalism.MainNotions.S.blockW k r h i j = 0 := by
   have hi' : r ≤ i.val ∧ i.val < r + k := hi
   have hj' : ¬ (r ≤ j.val ∧ j.val < r + k) := hj
-  simp only [Formalism.MainNotions.S.blockW, dif_pos hi', dif_neg hj']
+  simp only [Formalism.MainNotions.S.blockW, dite_eq_left hi', dite_eq_right hj']
 
 theorem blockW_mul (a b : Matrix (Fin k) (Fin k) ℂ) :
     Formalism.MainNotions.S.blockW k r (a * b) = Formalism.MainNotions.S.blockW k r a * Formalism.MainNotions.S.blockW k r b := by
@@ -129,7 +129,7 @@ theorem blockW_one : Formalism.MainNotions.S.blockW k r (1 : Matrix (Fin k) (Fin
         intro e
         subst e
         exact hj hi
-      rw [bw_off' _ hi hj, if_neg hne]
+      rw [bw_off' _ hi hj, ite_eq_right hne]
   · exact bw_row _ j hi
 
 theorem blockW_conjTranspose (h : Matrix (Fin k) (Fin k) ℂ) :
@@ -146,7 +146,7 @@ theorem blockW_conjTranspose (h : Matrix (Fin k) (Fin k) ℂ) :
     by_cases e : i = j
     · subst e
       simp
-    · rw [if_neg (Ne.symm e), if_neg e, star_zero]
+    · rw [ite_eq_right (Ne.symm e), ite_eq_right e, star_zero]
 
 theorem H_blrow {i : Fin (2 * r + k + 1)} (hi : bl k r i) (j : Fin (2 * r + k + 1)) :
     Hpk k r i j = if i = j then 1 else 0 := by
@@ -195,7 +195,7 @@ theorem H_comm (h : Matrix (Fin k) (Fin k) ℂ) :
           intro e
           subst e
           exact hd hl
-        rw [H_blrow hl d, if_neg hne, mul_zero]
+        rw [H_blrow hl d, ite_eq_right hne, mul_zero]
       · rw [bw_off' h hc hl, zero_mul]
   · simp only [fun l => bw_row h l hc, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
       ↓reduceIte]
@@ -204,7 +204,7 @@ theorem H_comm (h : Matrix (Fin k) (Fin k) ℂ) :
         intro e
         subst e
         exact hc hd
-      rw [H_blcol hd c, if_neg hne]
+      rw [H_blcol hd c, ite_eq_right hne]
       apply Finset.sum_eq_zero
       intro l _
       by_cases hl : bl k r l
@@ -212,7 +212,7 @@ theorem H_comm (h : Matrix (Fin k) (Fin k) ℂ) :
           intro e
           subst e
           exact hc hl
-        rw [H_blcol hl c, if_neg hne', zero_mul]
+        rw [H_blcol hl c, ite_eq_right hne', zero_mul]
       · rw [bw_off h hl hd, mul_zero]
     · simp only [fun l => bw_col h l hd, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ,
         ↓reduceIte]
@@ -231,7 +231,7 @@ theorem mem_UW {h : Matrix (Fin k) (Fin k) ℂ} (hu : h ∈ Matrix.unitaryGroup 
       first
         | exact Matrix.mem_unitaryGroup_iff'.mp hu
     rwa [Matrix.star_eq_conjTranspose] at hs'
-  simp only [Formalism.QuantumDeterminants.UWset, Set.mem_setOf_eq]
+  simp only [Formalism.QuantumDeterminants.UWset, Set.mem_ofPred_eq]
   refine ⟨?_, fun a => ⟨?_, ?_⟩, ?_⟩
   · show (Formalism.MainNotions.S.blockW k r h)ᴴ * Hpk k r * Formalism.MainNotions.S.blockW k r h = Hpk k r
     rw [blockW_conjTranspose, Matrix.mul_assoc, H_comm, ← Matrix.mul_assoc, ← blockW_mul, hs,

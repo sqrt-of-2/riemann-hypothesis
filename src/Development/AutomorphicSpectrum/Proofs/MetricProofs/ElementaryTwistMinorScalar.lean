@@ -77,7 +77,7 @@ theorem minorIJ_image_of_tri {R : Type} [CommRing R] (M : Matrix (Fin N) (Fin N)
     · intro i i' hii
       exact hσ (Finset.orderEmbOfFin_mem S rfl i) (Finset.orderEmbOfFin_mem S rfl i')
         ((S.orderEmbOfFin rfl).strictMono hii)
-  rw [← hf, Matrix.det_of_upperTriangular]
+  rw [← hf, Matrix.det_of_isUpperTriangular]
   · simp only [Matrix.submatrix_apply]
     conv_rhs => rw [← Finset.map_orderEmbOfFin_univ S rfl]
     rw [Finset.prod_map]
@@ -108,8 +108,8 @@ theorem param_core (S : Finset (Fin N)) (ca cb : Fin N) (hca : ca ∈ S) (hmax :
   have hne : ∀ c ∈ S, c ≠ cb := fun c hc => ne_of_lt ((hmax c hc).trans_lt hlt)
   have hcaNe : ca ≠ cb := ne_of_lt hlt
   let σ : Fin N → Fin N := fun c => if c = ca then cb else c
-  have hσca : σ ca = cb := if_pos rfl
-  have hσne : ∀ c, c ≠ ca → σ c = c := fun c hc => if_neg hc
+  have hσca : σ ca = cb := ite_eq_left rfl
+  have hσne : ∀ c, c ≠ ca → σ c = c := fun c hc => ite_eq_right hc
   have hσ : StrictMonoOn σ S := by
     intro x _ y hy hxy
     have hx' : x ≠ ca := ne_of_lt (hxy.trans_le (hmax y hy))
@@ -131,46 +131,46 @@ theorem param_core (S : Finset (Fin N)) (ca cb : Fin N) (hca : ca ∈ S) (hmax :
       (∏ c ∈ S.erase ca, B c c) * (B ca ca + t' * B ca cb) := by
     have h0 := minorIJ_image_of_tri (B * (1 + Matrix.single cb ca t')) S id strictMonoOn_id (by
       intro x hx y _ hy
-      rw [mul_entry, if_neg (hyne x hx y hy), add_zero]
+      rw [mul_entry, ite_eq_right (hyne x hx y hy), add_zero]
       exact hB hy)
     rw [Finset.image_id] at h0
     rw [h0, ← Finset.prod_erase_mul S _ hca]
     congr 1
     · refine Finset.prod_congr rfl fun c hc => ?_
-      rw [id, mul_entry, if_neg (Finset.ne_of_mem_erase hc), add_zero]
-    · rw [id, mul_entry, if_pos rfl]
+      rw [id, mul_entry, ite_eq_right (Finset.ne_of_mem_erase hc), add_zero]
+    · rw [id, mul_entry, ite_eq_left rfl]
   have R1 : minorIJ (1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ) S S = 1 := by
     have h0 := minorIJ_image_of_tri (1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ) S id strictMonoOn_id (by
       intro x hx y _ hy
-      rw [id, one_entry, if_neg (ne_of_gt hy), if_neg (fun h => hne x hx h.1.symm), add_zero])
+      rw [id, one_entry, ite_eq_right (ne_of_gt hy), ite_eq_right (fun h => hne x hx h.1.symm), add_zero])
     rw [Finset.image_id] at h0
     rw [h0]
     refine Finset.prod_eq_one fun c hc => ?_
-    rw [id, one_entry, if_pos rfl, if_neg (fun h => hne c hc h.1.symm), add_zero]
+    rw [id, one_entry, ite_eq_left rfl, ite_eq_right (fun h => hne c hc h.1.symm), add_zero]
 
   have L2 : minorIJ (B * (1 + Matrix.single cb ca t')) (S.image σ) S =
       (∏ c ∈ S.erase ca, B c c) * (t' * B cb cb) := by
     rw [minorIJ_image_of_tri _ S σ hσ (by
       intro x hx y _ hy
-      rw [mul_entry, if_neg (hyne x hx y hy), add_zero]
+      rw [mul_entry, ite_eq_right (hyne x hx y hy), add_zero]
       exact hB (hy.trans_le (hge x hx))), ← Finset.prod_erase_mul S _ hca]
     congr 1
     · refine Finset.prod_congr rfl fun c hc => ?_
       have hc' := Finset.ne_of_mem_erase hc
-      rw [hσne c hc', mul_entry, if_neg hc', add_zero]
+      rw [hσne c hc', mul_entry, ite_eq_right hc', add_zero]
     · have h0 : B cb ca = 0 := hB hlt
-      rw [hσca, mul_entry, if_pos rfl, h0, zero_add]
+      rw [hσca, mul_entry, ite_eq_left rfl, h0, zero_add]
   have R2 : minorIJ (1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ) (S.image σ) S = t := by
     rw [minorIJ_image_of_tri _ S σ hσ (by
       intro x hx y _ hy
-      rw [one_entry, if_neg (ne_of_gt (hy.trans_le (hge x hx))),
-        if_neg (fun h => hyne x hx y hy h.2.symm), add_zero]), ← Finset.prod_erase_mul S _ hca]
+      rw [one_entry, ite_eq_right (ne_of_gt (hy.trans_le (hge x hx))),
+        ite_eq_right (fun h => hyne x hx y hy h.2.symm), add_zero]), ← Finset.prod_erase_mul S _ hca]
     have h1 : ∏ c ∈ S.erase ca, (1 + Matrix.single cb ca t : Matrix (Fin N) (Fin N) ℂ) (σ c) c = 1 := by
       refine Finset.prod_eq_one fun c hc => ?_
       have hc' := Finset.ne_of_mem_erase hc
-      rw [hσne c hc', one_entry, if_pos rfl,
-        if_neg (fun h => hne c (Finset.mem_of_mem_erase hc) h.1.symm), add_zero]
-    rw [h1, one_mul, hσca, one_entry, if_neg (Ne.symm hcaNe), if_pos ⟨rfl, rfl⟩, zero_add]
+      rw [hσne c hc', one_entry, ite_eq_left rfl,
+        ite_eq_right (fun h => hne c (Finset.mem_of_mem_erase hc) h.1.symm), add_zero]
+    rw [h1, one_mul, hσca, one_entry, ite_eq_right (Ne.symm hcaNe), ite_eq_left ⟨rfl, rfl⟩, zero_add]
   have e1 := H S
   have e2 := H (S.image σ)
   rw [L1, R1, mul_one] at e1

@@ -155,7 +155,7 @@ theorem UpperTheory.Reformulated.B.AntidiagonalConjugation.aux11.{u_1} :
       (if (1 : ℤˣ) = (1 : ℤˣ) then (1 : MulAut (GL (Fin m) R)) else UpperTheory.Reformulated.B.AntidiagonalConjugation.thetaAut m R) =
         (1 : MulAut (GL (Fin m) R)) := by
   intro m R _
-  exact if_pos rfl
+  exact ite_eq_left rfl
 
 theorem UpperTheory.Reformulated.B.AntidiagonalConjugation.aux12.{u_1} :
     ∀ (m : ℕ) (R : Type u_1) [inst : CommRing R] (s t : ℤˣ),
@@ -314,7 +314,7 @@ theorem UpperTheory.Reformulated.B.ConjugationByInvolution.aux11.{u_1} :
       (if (1 : ℤˣ) = (1 : ℤˣ) then (1 : MulAut (GL (Fin m) R)) else UpperTheory.Reformulated.B.ConjugationByInvolution.thetaAut m R) =
         (1 : MulAut (GL (Fin m) R)) := by
   intro m R _
-  exact if_pos rfl
+  exact ite_eq_left rfl
 
 theorem UpperTheory.Reformulated.B.ConjugationByInvolution.aux12.{u_1} :
     ∀ (m : ℕ) (R : Type u_1) [inst : CommRing R] (s t : ℤˣ),
@@ -380,7 +380,7 @@ theorem UpperTheory.Reformulated.B.SignActionTheta.aux2.{u_1} :
   intro R _ m
   ext i j
   simp only [UpperTheory.Reformulated.B.SignActionTheta.Jmat, Matrix.mul_apply, ite_mul, one_mul, zero_mul,
-    Finset.sum_ite_eq', Finset.mem_univ, if_true, Fin.rev_rev, Matrix.one_apply]
+    Finset.sum_ite_eq', Finset.mem_univ, ite_true, Fin.rev_rev, Matrix.one_apply]
   simp only [eq_comm]
 
 noncomputable def UpperTheory.Reformulated.B.SignActionTheta.Jgl.{u_1} :
@@ -466,7 +466,7 @@ theorem UpperTheory.Reformulated.B.SignActionTheta.aux11.{u_1} :
       (if (1 : ℤˣ) = (1 : ℤˣ) then (1 : MulAut (GL (Fin m) R)) else UpperTheory.Reformulated.B.SignActionTheta.thetaAut m R) =
         (1 : MulAut (GL (Fin m) R)) := by
   intro m R _
-  exact if_pos rfl
+  exact ite_eq_left rfl
 
 theorem UpperTheory.Reformulated.B.SignActionTheta.aux12.{u_1} :
     ∀ (m : ℕ) (R : Type u_1) [inst : CommRing R] (s t : ℤˣ),
@@ -479,7 +479,7 @@ theorem UpperTheory.Reformulated.B.SignActionTheta.aux12.{u_1} :
   · simp
   · simp
   · simp
-  · rw [if_pos (by simp), if_neg hne]
+  · rw [ite_eq_left (by simp), ite_eq_right hne]
     ext1 g
     exact (UpperTheory.Reformulated.B.SignActionTheta.aux8 g).symm
 
@@ -522,9 +522,9 @@ theorem UpperTheory.Reformulated.B.SignActionTheta.sign_action_map_comm.{u_1, u_
   · ext1 g
     simp
   · have h1 : UpperTheory.Reformulated.B.SignActionTheta.sgnAct m R (-1) = UpperTheory.Reformulated.B.SignActionTheta.thetaAut m R :=
-      if_neg (t := (1 : MulAut (GL (Fin m) R))) hne
+      ite_eq_right (t := (1 : MulAut (GL (Fin m) R))) hne
     have h2 : UpperTheory.Reformulated.B.SignActionTheta.sgnAct m S (-1) = UpperTheory.Reformulated.B.SignActionTheta.thetaAut m S :=
-      if_neg (t := (1 : MulAut (GL (Fin m) S))) hne
+      ite_eq_right (t := (1 : MulAut (GL (Fin m) S))) hne
     rw [MonoidHom.id_apply, h1, h2]
     refine MonoidHom.ext fun g => ?_
     exact UpperTheory.Reformulated.B.SignActionTheta.map_theta f g
@@ -709,11 +709,11 @@ variable {l : ℕ} [Fact l.Prime] {X : Type} [TopologicalSpace X]
 
 theorem qcont_map {V W : Type} [AddCommGroup V] [Module ℚ_[l] V] [AddCommGroup W] [Module ℚ_[l] W]
     (f : V →ₗ[ℚ_[l]] W) {c : X → V} (h : QCont l c) : QCont l fun x => f (c x) := by
-  letI : TopologicalSpace V := moduleTopology ℚ_[l] V
-  haveI : IsModuleTopology ℚ_[l] V := ⟨rfl⟩
-  letI : TopologicalSpace W := moduleTopology ℚ_[l] W
-  haveI : IsModuleTopology ℚ_[l] W := ⟨rfl⟩
-  haveI : ContinuousAdd W := IsModuleTopology.toContinuousAdd ℚ_[l] W
+  let : TopologicalSpace V := moduleTopology ℚ_[l] V
+  have : IsModuleTopology ℚ_[l] V := ⟨rfl⟩
+  let : TopologicalSpace W := moduleTopology ℚ_[l] W
+  have : IsModuleTopology ℚ_[l] W := ⟨rfl⟩
+  have : ContinuousAdd W := IsModuleTopology.toContinuousAdd ℚ_[l] W
   exact (IsModuleTopology.continuous_of_linearMap f).comp h
 
 theorem qcont_pair {V W W' : Type} [AddCommGroup V] [Module ℚ_[l] V] [AddCommGroup W] [Module ℚ_[l] W]
@@ -724,9 +724,9 @@ theorem qcont_pair {V W W' : Type} [AddCommGroup V] [Module ℚ_[l] V] [AddCommG
     hf x y (congrArg Prod.fst e) (congrArg Prod.snd e))
   have h1 := qcont_map (L.comp (LinearMap.inl _ _ _)) h
   have h2 := qcont_map (L.comp (LinearMap.inr _ _ _)) h'
-  letI : TopologicalSpace V := moduleTopology ℚ_[l] V
-  haveI : IsModuleTopology ℚ_[l] V := ⟨rfl⟩
-  haveI : ContinuousAdd V := IsModuleTopology.toContinuousAdd ℚ_[l] V
+  let : TopologicalSpace V := moduleTopology ℚ_[l] V
+  have : IsModuleTopology ℚ_[l] V := ⟨rfl⟩
+  have : ContinuousAdd V := IsModuleTopology.toContinuousAdd ℚ_[l] V
   have h3 := Continuous.add (M := V) h1 h2
   have e : (fun x => (L.comp (LinearMap.inl _ _ _)) (f (c x)) + (L.comp (LinearMap.inr _ _ _)) (f' (c x))) = c := by
     funext x
@@ -751,7 +751,7 @@ variable {l : ℕ} [Fact l.Prime] {O : Type} [CommRing O] [IsLocalRing O] [Algeb
 
 theorem eta_open : IsOpen (D.η.ker : Set (GQ l)) := by
   have e : D.η.ker = GK D.Kv := Subgroup.ext fun g => D.η_ker g
-  haveI := D.Kv.2
+  have := D.Kv.2
   rw [e]
   exact IntermediateField.fixingSubgroup_isOpen D.Kv.1
 
@@ -780,19 +780,19 @@ theorem dcr_map (f : B →ₐ[ℚ_[l]] B') (hf : Function.Surjective f) {π : B 
   refine ⟨hr.mult, ?_, hc, ?_⟩
   · rw [← hr.red, ← hπ]; rfl
   obtain ⟨ρ, hρ, hcr⟩ := hr.cr
-  letI : TopologicalSpace B := moduleTopology ℚ_[l] B
-  haveI : IsModuleTopology ℚ_[l] B := ⟨rfl⟩
-  haveI : IsTopologicalRing B := IsModuleTopology.isTopologicalRing ℚ_[l] B
-  letI : TopologicalSpace B' := moduleTopology ℚ_[l] B'
-  haveI : IsModuleTopology ℚ_[l] B' := ⟨rfl⟩
-  haveI : IsTopologicalRing B' := IsModuleTopology.isTopologicalRing ℚ_[l] B'
+  let : TopologicalSpace B := moduleTopology ℚ_[l] B
+  have : IsModuleTopology ℚ_[l] B := ⟨rfl⟩
+  have : IsTopologicalRing B := IsModuleTopology.isTopologicalRing ℚ_[l] B
+  let : TopologicalSpace B' := moduleTopology ℚ_[l] B'
+  have : IsModuleTopology ℚ_[l] B' := ⟨rfl⟩
+  have : IsTopologicalRing B' := IsModuleTopology.isTopologicalRing ℚ_[l] B'
   refine ⟨(Matrix.GeneralLinearGroup.map (f : B →+* B')).comp ρ, fun g => by rw [MonoidHom.comp_apply, hρ]; rfl, ?_⟩
   refine ((isCrys_isDR_sub_quot _ (HL_emb D) (colRep ρ) _ (cont_col _ fun a b => ?_) (cont_col _ fun a b => ?_)
     (f.toLinearMap.compLeft (Fin 3)) fun g x => ?_).2 (fun y => ?_)).1 hcr
   · simp only [hρ]
-    exact Continuous.comp (hr.cont a b) continuous_subtype_val
+    exact Continuous.comp (hr.cont a b) continuous_subtypeVal
   · simp only [MonoidHom.comp_apply, hρ]
-    exact (Continuous.comp (hc a b) (continuous_subtype_val (p := fun g => g ∈ D.HL)) :)
+    exact (Continuous.comp (hc a b) (continuous_subtypeVal (p := fun g => g ∈ D.HL)) :)
   · funext a
     exact RingHom.map_mulVec (f : B →+* B') _ x a
   · choose x hx using fun a => hf (y a)
@@ -808,21 +808,21 @@ theorem dcr_pair (f : C →ₐ[ℚ_[l]] B) (f' : C →ₐ[ℚ_[l]] B') (hf : ∀
   refine ⟨hm, hr.red, hc, ?_⟩
   obtain ⟨ρ, hρ, hcr⟩ := hr.cr
   obtain ⟨ρ', hρ', hcr'⟩ := hr'.cr
-  letI : TopologicalSpace B := moduleTopology ℚ_[l] B
-  haveI : IsModuleTopology ℚ_[l] B := ⟨rfl⟩
-  haveI : IsTopologicalRing B := IsModuleTopology.isTopologicalRing ℚ_[l] B
-  letI : TopologicalSpace B' := moduleTopology ℚ_[l] B'
-  haveI : IsModuleTopology ℚ_[l] B' := ⟨rfl⟩
-  haveI : IsTopologicalRing B' := IsModuleTopology.isTopologicalRing ℚ_[l] B'
-  letI : TopologicalSpace C := moduleTopology ℚ_[l] C
-  haveI : IsModuleTopology ℚ_[l] C := ⟨rfl⟩
-  haveI : IsTopologicalRing C := IsModuleTopology.isTopologicalRing ℚ_[l] C
+  let : TopologicalSpace B := moduleTopology ℚ_[l] B
+  have : IsModuleTopology ℚ_[l] B := ⟨rfl⟩
+  have : IsTopologicalRing B := IsModuleTopology.isTopologicalRing ℚ_[l] B
+  let : TopologicalSpace B' := moduleTopology ℚ_[l] B'
+  have : IsModuleTopology ℚ_[l] B' := ⟨rfl⟩
+  have : IsTopologicalRing B' := IsModuleTopology.isTopologicalRing ℚ_[l] B'
+  let : TopologicalSpace C := moduleTopology ℚ_[l] C
+  have : IsModuleTopology ℚ_[l] C := ⟨rfl⟩
+  have : IsTopologicalRing C := IsModuleTopology.isTopologicalRing ℚ_[l] C
   have c1 : ContAction (resCoef ℚ_[l] (colRep ρ)) := cont_col ρ fun a b => by
     simp only [hρ]
-    exact (Continuous.comp (hr.cont a b) (continuous_subtype_val (p := fun g => g ∈ D.HL)) :)
+    exact (Continuous.comp (hr.cont a b) (continuous_subtypeVal (p := fun g => g ∈ D.HL)) :)
   have c2 : ContAction (resCoef ℚ_[l] (colRep ρ')) := cont_col ρ' fun a b => by
     simp only [hρ']
-    exact (Continuous.comp (hr'.cont a b) (continuous_subtype_val (p := fun g => g ∈ D.HL)) :)
+    exact (Continuous.comp (hr'.cont a b) (continuous_subtypeVal (p := fun g => g ∈ D.HL)) :)
   have c3 : ContAction ((resCoef ℚ_[l] (colRep ρ)).prod (resCoef ℚ_[l] (colRep ρ'))) :=
     (Continuous.comp c1 (continuous_fst.prodMk (continuous_fst.comp continuous_snd))).prodMk
       (Continuous.comp c2 (continuous_fst.prodMk (continuous_snd.comp continuous_snd)))
@@ -831,7 +831,7 @@ theorem dcr_pair (f : C →ₐ[ℚ_[l]] B) (f' : C →ₐ[ℚ_[l]] B') (hf : ∀
   refine ((isCrys_isDR_sub_quot _ (HL_emb D) _ _ (cont_col _ fun a b => ?_) c3
     ((f.toLinearMap.compLeft (Fin 3)).prod (f'.toLinearMap.compLeft (Fin 3))) fun g x => ?_).1
     (fun x y h => ?_)).1 hp
-  · exact Continuous.comp (hc a b) continuous_subtype_val
+  · exact Continuous.comp (hc a b) continuous_subtypeVal
   · refine Prod.ext (funext fun a => ?_) (funext fun a => ?_)
     · change _ = Matrix.mulVec (ρ g : Matrix (Fin 3) (Fin 3) B) _ a
       rw [hρ]
@@ -843,9 +843,9 @@ theorem dcr_pair (f : C →ₐ[ℚ_[l]] B) (f' : C →ₐ[ℚ_[l]] B') (hf : ∀
 
 theorem dcr_conj {π : B →+* E} {r : GQ l →* GG (m := 3) (R := B)} (hr : D.InDcrAt π r₁ r) (n : GL (Fin 3) B)
     (hn : Matrix.GeneralLinearGroup.map π n = 1) : D.InDcrAt π r₁ (conjBy n r) := by
-  letI : TopologicalSpace B := moduleTopology ℚ_[l] B
-  haveI : IsModuleTopology ℚ_[l] B := ⟨rfl⟩
-  haveI : IsTopologicalRing B := IsModuleTopology.isTopologicalRing ℚ_[l] B
+  let : TopologicalSpace B := moduleTopology ℚ_[l] B
+  have : IsModuleTopology ℚ_[l] B := ⟨rfl⟩
+  have : IsTopologicalRing B := IsModuleTopology.isTopologicalRing ℚ_[l] B
   have hm : HasMult D.η (conjBy n r) := fun g => (conjBy_right n r g).trans (hr.mult g)
   have h0 : Continuous fun g => (r g).mat := continuous_matrix fun a b => hr.cont a b
   have hc : Continuous fun g => (conjBy n r g).mat := by
@@ -866,9 +866,9 @@ theorem dcr_conj {π : B →+* E} {r : GQ l →* GG (m := 3) (R := B)} (hr : D.I
   refine ((isCrys_isDR_sub_quot _ (HL_emb D) (colRep ρ) _ (cont_col _ fun a b => ?_) (cont_col _ fun a b => ?_)
     ((Matrix.toLin' (n : Matrix (Fin 3) (Fin 3) B)).restrictScalars ℚ_[l]) fun g x => ?_).2 (fun y => ?_)).1 hcr
   · simp only [hρ]
-    exact Continuous.comp (hr.cont a b) continuous_subtype_val
+    exact Continuous.comp (hr.cont a b) continuous_subtypeVal
   · simp only [hv]
-    exact Continuous.comp (hc.matrix_elem a b) continuous_subtype_val
+    exact Continuous.comp (hc.matrix_elem a b) continuous_subtypeVal
   · change Matrix.mulVec (n : Matrix (Fin 3) (Fin 3) B) (Matrix.mulVec (ρ g : Matrix (Fin 3) (Fin 3) B) x) =
       Matrix.mulVec ((n * ρ g * n⁻¹ : GL (Fin 3) B) : Matrix (Fin 3) (Fin 3) B)
         (Matrix.mulVec (n : Matrix (Fin 3) (Fin 3) B) x)

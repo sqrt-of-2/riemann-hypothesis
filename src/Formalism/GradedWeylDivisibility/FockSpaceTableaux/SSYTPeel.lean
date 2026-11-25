@@ -63,23 +63,23 @@ private theorem colExp_apply {r n h : ℕ} (c : Fin h → Fin r) (hh : h ≤ n) 
   rw [Finsupp.finsetSum_apply]
   simp only [Finsupp.single_apply, Prod.mk.injEq]
   by_cases ht : t.val < h
-  · rw [dif_pos ht]
+  · rw [dite_eq_left ht]
     rw [Finset.sum_eq_single ⟨t.val, ht⟩]
     · have e : Fin.castLE hh ⟨t.val, ht⟩ = t := Fin.ext rfl
       by_cases hca : c ⟨t.val, ht⟩ = a
-      · rw [if_pos ⟨hca, e⟩, if_pos hca]
-      · rw [if_neg (fun hh' => hca hh'.1), if_neg hca]
+      · rw [ite_eq_left ⟨hca, e⟩, ite_eq_left hca]
+      · rw [ite_eq_right (fun hh' => hca hh'.1), ite_eq_right hca]
     · intro p _ hp
-      rw [if_neg]
+      rw [ite_eq_right]
       rintro ⟨_, h2⟩
       have h3 : p.val = t.val := congrArg Fin.val h2
       exact hp (Fin.ext h3)
     · intro hn
       exact absurd (Finset.mem_univ _) hn
-  · rw [dif_neg ht]
+  · rw [dite_eq_right ht]
     apply Finset.sum_eq_zero
     intro p _
-    rw [if_neg]
+    rw [ite_eq_right]
     rintro ⟨_, h2⟩
     have h3 : p.val = t.val := congrArg Fin.val h2
     have h4 := p.isLt
@@ -92,9 +92,9 @@ private theorem sum_colExp_apply_eq_ite_mem {r n h : ℕ} (c : Fin h → Fin r) 
       if ht : t.val < h then (if c ⟨t.val, ht⟩ ∈ S then 1 else 0) else 0 := by
   simp only [colExp_apply]
   by_cases ht : t.val < h
-  · simp only [dif_pos ht]
+  · simp only [dite_eq_left ht]
     exact Finset.sum_ite_eq S (c ⟨t.val, ht⟩) (fun _ => 1)
-  · simp only [dif_neg ht]
+  · simp only [dite_eq_right ht]
     exact Finset.sum_const_zero
 
 theorem semistandardPeel : SSYTPeel := by
@@ -140,7 +140,7 @@ theorem semistandardPeel : SSYTPeel := by
           rw [Finset.mem_filter] at hs
           rw [Finset.mem_Iio]
           by_contra hst
-          push_neg at hst
+          push Not at hst
           exact hnt (hmono s t hst hs.2)
         have hc := Finset.card_le_card hsub
         rw [Fin.card_Iio] at hc
@@ -213,15 +213,15 @@ theorem semistandardPeel : SSYTPeel := by
     intro a t
     rw [colExp_apply]
     by_cases ht : t.val < h
-    · rw [dif_pos ht]
+    · rw [dite_eq_left ht]
       by_cases hca : c ⟨t.val, ht⟩ = a
-      · rw [if_pos hca]
+      · rw [ite_eq_left hca]
         have h1 := hc1' t ht
         rw [hca] at h1
         omega
-      · rw [if_neg hca]
+      · rw [ite_eq_right hca]
         exact Nat.zero_le _
-    · rw [dif_neg ht]
+    · rw [dite_eq_right ht]
       exact Nat.zero_le _
   have hsub : ∀ x, (m - colExp c hh) x = m x - colExp c hh x := by
     intro x
@@ -261,12 +261,12 @@ theorem semistandardPeel : SSYTPeel := by
     · by_cases hcl : c ⟨l.val, hl⟩ < a
       · have hmemL : c ⟨l.val, hl⟩ ∈ Finset.univ.filter (fun b : Fin r => b < a) :=
           Finset.mem_filter.mpr ⟨Finset.mem_univ _, hcl⟩
-        rw [dif_pos hl, if_pos hmemL]
+        rw [dite_eq_left hl, ite_eq_left hmemL]
         by_cases hj : j.val < h
         · by_cases hcj : c ⟨j.val, hj⟩ ≤ a
           · have hmemJ : c ⟨j.val, hj⟩ ∈ Finset.univ.filter (fun b : Fin r => b ≤ a) :=
               Finset.mem_filter.mpr ⟨Finset.mem_univ _, hcj⟩
-            rw [dif_pos hj, if_pos hmemJ]
+            rw [dite_eq_left hj, ite_eq_left hmemJ]
             omega
           · have hz : ∑ b : Fin r with b ≤ a, m (b, j) = 0 := by
               apply Finset.sum_eq_zero
@@ -289,7 +289,7 @@ theorem semistandardPeel : SSYTPeel := by
   · intro t
     rw [hpart, hcol t]
     by_cases ht : t.val < h
-    · rw [dif_pos ht, if_pos (Finset.mem_univ _), if_pos ht]
-    · rw [dif_neg ht, if_neg ht]
+    · rw [dite_eq_left ht, ite_eq_left (Finset.mem_univ _), ite_eq_left ht]
+    · rw [dite_eq_right ht, ite_eq_right ht]
 
 end Formalism.GradedWeylDivisibility

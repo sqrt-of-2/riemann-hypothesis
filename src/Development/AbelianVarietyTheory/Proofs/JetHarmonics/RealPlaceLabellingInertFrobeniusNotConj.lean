@@ -61,7 +61,7 @@ lemma ordP_dvd_of_pos_eq (N : NumDatum) (l : ℕ) (z : RPl N.R) (u : ℕ) (h : N
   have h3 : u • N.hP l = 0 := by simpa using h2
   unfold NumDatum.ordP
   by_cases hc : N.cls l = PrimeClass.signal
-  · rw [if_pos hc]
+  · rw [ite_eq_left hc]
     have ho : ¬ Odd u := by
       intro ho
       rw [decide_eq_true (⟨hc, ho⟩ : N.cls l = PrimeClass.signal ∧ Odd u)] at h1
@@ -70,7 +70,7 @@ lemma ordP_dvd_of_pos_eq (N : NumDatum) (l : ℕ) (z : RPl N.R) (u : ℕ) (h : N
     rw [← two_mul]
     refine Nat.mul_dvd_mul_left 2 (addOrderOf_dvd_of_nsmul_eq_zero ?_)
     rw [← mul_smul, mul_two, h3]
-  · rw [if_neg hc]
+  · rw [ite_eq_right hc]
     exact addOrderOf_dvd_of_nsmul_eq_zero h3
 
 lemma pos_inj (N : NumDatum) (l : ℕ) (z : RPl N.R) (s t : ZMod (N.ordP l))
@@ -122,8 +122,8 @@ lemma bg_succ {d : ℕ} [NeZero d] (hd : Even d) (s : ZMod d) (g : Fin 2) : g = 
       Nat.mod_mod_of_dvd _ (even_iff_two_dvd.1 hd)]
   unfold RF.bg
   by_cases hs : Even s.val
-  · rw [if_pos hs, if_neg (fun hh => h.1 hh hs)]; fin_cases g <;> simp
-  · rw [if_neg hs, if_pos (h.2 hs)]; fin_cases g <;> simp
+  · rw [ite_eq_left hs, ite_eq_right (fun hh => h.1 hh hs)]; fin_cases g <;> simp
+  · rw [ite_eq_right hs, ite_eq_left (h.2 hs)]; fin_cases g <;> simp
 
 lemma pos_succ (N : NumDatum) (l : ℕ) (z : RPl N.R) (s : ZMod (N.ordP l)) :
     N.pos l z (s + 1).val = N.pos l (N.pos l z s.val) 1 := by
@@ -172,7 +172,8 @@ lemma embK_conj_bar {lv : Level H} (c : Coeff lv) (τ : E →+* ℂ) (x : 𝓞 E
   rw [embK_coe, embK_coe, H.bar_eq, IsCMField.complexEmbedding_complexConj]
   rfl
 
-lemma conj_conj (τ : E →+* ℂ) : ComplexEmbedding.conjugate (ComplexEmbedding.conjugate τ) = τ :=
+omit [NumberField E] [IsCMField E] in
+lemma conj_conj [NumberField E] [IsCMField E] (τ : E →+* ℂ) : ComplexEmbedding.conjugate (ComplexEmbedding.conjugate τ) = τ :=
   ComplexEmbedding.involutive_conjugate E τ
 
 theorem main : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] (H : ReciprocityTheory.ChartRestriction.G.Geo.Tor.Host E) (lv : Level H) (c : Coeff lv) (N : NumDatum) (pl : RPl N.R → (E →+* ℂ)), PlaceTie N c pl → ∀ (la : HeightOneSpectrum (𝓞 c.F)) (T : CDVR) (io : c.F →+* T.Fr) (C : Type) [Field C] [CharZero C] (V : VF C) (ι : T.Fr →+* C), EmbOK T V ι → V.l = resCharOf la → (∀ x ∈ la.asIdeal, V.MM (ι (io ((x : 𝓞 c.F) : c.F)))) → Inert N V.l → ¬ ConjIn N V.l → ∀ j : ℕ, ∃ Z : Finset (RPl N.R), RF.IsReps (parOf N j V.l) Z ∧ Z.Nonempty ∧ Even (N.ordP V.l) ∧ Function.Bijective (fun x : Z × Fin 2 × ZMod (N.ordP V.l) => tauIn N pl V.l x.1.1 x.2.1 x.2.2) ∧ ∀ z g, FrobOrd V io ι (tauIn N pl V.l z g) ∧ ∀ s, tauIn N pl V.l z 1 s = ComplexEmbedding.conjugate (tauIn N pl V.l z 0 s) := by
@@ -199,13 +200,13 @@ theorem main : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] (H : Recip
       rw [this]
     dsimp only [tauIn] at h
     by_cases a : g = RF.bg s <;> by_cases b : g' = RF.bg s'
-    · rw [if_pos a, if_pos b] at h
+    · rw [ite_eq_left a, ite_eq_left b] at h
       exact main (hT.inj h) (by tauto)
-    · rw [if_pos a, if_neg b] at h
+    · rw [ite_eq_left a, ite_eq_right b] at h
       exact absurd h (hne _ _)
-    · rw [if_neg a, if_pos b] at h
+    · rw [ite_eq_right a, ite_eq_left b] at h
       exact absurd h.symm (hne _ _)
-    · rw [if_neg a, if_neg b] at h
+    · rw [ite_eq_right a, ite_eq_right b] at h
       exact main (hT.inj (hcinj h)) (by tauto)
   · intro τ
     by_cases h : InPsi H τ
@@ -213,12 +214,12 @@ theorem main : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] (H : Recip
       obtain ⟨p, hp, -⟩ := hZ z'
       refine ⟨(⟨p.1, hp.1⟩, RF.bg p.2, p.2), ?_⟩
       dsimp only [tauIn]
-      rw [if_pos rfl, hp.2]
+      rw [ite_eq_left rfl, hp.2]
     · obtain ⟨z', hz'⟩ := (hT.psi _).1 ((inPsi_conj_iff τ).2 h)
       obtain ⟨p, hp, -⟩ := hZ z'
       refine ⟨(⟨p.1, hp.1⟩, RF.bg (p.2 + 1), p.2), ?_⟩
       dsimp only [tauIn]
-      rw [if_neg ((bg_succ hev _ _).1 rfl), hp.2, hz', conj_conj]
+      rw [ite_eq_right ((bg_succ hev _ _).1 rfl), hp.2, hz', conj_conj]
   · have hf : ∀ (w : RPl N.R) (x : 𝓞 E), V.MM (emA3 io ι (ComplexEmbedding.conjugate (pl (N.pos V.l w 1))) x -
         emA3 io ι (pl w) x ^ V.l) := by
       intro w x
@@ -229,15 +230,15 @@ theorem main : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] (H : Recip
     unfold tauIn
     rw [pos_succ]
     by_cases a : g = RF.bg s
-    · rw [if_pos a, if_neg (fun hh => (bg_succ hev _ _).1 hh a)]
+    · rw [ite_eq_left a, ite_eq_right (fun hh => (bg_succ hev _ _).1 hh a)]
       exact hf _ _
-    · rw [if_neg a, if_pos ((bg_succ hev _ _).2 a)]
+    · rw [ite_eq_right a, ite_eq_left ((bg_succ hev _ _).2 a)]
       have := hf (N.pos V.l z s.val) (H.bar x)
       simp only [emA3, RingHom.comp_apply, embK_conj_bar, conj_conj] at this ⊢
       exact this
   · unfold tauIn
     by_cases a : (0 : Fin 2) = RF.bg s
-    · rw [if_pos a, if_neg (by rw [← a]; decide)]
-    · rw [if_neg a, if_pos (by revert a; generalize RF.bg s = b; revert b; decide), conj_conj]
+    · rw [ite_eq_left a, ite_eq_right (by rw [← a]; decide)]
+    · rw [ite_eq_right a, ite_eq_left (by revert a; generalize RF.bg s = b; revert b; decide), conj_conj]
 
 end GlobalTheory.InertLabelling

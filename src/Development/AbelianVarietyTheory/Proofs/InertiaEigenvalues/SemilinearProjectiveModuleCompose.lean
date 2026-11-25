@@ -133,9 +133,9 @@ theorem semiBC_of_cover : ∀ (l : ℕ) [Fact l.Prime] (R : Type) [CommRing R] (
     (v : N' →ₛₗ[h.f] N'') (w : N →ₛₗ[h.f.comp k] N''), (∀ x, w x = v (u x)) → SemiBC v → SemiBC w →
     SemiBC u := by
   intro l _ R _ B C h hc A _ k N _ _ _ _ N' _ _ _ _ N'' _ _ u v w hw hv hwb
-  letI : Algebra A B.A := k.toAlgebra
-  letI : Algebra B.A C.A := h.f.toAlgebra
-  letI : Algebra A C.A := (h.f.comp k).toAlgebra
+  let : Algebra A B.A := k.toAlgebra
+  let : Algebra B.A C.A := h.f.toAlgebra
+  let : Algebra A C.A := (h.f.comp k).toAlgebra
   haveI : IsScalarTower A B.A C.A := IsScalarTower.of_algebraMap_eq fun _ => rfl
   letI : Module A N' := Module.compHom N' k
   haveI : IsScalarTower A B.A N' := ⟨fun a b x => mul_smul (k a) b x⟩

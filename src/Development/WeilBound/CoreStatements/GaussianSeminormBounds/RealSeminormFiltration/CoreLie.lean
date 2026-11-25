@@ -101,10 +101,10 @@ theorem lie_tw (p q r s : ℕ) (τ : ℂ) : IsLie (twAct p q r s τ) := by
   intro X Y
   refine LinearMap.ext fun f => ?_
   have h := LinearMap.congr_fun (lie2 p q r s X Y) f
-  simp only [LinearMap.sub_apply, Module.End.mul_apply] at h
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp] at h
   have ht : (X * Y - Y * X).trace = 0 := by
     rw [Matrix.trace_sub, Matrix.trace_mul_comm, sub_self]
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, twAct_apply]
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, twAct_apply]
   rw [ht, mul_zero, zero_smul, add_zero, ← h]
   simp only [map_add (f := _), map_smul, smul_add, smul_smul]
   rw [mul_comm (τ * X.trace)]
@@ -115,8 +115,8 @@ theorem lie_th (p q r s : ℕ) (c τ : ℂ) : IsLie (thAct p q r s c τ) := by
   refine LinearMap.ext fun x => ?_
   obtain ⟨f, rfl⟩ : ∃ f, thMkC p q r s c f = x := Submodule.mkQ_surjective _ x
   have h := LinearMap.congr_fun (lie_tw p q r s τ X Y) f
-  simp only [LinearMap.sub_apply, Module.End.mul_apply] at h
-  simp only [LinearMap.sub_apply, Module.End.mul_apply]
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp] at h
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp]
   rw [thAct_mk, thAct_mk, thAct_mk, thAct_mk, thAct_mk, ← h, map_sub]
 
 def sgnC (l : Ln p q r s) : ℂ := if linePos l = true then 1 else -1
@@ -125,36 +125,36 @@ theorem rai_adj (l : Ln p q r s) (P Q : Pol p q r s) :
     fockInner (raiB l P) Q = sgnC l * fockInner P (lowB l Q) := by
   unfold raiB lowB sgnC
   by_cases h : linePos l = true
-  · simp only [h, if_true, one_mul]
+  · simp only [h, ite_true, one_mul]
     exact PI.FHS.fockInner_X_mul l P Q
-  · rw [if_neg h, if_neg h, if_neg h, LinearMap.neg_apply, PI.FHS.fockInner_neg_left, neg_one_mul]
+  · rw [ite_eq_right h, ite_eq_right h, ite_eq_right h, LinearMap.neg_apply, PI.FHS.fockInner_neg_left, neg_one_mul]
     exact congrArg Neg.neg (PI.FHS.fockInner_pderiv l P Q)
 
 theorem low_adj (l : Ln p q r s) (P Q : Pol p q r s) :
     fockInner (lowB l P) Q = sgnC l * fockInner P (raiB l Q) := by
   unfold raiB lowB sgnC
   by_cases h : linePos l = true
-  · simp only [h, if_true, one_mul]
+  · simp only [h, ite_true, one_mul]
     exact PI.FHS.fockInner_pderiv l P Q
-  · rw [if_neg h, if_neg h, if_neg h, LinearMap.neg_apply, PI.FHS.fockInner_neg_right, neg_one_mul, neg_neg]
+  · rw [ite_eq_right h, ite_eq_right h, ite_eq_right h, LinearMap.neg_apply, PI.FHS.fockInner_neg_right, neg_one_mul, neg_neg]
     exact PI.FHS.fockInner_X_mul l P Q
 
 theorem omE_adj_gen (l l' : Ln p q r s) (P Q : Pol p q r s) :
     fockInner (omE l l' P) Q = (sgnC l * sgnC l') * fockInner P (omE l' l Q) := by
   unfold omE
-  simp only [LinearMap.add_apply, Module.End.mul_apply]
+  simp only [LinearMap.add_apply, mul_apply_eq_comp]
   rw [PI.FHS.fockInner_add_left, PI.FHS.fockInner_add_right, rai_adj, low_adj, mul_add, mul_assoc]
   congr 1
   by_cases h : l = l'
   · subst h
     have hs : sgnC l * sgnC l = 1 := by
       unfold sgnC; split_ifs <;> simp
-    rw [hs, one_mul, if_pos rfl]
-    simp only [LinearMap.smul_apply, Module.End.one_apply]
+    rw [hs, one_mul, ite_eq_left rfl]
+    simp only [LinearMap.smul_apply, one_apply_eq_self]
     rw [PI.FHS.fockInner_smul_left, PI.FHS.fockInner_smul_right]
     congr 1
     simp [map_ofNat]
-  · rw [if_neg h, if_neg (Ne.symm h)]
+  · rw [ite_eq_right h, ite_eq_right (Ne.symm h)]
     simp only [LinearMap.zero_apply]
     rw [PI.FHS.fockInner_zero_left, PI.FHS.fockInner_zero_right, mul_zero]
 
@@ -228,9 +228,9 @@ theorem scalar_of_hw {μ : Ix p q → ℚ} (hμ : ∀ a b, sameBlock a b → μ 
   have hw : HwK (units (fvAct1 p q r s)) μ (show FV p q r s from x) := hwK_of_hwSub.1 hx
   by_cases h : a = b
   · subst h
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     exact hw.1 a
-  · rw [if_neg h, zero_smul]
+  · rw [ite_eq_right h, zero_smul]
     rcases PI.FockOneDegW.Core.posC_or a b hab h with h1 | h1
     · exact hw.2 a b h1
     · exact low_kill (adjK_of_adjG (adj1 p q r s)) (glK_of_lie hL) hw h1 (hμ a b hab).symm
@@ -239,7 +239,7 @@ theorem mem_polChi_iff (c : ℂ) (x : Pol p q r s) : x ∈ polChi p q r s c ↔
     ∀ a b, sameBlock a b → fockAct1 p q r s (Eab a b) x = (if a = b then c else 0) • x := by
   unfold polChi jointEig
   simp only [Submodule.mem_iInf, LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.smul_apply,
-    Module.End.one_apply, sub_eq_zero]
+    one_apply_eq_self, sub_eq_zero]
   constructor
   · intro h a b hab
     have h1 := h ⟨Eab a b, PI.FockOneDegW.isKC_Eab hab⟩
@@ -259,13 +259,13 @@ theorem mem_polChi_iff (c : ℂ) (x : Pol p q r s) : x ∈ polChi p q r s c ↔
       · rw [h a b hab, smul_smul]
         by_cases e : a = b
         · subst e
-          rw [if_pos rfl, if_pos rfl, mul_comm]
-        · rw [if_neg e, if_neg e, mul_zero]
+          rw [ite_eq_left rfl, ite_eq_left rfl, mul_comm]
+        · rw [ite_eq_right e, ite_eq_right e, mul_zero]
       · have e : a ≠ b := by
           rintro rfl
           exact hab (by cases a <;> trivial)
-        rw [hZ a b hab, if_neg e, zero_smul, zero_smul]
-    simp only [key, ← Finset.sum_smul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+        rw [hZ a b hab, ite_eq_right e, zero_smul, zero_smul]
+    simp only [key, ← Finset.sum_smul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
     congr 1
     simp only [chiTr, Matrix.trace, Matrix.diag_apply, Finset.mul_sum]
 
@@ -276,8 +276,8 @@ theorem mem_polChi_iff_hw (c : ℂ) (c0 : ℚ) (hc : c = c0) (x : Pol p q r s) :
   constructor
   · intro h
     refine (PI.FockOneDegW.Swap.mem_hwSub_iff _ _ _).2 ⟨fun a => ?_, fun a b hab => ?_⟩
-    · rw [h a a (by cases a <;> trivial), if_pos rfl]
-    · rw [h a b (PI.FockOneDegW.Core.posC_sb a b hab), if_neg (PI.FockOneDegW.Core.posC_ne a b hab), zero_smul]
+    · rw [h a a (by cases a <;> trivial), ite_eq_left rfl]
+    · rw [h a b (PI.FockOneDegW.Core.posC_sb a b hab), ite_eq_right (PI.FockOneDegW.Core.posC_ne a b hab), zero_smul]
   · intro h a b hab
     exact scalar_of_hw (μ := fun _ => c0) (fun _ _ _ => rfl) h a b hab
 

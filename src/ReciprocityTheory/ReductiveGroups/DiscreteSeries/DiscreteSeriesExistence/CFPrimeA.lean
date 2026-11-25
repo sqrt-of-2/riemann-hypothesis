@@ -42,7 +42,7 @@ theorem sg_cp_comm {cp cm : Fin n → Fin n → Module.End ℂ W} (hC : IsCAR cp
     sgE ε cp cm c c * cp i x = cp i x * sgE ε cp cm c c + ((modeWt ε (i, x) c : ℝ) : ℂ) • cp i x := by
   unfold sgE
   by_cases hc : ε c = true
-  · rw [if_pos ⟨hc, hc⟩, Finset.sum_mul, Finset.mul_sum]
+  · rw [ite_eq_left ⟨hc, hc⟩, Finset.sum_mul, Finset.mul_sum]
     simp_rw [car_mul_mul_commute_add_ite hC]
     rw [Finset.sum_add_distrib]
     congr 1
@@ -54,13 +54,13 @@ theorem sg_cp_comm {cp cm : Fin n → Fin n → Module.End ℂ W} (hC : IsCAR cp
       · have hxc : x ≠ c := fun h => by rw [h, hc] at hx; exact Bool.noConfusion hx
         simp [minusIdx, hx, hc, modeWt, root, hxc]
       · simp [minusIdx, hx, modeWt]
-    · simp only [hci, false_and, if_false, Finset.sum_const_zero]
+    · simp only [hci, false_and, ite_false, Finset.sum_const_zero]
       by_cases hx : ε i = true ∧ ε x = false
       · have hxc : x ≠ c := fun h => by rw [h, hc] at hx; exact Bool.noConfusion hx.2
         simp [modeWt, hx, root, Ne.symm hci, hxc]
       · simp [modeWt, hx]
   · have hc' : ε c = false := by simpa using hc
-    rw [if_neg (fun h => hc h.1), if_pos ⟨hc', hc'⟩, neg_mul, mul_neg, Finset.sum_mul, Finset.mul_sum]
+    rw [ite_eq_right (fun h => hc h.1), ite_eq_left ⟨hc', hc'⟩, neg_mul, mul_neg, Finset.sum_mul, Finset.mul_sum]
     simp_rw [car_mul_mul_commute_add_ite hC]
     rw [Finset.sum_add_distrib, neg_add]
     congr 1
@@ -72,7 +72,7 @@ theorem sg_cp_comm {cp cm : Fin n → Fin n → Module.End ℂ W} (hC : IsCAR cp
       · have hic : i ≠ c := fun h => by rw [h, hc'] at hi; exact Bool.noConfusion hi
         simp [plusIdx, hi, hc', modeWt, root, hic]
       · simp [plusIdx, hi, modeWt]
-    · simp only [hcx, and_false, if_false, neg_zero, Finset.sum_const_zero]
+    · simp only [hcx, and_false, ite_false, neg_zero, Finset.sum_const_zero]
       by_cases hx : ε i = true ∧ ε x = false
       · have hic : i ≠ c := fun h => by rw [h, hc'] at hx; exact Bool.noConfusion hx.1
         simp [modeWt, hx, root, hic, Ne.symm hcx]
@@ -94,7 +94,7 @@ theorem sg_prod_list (ε : Fin n → Bool) (c : Fin n) (l : List (Fin n × Fin n
     obtain ⟨i, y⟩ := x
     have h := LinearMap.congr_fun (sg_cp_comm isCAR_fock ε c i y)
       ((l.map fun x => ExteriorAlgebra.ι ℂ (Pi.single x (1 : ℂ))).prod)
-    simp only [Module.End.mul_apply, LinearMap.add_apply, LinearMap.smul_apply, ih, map_smul] at h
+    simp only [mul_apply_eq_comp, LinearMap.add_apply, LinearMap.smul_apply, ih, map_smul] at h
     simp only [List.map_cons, List.prod_cons, List.sum_cons]
     rw [show ExteriorAlgebra.ι ℂ (Pi.single (i, y) (1 : ℂ)) *
         (l.map fun x => ExteriorAlgebra.ι ℂ (Pi.single x (1 : ℂ))).prod =
@@ -146,17 +146,17 @@ theorem cfa_rho_coord (ε : Fin n → Bool) (c : Fin n) :
   simp only [Pi.sub_apply, rhoHol, rhoN, qOf, pOf]
   rw [e1, e1, e1, e1]
   cases hc : ε c
-  · simp only [Bool.false_eq_true, if_false, Finset.sum_div, ← Finset.sum_sub_distrib,
+  · simp only [Bool.false_eq_true, ite_false, Finset.sum_div, ← Finset.sum_sub_distrib,
       ← Finset.sum_neg_distrib]
     refine Finset.sum_congr rfl fun b _ => ?_
     rcases lt_trichotomy b c with h | h | h
     · cases hb : ε b <;> simp [h, lt_asymm h]
     · subst h; simp [hc]
-    · cases hb : ε b <;> simp [h, lt_asymm h] <;> norm_num
-  · simp only [if_true, Finset.sum_div, ← Finset.sum_sub_distrib, ← Finset.sum_neg_distrib]
+    · cases hb : ε b <;> simp [h, lt_asymm h]; norm_num
+  · simp only [ite_true, Finset.sum_div, ← Finset.sum_sub_distrib, ← Finset.sum_neg_distrib]
     refine Finset.sum_congr rfl fun b _ => ?_
     rcases lt_trichotomy b c with h | h | h
-    · cases hb : ε b <;> simp [h, lt_asymm h] <;> norm_num
+    · cases hb : ε b <;> simp [h, lt_asymm h]; norm_num
     · subst h; simp [hc]
     · cases hb : ε b <;> simp [h, lt_asymm h]
 
@@ -186,11 +186,11 @@ theorem fockWt_dot_ge (ε : Fin n → Bool) {lam : Fin n → ℝ} (hlam : Strict
     · by_cases hlt : x.2 < x.1
       · have := hlam hlt
         have hp : ε x.1 = true ∧ ε x.2 = false ∧ x.2 < x.1 := ⟨hx.1, hx.2, hlt⟩
-        rw [if_pos hp, if_pos hp, if_pos hx]
+        rw [ite_eq_left hp, ite_eq_left hp, ite_eq_left hx]
         constructor <;> linarith
       · have := hlam.antitone (not_lt.1 hlt)
         have hn : ¬ (ε x.1 = true ∧ ε x.2 = false ∧ x.2 < x.1) := fun h => hlt h.2.2
-        rw [if_neg hn, if_neg hn, if_pos hx, sub_self]
+        rw [ite_eq_right hn, ite_eq_right hn, ite_eq_left hx, sub_self]
         constructor <;> linarith
     · have : ¬ (ε x.1 = true ∧ ε x.2 = false ∧ x.2 < x.1) := fun h => hx ⟨h.1, h.2.1⟩
       simp [hx, this]

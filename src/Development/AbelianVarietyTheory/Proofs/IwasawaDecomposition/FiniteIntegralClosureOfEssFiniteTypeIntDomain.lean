@@ -101,7 +101,7 @@ theorem finite_integralClosure_of_essFiniteType_int :
   obtain ⟨S₀, M, hft, hloc⟩ := (Algebra.essFiniteType_iff_exists_subalgebra ℤ D).mp inferInstance
   let K := FractionRing D
   have hinj : Function.Injective (algebraMap S₀ D) := Subtype.val_injective
-  haveI hfr : IsFractionRing S₀ K := by
+  have hfr : IsFractionRing S₀ K := by
     have h := IsLocalization.localization_localization_isLocalization_of_has_all_units M (nonZeroDivisors D) K
       (fun x hx => hx.mem_nonZeroDivisors)
     have e : (nonZeroDivisors D).comap (algebraMap S₀ D) = nonZeroDivisors S₀ := by
@@ -113,19 +113,19 @@ theorem finite_integralClosure_of_essFiniteType_int :
   suffices h : Module.Finite S₀ (integralClosure S₀ K) from
     finite_integralClosure_of_isLocalization M
   rcases CharP.char_is_prime_or_zero D (ringChar D) with hp | h0
-  · haveI : Fact (ringChar D).Prime := ⟨hp⟩
-    haveI : CharP D (ringChar D) := ringChar.charP D
-    haveI : CharP S₀ (ringChar D) := ⟨fun n => by
+  · have : Fact (ringChar D).Prime := ⟨hp⟩
+    have : CharP D (ringChar D) := ringChar.charP D
+    have : CharP S₀ (ringChar D) := ⟨fun n => by
       rw [← map_eq_zero_iff _ hinj, map_natCast, CharP.cast_eq_zero_iff D]⟩
-    letI : Algebra (ZMod (ringChar D)) S₀ := (ZMod.castHom dvd_rfl S₀).toAlgebra
-    haveI : Algebra.FiniteType (ZMod (ringChar D)) S₀ :=
+    let : Algebra (ZMod (ringChar D)) S₀ := (ZMod.castHom dvd_rfl S₀).toAlgebra
+    have : Algebra.FiniteType (ZMod (ringChar D)) S₀ :=
       .of_restrictScalars_finiteType ℤ (ZMod (ringChar D)) S₀
     exact NormFin.finite_integralClosure_of_perfectField (ZMod (ringChar D)) S₀ K K
-  · haveI : CharZero D := (CharP.ringChar_zero_iff_CharZero D).mp h0
-    haveI : CharZero K := charZero_of_injective_algebraMap (IsFractionRing.injective D K)
-    haveI : Algebra.EssFiniteType S₀ D := .of_isLocalization D M
-    haveI : Algebra.EssFiniteType D K := .of_isLocalization K (nonZeroDivisors D)
-    haveI : Algebra.EssFiniteType S₀ K := .comp S₀ D K
+  · have : CharZero D := (CharP.ringChar_zero_iff_CharZero D).mp h0
+    have : CharZero K := charZero_of_injective_algebraMap (IsFractionRing.injective D K)
+    have : Algebra.EssFiniteType S₀ D := .of_isLocalization D M
+    have : Algebra.EssFiniteType D K := .of_isLocalization K (nonZeroDivisors D)
+    have : Algebra.EssFiniteType S₀ K := .comp S₀ D K
     exact GlobalTheory.finite_integralClosure_of_essFiniteType_field ℤ S₀ K
 
 end GlobalTheory

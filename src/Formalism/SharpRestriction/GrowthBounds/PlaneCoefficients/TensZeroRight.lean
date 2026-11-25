@@ -61,7 +61,7 @@ theorem tens_monomial (mo : σ →₀ ℕ) (c : Kf) (G : MvPolynomial τ Kf) :
   unfold tens
   by_cases hc : c = 0
   · simp [hc]
-  · rw [support_monomial, if_neg hc, Finset.sum_singleton, coeff_monomial, if_pos rfl]
+  · rw [support_monomial, ite_eq_right hc, Finset.sum_singleton, coeff_monomial, ite_eq_left rfl]
 
 def tensH (G : MvPolynomial τ Kf) (mo : σ →₀ ℕ) : Kf →+ MvPolynomial σ (MvPolynomial τ Kf) where
   toFun c := monomial mo (c • G)
@@ -94,9 +94,9 @@ theorem compD_monomial {ι : Type} {s : ℕ} (d : ι → ℕ) (mo : ι × Fin s 
   unfold compD
   by_cases hc : c = 0
   · simp [hc]
-  · rw [support_monomial, if_neg hc, Finset.filter_singleton]
+  · rw [support_monomial, ite_eq_right hc, Finset.filter_singleton]
     split_ifs with h
-    · rw [Finset.sum_singleton, coeff_monomial, if_pos rfl]
+    · rw [Finset.sum_singleton, coeff_monomial, ite_eq_left rfl]
     · rw [Finset.sum_empty]
 
 theorem add_expand {R M : Type*} [CommSemiring R] [AddCommMonoid M] (f : MvPolynomial σ R → M) (h0 : f 0 = 0)
@@ -130,14 +130,14 @@ theorem monomialSubstitution_monomial (mo : TV n' (m + 1) →₀ ℕ) (c : KK O)
   unfold levP
   by_cases hc : c = 0
   · simp [hc]
-  · rw [support_monomial, if_neg hc, Finset.sum_singleton, coeff_monomial, if_pos rfl]
+  · rw [support_monomial, ite_eq_right hc, Finset.sum_singleton, coeff_monomial, ite_eq_left rfl]
 
 theorem levN_monomial (mo : TV n' (m + 1) →₀ ℕ) (c : KK O) :
     levN Fr p hk nL (monomial mo c) = monomial (noMon Fr p hk nL mo) c := by
   unfold levN
   by_cases hc : c = 0
   · simp [hc]
-  · rw [support_monomial, if_neg hc, Finset.sum_singleton, coeff_monomial, if_pos rfl]
+  · rw [support_monomial, ite_eq_right hc, Finset.sum_singleton, coeff_monomial, ite_eq_left rfl]
 
 theorem levImg_monomial (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : TL J nL r → ℕ) (mo : TV n' (m + 1) →₀ ℕ)
     (c : KK O) :
@@ -147,9 +147,9 @@ theorem levImg_monomial (rho : TL J nL r × Fin (r + K) → ℕ) (dPl dNo : TL J
   unfold levImg
   by_cases hc : c = 0
   · simp [hc]
-  · rw [support_monomial, if_neg hc, Finset.filter_singleton]
+  · rw [support_monomial, ite_eq_right hc, Finset.filter_singleton]
     split_ifs with h
-    · rw [Finset.sum_singleton, coeff_monomial, if_pos rfl]
+    · rw [Finset.sum_singleton, coeff_monomial, ite_eq_left rfl]
     · rw [Finset.sum_empty]
 
 theorem inBlock_iff (dPl dNo : TL J nL r → ℕ) (mo : TV n' (m + 1) →₀ ℕ) :
@@ -187,16 +187,16 @@ theorem lev_term (hp : 0 < p) (base d b : TV n' (m + 1) →₀ ℕ) (hd : LowDiv
     intro x c
     rw [Finsupp.add_apply, hd0, add_zero]
     exact hbase x c
-  rw [monomial_mul, levImg_monomial, monomialSubstitution_monomial, levN_monomial, compD_monomial, compD_monomial, inBlock_iff, e1, e2,
+  rw [MvPolynomial.monomial_mul_monomial, levImg_monomial, monomialSubstitution_monomial, levN_monomial, compD_monomial, compD_monomial, inBlock_iff, e1, e2,
     e3]
   by_cases h1 : InLow Fr p hk nL rho base
-  · rw [if_pos h1]
+  · rw [ite_eq_left h1]
     by_cases h2 : ∀ x, multideg (plMon Fr p hk nL (base + d)) x = dPl x
     · by_cases h3 : ∀ x, multideg (noMon Fr p hk nL b) x = dNo x
-      · rw [if_pos ⟨h1, h2, h3⟩, if_pos h2, if_pos h3, tens_monomial, smul_monomial, smul_eq_mul]
-      · rw [if_neg (fun h => h3 h.2.2), if_neg h3, tens_zero_right]
-    · rw [if_neg (fun h => h2 h.2.1), if_neg h2, tens_zero_left]
-  · rw [if_neg h1, if_neg (fun h => h1 h.1)]
+      · rw [ite_eq_left ⟨h1, h2, h3⟩, ite_eq_left h2, ite_eq_left h3, tens_monomial, smul_monomial, smul_eq_mul]
+      · rw [ite_eq_right (fun h => h3 h.2.2), ite_eq_right h3, tens_zero_right]
+    · rw [ite_eq_right (fun h => h2 h.2.1), ite_eq_right h2, tens_zero_left]
+  · rw [ite_eq_right h1, ite_eq_right (fun h => h1 h.1)]
 
 theorem lev_mul (hp : 0 < p) (base : TV n' (m + 1) →₀ ℕ) (P Q : MvPolynomial (TV n' (m + 1)) (KK O))
     (hP : ∀ a ∈ P.support, ∃ d, LowDiv Fr p hk nL d ∧ (∀ x c, d (noVar Fr hk nL x c) = 0) ∧ a = base + d)
@@ -237,9 +237,9 @@ theorem lev_mul (hp : 0 < p) (base : TV n' (m + 1) →₀ ℕ) (P Q : MvPolynomi
   split_ifs with h
   · rw [hR]
     refine Finset.sum_congr rfl fun a ha => Finset.sum_congr rfl fun b hb => ?_
-    rw [hterm a ha b hb, if_pos h]
+    rw [hterm a ha b hb, ite_eq_left h]
   · refine Finset.sum_eq_zero fun a ha => Finset.sum_eq_zero fun b hb => ?_
-    rw [hterm a ha b hb, if_neg h]
+    rw [hterm a ha b hb, ite_eq_right h]
 
 end Lev
 

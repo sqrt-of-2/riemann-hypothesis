@@ -293,7 +293,7 @@ theorem sameCoset_pass (hX : X.Ok) (hPr : Pr.Ok) {n : ℕ} (P : rowSG Pr sel mu)
     SameCoset sel mu cst P (k.1 v) y0 ↔ SameCoset sel mu cst P v y0 := by
   by_cases hP : P.1 ∈ Pr.vGs
   · unfold SameCoset
-    simp only [if_pos hP]
+    simp only [ite_eq_left hP]
     have hk : k⁻¹ ∈ GlobalTheory.TopStep.prinCong n P.1 1 :=
       GlobalTheory.CplCosetPt.mem_prinCong_one_of_redGL (GlobalTheory.TopStep.qOf_notMem_sq hX hPr hP) _ (by rw [map_inv, hr, inv_one])
     exact GlobalTheory.CplCosetPt.sameCoset_loc P.1 0 1 1 k.1 1 k⁻¹ k.2 (one_mem _) hk (by simp) (by omega) y0 (hy0 hP)
@@ -318,7 +318,7 @@ theorem coset_image (hX : X.Ok) (hPr : Pr.Ok) {n : ℕ} (fp fq : rowSG Pr sel mu
     show y = g (fp P ((κ P).1.symm ((κ P).1 ((fp P).symm (g.symm y)))))
     simp
   ext y
-  simp only [Set.mem_setOf_eq, Set.mem_image, e]
+  simp only [Set.mem_ofPred_eq, Set.mem_image, e]
   constructor
   · intro h
     refine ⟨g.symm y, fun P => (sameCoset_pass hX hPr P (κ P) (hr P) (h1 P) (y0 P) (hy0 P) _).1 (h P), by simp⟩
@@ -345,14 +345,14 @@ theorem coset_mem_ybSet (p : ChPt (R := R) sel mu u j) (y0 : rowSG Pr sel mu →
     have hs := hy P l
     have h0 := hy0 P l
     by_cases hP : P.1 ∈ Pr.vGs
-    · simp only [if_pos hP, pow_zero, inv_one, one_mul, pow_one] at hs h0 ⊢
+    · simp only [ite_eq_left hP, pow_zero, inv_one, one_mul, pow_one] at hs h0 ⊢
       simp only [_root_.zpow_neg, zpow_one, inv_inv]
       have e : ((qOf P.1 : ℕ) : X.E) * (frsF sel mu p P).symm y l =
           ((qOf P.1 : ℕ) : X.E) * ((frsF sel mu p P).symm y - y0 P) l + ((qOf P.1 : ℕ) : X.E) * y0 P l := by
         simp only [Pi.sub_apply]; ring
       rw [e]
       exact (hqI.mul hs).add h0
-    · simp only [if_neg hP] at hs h0 ⊢
+    · simp only [ite_eq_right hP] at hs h0 ⊢
       simp only [_root_.zpow_neg, zpow_natCast, inv_inv]
       have e : ((qOf P.1 : ℕ) : X.E) ^ cst.M * (frsF sel mu p P).symm y l =
           (((qOf P.1 : ℕ) : X.E) ^ cst.M * ((qOf P.1 : ℕ) : X.E) ^ cst.M) *
@@ -363,7 +363,7 @@ theorem coset_mem_ybSet (p : ChPt (R := R) sel mu u j) (y0 : rowSG Pr sel mu →
       rw [e]
       exact (((GlobalTheory.TopStep.intAt_pow hqI _).mul (GlobalTheory.TopStep.intAt_pow hqI _)).mul hs).add h0
   · ext z
-    rw [Set.mem_setOf_eq, Set.mem_setOf_eq, mem_locLat]
+    rw [Set.mem_ofPred_eq, Set.mem_ofPred_eq, mem_locLat]
     refine forall_congr' fun P => ?_
     rw [← GlobalTheory.TwV.Model.sameCoset_iff sel mu cst p P z y]
     exact ⟨fun h => GlobalTheory.TwV.Model.sameCoset_trans _ _ _ h (GlobalTheory.TwV.Model.sameCoset_symm _ _ _ (hy P)),
@@ -427,7 +427,7 @@ theorem xiPt_cpl_smul : UnderTie (fun {D L hT Gi Gl Kc Y cX ex t u μ St} A dtU 
   rw [Finset.prod_eq_one fun P _ => hprod P, mul_one] at law
   simp only [Finset.prod_const_one, inv_one, mul_one, Units.val_one, one_mul] at law
   unfold xiPt
-  rw [dite_eq_right (lt_irrefl _), if_pos rfl, dite_eq_right (lt_irrefl _), if_pos rfl, hC]
+  rw [dite_eq_right (lt_irrefl _), ite_eq_left rfl, dite_eq_right (lt_irrefl _), ite_eq_left rfl, hC]
   exact law
 
 end Main
@@ -503,7 +503,7 @@ theorem xiPt_top_smul : UnderTie (fun {D L hT Gi Gl Kc Y cX ex t u μ St} A dtU 
   have hn1 : ¬ (t.m2 + 1 < t.m2) := by omega
   have hn2 : t.m2 + 1 ≠ t.m2 := by omega
   unfold xiPt
-  rw [dite_eq_right hn1, if_neg hn2, dite_eq_right hn1, if_neg hn2, XiTop_eq, XiTop_eq]
+  rw [dite_eq_right hn1, ite_eq_right hn2, dite_eq_right hn1, ite_eq_right hn2, XiTop_eq, XiTop_eq]
   congr 1
   · exact phiT_smul t.X.K p.deco p'.deco g 1 g' 1 w
   · have hX : t.X.Ok := hPin.fields.ok
@@ -535,7 +535,7 @@ theorem xiPt_top_smul : UnderTie (fun {D L hT Gi Gl Kc Y cX ex t u μ St} A dtU 
       have hy0P : ∀ l, IntAt P.1 ((qOf P.1 : t.X.E) * A.y0 β P l) := by
         intro l
         have h := hy0 P l
-        simpa only [hP, if_true, pow_one] using h
+        simpa only [hP, ite_true, pow_one] using h
       have key1 : ∀ (F1 : Sp t.X.E (D.R.N (t.m2 + 1)) ≃ₗ[t.X.E] Sp t.X.E (D.R.N (t.m2 + 1))) (u1 u0 : Sp t.X.E (D.R.N (t.m2 + 1))),
           F1 = g.1 * frsF t.sel (t.tup μ) p P * κ.1 →
           SameCoset t.sel (t.tup μ) (t.cst μ) P (F1.symm u1) (y0At A (t.m2 + 1) (Nat.le_of_succ_le hi) β P) →
@@ -546,7 +546,7 @@ theorem xiPt_top_smul : UnderTie (fun {D L hT Gi Gl Kc Y cX ex t u μ St} A dtU 
               (inFr (frsF t.sel (t.tup μ) p P) (frsF t.sel (t.tup μ) p' P) w) ((frsF t.sel (t.tup μ) p P).symm u0) := by
         rintro F1 u1 u0 rfl h1 h2
         unfold SameCoset at h1 h2
-        simp only [hP, if_true, pow_zero, inv_one, one_mul, hyy] at h1 h2
+        simp only [hP, ite_true, pow_zero, inv_one, one_mul, hyy] at h1 h2
         have e1 : inFr (g.1 * frsF t.sel (t.tup μ) p P * κ.1) (g'.1 * frsF t.sel (t.tup μ) p' P * κ'.1)
             (g'.1.toLinearMap ∘ₗ w ∘ₗ g.1.symm.toLinearMap) =
             κ'.1.symm.toLinearMap ∘ₗ inFr (frsF t.sel (t.tup μ) p P) (frsF t.sel (t.tup μ) p' P) w ∘ₗ κ.1.toLinearMap := by
@@ -594,7 +594,7 @@ theorem xiPt_top_smul : UnderTie (fun {D L hT Gi Gl Kc Y cX ex t u μ St} A dtU 
     · have hy0P : ∀ l, IntAt P.1 ((qOf P.1 : t.X.E) ^ (t.cst μ).M * A.y0 β P l) := by
         intro l
         have h := hy0 P l
-        simpa only [hP, if_false] using h
+        simpa only [hP, ite_false] using h
       have hqM : (qOf P.1 : t.X.E) ^ (t.cst μ).M ≠ 0 := pow_ne_zero _ hq0
       have key2 : ∀ (F1 : Sp t.X.E (D.R.N (t.m2 + 1)) ≃ₗ[t.X.E] Sp t.X.E (D.R.N (t.m2 + 1))) (u1 u0 : Sp t.X.E (D.R.N (t.m2 + 1))),
           F1 = g.1 * frsF t.sel (t.tup μ) p P →
@@ -606,7 +606,7 @@ theorem xiPt_top_smul : UnderTie (fun {D L hT Gi Gl Kc Y cX ex t u μ St} A dtU 
               (inFr (frsF t.sel (t.tup μ) p P) (frsF t.sel (t.tup μ) p' P) w) ((frsF t.sel (t.tup μ) p P).symm u0) := by
         rintro F1 u1 u0 rfl h1 h2
         unfold SameCoset at h1 h2
-        simp only [hP, if_false, hyy] at h1 h2
+        simp only [hP, ite_false, hyy] at h1 h2
         have e1 : inFr (g.1 * frsF t.sel (t.tup μ) p P) (g'.1 * frsF t.sel (t.tup μ) p' P)
             (g'.1.toLinearMap ∘ₗ w ∘ₗ g.1.symm.toLinearMap) = inFr (frsF t.sel (t.tup μ) p P) (frsF t.sel (t.tup μ) p' P) w := by
           refine LinearMap.ext fun v => ?_
@@ -708,14 +708,14 @@ theorem red_pass_one {u : Pr.Word} {j : ℕ} {Λ : LevFam X.E X.K (R.N j) Pr.vGs
   · have e : κ P = passG ((g, 1, 1) : FrmG Λ Θ) p ⟨P.1, hP⟩ := by
       apply Subtype.ext
       unfold frsF at h
-      simp only [dif_pos hP] at h
+      simp only [dite_eq_left hP] at h
       show (κ P).1 = ((((g, 1, 1) : FrmG Λ Θ) • p).deco.1.liftFr ⟨P.1, hP⟩)⁻¹ * g.1 * p.deco.1.liftFr ⟨P.1, hP⟩
       rw [h, Subgroup.coe_inv]
       group
     rw [e]
     exact redGL_passG ((g, 1, 1) : FrmG Λ Θ) p ⟨P.1, hP⟩
   · unfold frsF at h
-    simp only [dif_neg hP] at h
+    simp only [dite_eq_right hP] at h
     have h1 : ((κ P)⁻¹).1 = 1 := by
       have h' : g.1 * (p.fr ⟨P.1, (Finset.mem_union.mp P.2).resolve_left hP⟩ * ((κ P)⁻¹).1) =
           g.1 * (p.fr ⟨P.1, (Finset.mem_union.mp P.2).resolve_left hP⟩ * 1) := by
@@ -771,7 +771,7 @@ theorem xiPt_rat : UnderTie (fun {D L hT Gi Gl Kc Y cX ex t u μ St} A dtU a =>
         (g'.1.toLinearMap ∘ₗ w ∘ₗ g.1.symm.toLinearMap) = xiPt A i hi β β' p p' w) := by
   intro D L hT Gi Gl Kc Y cX ex t u μ St A dtU a hP _hT i hi hlt β β' x x' p p' _hp _hp' g g' w
   unfold xiPt
-  rw [dif_pos hlt, dif_pos hlt]
+  rw [dite_eq_left hlt, dite_eq_left hlt]
   exact GlobalTheory.RatEntry.xiEntry_rat hP.fields.ok t.pr_ok hP.sel ⟨hP.avoid.2, hP.avoid.1⟩ (t.idx_ok μ) hlt _ _ g g' p p' w
 
 end GlobalTheory.RatEntry

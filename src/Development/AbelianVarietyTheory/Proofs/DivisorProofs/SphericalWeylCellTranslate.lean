@@ -70,7 +70,7 @@ theorem unipB_mul_apply_succ {n : ℕ} {X Y : GL (Fin n) L} (hX : X ∈ unipB L 
     have h2 := Fin.val_injective.ne hc.2
     by_cases hca : c < a
     · rw [hX.1 a c hca, zero_mul]
-    · have : a' < c := by rw [Fin.lt_iff_val_lt_val] at hca ⊢; omega
+    · have : a' < c := by rw [Fin.lt_def] at hca ⊢; omega
       rw [hY.1 c a' this, mul_zero]
 
 theorem unipB_inv_apply_succ {n : ℕ} {X : GL (Fin n) L} (hX : X ∈ unipB L (Fin n))
@@ -108,8 +108,8 @@ theorem inv_mul_diag {n : ℕ} {s : Equiv.Perm (Fin n)} {y : GL (Fin n) L} (hy :
 theorem swap_inversion {n : ℕ} {a a' p q : Fin n} (h : a'.val = a.val + 1) (hpq : p < q)
     (hs : Equiv.swap a a' q < Equiv.swap a a' p) : p = a ∧ q = a' := by
   rw [Equiv.swap_apply_def, Equiv.swap_apply_def] at hs
-  rw [Fin.lt_iff_val_lt_val] at hpq
-  split_ifs at hs with h1 h2 h3 h4 h5 h6 <;> simp only [Fin.lt_iff_val_lt_val, Fin.ext_iff] at * <;> omega
+  rw [Fin.lt_def] at hpq
+  split_ifs at hs with h1 h2 h3 h4 h5 h6 <;> simp only [Fin.lt_def, Fin.ext_iff] at * <;> omega
 
 theorem transvection_apply' {n : ℕ} (a a' : Fin n) (d : L) (i j : Fin n) :
     Matrix.transvection a a' d i j = (if i = j then 1 else 0) + (if i = a ∧ j = a' then d else 0) := by

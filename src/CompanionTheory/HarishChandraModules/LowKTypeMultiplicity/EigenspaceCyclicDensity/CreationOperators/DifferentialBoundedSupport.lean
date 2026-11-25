@@ -63,15 +63,15 @@ theorem bd_sub_ne {ε₀ ε : Fin n → Bool} (h0 : ∀ a b, ε a = ε b → ε�
   congr 1
   · refine Finset.sum_congr rfl fun i _ => ?_
     by_cases h1 : cpt ε i
-    · rw [if_pos h1, if_pos (h0 _ _ h1)]
-    · rw [if_neg h1]
+    · rw [ite_eq_left h1, ite_eq_left (h0 _ _ h1)]
+    · rw [ite_eq_right h1]
       split_ifs with h2
       · rw [hc.1 i h2 h1, map_zero]
       · rfl
   · refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => Finset.sum_congr rfl fun k _ => ?_
     by_cases h1 : Tri ε i j k
-    · rw [if_pos h1, if_pos ⟨h0 _ _ h1.1, h0 _ _ h1.2.1, h1.2.2⟩]
-    · rw [if_neg h1]
+    · rw [ite_eq_left h1, ite_eq_left ⟨h0 _ _ h1.1, h0 _ _ h1.2.1, h1.2.2⟩]
+    · rw [ite_eq_right h1]
       split_ifs with h2
       · exact hc.2 i j k h2 fun a b => h1 ⟨a, b, h2.2.2⟩
       · rfl
@@ -104,15 +104,15 @@ theorem sup_bd {ε : Fin n → Bool} (E : Fin n → Fin n → Module.End ℂ V) 
   rcases bd_ne ε E x A h with ⟨i, hi, h1⟩ | ⟨i, j', k, ht, h1⟩
   · obtain ⟨h2, h3⟩ := ann_ne h1
     obtain ⟨e1, e2⟩ := hx _ h3
-    rw [filter_insert, if_neg (not_not.2 hi)] at e1
-    rw [filter_insert, if_pos hi, card_insert_of_notMem (fun h => h2 (mem_filter.1 h).1)] at e2
+    rw [filter_insert, ite_eq_right (not_not.2 hi)] at e1
+    rw [filter_insert, ite_eq_left hi, card_insert_of_notMem (fun h => h2 (mem_filter.1 h).1)] at e2
     exact ⟨e1, e2⟩
   · obtain ⟨h2, h3, h4, h5⟩ := tri_ne h1
     obtain ⟨e1, e2⟩ := hx _ h5
-    rw [filter_insert, if_neg (not_not.2 ht.1), filter_insert, if_neg (not_not.2 ht.2.1),
+    rw [filter_insert, ite_eq_right (not_not.2 ht.1), filter_insert, ite_eq_right (not_not.2 ht.2.1),
       filter_erase_of_not (not_not.2 ht.cptk)] at e1
-    rw [filter_insert, if_pos ht.1, card_insert_of_notMem (fun h => h4 (mem_filter.1 h).1), filter_insert,
-      if_pos ht.2.1, card_insert_of_notMem (fun h => h3 (mem_filter.1 h).1), filter_erase] at e2
+    rw [filter_insert, ite_eq_left ht.1, card_insert_of_notMem (fun h => h4 (mem_filter.1 h).1), filter_insert,
+      ite_eq_left ht.2.1, card_insert_of_notMem (fun h => h3 (mem_filter.1 h).1), filter_erase] at e2
     have := card_erase_add_one (mem_filter.2 ⟨h2, ht.cptk⟩ : k ∈ A.filter (cpt ε))
     exact ⟨e1, by omega⟩
 
@@ -150,7 +150,7 @@ theorem differential_bounded_support : BdSup := by
       have e1 := (hx _ h5).1
       have e2 := hcard _ h5
       rw [card_insert_of_notMem h4] at e2
-      rw [filter_insert, if_pos h2] at e1
+      rw [filter_insert, ite_eq_left h2] at e1
       rw [← e1, pot_insert (fun h => h4 (mem_filter.1 h).1)]
       have := hpos i
       exact ⟨by omega, by rw [e1]; exact e2⟩
@@ -181,11 +181,11 @@ theorem differential_bounded_support : BdSup := by
       by_cases ci : cpt ε i <;> by_cases cj : cpt ε j'
       · exact absurd ⟨ci, cj⟩ h2
       · have ck : ¬cpt ε k := by rw [hk]; tauto
-        rw [if_pos ck, if_neg (not_not.2 ci), if_pos cj, pot_insert hkR, pot_insert hjR]; omega
+        rw [ite_eq_left ck, ite_eq_right (not_not.2 ci), ite_eq_left cj, pot_insert hkR, pot_insert hjR]; omega
       · have ck : ¬cpt ε k := by rw [hk]; tauto
-        rw [if_pos ck, if_pos ci, if_neg (not_not.2 cj), pot_insert hkR, pot_insert hiR]; omega
+        rw [ite_eq_left ck, ite_eq_left ci, ite_eq_right (not_not.2 cj), pot_insert hkR, pot_insert hiR]; omega
       · have ck : cpt ε k := by rw [hk]; tauto
-        rw [if_neg (not_not.2 ck), if_pos ci, if_pos cj, pot_insert hij, pot_insert hjR]; omega
+        rw [ite_eq_right (not_not.2 ck), ite_eq_left ci, ite_eq_left cj, pot_insert hij, pot_insert hjR]; omega
 
 theorem wt_om (ε : Fin n → Bool) : wt (om ε) = (2 : ℝ) • PI.UpqRep.rhoC ε := by
   funext c
@@ -230,7 +230,7 @@ theorem top_degree_cycle : TopCycle := by
           · exact notMem_erase _ _ h
       · rfl
     · intro i _
-      rw [if_pos rfl, ann_apply]
+      rw [ite_eq_left rfl, ann_apply]
       split_ifs with hi
       · exact map_zero _
       · by_cases e : insert i A = om ε

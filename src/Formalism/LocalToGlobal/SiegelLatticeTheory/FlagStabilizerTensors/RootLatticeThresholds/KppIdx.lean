@@ -74,19 +74,19 @@ theorem dN_sq (ob : Bool) (j : ℕ) : dN (g := g) s kk ob j * dN s kk ob j = 1 :
   split_ifs <;> simp [← pow_add, ← two_mul, pow_mul]
 
 theorem index_diag_isotropic (ob : Bool) {j : ℕ} (h : j < s) : dN (g := g) s kk ob j = 1 := by
-  unfold dN; rw [if_neg (by omega), if_neg (fun h' => absurd h'.2.1 (by omega))]
+  unfold dN; rw [ite_eq_right (by omega), ite_eq_right (fun h' => absurd h'.2.1 (by omega))]
 
 theorem dN_wt {j : ℕ} (h1 : s ≤ j) (h2 : j < s + kk) : dN (g := g) s kk true j = 1 := by
-  unfold dN; rw [if_neg (by omega), if_neg (fun h' => absurd h'.1 (by simp))]
+  unfold dN; rw [ite_eq_right (by omega), ite_eq_right (fun h' => absurd h'.1 (by simp))]
 
 theorem dN_wf {j : ℕ} (h1 : s ≤ j) (h2 : j < s + kk) : dN (g := g) s kk false j = (-1) ^ (j - s) := by
-  unfold dN; rw [if_neg (by omega), if_pos ⟨rfl, h1, h2⟩]
+  unfold dN; rw [ite_eq_right (by omega), ite_eq_left ⟨rfl, h1, h2⟩]
 
 theorem dN_add_eq_one (ob : Bool) : dN (g := g) s kk ob (s + kk) = 1 := by
-  unfold dN; rw [if_neg (by omega), if_neg (fun h' => absurd h'.2.2 (by omega))]
+  unfold dN; rw [ite_eq_right (by omega), ite_eq_right (fun h' => absurd h'.2.2 (by omega))]
 
 theorem dN_y (ob : Bool) {j : ℕ} (h : s + kk + 1 ≤ j) : dN (g := g) s kk ob j = (-1) ^ (j - (s + kk + 1)) := by
-  unfold dN; rw [if_pos h]
+  unfold dN; rw [ite_eq_left h]
 
 theorem neg_one_sq (i : ℕ) : ((-1 : ZMod g) ^ i) * (-1) ^ i = 1 := by
   rw [← pow_add, ← two_mul, pow_mul]; simp
@@ -126,16 +126,16 @@ theorem sum_range_pred (f : ℕ → ZMod g) (n : ℕ) :
   cases n with
   | zero => simp
   | succ t =>
-    rw [Finset.sum_range_succ, if_neg (by omega), add_zero, Nat.add_sub_cancel]
-    exact Finset.sum_congr rfl fun a ha => by rw [Finset.mem_range] at ha; rw [if_pos (by omega)]
+    rw [Finset.sum_range_succ, ite_eq_right (by omega), add_zero, Nat.add_sub_cancel]
+    exact Finset.sum_congr rfl fun a ha => by rw [Finset.mem_range] at ha; rw [ite_eq_left (by omega)]
 
 theorem sum_range_last (c : ZMod g) (n : ℕ) :
     ∑ a ∈ range n, (if a + 1 < n then 0 else c) = if 1 ≤ n then c else 0 := by
   cases n with
   | zero => simp
   | succ t =>
-    rw [Finset.sum_range_succ, if_neg (by omega), if_pos (by omega)]
-    rw [Finset.sum_eq_zero fun a ha => by rw [Finset.mem_range] at ha; rw [if_pos (by omega)], zero_add]
+    rw [Finset.sum_range_succ, ite_eq_right (by omega), ite_eq_left (by omega)]
+    rw [Finset.sum_eq_zero fun a ha => by rw [Finset.mem_range] at ha; rw [ite_eq_left (by omega)], zero_add]
 
 theorem phi_key (hr : r = kk + 2 * s + 1) (ob : Bool) {N N' : Matrix (Fin r) (Fin r) (ZMod g)}
     (hinv : ∀ i, i + 1 < r → entN N' i (i + 1) = -entN N i (i + 1)) :
@@ -171,7 +171,7 @@ theorem phi_key (hr : r = kk + 2 * s + 1) (ob : Bool) {N N' : Matrix (Fin r) (Fi
         else entN N' (s + (kk - 2 - i)) (s + (kk - 1 - i))) =
       (if ob then 1 else -1) * ∑ a ∈ range (kk - 1), entN N (s + a) (s + a + 1) := by
     cases ob
-    · simp only [Bool.false_eq_true, if_false, neg_one_mul]
+    · simp only [Bool.false_eq_true, ite_false, neg_one_mul]
       rw [← Finset.sum_range_reflect, ← Finset.sum_neg_distrib]
       refine Finset.sum_congr rfl fun a ha => ?_
       rw [Finset.mem_range] at ha
@@ -202,19 +202,19 @@ theorem phi_key (hr : r = kk + 2 * s + 1) (ob : Bool) {N N' : Matrix (Fin r) (Fi
       have e1 : s + a - s = a := by omega
       have e2 : s + a + 1 - s = a + 1 := by omega
       rw [e1, e2, pow_succ]
-      simp only [Bool.false_eq_true, if_false]
+      simp only [Bool.false_eq_true, ite_false]
       linear_combination (-(entN N (s + a) (s + a + 1))) * neg_one_sq (g := g) a
     · rw [dN_wt (by omega) (by omega), dN_wt (by omega) (by omega)]
       simp
   rw [Finset.sum_congr rfl hx, Finset.sum_congr rfl hy, Finset.sum_congr rfl hw, ← Finset.mul_sum]
   by_cases hs : 1 ≤ s
-  · rw [if_pos hs, if_pos hs]
+  · rw [ite_eq_left hs, ite_eq_left hs]
     have h1 : dN (g := g) s kk ob (s - 1) = 1 := index_diag_isotropic ob (by omega)
     have h2 : dN (g := g) s kk ob (s + kk) = 1 := dN_add_eq_one ob
     have h3 : dN (g := g) s kk ob (s + kk + 1) = 1 := by rw [dN_y ob le_rfl]; simp
     rw [h1, h2, h3, hinv _ (by omega), Finset.sum_neg_distrib]
     ring
-  · rw [if_neg hs, if_neg hs]
+  · rw [ite_eq_right hs, ite_eq_right hs]
     have : s - 1 = 0 := by omega
     rw [this]
     simp

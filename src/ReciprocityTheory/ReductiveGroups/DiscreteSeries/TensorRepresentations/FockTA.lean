@@ -22,15 +22,15 @@ theorem fockT_cm_cp {cp cm : Fin n → Fin n → Module.End ℂ W} (hC : IsCAR c
   have hne : ¬(j = u ∧ b = v) := by
     rintro ⟨rfl, rfl⟩
     exact hjb huv
-  rw [if_neg hne] at h3
+  rw [ite_eq_right hne] at h3
   have h := LinearMap.congr_fun h3 y
-  simp only [LinearMap.add_apply, Module.End.mul_apply, LinearMap.zero_apply] at h
+  simp only [LinearMap.add_apply, mul_apply_eq_comp, LinearMap.zero_apply] at h
   exact eq_neg_of_add_eq_zero_left h
 
 theorem fockT_cm_cm {cp cm : Fin n → Fin n → Module.End ℂ W} (hC : IsCAR cp cm) (j b w z : Fin n) (y : W) :
     cm j b (cm w z y) = -(cm w z (cm j b y)) := by
   have h := LinearMap.congr_fun (hC j b w z).2.1 y
-  simp only [LinearMap.add_apply, Module.End.mul_apply, LinearMap.zero_apply] at h
+  simp only [LinearMap.add_apply, mul_apply_eq_comp, LinearMap.zero_apply] at h
   exact eq_neg_of_add_eq_zero_left h
 
 theorem fockT_stable_gen {E cp cm : Fin n → Fin n → Module.End ℂ W} (hC : IsCAR cp cm)
@@ -40,7 +40,7 @@ theorem fockT_stable_gen {E cp cm : Fin n → Fin n → Module.End ℂ W} (hC : 
       cm j b (dOp ε E cp x) = 0 ∧ cm j b (dOp' ε E cm x) = 0 := by
   have hEc : ∀ a c y, cm j b (E a c y) = E a c (cm j b y) := fun a c y => by
     have h := LinearMap.congr_fun (hK a c j b).2 y
-    simp only [Module.End.mul_apply] at h
+    simp only [mul_apply_eq_comp] at h
     exact h.symm
   have hx0 := hx j b hjb
   have hE0 : ∀ a c, cm j b (E a c x) = 0 := fun a c => by rw [hEc, hx0, map_zero]
@@ -52,23 +52,23 @@ theorem fockT_stable_gen {E cp cm : Fin n → Fin n → Module.End ℂ W} (hC : 
   · intro a c
     simp only [diagE, LinearMap.add_apply, map_add (f := _), hE0, zero_add, sgE]
     by_cases ha : ε a = true <;> by_cases hc : ε c = true
-    · simp only [if_pos (And.intro ha hc), LinearMap.sum_apply, map_sum, Module.End.mul_apply]
+    · simp only [ite_eq_left (And.intro ha hc), LinearMap.sum_apply, map_sum, mul_apply_eq_comp]
       refine Finset.sum_eq_zero fun y hy => hcpcm a y c y ⟨ha, ?_⟩
       simpa [minusIdx] using hy
     · simp [ha, hc]
     · simp [ha, hc]
     · have ha0 : ε a = false := by cases h : ε a <;> simp_all
       have hc0 : ε c = false := by cases h : ε c <;> simp_all
-      simp only [if_neg (show ¬(ε a = true ∧ ε c = true) from fun h => ha h.1),
-        if_pos (And.intro ha0 hc0), LinearMap.neg_apply, LinearMap.sum_apply, map_neg, map_sum,
-        Module.End.mul_apply]
+      simp only [ite_eq_right (show ¬(ε a = true ∧ ε c = true) from fun h => ha h.1),
+        ite_eq_left (And.intro ha0 hc0), LinearMap.neg_apply, LinearMap.sum_apply, map_neg, map_sum,
+        mul_apply_eq_comp]
       refine neg_eq_zero.mpr (Finset.sum_eq_zero fun i hi => hcpcm i c i a ⟨?_, hc0⟩)
       simpa [plusIdx] using hi
-  · simp only [dOp, LinearMap.sum_apply, map_sum, Module.End.mul_apply]
+  · simp only [dOp, LinearMap.sum_apply, map_sum, mul_apply_eq_comp]
     refine Finset.sum_eq_zero fun i hi => Finset.sum_eq_zero fun a ha => ?_
     rw [hEc, fockT_cm_cp hC hjb ⟨by simpa [plusIdx] using hi, by simpa [minusIdx] using ha⟩, hx0]
     simp
-  · simp only [dOp', LinearMap.neg_apply, LinearMap.sum_apply, map_neg, map_sum, Module.End.mul_apply]
+  · simp only [dOp', LinearMap.neg_apply, LinearMap.sum_apply, map_neg, map_sum, mul_apply_eq_comp]
     refine neg_eq_zero.mpr (Finset.sum_eq_zero fun i _ => Finset.sum_eq_zero fun a _ => ?_)
     rw [hEc, fockT_cm_cm hC, hx0]
     simp

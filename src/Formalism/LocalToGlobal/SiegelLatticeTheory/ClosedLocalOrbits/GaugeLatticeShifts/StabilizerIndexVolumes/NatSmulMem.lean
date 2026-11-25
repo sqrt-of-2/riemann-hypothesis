@@ -16,23 +16,30 @@ section Den
 
 variable {E : Type} [Field E] [NumberField E]
 
-theorem intE_iff (x : E) : IntE x ↔ IsIntegral ℤ x := by
+omit [NumberField E] in
+theorem intE_iff [NumberField E] (x : E) : IntE x ↔ IsIntegral ℤ x := by
   rw [IsIntegralClosure.isIntegral_iff (A := 𝓞 E)]
   rfl
 
-theorem intE_zero : IntE (0 : E) := ⟨0, by simp⟩
+omit [NumberField E] in
+theorem intE_zero [NumberField E] : IntE (0 : E) := ⟨0, by simp⟩
 
-theorem intE_one : IntE (1 : E) := ⟨1, by simp⟩
+omit [NumberField E] in
+theorem intE_one [NumberField E] : IntE (1 : E) := ⟨1, by simp⟩
 
-theorem intE_nat (k : ℕ) : IntE (k : E) := ⟨k, by simp⟩
+omit [NumberField E] in
+theorem intE_nat [NumberField E] (k : ℕ) : IntE (k : E) := ⟨k, by simp⟩
 
-theorem intE_add {x y : E} (hx : IntE x) (hy : IntE y) : IntE (x + y) := by
+omit [NumberField E] in
+theorem intE_add [NumberField E] {x y : E} (hx : IntE x) (hy : IntE y) : IntE (x + y) := by
   obtain ⟨a, rfl⟩ := hx; obtain ⟨b, rfl⟩ := hy; exact ⟨a + b, by simp⟩
 
-theorem intE_neg {x : E} (hx : IntE x) : IntE (-x) := by
+omit [NumberField E] in
+theorem intE_neg [NumberField E] {x : E} (hx : IntE x) : IntE (-x) := by
   obtain ⟨a, rfl⟩ := hx; exact ⟨-a, by simp⟩
 
-theorem intE_mul {x y : E} (hx : IntE x) (hy : IntE y) : IntE (x * y) := by
+omit [NumberField E] in
+theorem intE_mul [NumberField E] {x y : E} (hx : IntE x) (hy : IntE y) : IntE (x * y) := by
   obtain ⟨a, rfl⟩ := hx; obtain ⟨b, rfl⟩ := hy; exact ⟨a * b, by simp⟩
 
 theorem intE_nat_mul (k : ℕ) {x : E} (hx : IntE x) : IntE ((k : E) * x) := intE_mul (intE_nat k) hx
@@ -86,9 +93,11 @@ section Lat
 variable {E : Type} [Field E] [NumberField E] {V : Type} [AddCommGroup V] [Module E V] [Module (𝓞 E) V]
   [IsScalarTower (𝓞 E) E V]
 
-theorem coe_smul_eq (o : 𝓞 E) (v : V) : (o : E) • v = o • v := algebraMap_smul E o v
+omit [NumberField E] V [AddCommGroup V] [Module E V] [Module (𝓞 E) V] [IsScalarTower (𝓞 E) E V] in
+theorem coe_smul_eq [NumberField E] {V : Type} [AddCommGroup V] [Module E V] [Module (𝓞 E) V] [IsScalarTower (𝓞 E) E V] (o : 𝓞 E) (v : V) : (o : E) • v = o • v := algebraMap_smul E o v
 
-theorem nat_smul_mem (Λ : Submodule (𝓞 E) V) (k : ℕ) {v : V} (hv : v ∈ Λ) : (k : E) • v ∈ Λ := by
+omit [NumberField E] V [AddCommGroup V] [Module E V] [Module (𝓞 E) V] [IsScalarTower (𝓞 E) E V] in
+theorem nat_smul_mem [NumberField E] {V : Type} [AddCommGroup V] [Module E V] [Module (𝓞 E) V] [IsScalarTower (𝓞 E) E V] (Λ : Submodule (𝓞 E) V) (k : ℕ) {v : V} (hv : v ∈ Λ) : (k : E) • v ∈ Λ := by
   rw [Nat.cast_smul_eq_nsmul]; exact Λ.toAddSubmonoid.nsmul_mem hv k
 
 theorem int_smul_mem (Λ : Submodule (𝓞 E) V) {c : E} (hc : IntE c) {v : V} (hv : v ∈ Λ) : c • v ∈ Λ := by
@@ -114,7 +123,8 @@ theorem lat_fun_bdd (Λ : Submodule (𝓞 E) V) (h : Submodule.IsLattice E Λ) {
     rw [← coe_smul_eq, LinearMap.map_smul, smul_eq_mul, mul_left_comm]
     exact intE_mul ⟨o, rfl⟩ hx
 
-theorem coord_exists [FiniteDimensional E V] {n : ℕ} {f : Fin n → V} (hf : LinearIndependent E f) :
+omit [NumberField E] V [AddCommGroup V] [Module E V] [Module (𝓞 E) V] [IsScalarTower (𝓞 E) E V] in
+theorem coord_exists [NumberField E] {V : Type} [AddCommGroup V] [Module E V] [Module (𝓞 E) V] [IsScalarTower (𝓞 E) E V] [FiniteDimensional E V] {n : ℕ} {f : Fin n → V} (hf : LinearIndependent E f) :
     ∃ φ : Fin n → V →ₗ[E] E, ∀ c d, φ c (f d) = if d = c then 1 else 0 := by
   classical
   have : ∀ c : Fin n, ∃ G : V →ₗ[E] E, ∀ d, G (f d) = if d = c then 1 else 0 := by
