@@ -1033,14 +1033,6 @@ open MvPowerSeries GlobalTheory GlobalTheory.Katz GlobalTheory.QLog GlobalTheory
 
 namespace GlobalTheory.TangentComb
 
-theorem in_top_add_smul {O Q σ : Type} [CommRing O] [CommRing Q] [Algebra O Q]
-    {f g : MvPowerSeries σ Q} (hf : In (⊤ : Ideal O) f) (hg : In (⊤ : Ideal O) g) (a : O) :
-    In (⊤ : Ideal O) (f + algebraMap O Q a • g) := by
-  intro α
-  obtain ⟨b, -, hb⟩ := hf α
-  obtain ⟨b', -, hb'⟩ := hg α
-  refine ⟨b + a * b', trivial, ?_⟩
-  rw [map_add (f := _), map_smul, hb, hb', map_add (f := _), map_mul, smul_eq_mul]
 
 theorem ql_add_smul {O Q : Type} [CommRing O] [CommRing Q] [Algebra O Q] {d : ℕ}
     {μ : Fin d → MvPowerSeries (Fin d ⊕ Fin d) O} (hμ : ∀ i, constantCoeff (μ i) = 0)
