@@ -33,7 +33,7 @@ theorem prod_ofFn_update_eq {p : ℕ} (f : Fin p → 𝒰) (j : Fin p) :
         funext i
         simp only [Function.update_apply, Fin.succ_inj]
       have e2 : Function.update f j'.succ v 0 = f 0 := by
-        simp only [Function.update_apply, (Fin.succ_ne_zero j').symm, if_false]
+        simp only [Function.update_apply, (Fin.succ_ne_zero j').symm, ite_false]
       rw [List.ofFn_succ, List.prod_cons, e1, e2, h]
       simp only [mul_assoc]
 
@@ -56,7 +56,7 @@ theorem comm_prod_ofFn (y : 𝒰) {p : ℕ} (f : Fin p → 𝒰) :
         funext i
         simp only [Function.update_apply, Fin.succ_inj]
       have e2 : Function.update f j'.succ (y * f j'.succ - f j'.succ * y) 0 = f 0 := by
-        simp only [Function.update_apply, (Fin.succ_ne_zero j').symm, if_false]
+        simp only [Function.update_apply, (Fin.succ_ne_zero j').symm, ite_false]
       rw [List.ofFn_succ, List.prod_cons, e1, e2]
     have hih := ih (fun i => f i.succ)
     rw [Fin.sum_univ_succ, h0, Finset.sum_congr rfl (fun j' _ => hs j'), ← Finset.mul_sum, ← hih,
@@ -88,6 +88,7 @@ theorem capEntry_comm (hE : GlRelR E) (a b c d : Fin n) (x : ℂ) :
   unfold capEntry
   split_ifs <;> subst_vars <;> first | rfl | simp_all
 
+omit [Algebra ℂ 𝒰] in
 private theorem prod_ofFn_update_sub' {p : ℕ} (f : Fin p → 𝒰) (j : Fin p) (u v : 𝒰) :
     (List.ofFn (Function.update f j (u - v))).prod =
       (List.ofFn (Function.update f j u)).prod - (List.ofFn (Function.update f j v)).prod := by
@@ -95,6 +96,7 @@ private theorem prod_ofFn_update_sub' {p : ℕ} (f : Fin p → 𝒰) (j : Fin p)
   rw [h, h, h]
   noncomm_ring
 
+omit [Algebra ℂ 𝒰] in
 private theorem prod_ofFn_update_ite' {p : ℕ} (f : Fin p → 𝒰) (j : Fin p) (P : Prop) [Decidable P]
     (w : 𝒰) :
     (List.ofFn (Function.update f j (if P then w else 0))).prod =
@@ -104,6 +106,7 @@ private theorem prod_ofFn_update_ite' {p : ℕ} (f : Fin p → 𝒰) (j : Fin p)
   · rfl
   · rw [h, mul_zero, zero_mul]
 
+omit [Algebra ℂ 𝒰] in
 private theorem sum_ite_sum_comm {α β : Type*} [Fintype α] [Fintype β] (P : α → Prop)
     [DecidablePred P] (g : α → β → 𝒰) :
     (∑ t, if P t then ∑ σ, g t σ else 0) = ∑ σ, ∑ t, if P t then g t σ else 0 := by
@@ -112,6 +115,7 @@ private theorem sum_ite_sum_comm {α β : Type*} [Fintype α] [Fintype β] (P : 
   refine Finset.sum_congr rfl fun t _ => ?_
   split_ifs <;> simp
 
+omit [Algebra ℂ 𝒰] in
 private theorem sum_comp_perm_eq_sum {p : ℕ} (σ : Equiv.Perm (Fin p)) (g : Fin p → 𝒰) :
     ∑ t, g t = ∑ j, g (σ j) :=
   (Equiv.sum_comp σ g).symm
@@ -130,7 +134,7 @@ theorem cminor_comm (hE : GlRelR E) (a b : Fin n) {p : ℕ} (R C : Fin p → Fin
     conv_rhs => rw [sum_comp_perm_eq_sum σ]
     refine Finset.sum_congr rfl fun j _ => ?_
     by_cases h : R (σ j) = b
-    · rw [if_pos h.symm, if_pos h]
+    · rw [ite_eq_left h.symm, ite_eq_left h]
       congr 1
       congr 1
       congr 1
@@ -139,12 +143,12 @@ theorem cminor_comm (hE : GlRelR E) (a b : Fin n) {p : ℕ} (R C : Fin p → Fin
       · subst hk
         simp
       · simp [hk, σ.injective.ne hk]
-    · rw [if_neg (Ne.symm h), if_neg h, smul_zero]
+    · rw [ite_eq_right (Ne.symm h), ite_eq_right h, smul_zero]
   · rw [sum_ite_sum_comm]
     refine Finset.sum_congr rfl fun σ _ => ?_
     refine Finset.sum_congr rfl fun j _ => ?_
     by_cases h : C j = a
-    · rw [if_pos h, if_pos h]
+    · rw [ite_eq_left h, ite_eq_left h]
       congr 1
       congr 1
       congr 1
@@ -153,6 +157,6 @@ theorem cminor_comm (hE : GlRelR E) (a b : Fin n) {p : ℕ} (R C : Fin p → Fin
       · subst hk
         simp
       · simp [hk]
-    · rw [if_neg h, if_neg h, smul_zero]
+    · rw [ite_eq_right h, ite_eq_right h, smul_zero]
 
 end ReciprocityTheory.ChartRestriction.DS.Lap.Capelli

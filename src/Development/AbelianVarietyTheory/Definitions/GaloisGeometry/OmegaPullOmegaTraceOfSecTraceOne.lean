@@ -91,25 +91,25 @@ def secTrace {U : X.Opens} (hU : IsAffineOpen U) : Sec s' (f ⁻¹ᵁ U) →+ Se
 theorem secTrace_res {U V : X.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V) (h : V ≤ U)
     (b' : Sec s' (f ⁻¹ᵁ U)) :
     Sec.res s h (secTrace s s' hU b') = secTrace s s' hV (Sec.res s' (f.preimage_mono h) b') := by
-  letI : Algebra (Sec s U) (Sec s V) := (Sec.res s h : Sec s U →+* Sec s V).toAlgebra
-  letI : Algebra (Sec s' (f ⁻¹ᵁ U)) (Sec s' (f ⁻¹ᵁ V)) :=
+  let : Algebra (Sec s U) (Sec s V) := (Sec.res s h : Sec s U →+* Sec s V).toAlgebra
+  let : Algebra (Sec s' (f ⁻¹ᵁ U)) (Sec s' (f ⁻¹ᵁ V)) :=
     (Sec.res s' (f.preimage_mono h) : Sec s' (f ⁻¹ᵁ U) →+* Sec s' (f ⁻¹ᵁ V)).toAlgebra
-  letI := secAlg s s' f U
-  letI := secAlg s s' f V
-  letI : Algebra (Sec s U) (Sec s' (f ⁻¹ᵁ V)) :=
+  let := secAlg s s' f U
+  let := secAlg s s' f V
+  let : Algebra (Sec s U) (Sec s' (f ⁻¹ᵁ V)) :=
     ((appSec s s' f V).comp (Sec.res s h : Sec s U →+* Sec s V)).toAlgebra
-  haveI : IsScalarTower (Sec s U) (Sec s V) (Sec s' (f ⁻¹ᵁ V)) := .of_algebraMap_eq fun _ ↦ rfl
-  haveI : IsScalarTower (Sec s U) (Sec s' (f ⁻¹ᵁ U)) (Sec s' (f ⁻¹ᵁ V)) :=
+  have : IsScalarTower (Sec s U) (Sec s V) (Sec s' (f ⁻¹ᵁ V)) := .of_algebraMap_eq fun _ ↦ rfl
+  have : IsScalarTower (Sec s U) (Sec s' (f ⁻¹ᵁ U)) (Sec s' (f ⁻¹ᵁ V)) :=
     .of_algebraMap_eq fun b ↦ ConcreteCategory.congr_hom (f.naturality (homOfLE h).op) b
-  haveI : Algebra.IsPushout (Sec s U) (Sec s' (f ⁻¹ᵁ U)) (Sec s V) (Sec s' (f ⁻¹ᵁ V)) :=
+  have : Algebra.IsPushout (Sec s U) (Sec s' (f ⁻¹ᵁ U)) (Sec s V) (Sec s' (f ⁻¹ᵁ V)) :=
     CommRingCat.isPushout_iff_isPushout.1 (GlobalTheory.FiniteAmple.isPushout_app f hU hV h)
-  haveI := this.symm
-  haveI := sec_finite (s := s) (s' := s') (f := f) hU
-  haveI := sec_etale (s := s) (s' := s') (f := f) hU
-  haveI := sec_finite (s := s) (s' := s') (f := f) hV
-  haveI := sec_etale (s := s) (s' := s') (f := f) hV
-  haveI := projective_of_etale (Sec s U) (Sec s' (f ⁻¹ᵁ U))
-  haveI := projective_of_etale (Sec s V) (Sec s' (f ⁻¹ᵁ V))
+  have := this.symm
+  have := sec_finite (s := s) (s' := s') (f := f) hU
+  have := sec_etale (s := s) (s' := s') (f := f) hU
+  have := sec_finite (s := s) (s' := s') (f := f) hV
+  have := sec_etale (s := s) (s' := s') (f := f) hV
+  have := projective_of_etale (Sec s U) (Sec s' (f ⁻¹ᵁ U))
+  have := projective_of_etale (Sec s V) (Sec s' (f ⁻¹ᵁ V))
   change Sec.res s h (algTrace (Sec s U) (Sec s' (f ⁻¹ᵁ U)) b') =
     algTrace (Sec s V) (Sec s' (f ⁻¹ᵁ V)) (algebraMap (Sec s' (f ⁻¹ᵁ U)) (Sec s' (f ⁻¹ᵁ V)) b')
   exact (algTrace_of_isPushout (C := Sec s V) (C' := Sec s' (f ⁻¹ᵁ V)) b').symm
@@ -132,19 +132,19 @@ def formTraceU (hf : f ≫ s = s') {U : X.Opens} (hU : IsAffineOpen U) (j : ℕ)
 theorem formTraceU_smul_formPull (hf : f ≫ s = s') {U : X.Opens} (hU : IsAffineOpen U) {j : ℕ}
     (b' : Sec s' (f ⁻¹ᵁ U)) (x : OmU s U j) :
     formTraceU hf hU j (b' • formPull hf U j x) = secTrace s s' hU b' • x := by
-  letI := secAlg s s' f U
-  haveI := sec_isScalarTower hf U
-  haveI := sec_finite (s := s) (s' := s') (f := f) hU
-  haveI := sec_etale (s := s) (s' := s') (f := f) hU
+  let := secAlg s s' f U
+  have := sec_isScalarTower hf U
+  have := sec_finite (s := s) (s' := s') (f := f) hU
+  have := sec_etale (s := s) (s' := s') (f := f) hU
   exact formTrace_smul_formLin k (Sec s U) (Sec s' (f ⁻¹ᵁ U)) b' x
 
 theorem formTraceU_smul (hf : f ≫ s = s') {U : X.Opens} (hU : IsAffineOpen U) {j : ℕ}
     (b : Sec s U) (y : OmU s' (f ⁻¹ᵁ U) j) :
     formTraceU hf hU j (appSec s s' f U b • y) = b • formTraceU hf hU j y := by
-  letI := secAlg s s' f U
-  haveI := sec_isScalarTower hf U
-  haveI := sec_finite (s := s) (s' := s') (f := f) hU
-  haveI := sec_etale (s := s) (s' := s') (f := f) hU
+  let := secAlg s s' f U
+  have := sec_isScalarTower hf U
+  have := sec_finite (s := s) (s' := s') (f := f) hU
+  have := sec_etale (s := s) (s' := s') (f := f) hU
   have e : appSec s s' f U b • y = b • y := algebraMap_smul (Sec s' (f ⁻¹ᵁ U)) b y
   rw [e]
   change formTrace k (Sec s U) (Sec s' (f ⁻¹ᵁ U)) j (b • y) = b • formTrace k _ _ j y
@@ -154,9 +154,9 @@ theorem formOm_induction (hf : f ≫ s = s') {U : X.Opens} (hU : IsAffineOpen U)
     {P : OmU s' (f ⁻¹ᵁ U) j → Prop} (h0 : P 0) (ha : ∀ y z, P y → P z → P (y + z))
     (hm : ∀ (b' : Sec s' (f ⁻¹ᵁ U)) (x : OmU s U j), P (b' • formPull hf U j x))
     (y : OmU s' (f ⁻¹ᵁ U) j) : P y := by
-  letI := secAlg s s' f U
-  haveI := sec_isScalarTower hf U
-  haveI := sec_etale (s := s) (s' := s') (f := f) hU
+  let := secAlg s s' f U
+  have := sec_isScalarTower hf U
+  have := sec_etale (s := s) (s' := s') (f := f) hU
   have hb := isBaseChange_formLin k (Sec s U) (Sec s' (f ⁻¹ᵁ U)) j
   obtain ⟨z, rfl⟩ := hb.equiv.surjective y
   induction z using TensorProduct.induction_on with

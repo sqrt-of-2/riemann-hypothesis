@@ -58,14 +58,14 @@ variable {K : Type} [Field K] [NumberField K] [StarRing K]
 
 theorem sStable_one : SStable (1 : FractionalIdeal (nonZeroDivisors (𝓞 K)) K) := by
   intro a ha
-  rw [FractionalIdeal.mem_coe, FractionalIdeal.mem_one_iff] at ha ⊢
+  rw [FractionalIdeal.mem_coeToSubmodule, FractionalIdeal.mem_one_iff] at ha ⊢
   obtain ⟨x, rfl⟩ := ha
   exact ⟨NumberField.RingOfIntegers.mapRingHom (starRingEnd K) x, rfl⟩
 
 theorem sStable_mul {I J : FractionalIdeal (nonZeroDivisors (𝓞 K)) K} (hI : SStable I) (hJ : SStable J) :
     SStable (I * J) := by
   intro a ha
-  rw [FractionalIdeal.coe_mul] at ha ⊢
+  rw [FractionalIdeal.coeToSubmodule_mul] at ha ⊢
   refine Submodule.mul_induction_on (C := fun a => star a ∈ (I : Submodule (𝓞 K) K) * J) ha ?_ ?_
   · intro x hx y hy
     rw [star_mul, mul_comm (star y)]
@@ -84,21 +84,21 @@ theorem sStable_inv {I : FractionalIdeal (nonZeroDivisors (𝓞 K)) K} (hI : SSt
   by_cases h0 : I = 0
   · subst h0
     intro a ha
-    rw [FractionalIdeal.inv_zero', FractionalIdeal.coe_zero, Submodule.mem_bot] at ha ⊢
+    rw [FractionalIdeal.inv_zero', FractionalIdeal.coeToSubmodule_zero, Submodule.mem_bot] at ha ⊢
     rw [ha, star_zero]
   · intro a ha
-    rw [FractionalIdeal.mem_coe, FractionalIdeal.mem_inv_iff h0] at ha ⊢
+    rw [FractionalIdeal.mem_coeToSubmodule, FractionalIdeal.mem_inv_iff h0] at ha ⊢
     intro y hy
     have h1 : a * star y ∈ (1 : FractionalIdeal (nonZeroDivisors (𝓞 K)) K) :=
-      ha _ (FractionalIdeal.mem_coe.mp (hI y (FractionalIdeal.mem_coe.mpr hy)))
-    have h2 := sStable_one (K := K) _ (FractionalIdeal.mem_coe.mpr h1)
+      ha _ (FractionalIdeal.mem_coeToSubmodule.mp (hI y (FractionalIdeal.mem_coeToSubmodule.mpr hy)))
+    have h2 := sStable_one (K := K) _ (FractionalIdeal.mem_coeToSubmodule.mpr h1)
     rw [star_mul, star_star, mul_comm] at h2
-    exact FractionalIdeal.mem_coe.mp h2
+    exact FractionalIdeal.mem_coeToSubmodule.mp h2
 
 theorem sStable_zpow {I : FractionalIdeal (nonZeroDivisors (𝓞 K)) K} (hI : SStable I) (n : ℤ) :
     SStable (I ^ n) := by
   cases n with
-  | ofNat n => rw [Int.ofNat_eq_coe, zpow_natCast]; exact sStable_pow hI n
+  | ofNat n => rw [Int.ofNat_eq_natCast, zpow_natCast]; exact sStable_pow hI n
   | negSucc n => rw [zpow_negSucc]; exact sStable_inv (sStable_pow hI _)
 
 end Generic
@@ -107,7 +107,7 @@ attribute [local instance] Formalism.BasicNotions.Host.cmStar
 
 theorem sStable_ddS (D : Formalism.BasicNotions.D7) : SStable (ddS D) := by
   intro a ha
-  rw [FractionalIdeal.mem_coe] at ha ⊢
+  rw [FractionalIdeal.mem_coeToSubmodule] at ha ⊢
   unfold ddS at ha ⊢
   rw [FractionalIdeal.mem_coeIdeal] at ha ⊢
   obtain ⟨y, hy, rfl⟩ := ha

@@ -67,15 +67,15 @@ theorem pi_cd_eq_map (D : D7) (V : HSp D) (hV : V.SigOK) (μ1 : Measure (GA D V)
     (hθ : IsInfFam θ) (hA : IsFrames V A) (hc : Continuous rp) (hrp : IsRealPart V θ A rp) :
     Measure.pi (fun ρ : D.what₂.Tau => D.cd.cd (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2) =
       Measure.map rp (μ1.restrict (Stab V)) := by
-  haveI := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).1
-  haveI := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.1
-  haveI := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.2.1
-  haveI := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.2.2.1
+  have := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).1
+  have := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.1
+  have := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.2.1
+  have := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.2.2.1
   obtain ⟨-, hsc, hbo, -⟩ := GlobalTheory.TwistAdelicTop.locallyCompact_secondCountable_borel_countable V
-  haveI := hsc
-  haveI := hbo
-  haveI : ∀ ρ : D.what₂.Tau, SigmaFinite (D.cd.cd (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2) := fun ρ => by
-    haveI := D.cd.haar (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2
+  have := hsc
+  have := hbo
+  have : ∀ ρ : D.what₂.Tau, SigmaFinite (D.cd.cd (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2) := fun ρ => by
+    have := D.cd.haar (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2
     infer_instance
   have hφm : Measurable rp := hc.measurable
   obtain ⟨-, -, H⟩ := hμ1
@@ -87,7 +87,7 @@ theorem pi_cd_eq_map (D : D7) (V : HSp D) (hV : V.SigOK) (μ1 : Measure (GA D V)
   refine Eq.trans ?_ (H2 B hB)
   congr 1
   ext h
-  simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_univ_pi, Set.mem_setOf_eq]
+  simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_univ_pi, Set.mem_ofPred_eq]
   rw [and_comm]
   refine and_congr Iff.rfl (forall_congr' fun ρ => ⟨fun hb => ⟨rp h ρ, hb, hrp h ρ⟩, ?_⟩)
   rintro ⟨b, hb, hbe⟩
@@ -99,15 +99,15 @@ namespace MainStatements.Tam
 
 theorem vol : VolSt := by
   intro D V P Q hV hs μ _ 𝓕 h𝓕 θ A m rp hθ hA hm hc hrp B hB
-  haveI := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).1
-  haveI := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.1
-  haveI := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.2.1
-  haveI := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.2.2.1
+  have := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).1
+  have := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.1
+  have := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.2.1
+  have := fun P Q => (GlobalTheory.UpqTopology.upq_lcsc P Q).2.2.2.2.1
   obtain ⟨hlc, hsc, hbo, -⟩ := GlobalTheory.TwistAdelicTop.locallyCompact_secondCountable_borel_countable V
-  haveI := hlc
-  haveI := hsc
-  haveI := hbo
-  haveI : IsTopologicalGroup (GA D V) := Formalism.L2.GlobalTheoryTheory.GenusMassVolumes.Unfold.topGroupHA _ _
+  have := hlc
+  have := hsc
+  have := hbo
+  have : IsTopologicalGroup (GA D V) := Formalism.L2.GlobalTheoryTheory.GenusMassVolumes.Unfold.topGroupHA _ _
 
   have hTG : VolTieG (GlobalTheory.Mem.retie D) := (GlobalTheory.Mem.retie_volTieG_and_cdScaleTie D).1
   have hT : VolTie (GlobalTheory.Mem.retie D) := VolTieG.volTie hTG
@@ -125,7 +125,7 @@ theorem vol : VolSt := by
       Formalism.MainNotions.GlobalTheoryTheory.GenusMassVolumes.AllSome (fun 𝓕 : Set (GA D V) => IsFundamentalDomain (GQ V) 𝓕 μ1) fun 𝓕 =>
         μ1 𝓕 = ENNReal.ofReal ((GlobalTheory.Mem.retie D).vol V) := hTG V hV
   obtain ⟨⟨μ1, hμ1'⟩, Hvol⟩ := hTG'
-  haveI := hμ1'.1
+  have := hμ1'.1
 
   have hscale : μ = Measure.haarScalarFactor μ μ1 • μ1 := Measure.isMulLeftInvariant_eq_smul μ μ1
   have hc0 : ((Measure.haarScalarFactor μ μ1 : ℝ≥0) : ℝ≥0∞) ≠ 0 :=
@@ -133,7 +133,7 @@ theorem vol : VolSt := by
   have hμX : ∀ X, μ X = (Measure.haarScalarFactor μ μ1 : ℝ≥0∞) * μ1 X := fun X => by
     conv_lhs => rw [hscale]
     first
-      | rw [Measure.smul_apply, ENNReal.smul_def, smul_eq_mul]
+      | rw [smul_apply, ENNReal.smul_def, smul_eq_mul]
   have hac : μ1 ≪ μ := fun X hX => by
     rw [hμX] at hX
     exact (mul_eq_zero.1 hX).resolve_left hc0
@@ -154,19 +154,19 @@ theorem vol : VolSt := by
     have e := GlobalTheory.LowRow.CompactDualScale.isMinf_eq_volU_smul_cd D.cd _ _ (m ρ) (hm ρ)
     rw [Formalism.BasicNotions.sig_sum V hV (tauE D ρ)] at e
     exact e
-  haveI : ∀ ρ : D.what₂.Tau, SigmaFinite (D.cd.cd (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2) := fun ρ => by
-    haveI := D.cd.haar (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2
+  have : ∀ ρ : D.what₂.Tau, SigmaFinite (D.cd.cd (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2) := fun ρ => by
+    have := D.cd.haar (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2
     infer_instance
-  haveI : ∀ ρ, SigmaFinite (m ρ) := fun ρ => by
-    haveI := (hm ρ).1
+  have : ∀ ρ, SigmaFinite (m ρ) := fun ρ => by
+    have := (hm ρ).1
     infer_instance
   have hpim : Measure.pi m = ENNReal.ofReal (ReciprocityTheory.ChartRestriction.DS.volU V.rank) ^ D.R.f •
       Measure.pi (fun ρ : D.what₂.Tau => D.cd.cd (V.sig (tauE D ρ)).1 (V.sig (tauE D ρ)).2) := by
     refine Measure.pi_eq fun C hC => ?_
-    rw [Measure.smul_apply, Measure.pi_pi, smul_eq_mul]
-    simp_rw [hmeq, Measure.smul_apply, smul_eq_mul]
+    rw [smul_apply, Measure.pi_pi, smul_eq_mul]
+    simp_rw [hmeq, smul_apply, smul_eq_mul]
     rw [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_univ, D.what₂.card_Tau]
-  rw [hpim, hSet, hμX 𝓕, hF1, hvol, Measure.smul_apply, smul_eq_mul,
+  rw [hpim, hSet, hμX 𝓕, hF1, hvol, smul_apply, smul_eq_mul,
     ENNReal.ofReal_mul (pow_nonneg hVpos.le _), ENNReal.ofReal_pow hVpos.le]
   ring
 

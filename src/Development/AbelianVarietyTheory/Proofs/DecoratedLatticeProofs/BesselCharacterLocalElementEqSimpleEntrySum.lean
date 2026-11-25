@@ -101,7 +101,8 @@ theorem map_mt_inv {V : HSp D} {Y : Type} [Fintype Y] [DecidableEq Y] (F : Frame
       ← Matrix.mul_assoc q.val, Units.mul_inv, Matrix.one_mul, F.βγ]
   rw [← Matrix.mul_one ((mt V g⁻¹).map p.π), ← h2, ← Matrix.mul_assoc, ← h, h1, Matrix.one_mul]
 
-theorem col_ne_zero {N : ℕ} {Y : Type} [Fintype Y] [DecidableEq Y] (F : Frame k N Y) (j : Y) {t : k} {x : Fin N → k}
+omit [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem col_ne_zero [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k] {N : ℕ} {Y : Type} [Fintype Y] [DecidableEq Y] (F : Frame k N Y) (j : Y) {t : k} {x : Fin N → k}
     (h : ∀ r, F.β r j = t * x r) : t ≠ 0 := fun e => by
   have h1 := congrFun (congrFun F.γβ j) j
   simp [Matrix.mul_apply, h, e] at h1
@@ -134,8 +135,8 @@ theorem π_coef {g : GA D V} {q : GL (n ⊕ Fin c) k} (h : (mt V g).map p.π = F
       rw [hr]; ring
     rw [h3, H.pair i i.2 l l.2]
     by_cases e : l = i
-    · subst e; rw [if_pos rfl, if_pos rfl, mul_comm]; rfl
-    · rw [if_neg (fun e' => e (Fin.ext e')), if_neg e, map_zero, mul_zero]
+    · subst e; rw [ite_eq_left rfl, ite_eq_left rfl, mul_comm]; rfl
+    · rw [ite_eq_right (fun e' => e (Fin.ext e')), ite_eq_right e, map_zero, mul_zero]
   rw [π_hA, h, ← smul_eq_mul, ← dotProduct_smul, ← mulVec_smul, e1, mulVec_mulVec, Matrix.mul_assoc, F.γβ, Matrix.mul_one,
     ← mulVec_mulVec, dotProduct_mulVec, mulVec_single_one, dotProduct, Fintype.sum_sum_type]
   simp [← hu, e2, e3]
@@ -156,7 +157,7 @@ def scal {ρ : ℕ} (B : BesLev D ρ) (s : k) (i : ℕ) : k :=
 
 theorem scal_lo {ρ : ℕ} (B : BesLev D ρ) (s : k) {i : ℕ} (hi : i < ρ) :
     p.pr (if i = ρ then hQ B.L B.ζ B.ζ else 1) * scal p B s i = p.xi * scal p B s (i + 1) := by
-  rw [if_neg hi.ne, show p.pr 1 = 1 from (Witness.prH p).map_one, scal, scal, if_pos hi]
+  rw [ite_eq_right hi.ne, show p.pr 1 = 1 from (Witness.prH p).map_one, scal, scal, ite_eq_left hi]
   split_ifs with h1 h2
   · rw [show ρ - i = ρ - (i + 1) + 1 by omega]; ring
   · rw [show ρ - i = 1 by omega]; ring
@@ -165,7 +166,7 @@ theorem scal_lo {ρ : ℕ} (B : BesLev D ρ) (s : k) {i : ℕ} (hi : i < ρ) :
 theorem scal_hi {ρ : ℕ} (B : BesLev D ρ) (s : k) {i : ℕ} (hi : ρ ≤ i) (hi' : i < 2 * ρ) :
     p.pr (if i = ρ then hQ B.L B.ζ B.ζ else 1) * scal p B s i = -p.xi * scal p B s (i + 1) := by
   have hx := Witness.xi_ne p
-  rw [scal, scal, if_neg (show ¬ i < ρ by omega), if_neg (show ¬ i + 1 < ρ by omega), if_neg (show ¬ i + 1 = ρ by omega)]
+  rw [scal, scal, ite_eq_right (show ¬ i < ρ by omega), ite_eq_right (show ¬ i + 1 < ρ by omega), ite_eq_right (show ¬ i + 1 = ρ by omega)]
   split_ifs with h1
   · rw [show ρ - 1 - (2 * ρ - (i + 1)) = 0 by omega]
     change p.hz B * s = _
@@ -209,18 +210,18 @@ theorem psiBes_isLoc : ∀ (D : D7) (k : Type) [Field k] [ValuativeRel k] [Topol
     intro i hi l hl
     unfold besselAuxiliaryVectors
     rcases lt_trichotomy l σ with h | h | h <;> rcases lt_trichotomy i σ with h' | h' | h'
-    · rw [if_pos h, if_neg (by omega), if_neg (by omega), hQ_XY B.d h (by omega), if_neg h'.ne]
+    · rw [ite_eq_left h, ite_eq_right (by omega), ite_eq_right (by omega), hQ_XY B.d h (by omega), ite_eq_right h'.ne]
       exact if_congr (by omega) rfl rfl
-    · rw [if_pos h, if_neg (by omega), if_pos (by omega), wittDecomposition_hermitian_e_anisotropicPart B.d h, if_neg (by omega)]
-    · rw [if_pos h, if_pos (by omega), hQ_XX B.d h (by omega), if_neg (by omega)]
-    · rw [if_neg (by omega), if_pos h, if_neg (by omega), if_neg (by omega), hQ_0Y B.d (by omega), if_neg (by omega)]
-    · rw [if_neg (by omega), if_pos h, if_neg (by omega), if_pos (by omega), hQ_vecB B.d B.o, if_pos (by omega), if_pos h']
-    · rw [if_neg (by omega), if_pos h, if_pos (by omega), hQ_0X B.d (by omega), if_neg (by omega)]
-    · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), hQ_YY B.d (by omega) (by omega),
-        if_neg (by omega)]
-    · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_pos (by omega), wittDecomposition_hermitian_dual_anisotropicPart B.d (by omega),
-        if_neg (by omega)]
-    · rw [if_neg (by omega), if_neg (by omega), if_pos (by omega), hQ_YX B.d (by omega) (by omega), if_neg h'.ne']
+    · rw [ite_eq_left h, ite_eq_right (by omega), ite_eq_left (by omega), wittDecomposition_hermitian_e_anisotropicPart B.d h, ite_eq_right (by omega)]
+    · rw [ite_eq_left h, ite_eq_left (by omega), hQ_XX B.d h (by omega), ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_left h, ite_eq_right (by omega), ite_eq_right (by omega), hQ_0Y B.d (by omega), ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_left h, ite_eq_right (by omega), ite_eq_left (by omega), hQ_vecB B.d B.o, ite_eq_left (by omega), ite_eq_left h']
+    · rw [ite_eq_right (by omega), ite_eq_left h, ite_eq_left (by omega), hQ_0X B.d (by omega), ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), hQ_YY B.d (by omega) (by omega),
+        ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_left (by omega), wittDecomposition_hermitian_dual_anisotropicPart B.d (by omega),
+        ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_left (by omega), hQ_YX B.d (by omega) (by omega), ite_eq_right h'.ne']
       exact if_congr (by omega) rfl rfl
   ne := by
     intro i _
@@ -250,7 +251,7 @@ theorem psiBes_isLoc : ∀ (D : D7) (k : Type) [Field k] [ValuativeRel k] [Topol
   · rw [Finset.mul_sum]
     refine Finset.sum_congr rfl fun i hi => hA_supp hg.1 ?_
     have hi' := Finset.mem_range.1 hi
-    rw [H.pair i (by omega) _ (by omega), if_neg (by omega)]
+    rw [H.pair i (by omega) _ (by omega), ite_eq_right (by omega)]
 
 end GlobalTheory.LocBesChar
 end

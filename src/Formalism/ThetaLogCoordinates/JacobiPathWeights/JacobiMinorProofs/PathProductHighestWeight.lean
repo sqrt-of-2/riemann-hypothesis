@@ -78,9 +78,9 @@ theorem map_step {A A' : Type*} [CommRing A] [CommRing A'] (φ : A →+* A') {n 
   unfold stepF
   cases up
 
-  · simp only [Bool.false_eq_true, if_false, contrF, map_sum, map_mul, map_intCast, hK]
+  · simp only [Bool.false_eq_true, ite_false, contrF, map_sum, map_mul, map_intCast, hK]
 
-  · simp only [if_true, wedgeF, map_sum, map_mul, map_intCast, hK]
+  · simp only [ite_true, wedgeF, map_sum, map_mul, map_intCast, hK]
 
 theorem map_pathWord {A A' : Type*} [CommRing A] [CommRing A'] (φ : A →+* A') {n : ℕ}
     (isVec : ℕ → Bool) (μ : ℕ → Fin n → ℤ) (c : ℤ) (Xr : ℕ → Fin n → A) :
@@ -95,9 +95,9 @@ theorem map_pathWord {A A' : Type*} [CommRing A] [CommRing A'] (φ : A →+* A')
   | succ j ih =>
     intro J
     by_cases hch : colHeight (μ (j + 1)) c = colHeight (μ j) c
-    · rw [pathWord, pathWord, if_pos hch, if_pos hch]
+    · rw [pathWord, pathWord, ite_eq_left hch, ite_eq_left hch]
       exact ih J
-    · rw [pathWord, pathWord, if_neg hch, if_neg hch]
+    · rw [pathWord, pathWord, ite_eq_right hch, ite_eq_right hch]
       exact map_step φ _ _ _ _ ih J
 
 theorem act_pathWord (hw : FactX2wedge) (hc : FactX2contr) {A : Type} [CommRing A] {n : ℕ}
@@ -112,14 +112,14 @@ theorem act_pathWord (hw : FactX2wedge) (hc : FactX2contr) {A : Type} [CommRing 
   | zero => exact (actF_oneF _).symm
   | succ j ih =>
     by_cases hch : colHeight (μ (j + 1)) c = colHeight (μ j) c
-    · rw [pathWord, pathWord, if_pos hch, if_pos hch]
+    · rw [pathWord, pathWord, ite_eq_left hch, ite_eq_left hch]
       exact ih
-    · rw [pathWord, pathWord, if_neg hch, if_neg hch, ih]
+    · rw [pathWord, pathWord, ite_eq_right hch, ite_eq_right hch, ih]
       unfold stepF
       cases hup : (isVec j == decide (1 ≤ c))
-      · simp only [Bool.false_eq_true, if_false]
+      · simp only [Bool.false_eq_true, ite_false]
         rw [hc, h2 j hup]
-      · simp only [if_true]
+      · simp only [ite_true]
         rw [hw, h1 j hup]
 
 end A1hw

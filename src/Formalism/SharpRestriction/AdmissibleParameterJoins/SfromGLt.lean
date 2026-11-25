@@ -81,12 +81,12 @@ theorem liesOver_ne_bot (hp : p.Prime) (I : Ideal (𝓞 K)) (hI : I.LiesOver (sp
 theorem img_places (hp : p.Prime) :
     (fun v : HeightOneSpectrum (𝓞 K) => v.asIdeal) '' {v | ((p : ℕ) : 𝓞 K) ∈ v.asIdeal} =
       (span {(p : ℤ)}).primesOver (𝓞 K) := by
-  apply Formalism.L2.SG.Pf.SatGramLoc.image_places_primesOver <;> assumption
+  apply Formalism.L2.SG.Pf.SatGramLoc.image_places_primesOver; assumption
 
 theorem ncard_places (hp : p.Prime) :
     ({v : HeightOneSpectrum (𝓞 K) | ((p : ℕ) : 𝓞 K) ∈ v.asIdeal}).ncard =
       (IsDedekindDomain.primesOverFinset (span {(p : ℤ)}) (𝓞 K)).card := by
-  haveI := pI_max p hp
+  have := pI_max p hp
   rw [← Set.ncard_coe_finset, IsDedekindDomain.coe_primesOverFinset (pI_ne_bot p hp), ← img_places K p hp,
     Set.ncard_image_of_injective _ (fun v w h => HeightOneSpectrum.ext h)]
 
@@ -96,7 +96,7 @@ theorem map_pI_ne_bot (hp : p.Prime) : map (algebraMap ℤ (𝓞 K)) (span {(p :
 
 theorem ef_pos (hp : p.Prime) (P : Ideal (𝓞 K)) (hP : P ∈ IsDedekindDomain.primesOverFinset (span {(p : ℤ)}) (𝓞 K)) :
     1 ≤ (span {(p : ℤ)}).ramificationIdx' P * (span {(p : ℤ)}).inertiaDeg' P := by
-  haveI := pI_max p hp
+  have := pI_max p hp
   obtain ⟨hPp, hPl⟩ := (IsDedekindDomain.mem_primesOverFinset_iff (pI_ne_bot p hp) (𝓞 K)).mp hP
   have he : 0 < (span {(p : ℤ)}).ramificationIdx' P := by
     rw [Ideal.ramificationIdx'_eq_ramificationIdx _ _ (pI_ne_bot p hp)]
@@ -107,7 +107,7 @@ theorem ef_pos (hp : p.Prime) (P : Ideal (𝓞 K)) (hP : P ∈ IsDedekindDomain.
 theorem sum_ef (hp : p.Prime) :
     ∑ P ∈ IsDedekindDomain.primesOverFinset (span {(p : ℤ)}) (𝓞 K),
       (span {(p : ℤ)}).ramificationIdx' P * (span {(p : ℤ)}).inertiaDeg' P = Module.finrank ℚ K := by
-  haveI := pI_max p hp
+  have := pI_max p hp
   exact Ideal.sum_ramification_inertia (𝓞 K) ℚ K (pI_ne_bot p hp)
 
 theorem ef_one_of_card (hp : p.Prime)

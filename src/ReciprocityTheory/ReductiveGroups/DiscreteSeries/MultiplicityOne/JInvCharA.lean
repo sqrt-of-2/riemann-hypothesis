@@ -34,16 +34,16 @@ theorem Hpk_mulVec (v : Fin (2 * r + k + 1) → ℂ) (i : Fin (2 * r + k + 1)) :
     (Hpk k r *ᵥ v) i = if i.val < r ∨ r + k < i.val then v ⟨2 * r + k - i.val, by omega⟩
       else if i.val = r + k then -v i else v i := by
   by_cases h : i.val < r ∨ r + k < i.val
-  · rw [if_pos h]
+  · rw [ite_eq_left h]
     simp only [mulVec, dotProduct, Hpk_out k r h]
     have e : ∀ j : Fin (2 * r + k + 1), (if j.val = 2 * r + k - i.val then (1 : ℂ) else 0) * v j =
         if j = ⟨2 * r + k - i.val, by omega⟩ then v j else 0 := by
       intro j
       by_cases hj : j.val = 2 * r + k - i.val
-      · rw [if_pos hj, if_pos (Fin.ext hj), one_mul]
-      · rw [if_neg hj, if_neg (fun e => hj (congrArg Fin.val e)), zero_mul]
+      · rw [ite_eq_left hj, ite_eq_left (Fin.ext hj), one_mul]
+      · rw [ite_eq_right hj, ite_eq_right (fun e => hj (congrArg Fin.val e)), zero_mul]
     simp only [e, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     simp only [mulVec, dotProduct, Hpk_mid k r h]
     have e : ∀ j : Fin (2 * r + k + 1),
         (if j.val = i.val then (if i.val = r + k then (-1 : ℂ) else 1) else 0) * v j =
@@ -52,7 +52,7 @@ theorem Hpk_mulVec (v : Fin (2 * r + k + 1) → ℂ) (i : Fin (2 * r + k + 1)) :
       by_cases hj : j = i
       · subst hj
         simp
-      · rw [if_neg (fun e => hj (Fin.ext e)), if_neg hj, zero_mul]
+      · rw [ite_eq_right (fun e => hj (Fin.ext e)), ite_eq_right hj, zero_mul]
     simp only [e, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
     split_ifs <;> simp
 
@@ -61,7 +61,7 @@ theorem Hpk_mulVec_mulVec (v : Fin (2 * r + k + 1) → ℂ) : Hpk k r *ᵥ (Hpk 
   have hi := i.isLt
   rw [Hpk_mulVec]
   by_cases h : i.val < r ∨ r + k < i.val
-  · rw [if_pos h, Hpk_mulVec]
+  · rw [ite_eq_left h, Hpk_mulVec]
     split_ifs with h3 h4
     all_goals first
       | (congr 1
@@ -71,7 +71,7 @@ theorem Hpk_mulVec_mulVec (v : Fin (2 * r + k + 1) → ℂ) : Hpk k r *ᵥ (Hpk 
       | (exfalso
          have h3' : ¬(2 * r + k - i.val < r ∨ r + k < 2 * r + k - i.val) := h3
          omega)
-  · rw [if_neg h, Hpk_mulVec, if_neg h]
+  · rw [ite_eq_right h, Hpk_mulVec, ite_eq_right h]
     split_ifs <;> simp
 
 theorem mat_eq_of_mulVec' {A B : Mat k r} (h : ∀ v, A *ᵥ v = B *ᵥ v) : A = B := by

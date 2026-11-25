@@ -82,5 +82,5 @@ theorem UpperTheory.Reformulated.B.CyclotomicCharacterContinuous.cont_cyc :
   intro F Ω _ _ _ _ l _
   have h1 : Continuous (UpperTheory.Reformulated.B.CyclotomicCharacterContinuous.cycZ F Ω l) := cyclotomicCharacter.continuous l F Ω
   have h2 : Continuous (fun x : ℤ_[l] ↦ algebraMap ℚ_[l] (PadicAlgCl l) (x : ℚ_[l])) :=
-    (continuous_algebraMap ℚ_[l] (PadicAlgCl l)).comp continuous_subtype_val
+    (continuous_algebraMap ℚ_[l] (PadicAlgCl l)).comp continuous_subtypeVal
   exact (Continuous.units_map _ h2).comp h1

@@ -71,12 +71,12 @@ theorem UpperTheory.Reformulated.B.DYka2.main :
                 (∀ g ∈ L, ((σ : Γ → W →ₗ[ℂ] W) g : W → W) ((f : V → W) u) = χ g • (f : V → W) u) →
                   ∃ (v : V), v ≠ (0 : V) ∧ ∀ g ∈ L, ((ρ : Γ → V →ₗ[ℂ] V) g : V → V) v = χ g • v := by
   intro Γ V W _ _ _ _ _ _ _ ρ σ hρ f L hL χ u hu hχ
-  haveI : CompactSpace L := isCompact_iff_compactSpace.mp hL
+  have : CompactSpace L := isCompact_iff_compactSpace.mp hL
   have hint : ∀ (g : Γ) (v : V), f (ρ g v) = σ g (f v) := fun g v => Representation.IntertwiningMap.isIntertwining ρ σ f g v
   have hmul : ∀ g ∈ L, ∀ h ∈ L, χ (g * h) = χ g * χ h := by
     intro g hg h hh
     have key : χ (g * h) • f u = (χ g * χ h) • f u := by
-      rw [← hχ (g * h) (L.mul_mem hg hh), map_mul, Module.End.mul_apply, hχ h hh, map_smul,
+      rw [← hχ (g * h) (L.mul_mem hg hh), map_mul, mul_apply_eq_comp, hχ h hh, map_smul,
         hχ g hg, smul_smul, mul_comm]
     exact smul_left_injective ℂ hu key
   have h1 : χ 1 = 1 := by
@@ -92,19 +92,19 @@ theorem UpperTheory.Reformulated.B.DYka2.main :
     { carrier := {g | ρ (g : Γ) u = u}
       mul_mem' := by
         intro a b ha hb
-        simp only [Set.mem_setOf_eq] at ha hb ⊢
-        rw [Subgroup.coe_mul, map_mul, Module.End.mul_apply, hb, ha]
+        simp only [Set.mem_ofPred_eq] at ha hb ⊢
+        rw [Subgroup.coe_mul, map_mul, mul_apply_eq_comp, hb, ha]
       one_mem' := by simp
       inv_mem' := by
         intro a ha
-        simp only [Set.mem_setOf_eq] at ha ⊢
+        simp only [Set.mem_ofPred_eq] at ha ⊢
         have : ρ ((a : Γ)⁻¹) (ρ (a : Γ) u) = u := by
-          rw [← Module.End.mul_apply, ← map_mul, inv_mul_cancel, map_one]; rfl
+          rw [← mul_apply_eq_comp, ← map_mul, inv_mul_cancel, map_one]; rfl
         rw [ha] at this
         simpa using this }
-  have hHopen : IsOpen (H : Set L) := (hρ u).preimage continuous_subtype_val
-  haveI : Finite (L ⧸ H) := Subgroup.quotient_finite_of_isOpen H hHopen
-  haveI : Fintype (L ⧸ H) := Fintype.ofFinite _
+  have hHopen : IsOpen (H : Set L) := (hρ u).preimage continuous_subtypeVal
+  have : Finite (L ⧸ H) := Subgroup.quotient_finite_of_isOpen H hHopen
+  have : Fintype (L ⧸ H) := Fintype.ofFinite _
   have hχH : ∀ h : L, h ∈ H → χ (h : Γ) = 1 := by
     intro h hh
     have e : ρ (h : Γ) u = u := hh
@@ -119,7 +119,7 @@ theorem UpperTheory.Reformulated.B.DYka2.main :
     have e : ρ ((a⁻¹ * b : L) : Γ) u = u := hab
     have c := hχH _ hab
     simp only [φ]
-    rw [hb, hmul _ a.2 _ (a⁻¹ * b).2, c, mul_one, map_mul, Module.End.mul_apply, e]
+    rw [hb, hmul _ a.2 _ (a⁻¹ * b).2, c, mul_one, map_mul, mul_apply_eq_comp, e]
   let ψ : L ⧸ H → V := Quotient.lift φ hφ
   have hψ : ∀ g : L, ψ (g : L ⧸ H) = φ g := fun g => rfl
   have hfψ : ∀ q : L ⧸ H, f (ψ q) = f u := by
@@ -136,7 +136,7 @@ theorem UpperTheory.Reformulated.B.DYka2.main :
       have : l • (g : L ⧸ H) = ((l * g : L) : L ⧸ H) := rfl
       rw [this, hψ, hψ]
       simp only [φ]
-      rw [map_smul, Subgroup.coe_mul, hmul _ l.2 _ g.2, map_mul, Module.End.mul_apply, smul_smul,
+      rw [map_smul, Subgroup.coe_mul, hmul _ l.2 _ g.2, map_mul, mul_apply_eq_comp, smul_smul,
         mul_inv, ← mul_assoc, mul_inv_cancel₀ (hne l l.2), one_mul]
   refine ⟨∑ q : L ⧸ H, ψ q, ?_, ?_⟩
   · intro h0

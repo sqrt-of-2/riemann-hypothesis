@@ -66,7 +66,7 @@ theorem pcLieEntry : ∀ (n : ℕ) (ε : Fin n → Bool) (Z : Matrix (Fin n) (Fi
     simp only [Matrix.zero_apply] at hb
     rcases Bool.eq_false_or_eq_true (ε a) with ha | ha <;>
       rcases Bool.eq_false_or_eq_true (ε b) with hb' | hb' <;>
-      simp only [ha, hb', if_true, Bool.false_eq_true, if_false] at hb ⊢ <;>
+      simp only [ha, hb', ite_true, Bool.false_eq_true, ite_false] at hb ⊢ <;>
       first | linear_combination hb | linear_combination -hb
   · intro h
     ext a b
@@ -75,7 +75,7 @@ theorem pcLieEntry : ∀ (n : ℕ) (ε : Fin n → Bool) (Z : Matrix (Fin n) (Fi
     have hb := h b a
     rcases Bool.eq_false_or_eq_true (ε a) with ha | ha <;>
       rcases Bool.eq_false_or_eq_true (ε b) with hb' | hb' <;>
-      simp only [ha, hb', if_true, Bool.false_eq_true, if_false] at hb ⊢ <;>
+      simp only [ha, hb', ite_true, Bool.false_eq_true, ite_false] at hb ⊢ <;>
       first | linear_combination hb | linear_combination -hb
 
 end GlobalTheory

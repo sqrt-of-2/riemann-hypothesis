@@ -45,16 +45,16 @@ theorem compactWordAction_single (hV : IsKStableSub ε E V) (a b : Fin n) (p : L
 
 theorem sC_mul (a b c d : Fin n) : sC V a b * sC V c d = if b = c then sC V a d else 0 := by
   refine Finsupp.lhom_ext fun p v => ?_
-  rw [Module.End.mul_apply, sC_single]
+  rw [mul_apply_eq_comp, sC_single]
   by_cases h1 : p.2 = d <;> by_cases h2 : b = c <;> simp [h1, h2, sC_single, eq_comm]
 
 theorem compactWordAction_commute (hV : IsKStableSub ε E V) (a b c d : Fin n) :
     compactWordAction ε E V hV a b * sC V c d = sC V c d * compactWordAction ε E V hV a b := by
   refine Finsupp.lhom_ext fun p v => ?_
 
-  rw [Module.End.mul_apply, Module.End.mul_apply, sC_single, compactWordAction_single, map_add (f := _), map_sum]
+  rw [mul_apply_eq_comp, mul_apply_eq_comp, sC_single, compactWordAction_single, map_add (f := _), map_sum]
   by_cases h1 : p.2 = d <;> by_cases h : ε a = ε b <;>
-    simp only [h1, h, if_true, if_false, dif_pos, dif_neg, not_false_eq_true, compactWordAction_single, map_smul,
+    simp only [h1, h, ite_true, ite_false, dite_eq_left, dite_eq_right, not_false_eq_true, compactWordAction_single, map_smul,
       sC_single, map_zero, smul_zero, sum_const_zero, add_zero]
 
 theorem isKRelation_compactWordAction (hV : IsKStableSub ε E V) (hE : IsGlRep E) : IsKRel ε (compactWordAction ε E V hV) := by
@@ -121,7 +121,7 @@ theorem exists_stable (hV : IsKStableSub ε E V) (EM : Fin n → Fin n → Modul
       exact add_mem (Submodule.subset_span (Or.inl (hW0 a b hab y hy)))
         (Submodule.subset_span (Or.inr ⟨a, b, y, hy, rfl⟩))
     · show sA ε E V hV a b (sC V c d y) ∈ Submodule.span ℂ G
-      rw [e, ← Module.End.mul_apply, compactWordAction_commute, ← Module.End.mul_apply (sC V a b), sC_mul]
+      rw [e, ← mul_apply_eq_comp, compactWordAction_commute, ← mul_apply_eq_comp (sC V a b), sC_mul]
       refine add_mem (Submodule.subset_span (Or.inr ⟨c, d, _, hW0 a b hab y hy, rfl⟩)) ?_
       split_ifs
       · exact Submodule.subset_span (Or.inr ⟨a, d, y, hy, rfl⟩)

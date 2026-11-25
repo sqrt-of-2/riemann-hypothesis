@@ -78,7 +78,7 @@ theorem trace_hb_mul_hb (p q : Fin n × Fin n) : trace (hb p * hb q) = if p = q 
   simp only [hb]
   split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12 h13 h14 h15 h16 <;>
   simp only [Matrix.add_mul, Matrix.mul_add, Matrix.sub_mul, Matrix.mul_sub, Matrix.smul_mul, Matrix.mul_smul,
-      trace_add, trace_sub, trace_smul, trace_single_mul_single, smul_eq_mul, Prod.mk.injEq] at * <;> (simp only [Fin.ext_iff, Fin.lt_iff_val_lt_val] at * ; split_ifs at * <;> (try omega)) <;>
+      trace_add, trace_sub, trace_smul, trace_single_mul_single, smul_eq_mul, Prod.mk.injEq] at * <;> (simp only [Fin.ext_iff, Fin.lt_def] at * ; split_ifs at * <;> (try omega)) <;>
   (generalize ((Real.sqrt 2 : ℝ) : ℂ)⁻¹ = s at hs ⊢
    have hs2 : s ^ 2 = 1 / 2 := by rw [sq]; exact hs
    first | ring1 | (ring_nf; simp only [Complex.I_sq, hs2]; ring_nf))

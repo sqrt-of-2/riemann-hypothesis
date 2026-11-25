@@ -79,8 +79,8 @@ private theorem algHom_finite_of_proper {F K L : Type} [Field F] [Field K] [Fiel
   set t : Fin d → F := fun j => x j.succ / x 0 with ht
   have hL : IsTranscendenceBasis ℂ (algebraMap F L ∘ t) := hF.algebraMap_comp
   have hK : IsTranscendenceBasis ℂ (algebraMap F K ∘ t) := hF.algebraMap_comp
-  letI : Algebra K L := j2.toRingHom.toAlgebra
-  haveI : IsScalarTower ℂ K L := IsScalarTower.of_algebraMap_eq fun c => (j2.commutes c).symm
+  let : Algebra K L := j2.toRingHom.toAlgebra
+  have : IsScalarTower ℂ K L := IsScalarTower.of_algebraMap_eq fun c => (j2.commutes c).symm
   have hw : AlgebraicIndependent ℂ (algebraMap K L ∘ (algebraMap F K ∘ t)) :=
     hK.1.map' (f := IsScalarTower.toAlgHom ℂ K L) (algebraMap K L).injective
   have hwb : IsTranscendenceBasis ℂ (algebraMap K L ∘ (algebraMap F K ∘ t)) :=
@@ -89,7 +89,7 @@ private theorem algHom_finite_of_proper {F K L : Type} [Field F] [Field K] [Fiel
   obtain ⟨s, hs⟩ := (Module.finite_def (R := F) (M := L)).1 inferInstance
   let S : Set L := (s : Set L) ∪ Set.range (algebraMap F L ∘ t)
   have hSfin : S.Finite := s.finite_toSet.union (Set.finite_range _)
-  haveI : Finite S := hSfin
+  have : Finite S := hSfin
   have htop : IntermediateField.adjoin K S = ⊤ := by
     rw [eq_top_iff]
     rintro y -
@@ -109,7 +109,7 @@ private theorem algHom_finite_of_proper {F K L : Type} [Field F] [Field K] [Fiel
     | smul r a _ ha =>
       rw [Algebra.smul_def]
       exact mul_mem (hP r) ha
-  haveI : FiniteDimensional K (IntermediateField.adjoin K S) :=
+  have : FiniteDimensional K (IntermediateField.adjoin K S) :=
     IntermediateField.finiteDimensional_adjoin fun z _ => (halg.isAlgebraic z).isIntegral
   rw [htop] at this
   change Module.Finite K L
@@ -122,19 +122,19 @@ private theorem fg_rB {F L : Type} [Field F] [Field L] [Algebra ℂ F] [Algebra 
   · have hbot : rB ℂ L x ∅ = ⊥ := by
       rw [eq_bot_iff]
       intro y hy
-      haveI : Algebra.IsIntegral ℂ (rA ℂ x ∅) := Algebra.IsIntegral.adjoin (by simp)
+      have : Algebra.IsIntegral ℂ (rA ℂ x ∅) := Algebra.IsIntegral.adjoin (by simp)
       have h : IsIntegral ℂ y := isIntegral_trans (A := rA ℂ x ∅) y hy
       have := minpoly.mem_range_of_degree_eq_one ℂ y
         (IsAlgClosed.degree_eq_one_of_irreducible ℂ (minpoly.irreducible h))
       exact Algebra.mem_bot.2 this
     rw [hbot]
     exact Subalgebra.fg_bot
-  · haveI : CharZero F := charZero_of_injective_algebraMap (algebraMap ℂ F).injective
-    haveI : IsFractionRing (rA ℂ x J) F := (_root_.GlobalTheory.PD.rA_isFractionRing_isNoetherianRing ℂ F d x pd J ⟨i, hi⟩).1
-    haveI : IsNoetherianRing (rA ℂ x J) := (_root_.GlobalTheory.PD.rA_isFractionRing_isNoetherianRing ℂ F d x pd J ⟨i, hi⟩).2
-    haveI := rA_isIntegrallyClosed pd hi
+  · have : CharZero F := charZero_of_injective_algebraMap (algebraMap ℂ F).injective
+    have : IsFractionRing (rA ℂ x J) F := (_root_.GlobalTheory.PD.rA_isFractionRing_isNoetherianRing ℂ F d x pd J ⟨i, hi⟩).1
+    have : IsNoetherianRing (rA ℂ x J) := (_root_.GlobalTheory.PD.rA_isFractionRing_isNoetherianRing ℂ F d x pd J ⟨i, hi⟩).2
+    have := rA_isIntegrallyClosed pd hi
     set_option synthInstance.maxHeartbeats 200000 in
-      haveI : Module.Finite (rA ℂ x J) (integralClosure (rA ℂ x J) L) :=
+      have : Module.Finite (rA ℂ x J) (integralClosure (rA ℂ x J) L) :=
         IsIntegralClosure.finite (rA ℂ x J) F L (integralClosure (rA ℂ x J) L)
     have hfg : (rA ℂ x J).FG := by
       refine Subalgebra.fg_def.2 ⟨_, ?_, rfl⟩
@@ -142,7 +142,7 @@ private theorem fg_rB {F L : Type} [Field F] [Field L] [Algebra ℂ F] [Algebra 
         fun p => x p.2 / x p.1).subset ?_
       rintro _ ⟨i', hi', j, rfl⟩
       exact ⟨(i', j), ⟨hi', trivial⟩, rfl⟩
-    haveI : Algebra.FiniteType ℂ (rA ℂ x J) := (Subalgebra.fg_iff_finiteType _).1 hfg
+    have : Algebra.FiniteType ℂ (rA ℂ x J) := (Subalgebra.fg_iff_finiteType _).1 hfg
     set_option synthInstance.maxHeartbeats 200000 in
       have hft : Algebra.FiniteType ℂ (integralClosure (rA ℂ x J) L) :=
         Algebra.FiniteType.trans (S := rA ℂ x J) inferInstance inferInstance
@@ -151,16 +151,16 @@ private theorem fg_rB {F L : Type} [Field F] [Field L] [Algebra ℂ F] [Algebra 
 private theorem integralClosure_finiteGenerated {F K L : Type} [Field F] [Field K] [Field L] [Algebra ℂ F] [Algebra ℂ K] [Algebra ℂ L]
     [Algebra F K] [IsScalarTower ℂ F K] {d : ℕ} {x : Fin (d + 1) → F} (pd : IsPd ℂ x) [FiniteDimensional F K]
     (j2 : K →ₐ[ℂ] L) (hf : j2.toRingHom.Finite) (J : Finset (Fin (d + 1))) : (R2 x j2 J).FG := by
-  letI : Algebra K L := j2.toRingHom.toAlgebra
-  letI : Algebra F L := ((algebraMap K L).comp (algebraMap F K)).toAlgebra
-  haveI : IsScalarTower F K L := IsScalarTower.of_algebraMap_eq fun _ => rfl
-  haveI : IsScalarTower ℂ K L := IsScalarTower.of_algebraMap_eq fun c => (j2.commutes c).symm
-  haveI : IsScalarTower ℂ F L := IsScalarTower.of_algebraMap_eq fun c => by
+  let : Algebra K L := j2.toRingHom.toAlgebra
+  let : Algebra F L := ((algebraMap K L).comp (algebraMap F K)).toAlgebra
+  have : IsScalarTower F K L := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  have : IsScalarTower ℂ K L := IsScalarTower.of_algebraMap_eq fun c => (j2.commutes c).symm
+  have : IsScalarTower ℂ F L := IsScalarTower.of_algebraMap_eq fun c => by
     change algebraMap ℂ L c = algebraMap K L (algebraMap F K (algebraMap ℂ F c))
     rw [← IsScalarTower.algebraMap_apply ℂ F K c]
     exact (j2.commutes c).symm
-  haveI : Module.Finite K L := hf
-  haveI : FiniteDimensional F L := Module.Finite.trans K L
+  have : Module.Finite K L := hf
+  have : FiniteDimensional F L := Module.Finite.trans K L
   let A := rA ℂ x J
   let B := (rB ℂ K x J).map j2
   let φ : A →+* B :=
@@ -170,10 +170,10 @@ private theorem integralClosure_finiteGenerated {F K L : Type} [Field F] [Field 
       map_mul' := fun a b => Subtype.ext (by simp)
       map_zero' := Subtype.ext (by simp)
       map_add' := fun a b => Subtype.ext (by simp) }
-  letI : Algebra A B := φ.toAlgebra
-  haveI : IsScalarTower A B L := IsScalarTower.of_algebraMap_eq fun _ => rfl
-  haveI : IsScalarTower A K L := IsScalarTower.of_algebraMap_eq fun _ => rfl
-  haveI : Algebra.IsIntegral A B := ⟨fun b => by
+  let : Algebra A B := φ.toAlgebra
+  have : IsScalarTower A B L := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  have : IsScalarTower A K L := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  have : Algebra.IsIntegral A B := ⟨fun b => by
     obtain ⟨c, hc, hb⟩ := Subalgebra.mem_map.1 b.2
     have h1 : IsIntegral A (algebraMap K L c) := IsIntegral.algebraMap hc
     have h2 : algebraMap B L b = algebraMap K L c := hb.symm
@@ -193,8 +193,8 @@ theorem rYFT_of :
     RYFT := by
   intro F K K' _ _ _ _ _ _ _ _ _ _ _ _ _ d x j2 h I J hI
   have pd := h.covZ.pd
-  haveI := h.covZ.fin
-  haveI := h.covY.fin
+  have := h.covZ.fin
+  have := h.covY.fin
   have h1 : (rB ℂ K' (xv x) I).FG := fg_rB h.covY.pd I
   have h2 : (R2 (xv x) j2 J).FG := integralClosure_finiteGenerated pd j2 (algHom_finite_of_proper pd j2) J
   exact (Subalgebra.fg_iff_finiteType _).1 (h1.sup h2)

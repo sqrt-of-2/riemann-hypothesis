@@ -168,20 +168,20 @@ theorem minor_colsB_mul (g : Matrix (Fin N) (Fin N) R) {bb : Matrix (Fin N) (Fin
           ((if k = cb then g r cb * bb cb cb else 0) + if k = ca then g r ca * bb ca cb else 0) := fun k => by
         have h2 := s.hcb
         rcases lt_trichotomy k ca with l | l | l
-        · rw [if_pos l, if_neg (l.trans s.lt_cb).ne, if_neg l.ne]; ring
-        · rw [if_neg (l ▸ lt_irrefl _), if_neg (l ▸ s.lt_cb.ne), if_pos l, l]; ring
-        · rw [if_neg (not_lt.2 l.le), if_neg l.ne']
+        · rw [ite_eq_left l, ite_eq_right (l.trans s.lt_cb).ne, ite_eq_right l.ne]; ring
+        · rw [ite_eq_right (l ▸ lt_irrefl _), ite_eq_right (l ▸ s.lt_cb.ne), ite_eq_left l, l]; ring
+        · rw [ite_eq_right (not_lt.2 l.le), ite_eq_right l.ne']
           by_cases e : k = cb
-          · rw [if_pos e, e]; ring
+          · rw [ite_eq_left e, e]; ring
           · have : cb < k := by
               have h3 : (ca : ℕ) < k := l
               have h4 : (k : ℕ) ≠ cb := fun h => e (Fin.ext h)
               show (cb : ℕ) < k
               omega
-            rw [if_neg e, hbt this]; ring
+            rw [ite_eq_right e, hbt this]; ring
       have h2 : ∀ k, g' r k * b' k c = (if k < ca then g r k * bb k cb else 0) +
           if k = ca then g r cb * bb cb cb + g r ca * bb ca cb else 0 := fun k => by
-        simp only [g', b', updateCol_apply, if_pos e]
+        simp only [g', b', updateCol_apply, ite_eq_left e]
         rcases lt_trichotomy k ca with l | l | l
         · simp [l, l.ne]
         · simp [l]; ring
@@ -189,7 +189,7 @@ theorem minor_colsB_mul (g : Matrix (Fin N) (Fin N) R) {bb : Matrix (Fin N) (Fin
       rw [Finset.sum_congr rfl fun k _ => h1 k, Finset.sum_congr rfl fun k _ => h2 k]
       simp [Finset.sum_add_distrib]
     · refine Finset.sum_congr rfl fun k _ => ?_
-      simp only [g', b', updateCol_apply, if_neg e]
+      simp only [g', b', updateCol_apply, ite_eq_right e]
       split_ifs with e'
       · rw [e', hbt (lt_of_le_of_ne (s.le_ca c hc) e), mul_zero, mul_zero]
       · rfl
@@ -198,26 +198,26 @@ theorem minor_colsB_mul (g : Matrix (Fin N) (Fin N) R) {bb : Matrix (Fin N) (Fin
   have h3 : b' ca ca = 1 := by simp [b']
   rw [h3, one_mul]
   congr 1
-  exact Finset.prod_congr rfl fun c hc => by simp only [b', updateCol_apply, if_neg (Finset.ne_of_mem_erase hc)]
+  exact Finset.prod_congr rfl fun c hc => by simp only [b', updateCol_apply, ite_eq_right (Finset.ne_of_mem_erase hc)]
 
 theorem prod_xi {E : Type} [Field E] {Ψ : Type} [DecidableEq Ψ] (τ : Ψ) (f : Fin N → E) :
     ∏ i, f i ^ xiCoef τ a (τ, i) = (∏ i : Fin N, if (i : ℕ) + 1 = a then f i else 1) * f b * ((f a)⁻¹) ^ 2 := by
   have h : ∀ i, f i ^ xiCoef τ a (τ, i) = (if (i : ℕ) + 1 = a then f i else 1) * (if i = b then f b else 1) *
       if i = a then ((f a)⁻¹) ^ 2 else 1 := fun i => by
     have hb := s.hb
-    simp only [xiCoef, if_true, Fin.ext_iff]
+    simp only [xiCoef, ite_true, Fin.ext_iff]
     by_cases h1 : (i : ℕ) + 1 = a
-    · rw [if_pos h1, if_pos h1, if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega)]
+    · rw [ite_eq_left h1, ite_eq_left h1, ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega)]
       simp
-    · rw [if_neg h1, if_neg h1]
+    · rw [ite_eq_right h1, ite_eq_right h1]
       by_cases h2 : (i : ℕ) = a + 1
-      · rw [if_pos h2, if_neg (by omega), if_pos (by omega), if_neg (by omega), show i = b from Fin.ext (by omega)]
+      · rw [ite_eq_left h2, ite_eq_right (by omega), ite_eq_left (by omega), ite_eq_right (by omega), show i = b from Fin.ext (by omega)]
         simp
-      · rw [if_neg h2, if_neg (show ¬ (i : ℕ) = b by omega)]
+      · rw [ite_eq_right h2, ite_eq_right (show ¬ (i : ℕ) = b by omega)]
         by_cases h3 : (i : ℕ) = a
-        · rw [if_pos h3, if_pos h3, show i = a from Fin.ext h3]
+        · rw [ite_eq_left h3, ite_eq_left h3, show i = a from Fin.ext h3]
           simp [_root_.zpow_neg, zpow_ofNat]
-        · rw [if_neg h3, if_neg h3]; simp
+        · rw [ite_eq_right h3, ite_eq_right h3]; simp
   rw [Finset.prod_congr rfl fun i _ => h i, Finset.prod_mul_distrib, Finset.prod_mul_distrib]
   simp
 
@@ -274,15 +274,15 @@ theorem Swp.alg {a b ca cb : Fin N} (s : Swp N j a b ca cb) {E : Type} [Field E]
   have hPa : ∏ c ∈ stepCols N j a, bb c c = bb ca ca * P := (Finset.mul_prod_erase _ _ s.ca_mem).symm
   have hPb : ∏ c ∈ stepCols N j b, bb c c = bb cb cb * (bb ca ca * P) := by
     rw [s.cols_b, Finset.prod_insert s.cb_notMem, hPa]
-  have hfa : facI N j a lam g a = 1 := if_pos s.proper
-  have hna : nI N j lam T bb a = D * (bb ca ca * P) := by rw [nI, if_pos s.proper, hPa]
+  have hfa : facI N j a lam g a = 1 := ite_eq_left s.proper
+  have hna : nI N j lam T bb a = D * (bb ca ca * P) := by rw [nI, ite_eq_left s.proper, hPa]
   have hDW : D = if j ≤ a then minorIJ T (wIdx N j) (wIdx N j) else 1 := by
-    rw [hDdef, detFac, if_neg (show ¬ (a : ℕ) + 1 = N by omega), mul_one]
+    rw [hDdef, detFac, ite_eq_right (show ¬ (a : ℕ) + 1 = N by omega), mul_one]
     exact if_congr (by omega) rfl rfl
   have h0 : (∏ i : Fin N, if (i : ℕ) + 1 = a then facI N j a lam g i else 1) * (D * P) =
       ∏ i : Fin N, if (i : ℕ) + 1 = a then nI N j lam T bb i else 1 := by
     by_cases ha : (a : ℕ) = 0
-    · rw [Finset.prod_eq_one fun i _ => if_neg (by omega), Finset.prod_eq_one fun i _ => if_neg (by omega), hPdef,
+    · rw [Finset.prod_eq_one fun i _ => ite_eq_right (by omega), Finset.prod_eq_one fun i _ => ite_eq_right (by omega), hPdef,
         s.cols_first (Or.inl ha), Finset.prod_empty, hDW]
       split_ifs with h
       · rw [show wIdx N j = ∅ by
@@ -293,24 +293,24 @@ theorem Swp.alg {a b ca cb : Fin N} (s : Swp N j a b ca cb) {E : Type} [Field E]
     · let i₀ : Fin N := ⟨a - 1, by omega⟩
       have hi : (i₀ : ℕ) + 1 = a := by simp only [i₀]; omega
       have hs : ∀ f : Fin N → E, (∏ i : Fin N, if (i : ℕ) + 1 = a then f i else 1) = f i₀ := fun f => by
-        rw [Finset.prod_eq_single i₀ (fun i _ h => if_neg fun e => h (Fin.ext (by omega))) (by simp), if_pos hi]
+        rw [Finset.prod_eq_single i₀ (fun i _ h => ite_eq_right fun e => h (Fin.ext (by omega))) (by simp), ite_eq_left hi]
       rw [hs, hs, facI, nI]
       by_cases hp : IsProperStep N j i₀
       · have := hp.1
-        rw [if_pos hp, if_pos hp, s.cols_prev hi hp, one_mul, hDW, detFac, if_neg (show ¬ (i₀ : ℕ) + 1 = N by omega),
+        rw [ite_eq_left hp, ite_eq_left hp, s.cols_prev hi hp, one_mul, hDW, detFac, ite_eq_right (show ¬ (i₀ : ℕ) + 1 = N by omega),
           mul_one, hi]
       · have h1 : (i₀ : ℕ) + 1 = j := by by_contra h; exact hp ⟨h, by omega⟩
-        rw [if_neg hp, if_neg hp, if_pos h1, if_neg (by omega), hPdef, s.cols_first (Or.inr (by omega)),
-          Finset.prod_empty, hDW, detFac, if_neg (show ¬ (i₀ : ℕ) + 1 = N by omega), hi]
+        rw [ite_eq_right hp, ite_eq_right hp, ite_eq_left h1, ite_eq_right (by omega), hPdef, s.cols_first (Or.inr (by omega)),
+          Finset.prod_empty, hDW, detFac, ite_eq_right (show ¬ (i₀ : ℕ) + 1 = N by omega), hi]
         ring
   have h1 : facI N j a lam g b * (D * (bb cb cb * (bb ca ca * P))) = muI N j b H * nI N j lam T bb b := by
     rw [facI, nI, muI, ← hPb]
     by_cases hp : IsProperStep N j b
     · have := hp.1
-      rw [if_pos hp, if_pos hp, if_pos hp, hDW, detFac, if_neg hp.2, mul_one]
+      rw [ite_eq_left hp, ite_eq_left hp, ite_eq_left hp, hDW, detFac, ite_eq_right hp.2, mul_one]
       congr 2
       exact if_congr (by omega) rfl rfl
-    · rw [if_neg hp, if_neg hp, if_neg hp, ← minorIJ_self_of_triangular bb hbt, hDW, detFac]
+    · rw [ite_eq_right hp, ite_eq_right hp, ite_eq_right hp, ← minorIJ_self_of_triangular bb hbt, hDW, detFac]
       rcases cols_whole hj hp with ⟨h, hc⟩ | ⟨h, h', hc⟩
       · have e1 := congrArg (fun X => minorIJ X (wIdx N j) (wIdx N j)) e
         simp only [minorIJ_mul_of_support _ _ _ _ (support_wIdx hH),
@@ -321,12 +321,12 @@ theorem Swp.alg {a b ca cb : Fin N} (s : Swp N j a b ca cb) {E : Type} [Field E]
               ext c; simp only [omIdx, Finset.mem_filter, Finset.mem_univ, true_and, Finset.notMem_empty,
                 iff_false]; omega, minor_empty']
           · rfl
-        rw [hc, e2, if_pos h, if_pos (by omega), if_neg (by omega), if_pos (by omega)]
+        rw [hc, e2, ite_eq_left h, ite_eq_left (by omega), ite_eq_right (by omega), ite_eq_left (by omega)]
         linear_combination (-lam b) * e1
       · have e1 := congrArg (fun X => minorIJ X (omIdx N j) (omIdx N j)) e
         simp only [minorIJ_mul_of_support _ _ _ _ (support_omIdx hH),
           minorIJ_mul_of_support _ _ _ _ (support_omIdx hbb)] at e1
-        rw [hc, if_neg h, if_pos (by omega), if_pos (by omega), if_pos h']
+        rw [hc, ite_eq_right h, ite_eq_left (by omega), ite_eq_left (by omega), ite_eq_left h']
         linear_combination (-lam b * minorIJ T (wIdx N j) (wIdx N j)) * e1
   rw [s.prod_xi, s.prod_xi, hfa, hna, ← h0]
   have h2 := hbd ca
@@ -351,10 +351,10 @@ theorem dual_sum {R : Type} [CommRing R] {κ : Type} [Fintype κ] (i : Fin N) (u
     rw [Finset.sum_comm]
     simp only [mul_assoc]
   rw [e1, Finset.sum_eq_single I]
-  · rw [hu I I hI hI, if_pos rfl, one_mul]
+  · rw [hu I I hI hI, ite_eq_left rfl, one_mul]
   · intro b _ hb
     by_cases hs : IsStepRows N j i b
-    · rw [hu I b hI hs, if_neg (Ne.symm hb), zero_mul]
+    · rw [hu I b hI hs, ite_eq_right (Ne.symm hb), zero_mul]
     · rw [hw b hs, mul_zero]
   · simp
 

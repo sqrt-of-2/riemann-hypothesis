@@ -62,7 +62,7 @@ variable {m : ℕ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 theorem isOpen_omX (m : ℕ) : IsOpen (OmX m) := by
   unfold OmX
-  rw [Set.setOf_forall]
+  rw [Set.ofPred_forall]
   exact isOpen_iInter_of_finite fun l => isOpen_ne_fun (continuous_apply l) continuous_const
 
 theorem coord_contDiff (l : Fin m) : ContDiff ℝ ∞ (fun x : Fin m → ℂ => x l) := contDiff_apply ℝ (fun _ => ℂ) l
@@ -134,9 +134,9 @@ theorem linear_operators_holds : LinOps := by
     (try (have e2 : fderiv ℝ (a • f) x = a • fderiv ℝ f x := by
             first
             | exact fderiv_const_smul (hd x hx).1 a
-            | exact fderiv_const_smul a (hd x hx).1
+
           rw [e2])) <;>
-    (try simp only [ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply, smul_zero, add_zero]) <;>
+    (try simp only [add_apply, smul_apply, smul_zero, add_zero]) <;>
     module
 
 end Formalism.QuantumDeterminants

@@ -16,12 +16,14 @@ open ReciprocityTheory.ChartRestriction.G.Geo ReciprocityTheory.GeometryOfNumber
 
 variable {Ω : Type} [Field Ω] [CharZero Ω] {J : Type} [Fintype J]
 
-theorem aeval_map_int (x : J → Ω) (f : MvPolynomial J ℤ) :
+omit [Fintype J] in
+theorem aeval_map_int [Fintype J] (x : J → Ω) (f : MvPolynomial J ℤ) :
     aeval x (map (Int.castRingHom ℚ) f) = aeval x f := by
   rw [aeval_def, eval₂_map, aeval_def]
-  congr 1 <;> exact RingHom.ext_int _ _
+  congr 1; exact RingHom.ext_int _ _
 
-theorem eval_smul_of_homog {R : Type*} [CommRing R] {φ : MvPolynomial J R} {d : ℕ}
+omit [Fintype J] in
+theorem eval_smul_of_homog [Fintype J] {R : Type*} [CommRing R] {φ : MvPolynomial J R} {d : ℕ}
     (hφ : φ.IsHomogeneous d) (c : R) (z : J → R) : eval (c • z) φ = c ^ d * eval z φ := by
   conv_lhs => rw [φ.as_sum]
   conv_rhs => rw [φ.as_sum]
@@ -45,17 +47,20 @@ theorem secFun_smul {b : MvPolynomial J ℚ} {n : ℕ}
   simp only [secFun, hmap]
   exact eval_smul_of_homog (hf.map _) c z
 
-theorem continuous_secFun (b : MvPolynomial J ℚ) : Continuous (secFun b) := by
+omit [Fintype J] in
+theorem continuous_secFun [Fintype J] (b : MvPolynomial J ℚ) : Continuous (secFun b) := by
   unfold secFun
   exact MvPolynomial.continuous_eval _
 
-theorem secFun_map_int (f : MvPolynomial J ℤ) (z : J → ℂ) :
+omit [Fintype J] in
+theorem secFun_map_int [Fintype J] (f : MvPolynomial J ℤ) (z : J → ℂ) :
     secFun (map (Int.castRingHom ℚ) f) z = eval z (map (Int.castRingHom ℂ) f) := by
   unfold secFun
   rw [map_map]
   congr 2
 
-theorem secFun_eq_zero_of_pts {x : J → Ω} {n : ℕ} {d : MvPolynomial J ℤ} (hd : d.IsHomogeneous n)
+omit [CharZero Ω] J [Fintype J] in
+theorem secFun_eq_zero_of_pts [CharZero Ω] {J : Type} [Fintype J] {x : J → Ω} {n : ℕ} {d : MvPolynomial J ℤ} (hd : d.IsHomogeneous n)
     (h0 : aeval x d = 0) {z : J → ℂ} (hz : z ∈ pts (coordIdeal ℤ x)) :
     secFun (map (Int.castRingHom ℚ) d) z = 0 := by
   have hmem : d ∈ coordIdeal ℤ x := by
@@ -73,13 +78,15 @@ theorem secFun_eq_zero_of_pts {x : J → Ω} {n : ℕ} {d : MvPolynomial J ℤ} 
   rw [secFun_map_int]
   exact hz.2 d hmem
 
-theorem secFun_conjPt (b : MvPolynomial J ℚ) (z : J → ℂ) :
+omit [Fintype J] in
+theorem secFun_conjPt [Fintype J] (b : MvPolynomial J ℚ) (z : J → ℂ) :
     secFun b (conjPt z) = starRingEnd ℂ (secFun b z) := by
   simp only [secFun, eval_map, hom_eval₂]
   rw [RingHom.ext_rat ((starRingEnd ℂ).comp (algebraMap ℚ ℂ)) (algebraMap ℚ ℂ)]
   rfl
 
-theorem continuous_conjPt : Continuous (conjPt : (J → ℂ) → J → ℂ) := by
+omit [Fintype J] in
+theorem continuous_conjPt [Fintype J] : Continuous (conjPt : (J → ℂ) → J → ℂ) := by
   exact continuous_pi fun i => Complex.continuous_conj.comp (continuous_apply i)
 
 def conjEquiv (J : Type) [Fintype J] : (J → ℂ) ≃ᵐ (J → ℂ) where
@@ -90,7 +97,8 @@ def conjEquiv (J : Type) [Fintype J] : (J → ℂ) ≃ᵐ (J → ℂ) where
   measurable_toFun := continuous_conjPt.measurable
   measurable_invFun := continuous_conjPt.measurable
 
-theorem wgt_conjPt {m : ConeMetric (C := ℂ) (ι := J)} (hm : IsConjInvariant m) (n : ℕ) (z : J → ℂ) :
+omit [Fintype J] in
+theorem wgt_conjPt [Fintype J] {m : ConeMetric (C := ℂ) (ι := J)} (hm : IsConjInvariant m) (n : ℕ) (z : J → ℂ) :
     wgt m n (conjPt z) = wgt m n z := by
   unfold wgt conjPt
   rw [hm z]

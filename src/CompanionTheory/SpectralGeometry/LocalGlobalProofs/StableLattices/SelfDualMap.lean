@@ -93,7 +93,7 @@ theorem selfDual_any : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [Num
     Unit 1 (Matrix.isSymm_one) (by simp)
   refine ⟨cinf, c, hU, fun ν => ?_, fun v ν => ?_⟩
   · obtain ⟨a1, a2, a3, a4, -, -, -, -⟩ := isLocR_Ainf F hCM.1
-    haveI := a1; haveI := a2; haveI := a3; haveI := a4
+    have := a1; have := a2; have := a3; have := a4
     haveI : BorelSpace (Ainf F) := ⟨rfl⟩
     haveI := hinf.1
     exact iff_of_unit (psiInf F ψ) laminf cinf _ (Matrix.map_one _ (map_zero _) (map_one _)) h1 ν

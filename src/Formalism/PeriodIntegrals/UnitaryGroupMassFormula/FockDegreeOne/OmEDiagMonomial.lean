@@ -64,23 +64,23 @@ def lw {p q r s : ℕ} (l : Ln p q r s) (α : Ln p q r s →₀ ℕ) : ℚ :=
 theorem X_mul_monomial' {σ : Type*} (l : σ) (β : σ →₀ ℕ) (c : ℂ) :
     MvPolynomial.X l * MvPolynomial.monomial β c =
       MvPolynomial.monomial (Finsupp.single l 1 + β) c := by
-  rw [MvPolynomial.X, MvPolynomial.monomial_mul, one_mul]
+  rw [MvPolynomial.X, MvPolynomial.monomial_mul_monomial, one_mul]
 
 theorem omE_diag_monomial {p q r s : ℕ} (l : Ln p q r s) (α : Ln p q r s →₀ ℕ) :
     omE l l (MvPolynomial.monomial α (1 : ℂ)) =
       ((lw l α : ℚ) : ℂ) • MvPolynomial.monomial α (1 : ℂ) := by
   unfold FockH1Action.omE
-  rw [if_pos rfl]
+  rw [ite_eq_left rfl]
   unfold FockH1Action.raiB FockH1Action.lowB lw
   cases hl : FockH1Action.linePos l
-  · simp only [Bool.false_eq_true, ↓reduceIte, LinearMap.add_apply, Module.End.mul_apply, LinearMap.neg_apply,
-      LinearMap.smul_apply, Module.End.one_apply, LinearMap.mulLeft_apply, Derivation.coeFn_coe]
+  · simp only [Bool.false_eq_true, ↓reduceIte, LinearMap.add_apply, mul_apply_eq_comp, LinearMap.neg_apply,
+      LinearMap.smul_apply, one_apply_eq_self, LinearMap.mulLeft_apply, Derivation.coeFn_coe]
     rw [X_mul_monomial', MvPolynomial.pderiv_monomial, add_tsub_cancel_left]
     refine MvPolynomial.ext _ _ fun β => ?_
-    simp only [MvPolynomial.coeff_add, MvPolynomial.coeff_neg, MvPolynomial.coeff_smul, MvPolynomial.coeff_monomial,
+    simp only [AddMonoidAlgebra.coeff_add, AddMonoidAlgebra.coeff_neg, MvPolynomial.coeff_smul, MvPolynomial.coeff_monomial,
       Finsupp.add_apply, Finsupp.single_eq_same]
-    by_cases hb : α = β <;> simp [hb] <;> ring
-  · simp only [↓reduceIte, LinearMap.add_apply, Module.End.mul_apply,
+    by_cases hb : α = β <;> simp [hb]; ring
+  · simp only [↓reduceIte, LinearMap.add_apply, mul_apply_eq_comp,
       LinearMap.smul_apply, Module.End.one_apply, LinearMap.mulLeft_apply, Derivation.coeFn_coe]
     rw [MvPolynomial.pderiv_monomial, X_mul_monomial']
     by_cases h0 : α l = 0

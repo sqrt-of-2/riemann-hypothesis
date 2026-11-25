@@ -86,7 +86,7 @@ theorem mb_hint_coset {H : Type} [Group H] (K L : Subgroup H) (hLK : L ≤ K) (g
     · intro hk
       by_contra hkL
       have h1 := hk g
-      simp only [inv_mul_cancel_left, inv_mul_cancel, L.one_mem, if_true, if_neg hkL] at h1
+      simp only [inv_mul_cancel_left, inv_mul_cancel, L.one_mem, ite_true, ite_eq_right hkL] at h1
       exact hc h1.symm
     · intro hk x
       simp only [← mul_assoc, Subgroup.mul_mem_cancel_right _ hk]
@@ -99,7 +99,7 @@ theorem mb_hint_coset {H : Type} [Group H] (K L : Subgroup H) (hLK : L ≤ K) (g
   rw [finsum_eq_single _ (QuotientGroup.mk g : H ⧸ L)]
   · have hm : g⁻¹ * (QuotientGroup.mk g : H ⧸ L).out ∈ L :=
       QuotientGroup.eq.1 (QuotientGroup.out_eq' (QuotientGroup.mk g : H ⧸ L)).symm
-    exact if_pos hm
+    exact ite_eq_left hm
   · intro q hq
     have hm : g⁻¹ * q.out ∉ L := by
       intro hm
@@ -108,12 +108,12 @@ theorem mb_hint_coset {H : Type} [Group H] (K L : Subgroup H) (hLK : L ≤ K) (g
       refine QuotientGroup.eq.2 ?_
       have := L.inv_mem hm
       rwa [_root_.mul_inv_rev, inv_inv] at this
-    exact if_neg hm
+    exact ite_eq_right hm
 
 theorem mb_relIndex_ne_zero {H : Type} [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
     (K L : Subgroup H) (hL : IsOpen (L : Set H)) (hK : IsCompact (K : Set H)) : L.relIndex K ≠ 0 := by
   have : CompactSpace K := isCompact_iff_compactSpace.1 hK
-  have hop : IsOpen ((L.subgroupOf K : Subgroup K) : Set K) := hL.preimage continuous_subtype_val
+  have hop : IsOpen ((L.subgroupOf K : Subgroup K) : Set K) := hL.preimage continuous_subtypeVal
   have : Finite (K ⧸ L.subgroupOf K) := Subgroup.quotient_finite_of_isOpen _ hop
   exact Subgroup.index_ne_zero_of_finite
 
@@ -132,9 +132,9 @@ theorem mb_lconv_lone {n : ℕ} {w : Pl E} (K' : Subgroup (UL n w)) (hK : K' ≤
       simp only [mb_lone_apply, inv_one, one_mul]
       by_cases hz : z ∈ K'
       · have h2 : z⁻¹ * y ∈ K' := K'.mul_mem (K'.inv_mem hz) hy
-        rw [if_pos hz, if_pos h2, if_pos hz]
-      · rw [if_neg hz, if_neg hz, zero_mul]
-    rw [hu, mb_hint_coset _ _ hK, mb_lone_apply, if_pos hy]
+        rw [ite_eq_left hz, ite_eq_left h2, ite_eq_left hz]
+      · rw [ite_eq_right hz, ite_eq_right hz, zero_mul]
+    rw [hu, mb_hint_coset _ _ hK, mb_lone_apply, ite_eq_left hy]
     by_cases hN : ((K'.relIndex (KL n w) : ℕ) : ℂ) = 0
     · rw [hN, mul_zero, mul_zero]
     · rw [← mul_assoc, inv_mul_cancel₀ hN, one_mul]
@@ -143,13 +143,13 @@ theorem mb_lconv_lone {n : ℕ} {w : Pl E} (K' : Subgroup (UL n w)) (hK : K' ≤
       simp only [mb_lone_apply, inv_one, one_mul, ite_self]
       by_cases hz : z ∈ K'
       · have h2 : z⁻¹ * y ∉ K' := fun h => hy (by simpa using K'.mul_mem hz h)
-        rw [if_neg h2, mul_zero]
-      · rw [if_neg hz, zero_mul]
-    rw [hu, mb_hint_coset _ _ hK, mb_lone_apply, if_neg hy, mul_zero]
+        rw [ite_eq_right h2, mul_zero]
+      · rw [ite_eq_right hz, zero_mul]
+    rw [hu, mb_hint_coset _ _ hK, mb_lone_apply, ite_eq_right hy, mul_zero]
 
 theorem mb_isCompact_KL_split {n : ℕ} {w : Pl E} (hw : IsSplitAt w) : IsCompact (KL n w : Set (UL n w)) := by
   have hcl : IsClosed (UL n w : Set (GLw n w)) := by
-    have h : UL n w = ⊤ := if_pos hw
+    have h : UL n w = ⊤ := ite_eq_left hw
     rw [h]
     exact isClosed_univ
   have hKL : (KL n w : Set (UL n w)) = Subtype.val ⁻¹' (GlobalTheory.LFun.KGL w (n := n) : Set (GLw n w)) := by
@@ -165,7 +165,7 @@ theorem mb_isHecke_lone {n : ℕ} {w : Pl E} {K' : Subgroup (UL n w)} (hK : IsLe
     have hsupp : Function.support (lone K') ⊆ (K' : Set (UL n w)) := by
       intro x hx
       by_contra h
-      exact hx (by rw [mb_lone_apply, if_neg (show x ∉ K' from h)])
+      exact hx (by rw [mb_lone_apply, ite_eq_right (show x ∉ K' from h)])
     exact hc.of_isClosed_subset (isClosed_tsupport _)
       ((closure_minimal hsupp hcl).trans fun x hx => hK.2.1 hx)
   · simp only [mb_lone_apply, Subgroup.mul_mem_cancel_left K' hk]
@@ -202,19 +202,19 @@ theorem fixIdem : FixIdem := by
         have h2 : φ m' = φ m := by
           have := (hφ.2 _ hk m).2
           rwa [mul_inv_cancel_left] at this
-        rw [if_pos h1, if_pos hk, h2, mul_comm]
+        rw [ite_eq_left h1, ite_eq_left hk, h2, mul_comm]
       · have h1 : m'⁻¹ * m ∉ L := fun h => hk (by
           have := L.inv_mem h
           rwa [_root_.mul_inv_rev, inv_inv] at this)
-        rw [if_neg h1, if_neg hk, mul_zero]
+        rw [ite_eq_right h1, ite_eq_right hk, mul_zero]
     rw [mconv, hu, mb_hint_coset _ _ hLK, ← mul_assoc, inv_mul_cancel₀ hN, one_mul]
   · have hu : (fun m' => idem L m' * φ (m'⁻¹ * m)) =
         fun m' => if (1 : GLw a w × GLw b w)⁻¹ * m' ∈ L then ((L.relIndex (K2 a b w) : ℕ) : ℂ) * φ m else 0 := by
       funext m'
       rw [hidem, inv_one, one_mul]
       by_cases hk : m' ∈ L
-      · rw [if_pos hk, if_pos hk, (hφ.2 _ (L.inv_mem hk) m).1]
-      · rw [if_neg hk, if_neg hk, zero_mul]
+      · rw [ite_eq_left hk, ite_eq_left hk, (hφ.2 _ (L.inv_mem hk) m).1]
+      · rw [ite_eq_right hk, ite_eq_right hk, zero_mul]
     rw [mconv, hu, mb_hint_coset _ _ hLK, ← mul_assoc, inv_mul_cancel₀ hN, one_mul]
 
 theorem matchBadSOf : MatchBadSOf := by

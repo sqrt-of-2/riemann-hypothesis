@@ -140,7 +140,7 @@ theorem prod_parity {M : Type*} [CommMonoid M] (a b : M) (n : ℕ) (hn : Even n)
     rw [show 2 * (m + 1) = 2 * m + 1 + 1 by ring, Finset.prod_range_succ, Finset.prod_range_succ, ih, pow_succ]
     have h1 : (2 * m + 1) % 2 = 1 := by omega
     have h0 : ¬ (2 * m) % 2 = 1 := by omega
-    simp only [h1, h0, if_true, if_false]
+    simp only [h1, h0, ite_true, ite_false]
     rw [mul_assoc]
 
 theorem prod_parity_pos {M : Type*} [CommMonoid M] (a b : M) (n : ℕ) (hn : Even n) :
@@ -148,8 +148,8 @@ theorem prod_parity_pos {M : Type*} [CommMonoid M] (a b : M) (n : ℕ) (hn : Eve
   rw [← prod_parity a b n hn]
   refine Finset.prod_congr rfl fun s _ => ?_
   by_cases h : s.val % 2 = 1
-  · rw [if_pos h, if_pos (show IsOddPos s from h)]
-  · rw [if_neg h, if_neg (show ¬ IsOddPos s from h)]
+  · rw [ite_eq_left h, ite_eq_left (show IsOddPos s from h)]
+  · rw [ite_eq_right h, ite_eq_right (show ¬ IsOddPos s from h)]
 
 end GlobalTheory.TwU.NormOne
 
@@ -406,12 +406,12 @@ theorem latAd_one_eq {F E : Type} [Field F] [NumberField F] [Field E] [NumberFie
   · rw [latAd, Submodule.span_le]
     intro x hx
     apply Formalism.L2.GlobalTheoryTheory.Br.latLocGlob_main (F := F) Lb hfin x
-    simp only [Set.mem_setOf_eq, inv_one, Units.val_one, Matrix.one_mulVec] at hx
+    simp only [Set.mem_ofPred_eq, inv_one, Units.val_one, Matrix.one_mulVec] at hx
     exact hx
   · intro x hx
     apply Submodule.subset_span
     show _ ∈ {x | _}
-    simp only [Set.mem_setOf_eq, inv_one, Units.val_one, Matrix.one_mulVec]
+    simp only [Set.mem_ofPred_eq, inv_one, Units.val_one, Matrix.one_mulVec]
     exact (Submodule.subset_span ⟨x, hx, rfl⟩ : (fun i => inclE (FiniteAdeleRing (𝓞 F) F) (x i)) ∈
       latS (F := F) (FiniteAdeleRing (𝓞 F) F) (tensInt (F := F) (FiniteAdeleRing (𝓞 F) F) (intOE E) (intAd F)) Lb)
 
@@ -423,7 +423,7 @@ theorem crd_mul_det_unit : AllSites (fun {D L hT Gi Gl Kc Dx cX ex u μ w hg Lv 
   have hTe := J.tie.T_eq j hj
   have hdual := ((J.St j hj).K β).lev.Lb_dual
   have hset := ((sysS H X std).G.P.setting v)
-  haveI := hset.frac_alt
+  have := hset.frac_alt
   have hcop : Nat.Coprime (D.mem u).A.T (D.what₂.places.resChar w) :=
     (Nat.coprime_comm).1 ((Nat.Prime.coprime_iff_not_dvd hg.1).2 hg.2.2.2.2.2)
   have hTu : IsUnit (((D.mem u).A.T : ℕ) : (sysS H X std).G.P.W v) := natCast_isUnit_localRing (sysS H X std) v _ hcop

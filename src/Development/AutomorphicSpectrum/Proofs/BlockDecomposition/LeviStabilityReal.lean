@@ -72,15 +72,16 @@ theorem sum_ite_const {κ M : Type*} [AddCommMonoid M] (s : Finset κ) (P : Prop
     (∑ i ∈ s, if P then f i else 0) = if P then ∑ i ∈ s, f i else 0 := by
   split_ifs <;> simp
 
-theorem sum_sum_ite_unique {M : Type*} [AddCommMonoid M] (P : Bool → ι → Prop) [∀ t b, Decidable (P t b)]
+omit [DecidableEq ι] in
+theorem sum_sum_ite_unique [DecidableEq ι] {M : Type*} [AddCommMonoid M] (P : Bool → ι → Prop) [∀ t b, Decidable (P t b)]
     (g : Bool → ι → M) (u : Bool) (c : ι) (h : ∀ t b, P t b → t = u ∧ b = c) :
     (∑ t, ∑ b, if P t b then g t b else 0) = if P u c then g u c else 0 := by
   rw [Finset.sum_eq_single u, Finset.sum_eq_single c]
   · intro b _ hb
-    exact if_neg fun hP => hb (h _ _ hP).2
+    exact ite_eq_right fun hP => hb (h _ _ hP).2
   · simp
   · intro t _ ht
-    exact Finset.sum_eq_zero fun b _ => if_neg fun hP => ht (h _ _ hP).1
+    exact Finset.sum_eq_zero fun b _ => ite_eq_right fun hP => ht (h _ _ hP).1
   · simp
 
 def adA (A C : Bool → ι → ι → R) (r : Bool) (p q : ι) : R :=
@@ -177,7 +178,7 @@ theorem comm_alt_ter (hA : ∀ s a b, D * A s a b - A s a b * D =
   unfold Wf
   simp only [Finset.sum_mul, Finset.mul_sum, ← Finset.sum_sub_distrib, comm_mul, hA, hC]
   simp only [sub_mul, mul_sub, ite_mul, mul_ite, zero_mul, mul_zero, Finset.sum_add_distrib, Finset.sum_sub_distrib,
-    sum_ite_const, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    sum_ite_const, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   have h4 : ∑ x, C (xor s x) a q * A (xor r x) b p = ∑ x, C (xor r (xor s x)) a q * A x b p := by
     rw [← sum_xor r (fun x => C (xor r (xor s x)) a q * A x b p)]
     simp only [xor_xor_xor]
@@ -197,7 +198,7 @@ theorem comm_ZA {Z : Bool → ι → ι → R}
   rw [← sub_eq_zero]
   simp only [Finset.sum_mul, Finset.mul_sum, ← Finset.sum_sub_distrib, comm_mul, hA, hZ]
   simp only [sub_mul, mul_sub, ite_mul, mul_ite, zero_mul, mul_zero, Finset.sum_add_distrib, Finset.sum_sub_distrib,
-    sum_ite_const, Finset.sum_ite_eq', Finset.sum_ite_eq, Finset.mem_univ, if_true]
+    sum_ite_const, Finset.sum_ite_eq', Finset.sum_ite_eq, Finset.mem_univ, ite_true]
   have h4 : ∑ s, ∑ b, Z s p b * A (xor r s) q b = ∑ s, ∑ b, Z (xor r s) p b * A s q b := by
     rw [← sum_xor r (fun s => ∑ b, Z (xor r s) p b * A s q b)]
     simp only [xor_xor_self]
@@ -240,7 +241,7 @@ theorem sum_pos {M : Type*} [AddCommMonoid M] (g : Pos n → M) :
     ∑ i, g i = ∑ a, ∑ b, if h : a < b then g ⟨(a, b), h⟩ else 0 := by
   rw [← Fintype.sum_prod_type' (f := fun a b => if h : a < b then g ⟨(a, b), h⟩ else 0)]
   rw [← Finset.sum_filter_of_ne (p := fun x : Fin n × Fin n => x.1 < x.2)
-    (fun x _ hx => by by_contra h; exact hx (dif_neg h))]
+    (fun x _ hx => by by_contra h; exact hx (dite_eq_right h))]
   rw [Finset.sum_subtype (p := fun x : Fin n × Fin n => x.1 < x.2) _ (fun x => by simp)]
   refine Finset.sum_congr rfl fun i _ => ?_
   simp [i.2]
@@ -264,7 +265,7 @@ theorem sum_k {M : Type*} [AddCommMonoid M] (u : Bool) {a c : Fin n} (h : a < c)
   rw [Finset.sum_eq_single (u, ⟨(a, c), h⟩)]
   · simp
   · intro k _ hk
-    refine if_neg fun hc => hk ?_
+    refine ite_eq_right fun hc => hk ?_
     exact Prod.ext hc.1 (Subtype.ext hc.2)
   · simp
 
@@ -287,7 +288,7 @@ theorem aE_aE (lev : Fin n → ℕ) (s : Bool) (a b : Fin n) (t : Bool) (c d : F
   unfold aE
   by_cases h1 : Sx lev a b
   · by_cases h2 : Sx lev c d
-    · rw [dif_pos h1, dif_pos h2]; exact annL_annL _ _
+    · rw [dite_eq_left h1, dite_eq_left h2]; exact annL_annL _ _
     · simp [h2]
   · simp [h1]
 
@@ -296,7 +297,7 @@ theorem cE_cE (lev : Fin n → ℕ) (s : Bool) (a b : Fin n) (t : Bool) (c d : F
   unfold cE
   by_cases h1 : Sx lev a b
   · by_cases h2 : Sx lev c d
-    · rw [dif_pos h1, dif_pos h2]; exact creL_creL _ _
+    · rw [dite_eq_left h1, dite_eq_left h2]; exact creL_creL _ _
     · simp [h2]
   · simp [h1]
 
@@ -306,22 +307,22 @@ theorem aE_cE (lev : Fin n → ℕ) (s : Bool) (a b : Fin n) (t : Bool) (c d : F
   unfold aE cE
   by_cases h1 : Sx lev a b
   · by_cases h2 : Sx lev c d
-    · rw [dif_pos h1, dif_pos h2, annL_creL]
+    · rw [dite_eq_left h1, dite_eq_left h2, annL_creL]
       by_cases e : s = t ∧ a = c ∧ b = d
       · obtain ⟨rfl, rfl, rfl⟩ := e
         simp [h1]
-      · rw [if_neg, if_neg]
+      · rw [ite_eq_right, ite_eq_right]
         · exact fun h => e ⟨h.1, h.2.1, h.2.2.1⟩
         · intro h
           have h3 := congrArg Prod.fst h
           have h4 := congrArg (fun x : Lt n => x.2.1) h
           simp only [Prod.mk.injEq] at h3 h4
           exact e ⟨h3, h4.1, h4.2⟩
-    · rw [dif_neg h2, if_neg]
+    · rw [dite_eq_right h2, ite_eq_right]
       · simp
       · rintro ⟨-, rfl, rfl, h⟩
         exact h2 h
-  · rw [dif_neg h1, if_neg]
+  · rw [dite_eq_right h1, ite_eq_right]
     · simp
     · exact fun h => h1 h.2.2.2
 
@@ -329,14 +330,14 @@ theorem lE_aE (E1 E2 : Fin n → Fin n → Module.End ℂ V) (lev : Fin n → �
     (a b : Fin n) : lE E1 E2 r p q * aE lev s a b = aE lev s a b * lE E1 E2 r p q := by
   unfold aE lE
   by_cases h : Sx lev a b
-  · rw [dif_pos h]; exact liftL_annL _ _
+  · rw [dite_eq_left h]; exact liftL_annL _ _
   · simp [h]
 
 theorem lE_cE (E1 E2 : Fin n → Fin n → Module.End ℂ V) (lev : Fin n → ℕ) (r : Bool) (p q : Fin n) (s : Bool)
     (a b : Fin n) : lE E1 E2 r p q * cE lev s a b = cE lev s a b * lE E1 E2 r p q := by
   unfold cE lE
   by_cases h : Sx lev a b
-  · rw [dif_pos h]; exact liftL_creL _ _
+  · rw [dite_eq_left h]; exact liftL_creL _ _
   · simp [h]
 
 theorem xE_comm {E1 E2 : Fin n → Fin n → Module.End ℂ V} (hE : IsPairA E1 E2) (r : Bool) (p q : Fin n) (s : Bool)
@@ -351,7 +352,7 @@ theorem xE_comm {E1 E2 : Fin n → Fin n → Module.End ℂ V} (hE : IsPairA E1 
     rw [← (hE.2.1 p q a b : E2 p q * E2 a b - E2 a b * E2 p q = _)]; abel
   have c1 := hE.2.2 p q a b
   have c2 := hE.2.2 a b p q
-  cases r <;> cases s <;> simp only [xE, kA, pA, Bool.false_eq_true, if_false, if_true, Bool.xor_false,
+  cases r <;> cases s <;> simp only [xE, kA, pA, Bool.false_eq_true, ite_false, ite_true, Bool.xor_false,
     Bool.xor_true, Bool.not_true, Bool.not_false]
   all_goals
     simp only [mul_add, add_mul, mul_sub, sub_mul, c1, ← c2, g1, g2]
@@ -363,8 +364,8 @@ theorem lE_comm {E1 E2 : Fin n → Fin n → Module.End ℂ V} (hE : IsPairA E1 
       (if q = a then lE E1 E2 (xor r s) p b else 0) - (if b = p then lE E1 E2 (xor r s) a q else 0) := by
   refine LinearMap.ext fun x => funext fun A => ?_
   have h := congrArg (fun T : Module.End ℂ V => T (x A)) (xE_comm hE r p q s a b)
-  simp only [LinearMap.sub_apply, Module.End.mul_apply] at h
-  simp only [lE, LinearMap.sub_apply, Module.End.mul_apply, Pi.sub_apply, liftL_apply, h]
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp] at h
+  simp only [lE, LinearMap.sub_apply, mul_apply_eq_comp, Pi.sub_apply, liftL_apply, h]
   split_ifs <;> simp [liftL_apply]
 
 theorem row_bracket (lev : Fin n → ℕ) (s : Bool) {a b : Fin n} (h : Sx lev a b) (Y : Module.End ℂ (Cq n V)) :
@@ -377,10 +378,10 @@ theorem row_bracket (lev : Fin n → ℕ) (s : Bool) {a b : Fin n} (h : Sx lev a
     by_cases hm : inUU lev m
     · by_cases hb : b = m.2.1.1
       · have hac : Sx lev a m.2.1.2 := ⟨h.1.trans (hb ▸ m.2.2), h.2.trans (hb ▸ hm)⟩
-        rw [if_pos hm, if_pos hb]
+        rw [ite_eq_left hm, ite_eq_left hb]
         have h2 := sum_k (M := Module.End ℂ (Cq n V)) (xor s m.1) hac.1 (fun k => creL k * annL m * Y)
         rw [show cE lev (xor s m.1) a m.2.1.2 = (creL (xor s m.1, ⟨(a, m.2.1.2), hac.1⟩) : Module.End ℂ (Cq n V)) from
-          dif_pos hac, ← h2]
+          dite_eq_left hac, ← h2]
         refine Finset.sum_congr rfl fun k _ => if_congr ?_ rfl rfl
         simp only [hm, hb, true_and, Prod.ext_iff]
       · simp [hb]
@@ -415,9 +416,9 @@ theorem bdL_eq (lev : Fin n → ℕ) (E1 E2 : Fin n → Fin n → Module.End ℂ
     rw [sum_letters]
     refine Finset.sum_congr rfl fun s _ => Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
     by_cases h : Sx lev a b
-    · rw [dif_pos h, show aE lev s a b = (annL (s, ⟨(a, b), h.1⟩) : Module.End ℂ (Cq n V)) from dif_pos h]
+    · rw [dite_eq_left h, show aE lev s a b = (annL (s, ⟨(a, b), h.1⟩) : Module.End ℂ (Cq n V)) from dite_eq_left h]
       rfl
-    · rw [dif_neg h, show aE lev s a b = (0 : Module.End ℂ (Cq n V)) from dif_neg h, mul_zero]
+    · rw [dite_eq_right h, show aE lev s a b = (0 : Module.End ℂ (Cq n V)) from dite_eq_right h, mul_zero]
   have p2 : (∑ l : Lt n, ∑ m : Lt n, ∑ k : Lt n,
       if inUU lev l ∧ inUU lev m ∧ l.2.1.2 = m.2.1.1 ∧ k.1 = xor l.1 m.1 ∧ k.2.1.1 = l.2.1.1 ∧ k.2.1.2 = m.2.1.2 then
         (creL k * annL m * annL l : Module.End ℂ (Cq n V)) else 0) =
@@ -430,18 +431,18 @@ theorem bdL_eq (lev : Fin n → ℕ) (E1 E2 : Fin n → Fin n → Module.End ℂ
             (creL k * annL m * annL l : Module.End ℂ (Cq n V)) else 0) else 0 := by
       intro l
       by_cases hl : inUU lev l
-      · rw [if_pos hl]
+      · rw [ite_eq_left hl]
         refine Finset.sum_congr rfl fun m _ => Finset.sum_congr rfl fun k _ => if_congr ?_ rfl rfl
         simp only [hl, true_and]
-      · rw [if_neg hl]
-        refine Finset.sum_eq_zero fun m _ => Finset.sum_eq_zero fun k _ => if_neg fun h => hl h.1
+      · rw [ite_eq_right hl]
+        refine Finset.sum_eq_zero fun m _ => Finset.sum_eq_zero fun k _ => ite_eq_right fun h => hl h.1
     simp only [h1]
     rw [sum_letters]
     refine Finset.sum_congr rfl fun s _ => Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => ?_
     by_cases h : Sx lev a b
-    · rw [dif_pos h, show aE lev s a b = (annL (s, ⟨(a, b), h.1⟩) : Module.End ℂ (Cq n V)) from dif_pos h,
+    · rw [dite_eq_left h, show aE lev s a b = (annL (s, ⟨(a, b), h.1⟩) : Module.End ℂ (Cq n V)) from dite_eq_left h,
         ← row_bracket lev s h]
-    · rw [dif_neg h, show aE lev s a b = (0 : Module.End ℂ (Cq n V)) from dif_neg h, mul_zero]
+    · rw [dite_eq_right h, show aE lev s a b = (0 : Module.End ℂ (Cq n V)) from dite_eq_right h, mul_zero]
   simp only [add_mul, Finset.sum_add_distrib]
   congr 1
   · rw [← p1]
@@ -459,7 +460,7 @@ theorem row_ad {lev : Fin n → ℕ} (hlev : Monotone lev) {p q : Fin n} (hpq : 
   · by_cases e : q = a
     · subst e
       have hs : Sx lev p b := (sx_iff hlev _ _).2 (hpq ▸ h.2)
-      rw [if_pos rfl, show cE lev (xor r t) p b = (creL (xor r t, ⟨(p, b), hs.1⟩) : Module.End ℂ (Cq n V)) from dif_pos hs,
+      rw [ite_eq_left rfl, show cE lev (xor r t) p b = (creL (xor r t, ⟨(p, b), hs.1⟩) : Module.End ℂ (Cq n V)) from dite_eq_left hs,
         ← sum_k (M := Module.End ℂ (Cq n V)) (xor r t) hs.1 (fun k => creL k * Y)]
       refine Finset.sum_congr rfl fun k _ => if_congr ?_ rfl rfl
       simp
@@ -467,7 +468,7 @@ theorem row_ad {lev : Fin n → ℕ} (hlev : Monotone lev) {p q : Fin n} (hpq : 
   · by_cases e : b = p
     · subst e
       have hs : Sx lev a q := (sx_iff hlev _ _).2 (hpq ▸ h.2)
-      rw [if_pos rfl, show cE lev (xor r t) a q = (creL (xor r t, ⟨(a, q), hs.1⟩) : Module.End ℂ (Cq n V)) from dif_pos hs,
+      rw [ite_eq_left rfl, show cE lev (xor r t) a q = (creL (xor r t, ⟨(a, q), hs.1⟩) : Module.End ℂ (Cq n V)) from dite_eq_left hs,
         ← sum_k (M := Module.End ℂ (Cq n V)) (xor r t) hs.1 (fun k => creL k * Y)]
       refine Finset.sum_congr rfl fun k _ => if_congr ?_ rfl rfl
       simp
@@ -485,11 +486,11 @@ theorem adLL_eq {lev : Fin n → ℕ} (hlev : Monotone lev) {p q : Fin n} (hpq :
           (if b = p then cE lev (xor r t) a q * aE lev t a b else 0) := by
     intro t a b
     by_cases h : Sx lev a b
-    · rw [dif_pos h, row_ad hlev hpq r t h,
-        show aE lev t a b = (annL (t, ⟨(a, b), h.1⟩) : Module.End ℂ (Cq n V)) from dif_pos h]
-    · rw [dif_neg h, show aE lev t a b = (0 : Module.End ℂ (Cq n V)) from dif_neg h]
+    · rw [dite_eq_left h, row_ad hlev hpq r t h,
+        show aE lev t a b = (annL (t, ⟨(a, b), h.1⟩) : Module.End ℂ (Cq n V)) from dite_eq_left h]
+    · rw [dite_eq_right h, show aE lev t a b = (0 : Module.End ℂ (Cq n V)) from dite_eq_right h]
       simp
-  simp only [h1, Finset.sum_sub_distrib, sum_ite_const, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+  simp only [h1, Finset.sum_sub_distrib, sum_ite_const, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
 
 theorem D_comm_bd {lev : Fin n → ℕ} (hlev : Monotone lev) {E1 E2 : Fin n → Fin n → Module.End ℂ V}
     (hE : IsPairA E1 E2) {p q : Fin n} (hpq : lev p = lev q) (r : Bool) :
@@ -497,8 +498,8 @@ theorem D_comm_bd {lev : Fin n → ℕ} (hlev : Monotone lev) {E1 E2 : Fin n →
       bdL (inUU lev) E1 E2 * (lE E1 E2 r p q + adLL lev r p q) := by
   have hp : ∀ c, Sx lev p c ↔ Sx lev q c := fun c => by rw [sx_iff hlev, sx_iff hlev, hpq]
   have hq : ∀ a, Sx lev a p ↔ Sx lev a q := fun a => by rw [sx_iff hlev, sx_iff hlev, hpq]
-  have a0 : ∀ s a b, ¬Sx lev a b → (aE lev s a b : Module.End ℂ (Cq n V)) = 0 := fun s a b h => dif_neg h
-  have c0 : ∀ s a b, ¬Sx lev a b → (cE lev s a b : Module.End ℂ (Cq n V)) = 0 := fun s a b h => dif_neg h
+  have a0 : ∀ s a b, ¬Sx lev a b → (aE lev s a b : Module.End ℂ (Cq n V)) = 0 := fun s a b h => dite_eq_right h
+  have c0 : ∀ s a b, ¬Sx lev a b → (cE lev s a b : Module.End ℂ (Cq n V)) = 0 := fun s a b h => dite_eq_right h
   rw [bdL_eq, adLL_eq hlev hpq]
   refine comm_bd (r := r) (p := p) (q := q) (fun s a b => ?_) (fun s a b => ?_) (fun s a b => ?_)
   · have e := ad_A (r := r) (Sx := Sx lev) (A := aE lev) (C := cE lev) (aE_aE lev) (aE_cE lev) a0 hp hq s a b
@@ -538,7 +539,7 @@ theorem cE_aE_mem {lev : Fin n → ℕ} {j : ℕ} {y : Cq n V} (hy : y ∈ chU l
   unfold cE aE
   by_cases h1 : Sx lev a c
   · by_cases h2 : Sx lev b d
-    · rw [dif_pos h1, dif_pos h2]
+    · rw [dite_eq_left h1, dite_eq_left h2]
       exact cre_ann_mem hy h1.2 h2.2
     · simp [h2]
   · simp [h1]
@@ -551,13 +552,13 @@ theorem D_mem {lev : Fin n → ℕ} (hlev : Monotone lev) (E1 E2 : Fin n → Fin
   · simp [lE, liftL_apply, h]
   · simp [lE, liftL_apply, h]
   · unfold adA
-    simp only [LinearMap.sub_apply, LinearMap.sum_apply, Module.End.mul_apply]
+    simp only [LinearMap.sub_apply, LinearMap.sum_apply, mul_apply_eq_comp]
     exact sub_mem (sum_mem fun t _ => sum_mem fun b _ => cE_aE_mem hy _ _ _ _ _ _)
       (sum_mem fun t _ => sum_mem fun b _ => cE_aE_mem hy _ _ _ _ _ _)
 
 theorem evLc_gen (lev : Fin n → ℕ) (E1 E2 : Fin n → Fin n → Module.End ℂ V) {p q : Fin n} (hpq : lev p = lev q)
     (r : Bool) : evLc lev E1 E2 (FreeAlgebra.ι ℂ (r, p, q)) = lE E1 E2 r p q + adLL lev r p q := by
-  simp only [evLc, FreeAlgebra.lift_ι_apply, hpq, if_true, lE, xE]
+  simp only [evLc, FreeAlgebra.lift_ι_apply, hpq, ite_true, lE, xE]
 
 theorem levStab : LevStab := by
   intro n lev hlev V _ _ E1 E2 hE p q hpq x hx

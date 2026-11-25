@@ -45,10 +45,10 @@ theorem ocbS_charP (hq : ((q : ℕ) : 𝓞 E) ∈ P.asIdeal) (hp : q.Prime) : Ch
 
 theorem ocbS_natCast_surj (hq : ((q : ℕ) : 𝓞 E) ∈ P.asIdeal) (hp : q.Prime) (hcard : Nat.card (𝓞 E ⧸ P.asIdeal) = q)
     (ρ : 𝓞 E ⧸ P.asIdeal) : ∃ ρ₀ : ℕ, ρ₀ < q ∧ ((ρ₀ : ℕ) : 𝓞 E ⧸ P.asIdeal) = ρ := by
-  haveI := ocbS_charP hq hp
-  haveI : Fact q.Prime := ⟨hp⟩
-  haveI : Finite (𝓞 E ⧸ P.asIdeal) := Nat.finite_of_card_ne_zero (by rw [hcard]; exact hp.ne_zero)
-  letI : Fintype (𝓞 E ⧸ P.asIdeal) := Fintype.ofFinite _
+  have := ocbS_charP hq hp
+  have : Fact q.Prime := ⟨hp⟩
+  have : Finite (𝓞 E ⧸ P.asIdeal) := Nat.finite_of_card_ne_zero (by rw [hcard]; exact hp.ne_zero)
+  let : Fintype (𝓞 E ⧸ P.asIdeal) := Fintype.ofFinite _
   let f := ZMod.castHom (dvd_refl q) (𝓞 E ⧸ P.asIdeal)
   have hinj : Function.Injective f := f.injective
   have hc : Fintype.card (ZMod q) = Fintype.card (𝓞 E ⧸ P.asIdeal) := by
@@ -108,7 +108,7 @@ theorem ocbS_card_res (hq : ((q : ℕ) : 𝓞 E) ∈ P.asIdeal) (hp : q.Prime) (
     ((Finset.range (q ^ M)).filter (fun i => ((i : ℕ) : 𝓞 E ⧸ P.asIdeal) = ρ)).card = q ^ (M - 1) := by
   classical
   obtain ⟨ρ₀, hρ₀, rfl⟩ := ocbS_natCast_surj hq hp hcard ρ
-  haveI := ocbS_charP hq hp
+  have := ocbS_charP hq hp
   have key : ∀ i : ℕ, ((i : ℕ) : 𝓞 E ⧸ P.asIdeal) = ((ρ₀ : ℕ) : 𝓞 E ⧸ P.asIdeal) ↔ i % q = ρ₀ := by
     intro i
     rw [CharP.natCast_eq_natCast (𝓞 E ⧸ P.asIdeal) q, Nat.ModEq, Nat.mod_eq_of_lt hρ₀]
@@ -153,7 +153,7 @@ theorem ocbS_card_vals (hq : ((q : ℕ) : 𝓞 E) ∈ P.asIdeal) (hu : ((q : ℕ
   have hinj : Function.Injective (fun i : ℕ => ((i : ℕ) : E) / (q : E) ^ A) := by
     intro a b h
     simp only at h
-    have := (div_left_inj' (pow_ne_zero A hq0)).1 h
+    have := (div_left_inj₀ (pow_ne_zero A hq0)).1 h
     exact_mod_cast this
   have e2 : ∀ j : ℕ, (((q ^ (A - d) * j : ℕ) : E)) / (q : E) ^ (A - d) = (j : E) := by
     intro j

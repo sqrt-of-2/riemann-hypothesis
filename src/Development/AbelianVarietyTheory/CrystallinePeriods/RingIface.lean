@@ -83,7 +83,7 @@ theorem ev_alg (n : ℕ) (a : Per.AinfP l) :
   first | exact EvaluationAlgebra.Bridge.ev_alg ..
 
 theorem ev_ext (y y' : Per.BdRp l) (h : ∀ n, Per.ev l n y = Per.ev l n y') : y = y' := by
-  first | (intros; apply EvaluationExt.Bridge.ev_ext <;> assumption)
+  first | (intros; apply EvaluationExt.Bridge.ev_ext; assumption)
 
 theorem phiA_coeff (w : Per.Ainf l) (n : ℕ) : (Per.φA l w).coeff n = w.coeff n ^ l := by
   first | exact FrobeniusCoeffA.Bridge.phiA_coeff ..
@@ -93,23 +93,23 @@ theorem fontaineTheta_algebraMap (a : Per.Ainf l) :
   first | exact ThetaAlgebraMap.Bridge.fontaineTheta_algebraMap ..
 
 theorem alg_mem_kerP {a : Per.Ainf l} (h : Per.θ l a = 0) : algebraMap (Per.Ainf l) (Per.AinfP l) a ∈ Per.kerP l := by
-  first | (intros; apply AlgebraMemThetaKernel.Bridge.alg_mem_kerP <;> assumption)
+  first | (intros; apply AlgebraMemThetaKernel.Bridge.alg_mem_kerP; assumption)
 
 theorem ev_surj (n : ℕ) : Function.Surjective (Per.ev l n) := by
-  first | (intros; apply EvaluationSurjective.Bridge.ev_surj <;> assumption)
+  first | (intros; apply EvaluationSurjective.Bridge.ev_surj)
 
 theorem thetaD_alg (a : Per.AinfP l) : Per.θD l (algebraMap (Per.AinfP l) (Per.BdRp l) a) = Per.θP l a := by
   first | exact ThetaDeRhamAlgebra.Bridge.thetaD_alg ..
 
 theorem thetaD_of_mem_FilP {y : Per.BdRp l} (h : y ∈ Per.FilP l 1) : Per.θD l y = 0 := by
-  first | (intros; apply ThetaOfFiltration.Bridge.thetaD_of_mem_FilP <;> assumption)
+  first | (intros; apply ThetaOfFiltration.Bridge.thetaD_of_mem_FilP; assumption)
 
 theorem sigDp_alg (g : Per.Gq l) (a : Per.AinfP l) : Per.σDp g (algebraMap (Per.AinfP l) (Per.BdRp l) a) =
     algebraMap (Per.AinfP l) (Per.BdRp l) (Per.extP (Per.σA g) a) := by
   first | exact DividedPowerAlgebraMap.Bridge.sigDp_alg ..
 
 theorem isUnit_of_generator {a : Per.AinfP l} (h : Per.kerP l = Ideal.span {a}) : IsUnit (Per.pD l a) := by
-  first | (intros; apply IsUnitOfGenerator.Bridge.isUnit_of_generator <;> assumption)
+  first | (intros; apply IsUnitOfGenerator.Bridge.isUnit_of_generator; assumption)
 
 theorem exists_bdRp_equiv : ∃ e : Per.BdRp l ≃+* AdicCompletion (Per.kerP l) (Per.AinfP l),
     (∀ a, e (algebraMap (Per.AinfP l) (Per.BdRp l) a) = algebraMap _ _ a) ∧
@@ -118,15 +118,15 @@ theorem exists_bdRp_equiv : ∃ e : Per.BdRp l ≃+* AdicCompletion (Per.kerP l)
 
 theorem bcris_ext {R : Type} [CommRing R] {f g : Per.Bcris l →+* R}
     (h : ∀ x, f (algebraMap (Per.Acris l) (Per.Bcris l) x) = g (algebraMap (Per.Acris l) (Per.Bcris l) x)) : f = g := by
-  first | (intros; apply PeriodRingExt.Bridge.bcris_ext <;> assumption)
+  first | (intros; apply PeriodRingExt.Bridge.bcris_ext; assumption)
 
 theorem alg_mem_FilD_nat {n : ℕ} {z : Per.BdRp l} (h : z ∈ Per.FilP l n) :
     algebraMap (Per.BdRp l) (Per.BdR l) z ∈ Per.FilD l (n : ℤ) := by
-  first | (intros; apply DeRhamFiltrationNat.Bridge.alg_mem_FilD_nat <;> assumption)
+  first | (intros; apply DeRhamFiltrationNat.Bridge.alg_mem_FilD_nat; assumption)
 
 theorem exists_of_mem_FilD_nat {n : ℕ} {x : Per.BdR l} (h : x ∈ Per.FilD l (n : ℤ)) :
     ∃ z ∈ Per.FilP l n, algebraMap (Per.BdRp l) (Per.BdR l) z = x := by
-  first | (intros; apply FiltrationNatExists.Bridge.exists_of_mem_FilD_nat <;> assumption)
+  first | (intros; apply FiltrationNatExists.Bridge.exists_of_mem_FilD_nat; assumption)
 
 theorem zB_eq_aB_zA : ∀ (l : ℕ) [Fact l.Prime] (z : ℤ_[l]), Formalism.Per.zB l z = Formalism.Per.aB l (Formalism.Per.zA l z) := by
   first | exact @GeneratorRelation.Bridge.zB_eq_aB_zA

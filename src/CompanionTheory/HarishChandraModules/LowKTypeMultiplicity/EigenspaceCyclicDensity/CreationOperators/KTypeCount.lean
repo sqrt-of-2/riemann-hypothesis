@@ -24,9 +24,9 @@ theorem ind_eq (A : Finset (Pos n)) (a b : Fin n) :
     ind A a b = if h : a < b then (if (⟨(a, b), h⟩ : Pos n) ∈ A then 1 else 0) else 0 := by
   unfold ind
   split_ifs with h h1
-  · rw [Finset.sum_eq_single_of_mem _ h1 fun i _ hi => if_neg fun e => hi (Subtype.ext e), if_pos rfl]
-  · exact Finset.sum_eq_zero fun i hi => if_neg fun e => h1 ((Subtype.ext e : i = ⟨(a, b), h⟩) ▸ hi)
-  · exact Finset.sum_eq_zero fun i _ => if_neg fun e => h (by have := i.2; rwa [e] at this)
+  · rw [Finset.sum_eq_single_of_mem _ h1 fun i _ hi => ite_eq_right fun e => hi (Subtype.ext e), ite_eq_left rfl]
+  · exact Finset.sum_eq_zero fun i hi => ite_eq_right fun e => h1 ((Subtype.ext e : i = ⟨(a, b), h⟩) ▸ hi)
+  · exact Finset.sum_eq_zero fun i _ => ite_eq_right fun e => h (by have := i.2; rwa [e] at this)
 
 theorem wt_eq (A : Finset (Pos n)) (c : Fin n) : wt A c = ∑ b, (ind A c b - ind A b c) := by
   rw [Finset.sum_sub_distrib]
@@ -35,7 +35,7 @@ theorem wt_eq (A : Finset (Pos n)) (c : Fin n) : wt A c = ∑ b, (ind A c b - in
   congr 1 <;> refine Finset.sum_congr rfl fun i _ => ?_
   · simp only [Prod.ext_iff, ite_and]
     split_ifs <;> simp
-  · simp only [Prod.ext_iff, ite_and, Finset.sum_ite_eq, mem_univ, if_true]
+  · simp only [Prod.ext_iff, ite_and, Finset.sum_ite_eq, mem_univ, ite_true]
     split_ifs <;> simp
 
 def sc (ε : Fin n → Bool) (a b : Fin n) : ℝ := if ε a = ε b then sig a b else 0
@@ -43,8 +43,8 @@ def sc (ε : Fin n → Bool) (a b : Fin n) : ℝ := if ε a = ε b then sig a b 
 theorem sc_anti (ε : Fin n → Bool) (a b : Fin n) : sc ε b a = -sc ε a b := by
   unfold sc
   by_cases h : ε a = ε b
-  · rw [if_pos h, if_pos h.symm, sig_anti]
-  · rw [if_neg h, if_neg (Ne.symm h), neg_zero]
+  · rw [ite_eq_left h, ite_eq_left h.symm, sig_anti]
+  · rw [ite_eq_right h, ite_eq_right (Ne.symm h), neg_zero]
 
 theorem rhoC_eq (ε : Fin n → Bool) (a : Fin n) : rhoC ε a = (∑ b, sc ε a b) / 2 := by
   unfold rhoC
@@ -105,23 +105,23 @@ theorem sorted_weight_eq_of_norm_eq (ε : Fin n → Bool) (κ μ ν : Fin n → 
     · simp [h0]
     · refine mul_nonneg (Nat.cast_nonneg _) ?_
       simp only [root, Pi.sub_apply, mul_sub, Finset.sum_sub_distrib, Pi.single_apply, mul_ite, mul_one, mul_zero,
-        Finset.sum_ite_eq', mem_univ, if_true, sub_nonneg]
+        Finset.sum_ite_eq', mem_univ, ite_true, sub_nonneg]
       exact hs c d (hm c d h0).1 (hm c d h0).2
   let tC : Fin n → Fin n → ℝ := fun a b => 2 * (ind C a b - ind C b a) - sc ε a b
   have htC : ∀ a b, |tC a b| ≤ if ε a = ε b then 1 else 0 := fun a b => by
     simp only [tC, ind_eq, sc, sig]
     rcases lt_trichotomy a b with h | h | h
-    · simp only [dif_pos h, dif_neg h.not_gt, if_pos h]
+    · simp only [dite_eq_left h, dite_eq_right h.not_gt, ite_eq_left h]
       by_cases h1 : (⟨(a, b), h⟩ : Pos n) ∈ C
       · have : ε a = ε b := hC _ h1
         simp [h1, this]; norm_num
-      · simp only [h1, if_false]; split_ifs <;> simp
+      · simp only [h1, ite_false]; split_ifs <;> simp
     · subst h; simp
-    · simp only [dif_pos h, dif_neg h.not_gt, if_pos h, if_neg h.not_gt]
+    · simp only [dite_eq_left h, dite_eq_right h.not_gt, ite_eq_left h, ite_eq_right h.not_gt]
       by_cases h1 : (⟨(b, a), h⟩ : Pos n) ∈ C
       · have : ε a = ε b := (hC _ h1).symm
         simp [h1, this]; norm_num
-      · simp only [h1, if_false]; split_ifs <;> simp
+      · simp only [h1, ite_false]; split_ifs <;> simp
   have i2 : ∑ a, κ a * (wt C a - rhoC ε a) ≤ ∑ a, κ (w a) * rhoC ε a := by
     have p1 := pair_eq tC (fun a b => by simp only [tC]; rw [sc_anti ε a b]; ring) κ
     have p2 := pair_eq (sc ε) (sc_anti ε) fun a => κ (w a)
@@ -179,11 +179,11 @@ theorem K_type_count : NumK := by
   have ta : ∀ a b, t b a = -t a b := fun a b => by
     simp only [t]; rw [sig_anti a b, sc_anti ε a b, sc_anti ε (w.symm a)]; ring
   have tb : ∀ a b, a < b → |t a b| ≤ 1 := fun a b h => by
-    simp only [t, ind_eq, dif_pos h, dif_neg h.not_gt, sc, hws]
+    simp only [t, ind_eq, dite_eq_left h, dite_eq_right h.not_gt, sc, hws]
     by_cases h1 : ε a = ε b
-    · rw [if_neg fun h2 => hBn _ h2 h1]
+    · rw [ite_eq_right fun h2 => hBn _ h2 h1]
       simpa [h1] using abs_sig _ _
-    · simp only [if_neg h1, sig, if_pos h]
+    · simp only [ite_eq_right h1, sig, ite_eq_left h]
       split_ifs <;> norm_num
   have tb' : ∀ a b, |t a b| ≤ 1 := fun a b => by
     rcases lt_trichotomy a b with h | h | h
@@ -196,7 +196,7 @@ theorem K_type_count : NumK := by
   have hne : t c d = -sig c d := by
     have h1 : ¬ε c = ε d := hBn _ hi
     have hcd' : c < d := hcd
-    simp only [t, ind_eq, dif_pos hcd', dif_neg hcd'.not_gt, sc, hws, if_neg h1, if_pos hi, sig, if_pos hcd']
+    simp only [t, ind_eq, dite_eq_left hcd', dite_eq_right hcd'.not_gt, sc, hws, ite_eq_right h1, ite_eq_left hi, sig, ite_eq_left hcd']
     norm_num
   have j1 := pair_lt t ta tb' hl c d (ne_of_lt hcd) hne
   have j2 := normSq_le t ta tb'

@@ -135,14 +135,14 @@ theorem mem_atL_iff : ∀ (l : ℕ) [hl : Fact (Nat.Prime l)] (K : Type)
   x ∈ atL l K L ↔
     ∃ s ∈ Ml l K, s • x ∈ L := by
   intro l hl K inst inst_1 V inst_2 inst_3 inst_4 tower L x
-  letI := rlModule l K V
+  let := rlModule l K V
   have hact : ∀ (r : NumberField.RingOfIntegers K) (v : V),
       (algebraMap (NumberField.RingOfIntegers K) (Rl l K) r) • v = r • v := by
     intro r v
     change rlToK l K (algebraMap _ _ r) • v = r • v
     unfold rlToK
     rw [IsLocalization.lift_eq, algebraMap_smul]
-  haveI : IsScalarTower (NumberField.RingOfIntegers K) (Rl l K) V :=
+  have : IsScalarTower (NumberField.RingOfIntegers K) (Rl l K) V :=
     IsScalarTower.of_algebraMap_smul hact
   unfold atL
   rw [IsLocalization.mem_span_iff (Ml l K), Submodule.span_eq]

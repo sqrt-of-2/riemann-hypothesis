@@ -62,6 +62,7 @@ variable {k : Type} [CommRing k]
 
 variable [Algebra ℚ k]
 
+omit [Algebra ℚ k] in
 private lemma coeff_XX_pow_lemma (d : ℕ) (e : Fin 2 →₀ ℕ) :
     coeff e ((X 0 + X 1 : MvPowerSeries (Fin 2) k) ^ d) =
       if e 0 + e 1 = d then ((d.choose (e 0) : ℕ) : k) else 0 := by
@@ -81,15 +82,15 @@ private lemma coeff_XX_pow_lemma (d : ℕ) (e : Fin 2 →₀ ℕ) :
         ext i
         fin_cases i <;> simp [h0, h1]
     by_cases h : e 0 = m ∧ e 1 = d - m
-    · rw [if_pos (hiff.2 h), if_pos h]
+    · rw [ite_eq_left (hiff.2 h), ite_eq_left h]
       simp
-    · rw [if_neg (fun h' => h (hiff.1 h')), if_neg h, zero_mul]
+    · rw [ite_eq_right (fun h' => h (hiff.1 h')), ite_eq_right h, zero_mul]
   rw [Finset.sum_congr rfl key]
   by_cases hd : e 0 + e 1 = d
-  · rw [if_pos hd, Finset.sum_eq_single (e 0)]
-    · rw [if_pos ⟨rfl, by omega⟩]
+  · rw [ite_eq_left hd, Finset.sum_eq_single (e 0)]
+    · rw [ite_eq_left ⟨rfl, by omega⟩]
     · intro m _ hm
-      rw [if_neg]
+      rw [ite_eq_right]
       rintro ⟨h, _⟩
       exact hm h.symm
     · intro h
@@ -97,32 +98,33 @@ private lemma coeff_XX_pow_lemma (d : ℕ) (e : Fin 2 →₀ ℕ) :
       apply h
       rw [Finset.mem_range]
       omega
-  · rw [if_neg hd]
+  · rw [ite_eq_right hd]
     apply Finset.sum_eq_zero
     intro m hm
     rw [Finset.mem_range] at hm
-    rw [if_neg]
+    rw [ite_eq_right]
     rintro ⟨h0, h1⟩
     omega
 
+omit [Algebra ℚ k] in
 private lemma coeff_substX_lemma_2 (i : Fin 2) (f : PowerSeries k) (e : Fin 2 →₀ ℕ) :
     coeff e (PowerSeries.subst (X i : MvPowerSeries (Fin 2) k) f) =
       if e = Finsupp.single i (e i) then PowerSeries.coeff (e i) f else 0 := by
   rw [PowerSeries.coeff_subst (PowerSeries.HasSubst.of_constantCoeff_zero (by simp))]
   simp_rw [coeff_X_pow]
   by_cases h : e = Finsupp.single i (e i)
-  · rw [if_pos h, finsum_eq_single _ (e i)]
-    · rw [if_pos h, smul_eq_mul, mul_one]
+  · rw [ite_eq_left h, finsum_eq_single _ (e i)]
+    · rw [ite_eq_left h, smul_eq_mul, mul_one]
     · intro d hd
-      rw [if_neg, smul_zero]
+      rw [ite_eq_right, smul_zero]
       intro h'
       apply hd
       rw [h']
       simp
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     have hz : ∀ d : ℕ, (PowerSeries.coeff d f • if e = Finsupp.single i d then (1 : k) else 0) = 0 := by
       intro d
-      rw [if_neg, smul_zero]
+      rw [ite_eq_right, smul_zero]
       intro h'
       apply h
       rw [h']
@@ -139,14 +141,14 @@ theorem exp_biv :
   have hL : coeff e (PowerSeries.subst (X (0 : Fin 2) + X 1 : MvPowerSeries (Fin 2) k) (PowerSeries.exp k)) =
       PowerSeries.coeff (e 0 + e 1) (PowerSeries.exp k) * ((e 0 + e 1).choose (e 0) : k) := by
     rw [PowerSeries.coeff_subst hsum, finsum_eq_single _ (e 0 + e 1)]
-    · rw [coeff_XX_pow_lemma, if_pos rfl, smul_eq_mul]
+    · rw [coeff_XX_pow_lemma, ite_eq_left rfl, smul_eq_mul]
     · intro d hd
-      rw [coeff_XX_pow_lemma, if_neg (fun h => hd h.symm), smul_zero]
+      rw [coeff_XX_pow_lemma, ite_eq_right (fun h => hd h.symm), smul_zero]
   have hR : coeff e (PowerSeries.subst (X (0 : Fin 2) : MvPowerSeries (Fin 2) k) (PowerSeries.exp k) *
         PowerSeries.subst (X (1 : Fin 2) : MvPowerSeries (Fin 2) k) (PowerSeries.exp k)) =
       PowerSeries.coeff (e 0) (PowerSeries.exp k) * PowerSeries.coeff (e 1) (PowerSeries.exp k) := by
     rw [coeff_mul, Finset.sum_eq_single (Finsupp.single 0 (e 0), Finsupp.single 1 (e 1))]
-    · rw [coeff_substX_lemma_2, coeff_substX_lemma_2, if_pos (by simp), if_pos (by simp)]
+    · rw [coeff_substX_lemma_2, coeff_substX_lemma_2, ite_eq_left (by simp), ite_eq_left (by simp)]
       simp
     · rintro ⟨p, q⟩ hpq hne
       rw [Finset.HasAntidiagonal.mem_antidiagonal] at hpq
@@ -172,8 +174,8 @@ theorem exp_biv :
           · rw [h2]
             congr 1
             omega
-        · rw [if_neg h2, mul_zero]
-      · rw [if_neg h1, zero_mul]
+        · rw [ite_eq_right h2, mul_zero]
+      · rw [ite_eq_right h1, zero_mul]
     · intro h
       exfalso
       apply h
@@ -198,7 +200,8 @@ theorem exp_biv :
   rw [← h']
   field_simp
 
-theorem psubst_comp {τ υ : Type} (b : τ → MvPowerSeries υ k) (hb : HasSubst b)
+omit [Algebra ℚ k] in
+theorem psubst_comp [Algebra ℚ k] {τ υ : Type} (b : τ → MvPowerSeries υ k) (hb : HasSubst b)
     (a : MvPowerSeries τ k) (ha : constantCoeff a = 0) (f : PowerSeries k) :
     subst b (PowerSeries.subst a f) = PowerSeries.subst (subst b a) f := by
   have ha' : HasSubst (fun _ : Unit => a) := hasSubst_of_constantCoeff_zero (fun _ => ha)

@@ -24,13 +24,13 @@ theorem negY_mem_sub (hW : CoeffSub K W) {x y : C} (hx : x ∈ K) (hy : y ∈ K)
   simp only [WeierstrassCurve.Affine.negY]
   repeat (first
     | assumption
-    | exact K.zero_mem
-    | exact K.one_mem
-    | apply K.div_mem
+
+
+
     | apply K.sub_mem
-    | apply K.add_mem
+
     | apply K.mul_mem
-    | apply K.pow_mem
+
     | apply K.neg_mem)
 
 theorem slope_mem_sub (hW : CoeffSub K W) {x₁ x₂ y₁ y₂ : C} (hx₁ : x₁ ∈ K) (hx₂ : x₂ ∈ K)
@@ -54,12 +54,12 @@ theorem slope_mem_sub (hW : CoeffSub K W) {x₁ x₂ y₁ y₂ : C} (hx₁ : x�
     | apply K.add_mem
     | apply K.mul_mem
     | apply K.pow_mem
-    | apply K.neg_mem)
+)
   · repeat (first
     | assumption
     | apply K.div_mem
     | apply K.sub_mem
-    | apply K.neg_mem)
+)
 
 theorem addX_mem_sub (hW : CoeffSub K W) {x₁ x₂ s : C} (hx₁ : x₁ ∈ K) (hx₂ : x₂ ∈ K)
     (hs : s ∈ K) : W.toAffine.addX x₁ x₂ s ∈ K := by
@@ -67,14 +67,14 @@ theorem addX_mem_sub (hW : CoeffSub K W) {x₁ x₂ s : C} (hx₁ : x₁ ∈ K) 
   simp only [WeierstrassCurve.Affine.addX]
   repeat (first
     | assumption
-    | exact K.zero_mem
-    | exact K.one_mem
-    | apply K.div_mem
+
+
+
     | apply K.sub_mem
     | apply K.add_mem
     | apply K.mul_mem
     | apply K.pow_mem
-    | apply K.neg_mem)
+)
 
 theorem addY_mem_sub (hW : CoeffSub K W) {x₁ x₂ y₁ s : C} (hx₁ : x₁ ∈ K) (hx₂ : x₂ ∈ K)
     (hy₁ : y₁ ∈ K) (hs : s ∈ K) : W.toAffine.addY x₁ x₂ y₁ s ∈ K := by
@@ -86,7 +86,7 @@ theorem addY_mem_sub (hW : CoeffSub K W) {x₁ x₂ y₁ s : C} (hx₁ : x₁ �
     | apply K.sub_mem
     | apply K.add_mem
     | apply K.mul_mem
-    | apply K.neg_mem)
+)
   simp only [WeierstrassCurve.Affine.addY]
   exact negY_mem_sub K W hW hX hN
 

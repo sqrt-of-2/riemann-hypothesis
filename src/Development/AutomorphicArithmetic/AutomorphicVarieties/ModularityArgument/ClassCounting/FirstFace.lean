@@ -87,26 +87,26 @@ private theorem merge (q e t : ℕ) (ht : t < e + 1) (j : Fin (e + 1) → ZMod q
   rcases lt_trichotomy (k : ℕ) (2 * t) with h | h | h
   · rw [Fin.contractNth_apply_of_lt _ _ _ _ h, Fin.contractNth_apply_of_lt _ _ _ _ (by simp; omega)]
     simp only [gz, Fin.val_castSucc, Pi.add_apply]
-    rw [if_neg (show ¬ (k : ℕ) / 2 = t by omega), if_neg (show ¬ (k : ℕ) / 2 = t + 1 by omega), add_zero]
+    rw [ite_eq_right (show ¬ (k : ℕ) / 2 = t by omega), ite_eq_right (show ¬ (k : ℕ) / 2 = t + 1 by omega), add_zero]
   · rw [Fin.contractNth_apply_of_eq _ _ _ _ h, Fin.contractNth_apply_of_lt _ _ _ _ (by simp; omega)]
     simp only [gz, Fin.val_castSucc, Fin.val_succ, Pi.add_apply]
-    rw [if_pos (show (k : ℕ) % 2 = 0 by omega), if_pos (show (k : ℕ) % 2 = 0 by omega),
-      if_neg (show ¬ ((k : ℕ) + 1) % 2 = 0 by omega), if_pos (show (k : ℕ) / 2 = t by omega), ofAdd_add]
+    rw [ite_eq_left (show (k : ℕ) % 2 = 0 by omega), ite_eq_left (show (k : ℕ) % 2 = 0 by omega),
+      ite_eq_right (show ¬ ((k : ℕ) + 1) % 2 = 0 by omega), ite_eq_left (show (k : ℕ) / 2 = t by omega), ofAdd_add]
   · rw [Fin.contractNth_apply_of_gt _ _ _ _ h]
     rcases eq_or_lt_of_le (Nat.succ_le_of_lt h) with h' | h'
     · rw [Fin.contractNth_apply_of_eq _ _ _ _ h'.symm]
       simp only [gz, Fin.val_castSucc, Fin.val_succ, Pi.add_apply]
-      rw [if_pos (show ((k : ℕ) + 1) % 2 = 0 by omega), if_pos (show ((k : ℕ) + 1) % 2 = 0 by omega),
-        if_neg (show ¬ (k : ℕ) % 2 = 0 by omega), if_neg (show ¬ ((k : ℕ) + 1) / 2 = t by omega),
-        if_pos (show ((k : ℕ) + 1) / 2 = t + 1 by omega), ← ofAdd_add]
+      rw [ite_eq_left (show ((k : ℕ) + 1) % 2 = 0 by omega), ite_eq_left (show ((k : ℕ) + 1) % 2 = 0 by omega),
+        ite_eq_right (show ¬ (k : ℕ) % 2 = 0 by omega), ite_eq_right (show ¬ ((k : ℕ) + 1) / 2 = t by omega),
+        ite_eq_left (show ((k : ℕ) + 1) / 2 = t + 1 by omega), ← ofAdd_add]
       congr 1
       ring
     · rw [Fin.contractNth_apply_of_gt _ _ _ _ h']
       simp only [gz, Fin.val_succ, Pi.add_apply]
       have h'' : 2 * t + 1 < (k : ℕ) := h'
       by_cases h1 : ((k : ℕ) + 1) % 2 = 0
-      · rw [if_neg (show ¬ ((k : ℕ) + 1) / 2 = t by omega), if_neg (show ¬ ((k : ℕ) + 1) / 2 = t + 1 by omega), add_zero]
-      · rw [if_neg h1, if_neg h1]
+      · rw [ite_eq_right (show ¬ ((k : ℕ) + 1) / 2 = t by omega), ite_eq_right (show ¬ ((k : ℕ) + 1) / 2 = t + 1 by omega), add_zero]
+      · rw [ite_eq_right h1, ite_eq_right h1]
 
 theorem sZc : SZc := by
   apply LateralTheory.Q.SZcT.SZc_of

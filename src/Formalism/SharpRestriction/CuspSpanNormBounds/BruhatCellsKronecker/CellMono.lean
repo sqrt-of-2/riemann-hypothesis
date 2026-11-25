@@ -58,7 +58,7 @@ def cmonoE (p q : Fin n) (y : K) : Matrix (Fin n) (Fin n) K := fun a b => if a =
 theorem cmono_strict (p q : Fin n) (y : K) (h : p < q) : StrictUp (cmonoE p q y) := by
   intro a b hab
   unfold cmonoE
-  rw [if_neg]
+  rw [ite_eq_right]
   rintro ⟨rfl, rfl⟩
   exact absurd h (not_lt.2 hab)
 
@@ -68,11 +68,11 @@ theorem cmono_supSum_succ (p q : Fin n) (y : K) (h : q.val = p.val + 1) : supSum
   · have hp : p.val + 1 < n := h ▸ q.isLt
     rw [dite_eq_left hp]
     unfold cmonoE
-    rw [if_pos ⟨rfl, Fin.ext h.symm⟩]
+    rw [ite_eq_left ⟨rfl, Fin.ext h.symm⟩]
   · intro a _ hne
     split_ifs with h1
     · unfold cmonoE
-      rw [if_neg (fun hh => hne hh.1)]
+      rw [ite_eq_right (fun hh => hne hh.1)]
     · rfl
   · intro hh
     exact absurd (Finset.mem_univ p) hh
@@ -82,7 +82,7 @@ theorem cmono_supSum_ne (p q : Fin n) (y : K) (h : q.val ≠ p.val + 1) : supSum
   refine Finset.sum_eq_zero (fun a _ => ?_)
   split_ifs with h1
   · unfold cmonoE
-    rw [if_neg]
+    rw [ite_eq_right]
     rintro ⟨rfl, h2⟩
     exact h (by rw [← h2])
   · rfl
@@ -91,16 +91,16 @@ theorem cmono_left [StarRing K] (σ : Fin n → Fin n) (t : Fin n → K) (hσ : 
     (y : K) (i j : Fin n) :
     ((cmonoE (σ b) q y)ᴴ * mono σ t) i j = if i = q ∧ j = b then star y * t b else 0 := by
   rw [Matrix.mul_apply, Finset.sum_eq_single (σ j)]
-  · simp only [Matrix.conjTranspose_apply, cmonoE, mono, if_true]
+  · simp only [Matrix.conjTranspose_apply, cmonoE, mono, ite_true]
     by_cases h1 : i = q ∧ j = b
     · obtain ⟨rfl, rfl⟩ := h1
       simp
-    · rw [if_neg h1, if_neg, star_zero, zero_mul]
+    · rw [ite_eq_right h1, ite_eq_right, star_zero, zero_mul]
       rintro ⟨h2, h3⟩
       exact h1 ⟨h3, hσ h2⟩
   · intro k _ hk
     simp only [mono]
-    rw [if_neg hk, mul_zero]
+    rw [ite_eq_right hk, mul_zero]
   · intro hh
     exact absurd (Finset.mem_univ _) hh
 
@@ -115,7 +115,7 @@ theorem cmono_right (σ : Fin n → Fin n) (t : Fin n → K) (c b : Fin n) (x : 
     · simp [h1]
   · intro k _ hk
     simp only [cmonoE]
-    rw [if_neg (fun hh => hk hh.1), mul_zero]
+    rw [ite_eq_right (fun hh => hk hh.1), mul_zero]
   · intro hh
     exact absurd (Finset.mem_univ _) hh
 
@@ -136,8 +136,8 @@ theorem cell_mono : RelevantMonomialConsecutive := by
     ext i j
     rw [Matrix.add_apply, cmono_left σ t hσ.1, cmono_right, Matrix.zero_apply]
     by_cases h : i = σ c ∧ j = b
-    · rw [if_pos h, if_pos h, hsy]
-    · rw [if_neg h, if_neg h, add_zero]
+    · rw [ite_eq_left h, ite_eq_left h, hsy]
+    · rw [ite_eq_right h, ite_eq_right h, add_zero]
   have h := hrel _ _ (cmono_strict (σ b) (σ c) y hlt) (cmono_strict c b 1 hcb) hR
   rw [cmono_supSum_succ (σ b) (σ c) y hv] at h
   have hy0 : y ≠ 0 := by

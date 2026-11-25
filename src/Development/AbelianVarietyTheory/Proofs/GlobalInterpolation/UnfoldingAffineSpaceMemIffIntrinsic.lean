@@ -56,16 +56,16 @@ theorem eN_eq_single {F : Type} [Field F] {N i : ℕ} (h : i < N) :
 theorem eN_eq_zero {F : Type} [Field F] {N i : ℕ} (h : ¬ i < N) : Loc.eN F N i = 0 := by
   funext l
   have hl : l.1 ≠ i := fun e => h (e ▸ l.2)
-  simp only [Loc.eN, hl, if_false, Pi.zero_apply]
+  simp only [Loc.eN, hl, ite_false, Pi.zero_apply]
 
 theorem inX_single {F : Type} [Field F] {n c : ℕ} (s : Fin (n + c)) (hs : s.1 < n) :
     Loc.inX F n c (Pi.single ⟨s.1, hs⟩ 1) = Pi.single s 1 := by
   funext l
   rw [inX_apply]
   by_cases hl : l.1 < n
-  · simp only [hl, dif_pos, Pi.single_apply, Fin.ext_iff]
+  · simp only [hl, dite_eq_left, Pi.single_apply, Fin.ext_iff]
   · have hne : l ≠ s := fun e => hl (e ▸ hs)
-    simp only [hl, dif_neg, not_false_eq_true, Pi.single_apply, hne, if_false]
+    simp only [hl, dite_eq_right, not_false_eq_true, Pi.single_apply, hne, ite_false]
 
 theorem unfoldingAffineSpace_mem_iff_intrinsic : ∀ (F : Type) [Field F] (n' c' n c : ℕ), 1 ≤ c → c' = c + 1 → ∀ (xj : (Fin n' → F) →ₗ[F] (Fin n → F)) (x : (Fin (n' + c') → F) →ₗ[F] (Fin (n + c) → F)), (∃ t : Loc.FC n' c' n c → F, x = Loc.xx1 xj t) ↔ ((∀ v, x (Loc.inX F n' c' v) = Loc.inX F n c (xj v)) ∧ x (Loc.eN F (n' + c') n') = Loc.eN F (n + c) n ∧ ∀ s : ℕ, x (Loc.eN F (n' + c') (n' + s)) - Loc.eN F (n + c) (n + s) ∈ Loc.Ufl F n c s) := by
   intro F _ n' c' n c hc hc' xj x
@@ -95,11 +95,11 @@ theorem unfoldingAffineSpace_mem_iff_intrinsic : ∀ (F : Type) [Field F] (n' c'
         have hnf : ¬ Loc.IsFree n' n c l.1 (Fin.castAdd (c + 1) a).1 := by
           simp only [Loc.IsFree, Fin.val_castAdd]
           omega
-        rw [dif_neg hnf, dif_pos (by simp only [Fin.val_castAdd]; exact a.2)]
+        rw [dite_eq_right hnf, dite_eq_left (by simp only [Fin.val_castAdd]; exact a.2)]
         by_cases hl : l.1 < n
-        · rw [dif_pos hl, dif_pos hl, hy]
+        · rw [dite_eq_left hl, dite_eq_left hl, hy]
           rfl
-        · rw [dif_neg hl, dif_neg hl]
+        · rw [dite_eq_right hl, dite_eq_right hl]
       exact LinearMap.congr_fun hcomp v
     · rw [eN_eq_single (show n' < n' + (c + 1) by omega)]
       funext l
@@ -107,7 +107,7 @@ theorem unfoldingAffineSpace_mem_iff_intrinsic : ∀ (F : Type) [Field F] (n' c'
       have hnf : ¬ Loc.IsFree n' n c l.1 n' := by
         simp only [Loc.IsFree]
         omega
-      rw [dif_neg hnf, dif_neg (lt_irrefl n'), Nat.sub_self, Nat.add_zero]
+      rw [dite_eq_right hnf, dite_eq_right (lt_irrefl n'), Nat.sub_self, Nat.add_zero]
       simp only [Loc.eN]
     · intro s
       rw [mem_Ufl]
@@ -119,7 +119,7 @@ theorem unfoldingAffineSpace_mem_iff_intrinsic : ∀ (F : Type) [Field F] (n' c'
           have := l.2
           simp only [Loc.IsFree]
           omega
-        rw [dif_neg hnf, dif_neg (Nat.not_lt.2 (Nat.le_add_right n' s))]
+        rw [dite_eq_right hnf, dite_eq_right (Nat.not_lt.2 (Nat.le_add_right n' s))]
         change (if l.1 = n + (n' + s - n') then (1 : F) else 0) - _ = 0
         rw [Nat.add_sub_cancel_left]
         simp only [Loc.eN, sub_self]
@@ -127,7 +127,7 @@ theorem unfoldingAffineSpace_mem_iff_intrinsic : ∀ (F : Type) [Field F] (n' c'
         have hne : l.1 ≠ n + s := by
           have := l.2
           omega
-        simp only [Loc.eN, hne, if_false, Pi.zero_apply, sub_zero]
+        simp only [Loc.eN, hne, ite_false, Pi.zero_apply, sub_zero]
   · rintro ⟨h1, h2, h3⟩
     refine ⟨fun p => x (Pi.single p.1.2 1) p.1.1, ?_⟩
     refine (Pi.basisFun F (Fin (n' + (c + 1)))).ext fun s => ?_
@@ -135,14 +135,14 @@ theorem unfoldingAffineSpace_mem_iff_intrinsic : ∀ (F : Type) [Field F] (n' c'
     funext l
     rw [hy (Loc.xx1 xj _), hM]
     by_cases hf : Loc.IsFree n' n c l.1 s.1
-    · rw [dif_pos hf]
-    rw [dif_neg hf]
+    · rw [dite_eq_left hf]
+    rw [dite_eq_right hf]
     by_cases hs : s.1 < n'
-    · rw [dif_pos hs, ← inX_single s hs, h1, inX_apply]
+    · rw [dite_eq_left hs, ← inX_single s hs, h1, inX_apply]
       by_cases hl : l.1 < n
-      · rw [dif_pos hl, dif_pos hl, hy]
-      · rw [dif_neg hl, dif_neg hl]
-    rw [dif_neg hs]
+      · rw [dite_eq_left hl, dite_eq_left hl, hy]
+      · rw [dite_eq_right hl, dite_eq_right hl]
+    rw [dite_eq_right hs]
     have hsj : s.1 = n' + (s.1 - n') := by omega
     have hsingle : (Pi.single s 1 : Fin (n' + (c + 1)) → F) = Loc.eN F (n' + (c + 1)) (n' + (s.1 - n')) := by
       rw [eN_eq_single (show n' + (s.1 - n') < n' + (c + 1) by omega)]

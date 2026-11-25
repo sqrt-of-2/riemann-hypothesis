@@ -53,19 +53,19 @@ namespace GlobalTheory.UPoinc
 theorem ker_eq_bot_of_charZero {o K : Type} [CommRing o] [IsDedekindDomain o] [Algebra.FiniteType ℤ o] [Field K]
     [CharZero K] (φ : o →+* K) : RingHom.ker φ = ⊥ := by
   by_contra h
-  haveI : (RingHom.ker φ).IsMaximal := (RingHom.ker_isPrime φ).isMaximal h
-  letI := Ideal.Quotient.field (RingHom.ker φ)
-  haveI := ReciprocityTheory.AnForm.R.IntegerToRational.isJacobsonRing_int
-  haveI : Module.Finite ℤ (o ⧸ RingHom.ker φ) := finite_of_finite_type_of_isJacobsonRing ℤ _
-  haveI : CharZero (o ⧸ RingHom.ker φ) := (RingHom.charZero_iff (RingHom.kerLift_injective φ)).2 inferInstance
+  have : (RingHom.ker φ).IsMaximal := (RingHom.ker_isPrime φ).isMaximal h
+  let := Ideal.Quotient.field (RingHom.ker φ)
+  have := ReciprocityTheory.AnForm.R.IntegerToRational.isJacobsonRing_int
+  have : Module.Finite ℤ (o ⧸ RingHom.ker φ) := finite_of_finite_type_of_isJacobsonRing ℤ _
+  have : CharZero (o ⧸ RingHom.ker φ) := (RingHom.charZero_iff (RingHom.kerLift_injective φ)).2 inferInstance
   exact Int.not_isField (isField_of_isIntegral_of_isField (R := ℤ) (S := o ⧸ RingHom.ker φ)
     (fun _ _ h => Int.cast_injective (α := o ⧸ RingHom.ker φ) (by simpa using h)) (Field.toIsField _))
 
 theorem UCompact.range_subset_generic {E : Type} [Field E] [NumberField E] [IsCMField E] {H : Host E} {D : Datum H}
     {l : Geo.Tor.Level H} {Xo : Moduli D l} {c : Coeff l} (C : UCompact Xo c) {K : Type} [Field K] [CharZero K]
     (x : Sp K ⟶ Sp C.o) : Set.range x ⊆ Set.range (spMap C.b) := by
-  haveI := C.ded
-  haveI := C.ft
+  have := C.ded
+  have := C.ft
   obtain ⟨φ, rfl⟩ := Spec.map_surjective x
   rintro _ ⟨w, rfl⟩
   refine ⟨(⊥ : PrimeSpectrum c.F), PrimeSpectrum.ext ?_⟩
@@ -75,11 +75,11 @@ theorem UCompact.range_subset_generic {E : Type} [Field E] [NumberField E] [IsCM
 
 theorem exists_open_generic_subset_moduli : ∀ (E : Type) [Field E] [NumberField E] [IsCMField E] (H : Host E) (Dw : Datum H) (l : Geo.Tor.Level H) (Xo : Moduli Dw l) (c : Coeff l) (C : UCompact Xo c), ∃ W : C.Z.Opens, Set.range C.i ⊆ W ∧ ∀ (p : ℕ) [Fact p.Prime] (y : Sp (OO p) ⟶ C.Z), Set.range (gPt p ≫ y) ⊆ W → Set.range (gPt p ≫ y) ⊆ Set.range C.i := by
   intro E _ _ _ H Dw l Xo c C
-  letI := C.b.toAlgebra
-  haveI := C.isFractionRing
-  haveI := C.iF_open
-  haveI := C.ded
-  haveI : IsPreimmersion (spMap C.b) := IsPreimmersion.of_isLocalization (nonZeroDivisors C.o)
+  let := C.b.toAlgebra
+  have := C.isFractionRing
+  have := C.iF_open
+  have := C.ded
+  have : IsPreimmersion (spMap C.b) := IsPreimmersion.of_isLocalization (nonZeroDivisors C.o)
   have hg : Topology.IsEmbedding (pullback.fst C.z (spMap C.b) :) := (pullback.fst C.z (spMap C.b)).isEmbedding
   obtain ⟨U, hU, hUe⟩ := hg.isInducing.isOpen_iff.1 C.iF.isOpenEmbedding.isOpen_range
   refine ⟨⟨U, hU⟩, ?_, ?_⟩

@@ -146,10 +146,10 @@ theorem hermMat_mem (hσ : IsCMExt F E σ) (n : ℕ) (c : Coords R (R ⊗[F] E) 
     hermMat R σ n c ∈ HermR R σ n := by
   intro a b
   rcases lt_trichotomy a b with h | h | h
-  · simp only [hermMat, dif_pos h, dif_neg (not_lt_of_gt h)]
+  · simp only [hermMat, dite_eq_left h, dite_eq_right (not_lt_of_gt h)]
     exact GlobalTheory.GaussMean.OneVec.sigR_sigR R hσ _
   · subst h
-    simp only [hermMat, lt_irrefl, dif_neg, not_false_eq_true]
+    simp only [hermMat, lt_irrefl, dite_eq_right, not_false_eq_true]
     exact GlobalTheory.GaussMean.OneVec.sigR_algebraMap R _
   · simp [hermMat, h, not_lt_of_gt h]
 
@@ -174,8 +174,8 @@ def chart (hσ : IsCMExt F E σ) (n : ℕ) : HermR R σ n ≃ Coords R (R ⊗[F]
 variable [TopologicalSpace R] [IsTopologicalRing R]
 
 theorem continuous_algebraMapK : Continuous (algebraMap R (R ⊗[F] E)) := by
-  haveI : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
-  haveI : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R (R ⊗[F] E)
+  have : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
+  have : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R (R ⊗[F] E)
   have : (algebraMap R (R ⊗[F] E) : R → R ⊗[F] E) = fun r => r • (1 : R ⊗[F] E) := by
     funext r
     exact Algebra.algebraMap_eq_smul_one r
@@ -188,18 +188,18 @@ def chartH (hσ : IsCMExt F E σ) (htr : Continuous (Algebra.trace R (R ⊗[F] E
   continuous_toFun := by
     have hel : ∀ i j : Fin n, Continuous fun S : HermR R σ n =>
         (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)) i j := fun i j =>
-      (continuous_apply j).comp ((continuous_apply i).comp continuous_subtype_val)
+      (continuous_apply j).comp ((continuous_apply i).comp continuous_subtypeVal)
     refine Continuous.prodMk (continuous_pi fun i => ?_) (continuous_pi fun p => hel _ _)
     exact continuous_const.mul (htr.comp (hel i i))
   continuous_invFun := by
     refine Continuous.subtype_mk (continuous_pi fun i => continuous_pi fun j => ?_) _
     by_cases h : i < j
-    · simp only [hermMat, dif_pos h]
+    · simp only [hermMat, dite_eq_left h]
       exact (continuous_apply _).comp continuous_snd
     · by_cases h' : j < i
-      · simp only [hermMat, dif_neg h, dif_pos h']
+      · simp only [hermMat, dite_eq_right h, dite_eq_left h']
         exact hsig.comp ((continuous_apply _).comp continuous_snd)
-      · simp only [hermMat, dif_neg h, dif_neg h']
+      · simp only [hermMat, dite_eq_right h, dite_eq_right h']
         exact (continuous_algebraMapK R).comp ((continuous_apply i).comp continuous_fst)
 
 theorem hermMat_zero_zero (n : ℕ) (q : R × (Fin n → R ⊗[F] E) × Coords R (R ⊗[F] E) n) :
@@ -209,22 +209,22 @@ theorem hermMat_zero_zero (n : ℕ) (q : R × (Fin n → R ⊗[F] E) × Coords R
 theorem hermMat_zero_succ (n : ℕ) (q : R × (Fin n → R ⊗[F] E) × Coords R (R ⊗[F] E) n) (j : Fin n) :
     hermMat R σ (n + 1) ((splitE R (R ⊗[F] E) n).symm q) 0 j.succ = q.2.1 j := by
   have h : (0 : Fin (n + 1)) < j.succ := Fin.succ_pos j
-  simp only [hermMat, dif_pos h]
+  simp only [hermMat, dite_eq_left h]
   exact splitE_symm_snd_inl q j
 
 theorem hermMat_succ_succ (n : ℕ) (q : R × (Fin n → R ⊗[F] E) × Coords R (R ⊗[F] E) n) (i j : Fin n) :
     hermMat R σ (n + 1) ((splitE R (R ⊗[F] E) n).symm q) i.succ j.succ = hermMat R σ n q.2.2 i j := by
   by_cases h : i < j
   · have h1 : i.succ < j.succ := Fin.succ_lt_succ_iff.2 h
-    simp only [hermMat, dif_pos h, dif_pos h1]
+    simp only [hermMat, dite_eq_left h, dite_eq_left h1]
     exact splitE_symm_snd_inr q ⟨(i, j), h⟩
   · have h1 : ¬ i.succ < j.succ := fun hh => h (Fin.succ_lt_succ_iff.1 hh)
     by_cases h' : j < i
     · have h2 : j.succ < i.succ := Fin.succ_lt_succ_iff.2 h'
-      simp only [hermMat, dif_neg h, dif_neg h1, dif_pos h', dif_pos h2]
+      simp only [hermMat, dite_eq_right h, dite_eq_right h1, dite_eq_left h', dite_eq_left h2]
       exact congrArg _ (splitE_symm_snd_inr q ⟨(j, i), h'⟩)
     · have h2 : ¬ j.succ < i.succ := fun hh => h' (Fin.succ_lt_succ_iff.1 hh)
-      simp only [hermMat, dif_neg h, dif_neg h1, dif_neg h', dif_neg h2]
+      simp only [hermMat, dite_eq_right h, dite_eq_right h1, dite_eq_right h', dite_eq_right h2]
       exact congrArg _ (splitE_symm_fst_succ q i)
 
 end Chart
@@ -232,16 +232,16 @@ end Chart
 theorem herm_split : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [NumberField E] [Algebra F E] (σ : E →ₐ[F] E), IsCMExt F E σ → ∀ (R : Type) [CommRing R] [Algebra F R] [TopologicalSpace R] [IsTopologicalRing R] [LocallyCompactSpace R] [SecondCountableTopology R] [T2Space R] [MeasurableSpace R] [BorelSpace R], ∀ (d : ℕ) (b : Module.Basis (Fin d) F E), ∀ (lam : Measure R), lam.IsAddHaarMeasure → ∀ n : ℕ, ∃ e : (R × (Fin n → R ⊗[F] E) × HermR R σ n) ≃ₜ HermR R σ (n + 1), (∀ p, (e p : Matrix (Fin (n + 1)) (Fin (n + 1)) (R ⊗[F] E)) 0 0 = p.1 ⊗ₜ[F] (1 : E)) ∧ (∀ p j, (e p : Matrix (Fin (n + 1)) (Fin (n + 1)) (R ⊗[F] E)) 0 (Fin.succ j) = p.2.1 j) ∧ (∀ p i j, (e p : Matrix (Fin (n + 1)) (Fin (n + 1)) (R ⊗[F] E)) (Fin.succ i) (Fin.succ j) = (p.2.2 : Matrix (Fin n) (Fin n) (R ⊗[F] E)) i j) ∧ (lam.prod ((Measure.pi fun _ => coordK R b lam).prod (coordHerm R σ b lam n))).map e = coordHerm R σ b lam (n + 1) := by
   intro F E _ _ _ _ _ σ hσ R _ _ _ _ _ _ _ _ _ d b lam hlam n
   obtain ⟨hKring, hKlc, hKsc, hKt2, hsig, htr, -, -, -, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hσ R
-  haveI := hKring
-  haveI := hKlc
-  haveI := hKsc
-  haveI := hKt2
-  haveI := hlam
-  haveI : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
-  haveI hκ := (_root_.GlobalTheory.CompanionTheory.SW.coord_measures_haar F E σ hσ R d b lam hlam).1
-  haveI hHerm : ∀ m, BorelSpace (HermR R σ m) := fun _ => ⟨rfl⟩
+  have := hKring
+  have := hKlc
+  have := hKsc
+  have := hKt2
+  have := hlam
+  have : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
+  have hκ := (_root_.GlobalTheory.CompanionTheory.SW.coord_measures_haar F E σ hσ R d b lam hlam).1
+  have hHerm : ∀ m, BorelSpace (HermR R σ m) := fun _ => ⟨rfl⟩
   let C := fun m => chartH (F := F) (E := E) (σ := σ) R hσ htr hsig m
-  haveI hsc : ∀ m, SecondCountableTopology (HermR R σ m) := fun m => (C m).secondCountableTopology
+  have hsc : ∀ m, SecondCountableTopology (HermR R σ m) := fun m => (C m).secondCountableTopology
   have hC : ∀ m, coordHerm R σ b lam m = ((Measure.pi fun _ : Fin m => lam).prod
       (Measure.pi fun _ : Pairs m => coordK R b lam)).map (C m).symm := by
     intro m

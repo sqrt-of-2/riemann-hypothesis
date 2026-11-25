@@ -56,13 +56,13 @@ theorem derivation_prod {A ι : Type*} [CommRing A] [Algebra ℂ A] [DecidableEq
   · simp
   · intro a s ha ih
     rw [Finset.prod_insert ha, D.leibniz, ih, Finset.sum_insert ha, Finset.prod_insert ha,
-      if_pos (rfl : a = a)]
+      ite_eq_left (rfl : a = a)]
     have h1 : ∏ i ∈ s, (if i = a then D (f i) else f i) = ∏ i ∈ s, f i :=
-      Finset.prod_congr rfl fun i hi => if_neg (fun h => ha (by rw [← h]; exact hi))
+      Finset.prod_congr rfl fun i hi => ite_eq_right (fun h => ha (by rw [← h]; exact hi))
     have h2 : ∀ j ∈ s, ∏ i ∈ insert a s, (if i = j then D (f i) else f i) =
         f a * ∏ i ∈ s, (if i = j then D (f i) else f i) := by
       intro j hj
-      rw [Finset.prod_insert ha, if_neg (fun h => ha (by rw [h]; exact hj))]
+      rw [Finset.prod_insert ha, ite_eq_right (fun h => ha (by rw [h]; exact hj))]
     rw [h1, Finset.sum_congr rfl h2, ← Finset.mul_sum]
     simp only [smul_eq_mul]
     ring
@@ -130,8 +130,8 @@ theorem rowOp_eq_rowDer (z : Fin p × Fin r → σ) (a b : Fin p) (P : MvPolynom
   rw [GlobalTheory.Capelli.rowOp_apply]
   unfold rowDer
 
-  rw [← Derivation.coeFnAddMonoidHom_apply, map_sum, Finset.sum_apply]
-  simp only [Derivation.coeFnAddMonoidHom_apply, Derivation.smul_apply, smul_eq_mul]
+  rw [← FunLike.coeAddMonoidHom_apply, map_sum, Finset.sum_apply]
+  simp only [FunLike.coeAddMonoidHom_apply, smul_apply, smul_eq_mul]
 
 theorem rowDer_X (z : Fin p × Fin r → σ) (hz : Function.Injective z) (a b c : Fin p) (k : Fin r) :
     rowDer z a b (X (z (c, k))) = if c = b then X (z (a, k)) else 0 := by
@@ -142,11 +142,11 @@ theorem rowDer_X (z : Fin p × Fin r → σ) (hz : Function.Injective z) (a b c 
   · by_cases h : c = b
     · subst h
       simp
-    · rw [if_neg h, Pi.single_apply, if_neg, mul_zero]
+    · rw [ite_eq_right h, Pi.single_apply, ite_eq_right, mul_zero]
       intro h'
       exact h (congrArg Prod.fst (hz h'))
   · intro k' _ hk'
-    rw [Pi.single_apply, if_neg, mul_zero]
+    rw [Pi.single_apply, ite_eq_right, mul_zero]
     intro h'
     exact hk' (congrArg Prod.snd (hz h')).symm
   · intro h
@@ -174,14 +174,14 @@ private theorem coordDer_lead_eq_sum_det_replaced (z : Fin p × Fin r → σ) (h
   rw [derivation_det]
   refine Finset.sum_congr rfl fun i _ => ?_
   by_cases h : Fin.castLE hp i = b
-  · rw [if_pos h]
+  · rw [ite_eq_left h]
     congr 2
     funext d
-    simp only [Matrix.of_apply, rowDer_X z hz, if_pos h]
-  · rw [if_neg h]
+    simp only [Matrix.of_apply, rowDer_X z hz, ite_eq_left h]
+  · rw [ite_eq_right h]
     apply Matrix.det_eq_zero_of_row_eq_zero i
     intro d
-    simp only [Matrix.updateRow_self, Matrix.of_apply, rowDer_X z hz, if_neg h]
+    simp only [Matrix.updateRow_self, Matrix.of_apply, rowDer_X z hz, ite_eq_right h]
 
 theorem rowDer_lead_of_lt (z : Fin p × Fin r → σ) (hz : Function.Injective z) {n : ℕ}
     (hp : n ≤ p) (hr : n ≤ r) {a b : Fin p} (hab : a < b) :
@@ -189,7 +189,7 @@ theorem rowDer_lead_of_lt (z : Fin p × Fin r → σ) (hz : Function.Injective z
   rw [coordDer_lead_eq_sum_det_replaced z hz hp hr, zero_smul]
   refine Finset.sum_eq_zero fun i _ => ?_
   by_cases h : Fin.castLE hp i = b
-  · rw [if_pos h]
+  · rw [ite_eq_left h]
     have hb : (b : ℕ) = i := by rw [← h]; rfl
     have hab' : (a : ℕ) < b := hab
     have hi : (a : ℕ) < n := by have := i.isLt; omega
@@ -198,27 +198,27 @@ theorem rowDer_lead_of_lt (z : Fin p × Fin r → σ) (hz : Function.Injective z
     rw [Matrix.updateRow_self, Matrix.updateRow_ne hne.symm]
     funext d
     rfl
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
 
 theorem rowDer_lead_self (z : Fin p × Fin r → σ) (hz : Function.Injective z) {n : ℕ}
     (hp : n ≤ p) (hr : n ≤ r) (a : Fin p) :
     rowDer z a a (lead z hp hr) = (if a.val < n then (1 : ℂ) else 0) • lead z hp hr := by
   rw [coordDer_lead_eq_sum_det_replaced z hz hp hr]
   by_cases ha : (a : ℕ) < n
-  · rw [if_pos ha, one_smul, Finset.sum_eq_single ⟨a, ha⟩]
-    · rw [if_pos (show Fin.castLE hp ⟨a, ha⟩ = a from rfl)]
+  · rw [ite_eq_left ha, one_smul, Finset.sum_eq_single ⟨a, ha⟩]
+    · rw [ite_eq_left (show Fin.castLE hp ⟨a, ha⟩ = a from rfl)]
       unfold lead
       congr 1
       exact Matrix.updateRow_eq_self _ _
     · intro j _ hj
-      rw [if_neg]
+      rw [ite_eq_right]
       intro h
       exact hj (Fin.ext (show (j : ℕ) = a from congrArg Fin.val h))
     · intro h
       exact absurd (Finset.mem_univ _) h
-  · rw [if_neg ha, zero_smul]
+  · rw [ite_eq_right ha, zero_smul]
     refine Finset.sum_eq_zero fun i _ => ?_
-    rw [if_neg]
+    rw [ite_eq_right]
     intro h
     apply ha
     rw [← h]
@@ -231,17 +231,17 @@ theorem telescope (α : ℕ → ℕ) (hα : Antitone α) (a m : ℕ) :
   | zero =>
     simp only [Finset.range_zero, Finset.sum_empty]
     by_cases h : a ≤ 0
-    · rw [if_pos h, Nat.le_zero.mp h, sub_self]
-    · rw [if_neg h]
+    · rw [ite_eq_left h, Nat.le_zero.mp h, sub_self]
+    · rw [ite_eq_right h]
   | succ m ih =>
     rw [Finset.sum_range_succ, ih, Nat.cast_sub (hα (Nat.le_add_right m 1))]
     by_cases h1 : a ≤ m
-    · rw [if_pos h1, if_pos (by omega : a < m + 1), if_pos (by omega : a ≤ m + 1)]
+    · rw [ite_eq_left h1, ite_eq_left (by omega : a < m + 1), ite_eq_left (by omega : a ≤ m + 1)]
       ring
     · by_cases h2 : a = m + 1
-      · rw [if_neg h1, if_neg (by omega : ¬ a < m + 1), if_pos (by omega : a ≤ m + 1), h2]
+      · rw [ite_eq_right h1, ite_eq_right (by omega : ¬ a < m + 1), ite_eq_left (by omega : a ≤ m + 1), h2]
         ring
-      · rw [if_neg h1, if_neg (by omega : ¬ a < m + 1), if_neg (by omega : ¬ a ≤ m + 1)]
+      · rw [ite_eq_right h1, ite_eq_right (by omega : ¬ a < m + 1), ite_eq_right (by omega : ¬ a ≤ m + 1)]
         ring
 
 theorem what₂ (z : Fin p × Fin r → σ) (hz : Function.Injective z) (α : ℕ → ℕ) (hα : Antitone α)
@@ -267,8 +267,8 @@ theorem what₂ (z : Fin p × Fin r → σ) (hz : Function.Injective z) (α : �
       (fun i => ((α i - α (i + 1) : ℕ) : ℂ) * (if (a : ℕ) < i + 1 then 1 else 0)) m,
       telescope α hα a m]
     by_cases h : (a : ℕ) ≤ m
-    · rw [if_pos h, h0 m le_rfl, Nat.cast_zero, sub_zero]
-    · rw [if_neg h, h0 a (by omega), Nat.cast_zero]
+    · rw [ite_eq_left h, h0 m le_rfl, Nat.cast_zero, sub_zero]
+    · rw [ite_eq_right h, h0 a (by omega), Nat.cast_zero]
 
 theorem lead_ne_zero (z : Fin p × Fin r → σ) (hz : Function.Injective z) {n : ℕ}
     (hp : n ≤ p) (hr : n ≤ r) : lead z hp hr ≠ 0 := by
@@ -280,8 +280,8 @@ theorem lead_ne_zero (z : Fin p × Fin r → σ) (hz : Function.Injective z) {n 
     intro i j
     simp only [f]
     by_cases hij : i = j
-    · rw [if_pos hij, if_pos ⟨i, by rw [hij]⟩]
-    · rw [if_neg hij, if_neg]
+    · rw [ite_eq_left hij, ite_eq_left ⟨i, by rw [hij]⟩]
+    · rw [ite_eq_right hij, ite_eq_right]
       rintro ⟨k, hk⟩
       have e := hz hk
       simp only [Prod.mk.injEq] at e

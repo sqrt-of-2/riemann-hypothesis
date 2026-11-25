@@ -108,8 +108,8 @@ theorem KG_hom {n : ℕ} (φ : (σ →₀ ℕ) →+ ℕ) (c : ℤ) (hs : ℕ →
     have ih := KG_hom φ c hs x ω hx t
     rw [Finset.sum_range_succ]
     by_cases h : hs t = hs (t + 1)
-    · rw [KG_eq h, if_pos h, add_zero]; exact ih J
-    · rw [if_neg h]
+    · rw [KG_eq h, ite_eq_left h, add_zero]; exact ih J
+    · rw [ite_eq_right h]
       show HomG φ _ (colStep c (hs t) (hs (t + 1)) (x t) (KG c hs x t) J)
       unfold colStep wedgeR contrR
       split_ifs
@@ -145,7 +145,7 @@ theorem KG_one (c : ℤ) (ν : ℕ → ℤ) (h0 : ν 0 = 0) (hm : ∀ t, ν t �
     ∀ t, KG c hs x t (if 1 ≤ c ∧ c ≤ ν t then {0} else ∅) = ∏ i ∈ range t, if ν i < c ∧ c ≤ ν (i + 1) then x i 0 else 1
   | 0 => by
     have : ¬ (1 ≤ c ∧ c ≤ ν 0) := by rw [h0]; omega
-    rw [if_neg this]
+    rw [ite_eq_right this]
     show extOne ∅ = _
     simp [extOne]
   | t + 1 => by
@@ -158,26 +158,26 @@ theorem KG_one (c : ℤ) (ν : ℕ → ℤ) (h0 : ν 0 = 0) (hm : ∀ t, ν t �
     rw [Finset.prod_range_succ, ← ih]
     by_cases h1 : c ≤ ν t
     · have h2 : c ≤ ν (t + 1) := le_trans h1 (hm t)
-      have e : hs t = hs (t + 1) := by rw [hhs, hhs, if_pos h1, if_pos h2]
+      have e : hs t = hs (t + 1) := by rw [hhs, hhs, ite_eq_left h1, ite_eq_left h2]
       have hn : ¬ (ν t < c ∧ c ≤ ν (t + 1)) := by omega
-      rw [KG_eq e, if_neg hn, mul_one]
+      rw [KG_eq e, ite_eq_right hn, mul_one]
       by_cases hc : 1 ≤ c
-      · rw [if_pos ⟨hc, h2⟩, if_pos ⟨hc, h1⟩]
-      · rw [if_neg (fun h => hc h.1), if_neg (fun h => hc h.1)]
+      · rw [ite_eq_left ⟨hc, h2⟩, ite_eq_left ⟨hc, h1⟩]
+      · rw [ite_eq_right (fun h => hc h.1), ite_eq_right (fun h => hc h.1)]
     · by_cases h2 : c ≤ ν (t + 1)
       · have hc : 1 ≤ c := by have := hnn t; omega
-        have e : hs t < hs (t + 1) := by rw [hhs, hhs, if_neg h1, if_pos h2]; omega
+        have e : hs t < hs (t + 1) := by rw [hhs, hhs, ite_eq_right h1, ite_eq_left h2]; omega
         have hp1 : 1 ≤ c ∧ c ≤ ν (t + 1) := ⟨hc, h2⟩
         have hn2 : ¬ (1 ≤ c ∧ c ≤ ν t) := fun h => h1 h.2
         have hp3 : ν t < c ∧ c ≤ ν (t + 1) := ⟨by omega, h2⟩
-        rw [KG_rise_pos hc e, if_pos hp1, if_neg hn2, if_pos hp3]
+        rw [KG_rise_pos hc e, ite_eq_left hp1, ite_eq_right hn2, ite_eq_left hp3]
         unfold wedgeR
         simp [mul_comm, Finset.filter_singleton]
-      · have e : hs t = hs (t + 1) := by rw [hhs, hhs, if_neg h1, if_neg h2]
+      · have e : hs t = hs (t + 1) := by rw [hhs, hhs, ite_eq_right h1, ite_eq_right h2]
         have hn : ¬ (ν t < c ∧ c ≤ ν (t + 1)) := fun h => h2 h.2
         have hn1 : ¬ (1 ≤ c ∧ c ≤ ν (t + 1)) := fun h => h2 h.2
         have hn2 : ¬ (1 ≤ c ∧ c ≤ ν t) := fun h => h1 h.2
-        rw [KG_eq e, if_neg hn, if_neg hn1, if_neg hn2, mul_one]
+        rw [KG_eq e, ite_eq_right hn, ite_eq_right hn1, ite_eq_right hn2, mul_one]
 
 end Shift
 

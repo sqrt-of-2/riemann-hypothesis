@@ -54,8 +54,8 @@ theorem block_inr_inl_one : bl Sum.inr Sum.inl (1 : Matrix (l ⊕ l) (l ⊕ l) �
 theorem hasDerivAt_lin_exp {F : Type} [NormedAddCommGroup F] [NormedSpace ℝ F] (L : Matrix (l ⊕ l) (l ⊕ l) ℝ →ₗ[ℝ] F)
     (X : Matrix (l ⊕ l) (l ⊕ l) ℝ) (t : ℝ) :
     HasDerivAt (fun t : ℝ => L (NormedSpace.exp (t • X))) (L (NormedSpace.exp (t • X) * X)) t := by
-  letI := Matrix.linftyOpNormedRing (n := l ⊕ l) (α := ℝ)
-  letI := Matrix.linftyOpNormedAlgebra (n := l ⊕ l) (R := ℝ) (α := ℝ)
+  let := Matrix.linftyOpNormedRing (n := l ⊕ l) (α := ℝ)
+  let := Matrix.linftyOpNormedAlgebra (n := l ⊕ l) (R := ℝ) (α := ℝ)
   exact (LinearMap.toContinuousLinearMap L).hasFDerivAt.comp_hasDerivAt t (hasDerivAt_exp_smul_const (𝕂 := ℝ) X t)
 
 theorem exp_mul_exp_neg (X : Matrix (l ⊕ l) (l ⊕ l) ℝ) : NormedSpace.exp X * NormedSpace.exp (-X) = 1 := by
@@ -73,8 +73,8 @@ theorem intw_of_sympl {g : Matrix (l ⊕ l) (l ⊕ l) ℝ} (hg : ∀ w w', sympl
     exact this
   rw [pPart_mulVec, qPart_mulVec]
   refine intw_big h.ringInverse (fun x => ?_) (fun x => ?_) (fun y z => ?_) (fun y z => ?_) (fun y z => ?_) c _ _
-  · rw [← ContinuousLinearMap.mul_apply, Ring.mul_inverse_cancel _ h, ContinuousLinearMap.one_apply]
-  · rw [← ContinuousLinearMap.mul_apply, Ring.inverse_mul_cancel _ h, ContinuousLinearMap.one_apply]
+  · rw [← mul_apply_eq_comp, Ring.mul_inverse_cancel _ h, one_apply_eq_self]
+  · rw [← mul_apply_eq_comp, Ring.inverse_mul_cancel _ h, one_apply_eq_self]
   · simpa [sub_eq_zero] using key y 0 z 0
   · simpa [sub_eq_zero] using key 0 y 0 z
   · simpa using key y 0 0 z
@@ -84,7 +84,7 @@ theorem fou_mq_fouInv (B : Matrix l l ℝ) (f : Sch l) :
       (4 * π * I : ℂ)⁻¹ • ∑ j, ∑ k, (B j k : ℂ) • (∂_{(EuclideanSpace.single j 1 : Eu l)}
         (∂_{(EuclideanSpace.single k 1 : Eu l)} f)) := by
   have e : ∀ u : Sch l, fou l (fouInv l u) = u := fun u => by
-    rw [← ContinuousLinearMap.mul_apply, fou_mul_fouInv, ContinuousLinearMap.one_apply]
+    rw [← mul_apply_eq_comp, fou_mul_fouInv, one_apply_eq_self]
   rw [← e (_ • _)]
   congr 1
   have h : ∀ j (u : Sch l), fouInv l (dRho (Pi.single (Sum.inl j) 1) u) = -dRho (Pi.single (Sum.inr j) 1) (fouInv l u) :=
@@ -93,8 +93,8 @@ theorem fou_mq_fouInv (B : Matrix l l ℝ) (f : Sch l) :
   simp only [← dRho_single_inl, map_smul, map_sum, h, map_neg, neg_neg]
   ext x
   have hπ : (π : ℂ) ≠ 0 := by simp [Real.pi_ne_zero]
-  simp only [mq_apply, SchwartzMap.smul_apply, SchwartzMap.sum_apply, dRho_single_inr, smul_eq_mul,
-    ContinuousLinearMap.neg_apply, inner_neg_right, inner_toEuclideanCLM, dotProduct, mulVec, Finset.mul_sum]
+  simp only [mq_apply, smul_apply, sum_apply, dRho_single_inr, smul_eq_mul,
+    neg_apply, inner_neg_right, inner_toEuclideanCLM, dotProduct, mulVec, Finset.mul_sum]
   push_cast
   simp only [mul_neg, neg_mul, Finset.mul_sum, Finset.sum_mul]
   simp only [← Finset.sum_neg_distrib, neg_neg]
@@ -117,7 +117,7 @@ theorem quad_eq {X : Matrix (l ⊕ l) (l ⊕ l) ℝ} (hX : X ∈ LieAlgebra.Symp
     have : bl Sum.inl Sum.inl X x = ∑ j, ∑ k, (X.toBlocks₁₁ j k * x k) • (EuclideanSpace.single j 1 : Eu l) := by
       ext a
       simp [bl_apply, Pi.single_apply, toBlocks₁₁, Finset.sum_apply]
-    rw [vf_apply, ContinuousLinearMap.neg_apply, this]
+    rw [vf_apply, neg_apply, this]
     simp [lineDerivOp_apply_eq_fderiv]
   have h4 : mq (bl Sum.inr Sum.inl X) f x = -(π * I * ∑ j, ∑ k, (X.toBlocks₂₁ j k : ℂ) * x j * x k * f x) := by
     have : ⟪x, bl Sum.inr Sum.inl X x⟫ = x ⬝ᵥ X.toBlocks₂₁ *ᵥ x := inner_toEuclideanCLM _ _ _
@@ -126,10 +126,10 @@ theorem quad_eq {X : Matrix (l ⊕ l) (l ⊕ l) ℝ} (hX : X ∈ LieAlgebra.Symp
     push_cast
     simp only [Finset.mul_sum, Finset.sum_mul, ← Finset.sum_neg_distrib]
     exact Finset.sum_congr rfl fun j _ => Finset.sum_congr rfl fun k _ => by ring
-  simp only [SchwartzMap.sub_apply, SchwartzMap.add_apply]
+  simp only [sub_apply, add_apply]
   rw [h, h3, h4]
   erw [h2]
-  simp only [SchwartzMap.smul_apply, SchwartzMap.sum_apply, smul_eq_mul]
+  simp only [smul_apply, sum_apply, smul_eq_mul]
   push_cast
   ring
 

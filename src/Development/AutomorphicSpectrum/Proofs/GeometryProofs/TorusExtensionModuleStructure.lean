@@ -70,23 +70,23 @@ theorem diagMap_eq_torusMap {S : Scheme.{0}} {X Y : Type} [AddCommGroup X] [AddC
 variable {K : Type} [Field K] {G : Over (Sp K)} [GrpObj G]
 
 theorem mono_i (τ : TorusExtension G) : letI := τ.addCommGroup; letI := τ.grpB; Mono τ.i := by
-  letI := τ.addCommGroup
-  letI := τ.grpB
+  let := τ.addCommGroup
+  let := τ.grpB
   exact ⟨fun g h e => τ.isKernel.hom_ext e (toUnit_unique _ _)⟩
 
 theorem exists_restrict (τ : TorusExtension G) (f : G ⟶ G) [IsMonHom f] :
     letI := τ.addCommGroup; letI := τ.grpB; ∀ (b : τ.B ⟶ τ.B), IsMonHom b → f ≫ τ.q = τ.q ≫ b →
       ∃ φ : τ.X →+ τ.X, GlobalTheory.SplitTorus.torusMap (Sp K) φ ≫ τ.i = τ.i ≫ f := by
-  letI := τ.addCommGroup
-  letI := τ.grpB
+  let := τ.addCommGroup
+  let := τ.grpB
   intro b hb hq
-  haveI := mono_i τ
-  haveI := τ.i_hom
+  have := mono_i τ
+  have := τ.i_hom
   have w : (τ.i ≫ f) ≫ τ.q = toUnit _ ≫ η := by
     rw [Category.assoc, hq, ← Category.assoc, τ.isKernel.w, Category.assoc, IsMonHom.one_hom]
   let u := τ.isKernel.lift (τ.i ≫ f) (toUnit _) w
   have hu : u ≫ τ.i = τ.i ≫ f := τ.isKernel.lift_fst _ _ _
-  haveI : IsMonHom u := isMonHom_of_comp_mono τ.i f u hu
+  have : IsMonHom u := isMonHom_of_comp_mono τ.i f u hu
   obtain ⟨φ, hφ⟩ := GlobalTheory.SplitTorus.exists_eq_torusMap u
   exact ⟨φ, hφ ▸ hu⟩
 
@@ -96,14 +96,14 @@ theorem exists_module_diagAct : ∀ (K : Type) [Field K] (G : Over (Sp K)) [GrpO
       ∃ m : Module O τ.X, letI := m;
         ∀ a, (GlobalTheory.Diag.diagAct (Sp K) O τ.X).act a ≫ τ.i = τ.i ≫ act.act a := by
   intro K _ G _ τ O _ act
-  letI := τ.addCommGroup
-  letI := τ.grpB
+  let := τ.addCommGroup
+  let := τ.grpB
   intro hb
-  haveI := mono_i τ
-  haveI := τ.i_hom
+  have := mono_i τ
+  have := τ.i_hom
   have ex : ∀ a, ∃ φ : τ.X →+ τ.X, GlobalTheory.SplitTorus.torusMap (Sp K) φ ≫ τ.i = τ.i ≫ act.act a := fun a => by
     obtain ⟨b, h1, h2⟩ := hb a
-    haveI := act.hom a
+    have := act.hom a
     exact exists_restrict τ _ b h1 h2
   choose φ hφ using ex
   have inj : ∀ {α β : τ.X →+ τ.X}, GlobalTheory.SplitTorus.torusMap (Sp K) α ≫ τ.i =
@@ -117,7 +117,7 @@ theorem exists_module_diagAct : ∀ (K : Type) [Field K] (G : Over (Sp K)) [GrpO
   have ha : ∀ a b, φ (a + b) = φ a + φ b := fun a b => inj (by
     rw [hφ, act.add, GlobalTheory.SplitTorus.torusMap_add, MonObj.mul_comp, hφ, hφ, MonObj.comp_mul])
   let ρ : O →+* AddMonoid.End τ.X := RingHom.mk' ⟨⟨φ, h1⟩, hm⟩ ha
-  letI m : Module O τ.X := Module.compHom τ.X ρ
+  let m : Module O τ.X := Module.compHom τ.X ρ
   refine ⟨m, fun a => ?_⟩
   have e : DistribSMul.toAddMonoidHom τ.X a = φ a := rfl
   rw [GlobalTheory.Diag.diagAct_act, e, diagMap_eq_torusMap, hφ]

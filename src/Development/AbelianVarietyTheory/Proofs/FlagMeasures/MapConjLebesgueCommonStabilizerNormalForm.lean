@@ -88,7 +88,7 @@ theorem mulVec_mp {ι : Type*} [Fintype ι] [DecidableEq ι] {g : Matrix ι ι �
   simp
 
 theorem mul_star_mp {a : ℂ} (ha : ‖a‖ = 1) : MeasurePreserving (fun z : ℂ => a * star z) volume volume := by
-  apply PI.AmpRootJacW.mp_unitConj1 <;> assumption
+  apply PI.AmpRootJacW.mp_unitConj1; assumption
 
 theorem normSq_det_of_mem {M : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ} (hM : M ∈ UH (Hb k)) :
     Complex.normSq M.det = 1 := by
@@ -111,12 +111,12 @@ theorem normSq_det_of_mem {M : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ} (hM : M �
 
 theorem isUnit_upper (x : UT r → ℂ) : IsUnit (upper x).det := by
   have htri : (upper x).BlockTriangular id := fun a b hab => upper_of_gt x hab
-  rw [Matrix.det_of_upperTriangular htri]
+  rw [Matrix.det_of_isUpperTriangular htri]
   simp [upper_diag]
 
 theorem inv_zero_of {α : Type*} [LinearOrder α] (f : Fin r → α) (u : Matrix (Fin r) (Fin r) ℂ) (hu : IsUnit u.det)
     (h : ∀ a b, f b < f a → u a b = 0) {a b : Fin r} (hab : f b < f a) : u⁻¹ a b = 0 := by
-  letI := Matrix.invertibleOfIsUnitDet u hu
+  let := Matrix.invertibleOfIsUnitDet u hu
   have htri : u.BlockTriangular f := fun i j hij => h i j hij
   exact Matrix.blockTriangular_inv_of_blockTriangular htri hab
 
@@ -149,23 +149,23 @@ theorem inv_upper_lt (x : UT r → ℂ) {a b : Fin r} (h : a < b) :
     intro c
     rcases lt_trichotomy c a with hca | hca | hac
     · have n1 : ¬ (a < c ∧ c < b) := fun hh => absurd (hh.1.trans hca) (lt_irrefl _)
-      rw [upper_of_gt x hca, zero_mul, if_neg (ne_of_lt hca), if_neg (ne_of_lt (hca.trans h)), if_neg n1]
+      rw [upper_of_gt x hca, zero_mul, ite_eq_right (ne_of_lt hca), ite_eq_right (ne_of_lt (hca.trans h)), ite_eq_right n1]
       ring
     · have n1 : ¬ (a < c ∧ c < b) := fun hh => absurd hh.1 (by rw [hca]; exact lt_irrefl _)
       have n2 : c ≠ b := by rw [hca]; exact ne_of_lt h
-      rw [if_pos hca, if_neg n2, if_neg n1, hca, upper_diag, one_mul]
+      rw [ite_eq_left hca, ite_eq_right n2, ite_eq_right n1, hca, upper_diag, one_mul]
       ring
     · rcases lt_trichotomy c b with hcb | hcb | hbc
-      · rw [if_neg (ne_of_gt hac), if_neg (ne_of_lt hcb), if_pos ⟨hac, hcb⟩]
+      · rw [ite_eq_right (ne_of_gt hac), ite_eq_right (ne_of_lt hcb), ite_eq_left ⟨hac, hcb⟩]
         ring
       · have n1 : ¬ (a < c ∧ c < b) := fun hh => absurd hh.2 (by rw [hcb]; exact lt_irrefl _)
-        rw [if_neg (ne_of_gt hac), if_pos hcb, if_neg n1, hcb, inv_upper_diag, mul_one]
+        rw [ite_eq_right (ne_of_gt hac), ite_eq_left hcb, ite_eq_right n1, hcb, inv_upper_diag, mul_one]
         ring
       · have n1 : ¬ (a < c ∧ c < b) := fun hh => absurd (hh.2.trans hbc) (lt_irrefl _)
-        rw [inv_upper_gt x hbc, mul_zero, if_neg (ne_of_gt hac), if_neg (ne_of_gt hbc), if_neg n1]
+        rw [inv_upper_gt x hbc, mul_zero, ite_eq_right (ne_of_gt hac), ite_eq_right (ne_of_gt hbc), ite_eq_right n1]
         ring
   rw [Finset.sum_congr rfl (fun c _ => hterm c), Finset.sum_add_distrib, Finset.sum_add_distrib,
-    Finset.sum_ite_eq', Finset.sum_ite_eq', if_pos (Finset.mem_univ _), if_pos (Finset.mem_univ _)] at h0
+    Finset.sum_ite_eq', Finset.sum_ite_eq', ite_eq_left (Finset.mem_univ _), ite_eq_left (Finset.mem_univ _)] at h0
   linear_combination -h0
 
 theorem inv_upper_congr (x y : UT r → ℂ) (n : ℕ)
@@ -183,7 +183,7 @@ theorem inv_upper_congr (x y : UT r → ℂ) (n : ℕ)
     rw [inv_upper_lt x hab, inv_upper_lt y hab]
     refine Finset.sum_congr rfl fun c _ => ?_
     by_cases hc : a < c ∧ c < b
-    · rw [if_pos hc, if_pos hc]
+    · rw [ite_eq_left hc, ite_eq_left hc]
       have hac' : a.val < c.val := hc.1
       have hcb' : c.val < b.val := hc.2
       have e1 : upper x a c = upper y a c := hxy a c hc.1 (by omega)
@@ -193,13 +193,13 @@ theorem inv_upper_congr (x y : UT r → ℂ) (n : ℕ)
         rw [e2] at e3
         linear_combination -e3
       rw [e1, e4]
-    · rw [if_neg hc, if_neg hc]
+    · rw [ite_eq_right hc, ite_eq_right hc]
 
 private lemma det_upperIn_eq_one (β : Fin r → ℕ) (x : UTin β → ℂ) : (upperIn β x).det = 1 := by
   unfold upperIn
   have hb : (upper fun p : UT r => if h : β p.1.1 = β p.1.2 then x ⟨p, h⟩ else 0).BlockTriangular id :=
     fun a b hab => upper_of_gt _ hab
-  rw [Matrix.det_of_upperTriangular hb]
+  rw [Matrix.det_of_isUpperTriangular hb]
   exact Finset.prod_eq_one fun a _ => upper_diag _ a
 
 theorem continuous_inv_upperIn (β : Fin r → ℕ) : Continuous fun x : UTin β → ℂ => (upperIn β x)⁻¹ := by
@@ -213,18 +213,18 @@ theorem upperIn_lt (β : Fin r → ℕ) (x : UTin β → ℂ) (p : UTin β) : up
   obtain ⟨⟨⟨a, b⟩, hab⟩, hβ⟩ := p
   unfold upperIn
   rw [upper_of_lt _ hab]
-  exact dif_pos hβ
+  exact dite_eq_left hβ
 
 theorem upperIn_ne (β : Fin r → ℕ) (x : UTin β → ℂ) {a b : Fin r} (h : β a ≠ β b) : upperIn β x a b = 0 := by
   unfold upperIn
   rcases lt_trichotomy a b with hab | hab | hab
   · rw [upper_of_lt _ hab]
-    exact dif_neg h
+    exact dite_eq_right h
   · exact absurd (congrArg β hab) h
   · exact upper_of_gt _ hab
 
 theorem inv_upperIn_ne (β : Fin r → ℕ) (x : UTin β → ℂ) {a b : Fin r} (h : β a ≠ β b) : (upperIn β x)⁻¹ a b = 0 := by
-  haveI : Invertible (upperIn β x) := Matrix.invertibleOfIsUnitDet _ (isUnit_upper _)
+  have : Invertible (upperIn β x) := Matrix.invertibleOfIsUnitDet _ (isUnit_upper _)
   have h1 : (upperIn β x).BlockTriangular β := fun i j hij => upperIn_ne β x (ne_of_gt hij)
   have h2 : (upperIn β x).BlockTriangular (fun i => OrderDual.toDual (β i)) :=
     fun i j hij => upperIn_ne β x (ne_of_lt (OrderDual.toDual_lt_toDual.mp hij))
@@ -239,23 +239,23 @@ theorem shearInv_mp (j : ℕ) (β : Fin r → ℕ) : MeasurePreserving (shearInv
   refine Formalism.FourierDecayAlt.P.ShearMeasurability.shear_mp (fun p : UTin β => p.1.1.2.val - p.1.1.1.val) (shearInv j β) ?_ ?_
   · refine Continuous.measurable (continuous_pi fun p => ?_)
     by_cases hp : p.1.1.1.val < j
-    · simp only [shearInv, hp, if_true]
+    · simp only [shearInv, hp, ite_true]
       exact ((continuous_apply p.1.1.2).comp ((continuous_apply p.1.1.1).comp
         (continuous_inv_upperIn β))).neg
-    · simp only [shearInv, hp, if_false]
+    · simp only [shearInv, hp, ite_false]
       exact continuous_apply p
   · intro q x y hxy
     by_cases hq : q.1.1.1.val < j
-    · simp only [shearInv, hq, if_true]
+    · simp only [shearInv, hq, ite_true]
       rw [← upperIn_lt β x q, ← upperIn_lt β y q]
       unfold upperIn
       refine inv_upper_congr _ _ (q.1.1.2.val - q.1.1.1.val) (fun a b hab hlt => ?_) _ _ _ q.1.2 le_rfl le_rfl
       rw [upper_of_lt _ hab, upper_of_lt _ hab]
       by_cases hβ : β a = β b
-      · simp only [dif_pos hβ]
+      · simp only [dite_eq_left hβ]
         exact hxy ⟨⟨(a, b), hab⟩, hβ⟩ hlt
-      · simp only [dif_neg hβ]
-    · simp only [shearInv, hq, if_false, sub_self]
+      · simp only [dite_eq_right hβ]
+    · simp only [shearInv, hq, ite_false, sub_self]
 
 def HasBlocks (g : Mat k r) (D Y Z : Matrix (Fin r) (Fin r) ℂ) (M : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) : Prop :=
   (∀ a b, g (eI k r a) (eI k r b) = D a b) ∧ (∀ a n, g (eI k r a) (wI k r n) = 0) ∧
@@ -320,7 +320,7 @@ theorem conj_u {g : Mat k r} {D Y Z : Matrix (Fin r) (Fin r) ℂ} {M : Matrix (F
     simp only [Matrix.mul_apply, sum3, hee, hew, hes, hwe, hww, hws, hse, hsw, hss, _root_.GlobalTheory.Amp.UEmb.u_ee, _root_.GlobalTheory.Amp.UEmb.u_es,
       _root_.GlobalTheory.Amp.UEmb.u_se, u_ew, u_we, u_ww, u_ws, u_sw, u_ss, mul_zero, zero_mul, Finset.sum_const_zero, add_zero,
       zero_add, mul_ite, ite_mul, mul_one, one_mul, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ,
-      if_true]
+      ite_true]
   all_goals first
     | simpa only [Matrix.mul_apply] using congrFun (congrFun h1 _) _
     | simpa only [Matrix.mul_apply] using congrFun (congrFun h2 _) _
@@ -420,7 +420,7 @@ private lemma sum_star_mulVec_mul_sg_mul_eq {M : Matrix (Fin (k + 1)) (Fin (k + 
     have h := congrFun (congrFun hM l) n
     rw [← Hb_apply, ← h]
     simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, Hb_apply, mul_ite, mul_zero,
-      Finset.sum_ite_eq', Finset.mem_univ, if_true]
+      Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   calc ∑ m, star ((M *ᵥ v) m) * sg k m * M m n
       = ∑ m, ∑ l, star (v l) * (star (M m l) * sg k m * M m n) := by
         apply Finset.sum_congr rfl
@@ -433,7 +433,7 @@ private lemma sum_star_mulVec_mul_sg_mul_eq {M : Matrix (Fin (k + 1)) (Fin (k + 
         rw [Finset.sum_comm]
         simp only [Finset.mul_sum]
     _ = star (v n) * sg k n := by
-        simp only [hU, mul_ite, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+        simp only [hU, mul_ite, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
 
 def Fj (r j : ℕ) : Matrix (Fin r) (Fin r) ℂ := Matrix.diagonal fun a => if j ≤ a.val then 1 else 0
 
@@ -461,7 +461,7 @@ theorem conj_p {j : ℕ} {g : Mat k r} {c : ℂ} {Y Z : Matrix (Fin r) (Fin r) �
     intro x _
     by_cases h : j ≤ x.val
     · rw [hZ x b (Or.inl h), mul_zero]
-    · push_neg at h
+    · push Not at h
       rw [hS a x (Or.inr h), hB' x h]
       simp [herm]
   ext x y
@@ -469,29 +469,29 @@ theorem conj_p {j : ℕ} {g : Mat k r} {c : ℂ} {Y Z : Matrix (Fin r) (Fin r) �
     simp only [Matrix.mul_apply, sum3, hee, hew, hes, hwe, hww, hws, hse, hsw, hss, hD, pEl_ee, pEl_ew, pEl_es,
       pEl_we, pEl_ww, pEl_ws, pEl_se, pEl_sw, pEl_ss, mul_zero, zero_mul, Finset.sum_const_zero, add_zero,
       zero_add, mul_ite, ite_mul, mul_one, one_mul, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ,
-      if_true]
+      ite_true]
   all_goals first
     | (rw [hv1, add_zero]; split_ifs <;> simp_all)
     | (rename_i a n
        by_cases h : j ≤ a.val
-       · rw [if_pos h, ← sum_star_mulVec_mul_sg_mul_eq hM (B a) n, ← Finset.sum_neg_distrib, Finset.mul_sum]
+       · rw [ite_eq_left h, ← sum_star_mulVec_mul_sg_mul_eq hM (B a) n, ← Finset.sum_neg_distrib, Finset.mul_sum]
          apply Finset.sum_congr rfl
          intro x _
          simp only [Pi.smul_apply, smul_eq_mul, star_mul', star_star]
          ring
-       · rw [if_neg h, hB' a (by omega)]
+       · rw [ite_eq_right h, hB' a (by omega)]
          simp)
     | (rename_i a b
        rw [add_comm]
        congr 1
        by_cases ha : j ≤ a.val <;> by_cases hb : j ≤ b.val
-       · simp only [ha, hb, if_true, herm_smul, herm_mulVec hM, star_star, hcc, one_mul]
+       · simp only [ha, hb, ite_true, herm_smul, herm_mulVec hM, star_star, hcc, one_mul]
          ring
-       · simp only [ha, hb, if_true, if_false, hS a b (Or.inr (by omega)), hB b (by omega)]
+       · simp only [ha, hb, ite_true, ite_false, hS a b (Or.inr (by omega)), hB b (by omega)]
          simp [herm]
-       · simp only [ha, hb, if_true, if_false, hS a b (Or.inl (by omega)), hB' a (by omega)]
+       · simp only [ha, hb, ite_true, ite_false, hS a b (Or.inl (by omega)), hB' a (by omega)]
          simp [herm]
-       · simp only [ha, hb, if_false])
+       · simp only [ha, hb, ite_false])
     | (rename_i m a
        rw [ite_self, zero_add]
        symm
@@ -503,10 +503,10 @@ theorem conj_p {j : ℕ} {g : Mat k r} {c : ℂ} {Y Z : Matrix (Fin r) (Fin r) �
          simp)
     | (rename_i m b
        by_cases h : j ≤ b.val
-       · rw [if_pos h]
+       · rw [ite_eq_left h]
          simp only [Pi.smul_apply, smul_eq_mul, Matrix.mulVec, dotProduct]
          linear_combination -(∑ x, M m x * B b x) * hcc
-       · rw [if_neg h, hB b (by omega)]
+       · rw [ite_eq_right h, hB b (by omega)]
          simp)
     | (rw [ite_self, zero_add])
     | (rename_i a n
@@ -536,7 +536,7 @@ theorem exists_perm {j : ℕ} (hj : j ≤ r) (β : Fin r → ℕ) (Z : Matrix (F
   have hex : ∀ a : Fin j, ∃ b : Fin j, Z (Fin.castLE hj a) (Fin.castLE hj b) ≠ 0 := by
     intro a
     by_contra hno
-    push_neg at hno
+    push Not at hno
     exact hdet (Matrix.det_eq_zero_of_row_eq_zero a fun b => hno b)
   choose τ hτ using hex
   have hβτ : ∀ a, β (Fin.castLE hj a) = β (Fin.castLE hj (τ a)) := fun a => hblk a (τ a) (hτ a)
@@ -554,8 +554,8 @@ theorem exists_perm {j : ℕ} (hj : j ≤ r) (β : Fin r → ℕ) (Z : Matrix (F
       rw [he] at h1
       exact lt_irrefl _ h1
   let f : Fin r → Fin r := fun a => if ha : a.val < j then Fin.castLE hj (τ ⟨a.val, ha⟩) else a
-  have hf_c : ∀ a0 : Fin j, f (Fin.castLE hj a0) = Fin.castLE hj (τ a0) := fun a0 => dif_pos a0.isLt
-  have hf_ge : ∀ a : Fin r, ¬ a.val < j → f a = a := fun a ha => dif_neg ha
+  have hf_c : ∀ a0 : Fin j, f (Fin.castLE hj a0) = Fin.castLE hj (τ a0) := fun a0 => dite_eq_left a0.isLt
+  have hf_ge : ∀ a : Fin r, ¬ a.val < j → f a = a := fun a ha => dite_eq_right ha
   have hlift : ∀ a : Fin r, a.val < j → ∃ a0 : Fin j, Fin.castLE hj a0 = a := fun a ha =>
     ⟨⟨a.val, ha⟩, Fin.ext rfl⟩
   have hfinj : Function.Injective f := by
@@ -623,7 +623,7 @@ theorem mulVec_bvec (g : Mat k r) (x i : Fin (2 * r + k + 1)) : (g *ᵥ bvec x) 
 theorem H_sq : Hpk k r * Hpk k r = 1 := by
   first
   | exact _root_.Formalism.SharedLemmas.upq_hpk_mul_self
-  | (apply _root_.Formalism.SharedLemmas.upq_hpk_mul_self <;> assumption)
+
 
 theorem isUnit_det_of_mem {g : Mat k r} (hg : g ∈ GG k r) : IsUnit g.det := by
   have hg' : gᴴ * Hpk k r * g = Hpk k r := hg
@@ -641,7 +641,7 @@ theorem pairing {g : Mat k r} (hg : g ∈ GG k r) (x i : Fin (2 * r + k + 1)) :
   have hg' : gᴴ * Hpk k r * g = Hpk k r := hg
   rw [← congrFun (congrFun hg' x) i]
   simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, sum3, H_ee, H_ew, H_es, H_we,
-    H_ww, H_ws, H_se, H_sw, H_ss, mul_zero, mul_ite, mul_one, Finset.sum_ite_eq', Finset.mem_univ, if_true, Finset.sum_const_zero, add_zero, zero_add]
+    H_ww, H_ws, H_se, H_sw, H_ss, mul_zero, mul_ite, mul_one, Finset.sum_ite_eq', Finset.mem_univ, ite_true, Finset.sum_const_zero, add_zero, zero_add]
 
 private theorem apply_eq_ite_of_mulVec_bvec_eq_smul {g : Mat k r} {c : ℂ} {x : Fin (2 * r + k + 1)}
     (h : g *ᵥ bvec x = c • bvec x) (i : Fin (2 * r + k + 1)) : g i x = if i = x then c else 0 := by
@@ -661,7 +661,7 @@ private theorem Hpk_conj_apply_eI_eq_sum (g : Mat k r) (i : Fin (2 * r + k + 1))
     (Hpk k r * gᴴ * Hpk k r) i (eI k r a) = ∑ p, Hpk k r i p * star (g (esI k r a) p) := by
   rw [Matrix.mul_apply, sum3]
   simp only [H_ee, H_we, H_se, mul_zero, Finset.sum_const_zero, zero_add, mul_ite, mul_one,
-    Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   rw [Matrix.mul_apply]
   simp [Matrix.conjTranspose_apply]
 
@@ -714,29 +714,29 @@ theorem exists_blocks {j : ℕ} (hj : j ≤ r) {β : Fin r → ℕ} {c : ℂ} {z
     · intro x
       by_cases hx : x = σ a
       · subst hx; simp [ht, Zr]
-      · rw [if_neg (by rw [eI_inj]; exact hx)]
+      · rw [ite_eq_right (by rw [eI_inj]; exact hx)]
         by_cases hxj : x.val < j
         · exact (s3 a ha).2 x hxj hx
-        · rw [cE x (by omega) (esI k r a), if_neg (esI_ne_eI a x)]
-    · intro n; rw [if_neg (wI_ne_eI n (σ a)), rSw a ha n]
-    · intro x; rw [if_neg (esI_ne_eI x (σ a)), rSs a ha x]
+        · rw [cE x (by omega) (esI k r a), ite_eq_right (esI_ne_eI a x)]
+    · intro n; rw [ite_eq_right (wI_ne_eI n (σ a)), rSw a ha n]
+    · intro x; rw [ite_eq_right (esI_ne_eI x (σ a)), rSs a ha x]
   have cLs : ∀ a : Fin r, a.val < j → ∀ i,
       star (g i (eI k r (σ a))) = if i = esI k r a then star (t a) else 0 := by
     intro a ha i
     have hσ : (σ a).val < j := (s1 a).mpr ha
     refine cases3 (P := fun i => star (g i (eI k r (σ a))) = if i = esI k r a then star (t a) else 0)
       ?_ ?_ ?_ i
-    · intro x; rw [if_neg (eI_ne_esI x a), cL (σ a) hσ _ (fun a' _ => eI_ne_esI x a'), star_zero]
-    · intro n; rw [if_neg (wI_ne_esI n a), cL (σ a) hσ _ (fun a' _ => wI_ne_esI n a'), star_zero]
+    · intro x; rw [ite_eq_right (eI_ne_esI x a), cL (σ a) hσ _ (fun a' _ => eI_ne_esI x a'), star_zero]
+    · intro n; rw [ite_eq_right (wI_ne_esI n a), cL (σ a) hσ _ (fun a' _ => wI_ne_esI n a'), star_zero]
     · intro x
       by_cases hxj : x.val < j
       · rw [rS x hxj]
         by_cases hxa : x = a
         · subst hxa; simp
-        · rw [if_neg (by rw [eI_inj]; exact fun h => hxa (σ.injective h).symm),
-            if_neg (by rw [esI_inj]; exact hxa), star_zero]
+        · rw [ite_eq_right (by rw [eI_inj]; exact fun h => hxa (σ.injective h).symm),
+            ite_eq_right (by rw [esI_inj]; exact hxa), star_zero]
       · rw [cL (σ a) hσ _ (fun a' ha' h => hxj (by rw [esI_inj] at h; rw [h]; exact ha')),
-          if_neg (by rw [esI_inj]; rintro rfl; exact hxj ha), star_zero]
+          ite_eq_right (by rw [esI_inj]; rintro rfl; exact hxj ha), star_zero]
   have rElo : ∀ a : Fin r, a.val < j → ∀ y, star (t a) * g (eI k r a) y = Hpk k r (eI k r (σ a)) y := by
     intro a ha y
     have e := pairing hgG (eI k r (σ a)) y
@@ -779,7 +779,7 @@ theorem exists_blocks {j : ℕ} (hj : j ≤ r) {β : Fin r → ℕ} {c : ℂ} {z
   have gWs : ∀ n (b : Fin r), g (wI k r n) (esI k r b) = 0 := by
     intro n b
     by_cases hb : j ≤ b.val
-    · rw [cS b hb, if_neg (wI_ne_esI n b)]
+    · rw [cS b hb, ite_eq_right (wI_ne_esI n b)]
     · obtain ⟨a, rfl⟩ := σ.surjective b
       have ha : a.val < j := (s1 a).mp (by omega)
       have e := congrFun (congrFun hmul (wI k r n)) (eI k r a)
@@ -787,8 +787,8 @@ theorem exists_blocks {j : ℕ} (hj : j ≤ r) {β : Fin r → ℕ} {c : ℂ} {z
       have inner : ∀ i, (Hpk k r * gᴴ * Hpk k r) i (eI k r a) = Hpk k r i (eI k r (σ a)) * star (t a) := by
         intro i
         rw [Hpk_conj_apply_eI_eq_sum, Finset.sum_eq_single (eI k r (σ a))]
-        · rw [rS a ha, if_pos rfl]
-        · intro p _ hp; rw [rS a ha, if_neg hp, star_zero, mul_zero]
+        · rw [rS a ha, ite_eq_left rfl]
+        · intro p _ hp; rw [rS a ha, ite_eq_right hp, star_zero, mul_zero]
         · intro h; exact absurd (Finset.mem_univ _) h
       simp_rw [inner, ← mul_assoc] at e
       rw [← Finset.sum_mul, sum_mul_Hpk_eI_eq_apply_esI] at e
@@ -826,11 +826,11 @@ theorem exists_blocks {j : ℕ} (hj : j ≤ r) {β : Fin r → ℕ} {c : ℂ} {z
           rw [← e, ← mul_assoc, inv_mul_cancel₀ hst, one_mul]]
         by_cases hb : b = σ a
         · subst hb; simp [ha]
-        · rw [if_neg (fun h => hb h.symm), mul_zero, if_neg (fun h => hb h.2)]
+        · rw [ite_eq_right (fun h => hb h.symm), mul_zero, ite_eq_right (fun h => hb h.2)]
       · rw [solC _ _ (rEhi a (by omega) (esI k r b)), H_ss, mul_zero]; simp [ha]
     · intro n b
       by_cases hb : j ≤ b.val
-      · rw [cE b hb, if_neg (wI_ne_eI n b)]
+      · rw [cE b hb, ite_eq_right (wI_ne_eI n b)]
       · exact cL b (by omega) _ (fun a' _ => wI_ne_esI n a')
     · intro a b
       simp only [Matrix.of_apply]
@@ -838,7 +838,7 @@ theorem exists_blocks {j : ℕ} (hj : j ≤ r) {β : Fin r → ℕ} {c : ℂ} {z
       · rw [rS a ha]
         by_cases hb : b = σ a
         · subst hb; simp [ha]
-        · rw [if_neg (by rw [eI_inj]; exact hb)]; simp [hb]
+        · rw [ite_eq_right (by rw [eI_inj]; exact hb)]; simp [hb]
       · rw [solC _ _ (rShi a (by omega) (eI k r b)), H_ee, mul_zero]; simp [ha]
     · intro a b
       simp only [Matrix.smul_apply, Fj, Matrix.diagonal_apply, smul_eq_mul]
@@ -869,21 +869,21 @@ theorem exists_phi {j : ℕ} {β : Fin r → ℕ} (hβ : ∀ a b : Fin r, β a =
     intro p q hpq
     by_cases hp : p.1.1.1.val < j
     · by_cases hq : q.1.1.1.val < j
-      · simp only [τ, dif_pos hp, dif_pos hq] at hpq
+      · simp only [τ, dite_eq_left hp, dite_eq_left hq] at hpq
         have h1 := congrArg (fun u : UTin β => u.1.1) hpq
         simp only [Prod.mk.injEq] at h1
         apply Subtype.ext; apply Subtype.ext
         exact Prod.ext (σ.injective h1.2) (σ.injective h1.1)
-      · simp only [τ, dif_pos hp, dif_neg hq] at hpq
+      · simp only [τ, dite_eq_left hp, dite_eq_right hq] at hpq
         have h1 := congrArg (fun u : UTin β => u.1.1.1.val) hpq
         simp only at h1
         exact absurd (by rw [← h1]; exact (s1 _).mpr (hb_of p hp)) hq
     · by_cases hq : q.1.1.1.val < j
-      · simp only [τ, dif_neg hp, dif_pos hq] at hpq
+      · simp only [τ, dite_eq_right hp, dite_eq_left hq] at hpq
         have h1 := congrArg (fun u : UTin β => u.1.1.1.val) hpq
         simp only at h1
         exact absurd (by rw [h1]; exact (s1 _).mpr (hb_of q hq)) hp
-      · simp only [τ, dif_neg hp, dif_neg hq] at hpq
+      · simp only [τ, dite_eq_right hp, dite_eq_right hq] at hpq
         exact hpq
   let e : UTin β ≃ UTin β := Equiv.ofBijective τ (Finite.injective_iff_bijective.mp hτ)
   let A : UTin β → ℂ := fun p => -((star (t p.1.1.1))⁻¹ * star (t p.1.1.2))
@@ -896,9 +896,9 @@ theorem exists_phi {j : ℕ} {β : Fin r → ℕ} (hβ : ∀ a b : Fin r, β a =
         simp only [A, norm_neg, norm_mul, norm_inv, norm_star]
         rw [(s4 _ _ hp hb p.2).1]
         exact inv_mul_cancel₀ (norm_ne_zero_iff.mpr (s3 _ hb))
-      have hFp : F p = fun z => A p * star z := by funext z; simp only [F, if_pos hp]
+      have hFp : F p = fun z => A p * star z := by funext z; simp only [F, ite_eq_left hp]
       rw [hFp]; exact mul_star_mp hA
-    · have hFp : F p = id := by funext z; simp only [F, if_neg hp, id]
+    · have hFp : F p = id := by funext z; simp only [F, ite_eq_right hp, id]
       rw [hFp]; exact MeasurePreserving.id volume
   have hP : MeasurePreserving (fun y : UTin β → ℂ => fun p => y (e p)) volume volume := by
     have h0 := volume_preserving_arrowCongr' e.symm (MeasurableEquiv.refl ℂ) (MeasurePreserving.id volume)
@@ -915,37 +915,37 @@ theorem exists_phi {j : ℕ} {β : Fin r → ℕ} (hβ : ∀ a b : Fin r, β a =
   beta_reduce
   rw [key]
   rcases lt_trichotomy a b with hab | rfl | hab
-  · rw [dif_pos hab]
+  · rw [dite_eq_left hab]
     by_cases hβab : β a = β b
-    · rw [dif_pos hβab]
+    · rw [dite_eq_left hβab]
       by_cases ha : a.val < j
       · have hb : b.val < j := (hβ a b hβab).mp ha
         have hσ : (σ b).val < j := (s1 b).mpr hb
-        simp only [F, e, Equiv.ofBijective_apply, τ, A, dif_pos ha, if_pos ha, shearInv, if_pos hσ, if_pos (And.intro ha hb), if_neg (show ¬ j ≤ a.val by omega), star_neg, add_zero]
+        simp only [F, e, Equiv.ofBijective_apply, τ, A, dite_eq_left ha, ite_eq_left ha, shearInv, ite_eq_left hσ, ite_eq_left (And.intro ha hb), ite_eq_right (show ¬ j ≤ a.val by omega), star_neg, add_zero]
         ring
       · have hja : j ≤ a.val := by omega
-        simp only [F, e, Equiv.ofBijective_apply, τ, dif_neg ha, if_neg ha, shearInv,
-          if_neg (show ¬ (a.val < j ∧ b.val < j) from fun h => ha h.1), if_pos hja, zero_add]
-        rw [key, dif_pos hab, dif_pos hβab]
-    · rw [dif_neg hβab]
+        simp only [F, e, Equiv.ofBijective_apply, τ, dite_eq_right ha, ite_eq_right ha, shearInv,
+          ite_eq_right (show ¬ (a.val < j ∧ b.val < j) from fun h => ha h.1), ite_eq_left hja, zero_add]
+        rw [key, dite_eq_left hab, dite_eq_left hβab]
+    · rw [dite_eq_right hβab]
       have h1 : (upperIn β x)⁻¹ (σ b) (σ a) = 0 :=
         inv_upperIn_ne β x (by rw [s2, s2]; exact fun h => hβab h.symm)
-      rw [h1, key, dif_pos hab, dif_neg hβab]; simp
-  · rw [dif_neg (lt_irrefl _), if_pos rfl, hdiag]
+      rw [h1, key, dite_eq_left hab, dite_eq_right hβab]; simp
+  · rw [dite_eq_right (lt_irrefl _), ite_eq_left rfl, hdiag]
     by_cases ha : a.val < j
-    · rw [if_pos ⟨ha, ha⟩, if_neg (show ¬ j ≤ a.val by omega), star_one, mul_one,
+    · rw [ite_eq_left ⟨ha, ha⟩, ite_eq_right (show ¬ j ≤ a.val by omega), star_one, mul_one,
         inv_mul_cancel₀ (star_ne_zero.mpr (s3 a ha)), add_zero]
-    · rw [if_neg (fun h : a.val < j ∧ a.val < j => ha h.1), if_pos (show j ≤ a.val by omega), key,
-        dif_neg (lt_irrefl _), if_pos rfl, zero_add]
-  · rw [dif_neg (not_lt.mpr hab.le), if_neg (ne_of_gt hab)]
-    have h2 : upperIn β x a b = 0 := by rw [key, dif_neg (not_lt.mpr hab.le), if_neg (ne_of_gt hab)]
+    · rw [ite_eq_right (fun h : a.val < j ∧ a.val < j => ha h.1), ite_eq_left (show j ≤ a.val by omega), key,
+        dite_eq_right (lt_irrefl _), ite_eq_left rfl, zero_add]
+  · rw [dite_eq_right (not_lt.mpr hab.le), ite_eq_right (ne_of_gt hab)]
+    have h2 : upperIn β x a b = 0 := by rw [key, dite_eq_right (not_lt.mpr hab.le), ite_eq_right (ne_of_gt hab)]
     by_cases hj2 : a.val < j ∧ b.val < j
     · have h1 : (upperIn β x)⁻¹ (σ b) (σ a) = 0 := by
         by_cases hβab : β a = β b
         · exact hgt _ _ ((s4 b a hj2.2 hj2.1 hβab.symm).2 hab)
         · exact inv_upperIn_ne β x (by rw [s2, s2]; exact fun h => hβab h.symm)
       rw [h1, h2]; simp
-    · rw [if_neg hj2, h2]; simp
+    · rw [ite_eq_right hj2, h2]; simp
 
 theorem continuous_rEl (j : ℕ) (β : Fin r → ℕ) : Continuous (rEl k r j β) := by
   unfold rEl
@@ -980,7 +980,7 @@ private lemma mul_perm_weighted_conjTranspose_apply {r j : ℕ} (σ : Equiv.Perm
     (A * Pᴴ) a b = if b.val < j then A a (σ b) * star (f b) else 0 := by
   rw [Matrix.mul_apply]
   by_cases hb : b.val < j
-  · rw [if_pos hb, Finset.sum_eq_single (σ b)]
+  · rw [ite_eq_left hb, Finset.sum_eq_single (σ b)]
     · simp [Matrix.conjTranspose_apply, hP, hb]
     · intro d _ hd
       simp [Matrix.conjTranspose_apply, hP, hd]
@@ -1120,7 +1120,7 @@ theorem lebR0_map_conjM_eq_of_isNormalZero : ∀ (k r j : ℕ) (hj : j ≤ r) (z
       rw [hΦu, Matrix.add_apply, Matrix.mul_assoc, perm_weighted_mul_apply σ Ym _ _ hYP,
         mul_perm_weighted_conjTranspose_apply σ Zm _ _ hZP]
       simp only [Fj, Matrix.diagonal_mul, Matrix.conjTranspose_apply]
-      by_cases ha : a.val < j <;> by_cases hb : b.val < j <;> simp [ha, hb] <;> ring_nf
+      by_cases ha : a.val < j <;> by_cases hb : b.val < j <;> simp [ha, hb]; ring_nf
     rw [← key]
     exact conj_u hB h1 h2 h3 h4
   have hZ0 : ∀ a b : Fin r, j ≤ a.val ∨ j ≤ b.val → Zm a b = 0 := by
@@ -1145,17 +1145,17 @@ theorem lebR0_map_conjM_eq_of_isNormalZero : ∀ (k r j : ℕ) (hj : j ≤ r) (z
     rw [e1, e2]
     refine conj_p hB hc hM hZ0 _ _ ?_ ?_
     · intro a ha
-      rw [dif_neg (by omega)]
+      rw [dite_eq_right (by omega)]
     · intro a b hab
       simp only [skewM]
       by_cases h1 : a < b
       · have ha : ¬ j ≤ a.val := by
-          have := Fin.lt_iff_val_lt_val.mp h1
+          have := Fin.lt_def.mp h1
           omega
         simp [h1, ha]
       · by_cases h2 : b < a
         · have hb : ¬ j ≤ b.val := by
-            have := Fin.lt_iff_val_lt_val.mp h2
+            have := Fin.lt_def.mp h2
             omega
           simp [h1, h2, hb]
         · have hab' : a = b := le_antisymm (not_lt.mp h2) (not_lt.mp h1)
@@ -1179,15 +1179,15 @@ theorem lebR0_map_conjM_eq_of_isNormalZero : ∀ (k r j : ℕ) (hj : j ≤ r) (z
         (fun _ => (volume : Measure (Fin (k + 1) → ℂ))) (fun _ => h1)
     have h3 := h2.prod (MeasurePreserving.id (volume : Measure (({p : UT r // j ≤ p.1.1.val} → ℂ) × ({a : Fin r // j ≤ a.val} → ℝ))))
     exact h3
-  haveI : SFinite (volume : Measure (PTop k r j)) := by
-    haveI : SFinite ((volume : Measure ({p : UT r // j ≤ p.1.1.val} → ℂ)).prod
+  have : SFinite (volume : Measure (PTop k r j)) := by
+    have : SFinite ((volume : Measure ({p : UT r // j ≤ p.1.1.val} → ℂ)).prod
       (volume : Measure ({a : Fin r // j ≤ a.val} → ℝ))) := inferInstance
-    haveI : SFinite (volume : Measure ({a : Fin r // j ≤ a.val} → Fin (k + 1) → ℂ)) := inferInstance
+    have : SFinite (volume : Measure ({a : Fin r // j ≤ a.val} → Fin (k + 1) → ℂ)) := inferInstance
     exact (inferInstance : SFinite ((volume : Measure ({a : Fin r // j ≤ a.val} → Fin (k + 1) → ℂ)).prod
       ((volume : Measure ({p : UT r // j ≤ p.1.1.val} → ℂ)).prod (volume : Measure ({a : Fin r // j ≤ a.val} → ℝ)))))
-  haveI : OpensMeasurableSpace ((UTin β → ℂ) × PTop k r j) := by
-    haveI : OpensMeasurableSpace (({p : UT r // j ≤ p.1.1.val} → ℂ) × ({a : Fin r // j ≤ a.val} → ℝ)) := inferInstance
-    haveI : OpensMeasurableSpace (PTop k r j) := inferInstance
+  have : OpensMeasurableSpace ((UTin β → ℂ) × PTop k r j) := by
+    have : OpensMeasurableSpace (({p : UT r // j ≤ p.1.1.val} → ℂ) × ({a : Fin r // j ≤ a.val} → ℝ)) := inferInstance
+    have : OpensMeasurableSpace (PTop k r j) := inferInstance
     infer_instance
   let Ψ : (UTin β → ℂ) × PTop k r j → (UTin β → ℂ) × PTop k r j := fun q => (Φ q.1, L q.2)
   have hΨ : MeasurePreserving Ψ (volume.prod volume) (volume.prod volume) := hΦ.prod hLmp

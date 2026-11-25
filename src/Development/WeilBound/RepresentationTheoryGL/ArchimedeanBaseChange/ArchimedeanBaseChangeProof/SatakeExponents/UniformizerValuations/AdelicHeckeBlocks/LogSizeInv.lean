@@ -66,14 +66,15 @@ variable {E : Type} [Field E] [NumberField E] [IsCMField E]
 theorem logSize_inv {n : ℕ} (g : GA E n) : logSize g⁻¹ = logSize g := by
   rw [logSize, logSize, inv_inv, add_comm]
 
-theorem adjVal_spec (h2 : MultAlg) {n : ℕ} (μ : Measure (G n)) [μ.IsHaarMeasure] {M : Mods E n} (k : Kers M)
+omit [NumberField E] [IsCMField E] in
+theorem adjVal_spec [NumberField E] [IsCMField E] (h2 : MultAlg) {n : ℕ} (μ : Measure (G n)) [μ.IsHaarMeasure] {M : Mods E n} (k : Kers M)
     (val : InfinitePlace E → Inf n → ℂ) (T : ℝ) (v : InfinitePlace E) (hk : IsMult μ (M v) (k v) (val v) T) :
     IsMult μ (M v) (adjK k v) (adjVal μ k val T v) T ∧
       ∀ χ, IsHerm χ → adjVal μ k val T v χ = starRingEnd ℂ (val v χ) := by
   have hex : ∃ val₁, IsMult μ (M v) (adjK k v) val₁ T ∧ ∀ χ, IsHerm χ → val₁ χ = starRingEnd ℂ (val v χ) := by
     obtain ⟨-, -, h, -⟩ := h2 n μ (M v) (k v) (k v) (val v) (val v) T T hk hk
     exact h
-  have e : adjVal μ k val T v = hex.choose := dif_pos hex
+  have e : adjVal μ k val T v = hex.choose := dite_eq_left hex
   rw [e]
   exact hex.choose_spec
 
@@ -82,23 +83,23 @@ variable (B : Block E)
 theorem opOf_eq (h1 : OpEx) {Φ : Matrix B.I B.I (H E B.a B.b → ℂ)} {T : B.Hb →L[ℂ] B.Hb} (hΦ : IsTestM Φ)
     (hT : IsROp B.D Φ T) : B.opOf Φ = T := by
   have hex : ∃ T, IsROp B.D Φ T := ⟨T, hT⟩
-  have e : B.opOf Φ = hex.choose := dif_pos hex
+  have e : B.opOf Φ = hex.choose := dite_eq_left hex
   rw [e]
   exact ((h1 E B.a B.b B.D B.I).1 Φ hΦ).unique hex.choose_spec hT
 
 theorem test (h3 : TensTest) (t : PT B) (ht : t.Ok) : IsTestM t.Φ := by
-  haveI := B.ha; haveI := B.hb
+  have := B.ha; have := B.hb
   exact (h3 E B.a B.b B.μa B.μb B.Ma B.Mb B.κ t.ka t.kb t.va t.vb t.T t.ψ ht.ka ht.kb ht.ψ).1
 
 theorem rop (h1 : OpEx) (h3 : TensTest) (t : PT B) (ht : t.Ok) : IsROp B.D t.Φ t.op := by
   have hex := ((h1 E B.a B.b B.D B.I).1 t.Φ (test B h3 t ht)).exists
-  have e : B.opOf t.Φ = hex.choose := dif_pos hex
+  have e : B.opOf t.Φ = hex.choose := dite_eq_left hex
   show IsROp B.D t.Φ (B.opOf t.Φ)
   rw [e]
   exact hex.choose_spec
 
 theorem mulOk (h2 : MultAlg) (h4 : TensMul) (t t' : PT B) (ht : t.Ok) (ht' : t'.Ok) : (t.mul t').Ok := by
-  haveI := B.ha; haveI := B.hb; haveI := B.hν
+  have := B.ha; have := B.hb; have := B.hν
   refine ⟨add_nonneg ht.T ht'.T, add_nonneg (add_nonneg ht.r ht'.r) B.c_nonneg, fun v => ?_, fun v => ?_, ?_, ?_⟩
   · exact (h2 B.a B.μa (B.Ma v) (t.ka v) (t'.ka v) (t.va v) (t'.va v) t.T t'.T (ht.ka v) (ht'.ka v)).1
   · exact (h2 B.b B.μb (B.Mb v) (t.kb v) (t'.kb v) (t.vb v) (t'.vb v) t.T t'.T (ht.kb v) (ht'.kb v)).1
@@ -108,11 +109,11 @@ theorem mulOk (h2 : MultAlg) (h4 : TensMul) (t t' : PT B) (ht : t.Ok) (ht' : t'.
     have hg' : ∑ z, ∫ h, t.ψ x z h * t'.ψ z y (h⁻¹ * g) ∂B.ν ≠ 0 := hg
     obtain ⟨z, hz⟩ : ∃ z, ∫ h, t.ψ x z h * t'.ψ z y (h⁻¹ * g) ∂B.ν ≠ 0 := by
       by_contra hc
-      push_neg at hc
+      push Not at hc
       exact hg' (Finset.sum_eq_zero fun z _ => hc z)
     obtain ⟨h, hh⟩ : ∃ h, t.ψ x z h * t'.ψ z y (h⁻¹ * g) ≠ 0 := by
       by_contra hc
-      push_neg at hc
+      push Not at hc
       exact hz (by simp [hc])
     have s1 := ht.size x z h (left_ne_zero_of_mul hh)
     have s2 := ht'.size z y (h⁻¹ * g) (right_ne_zero_of_mul hh)
@@ -126,7 +127,7 @@ theorem mulOk (h2 : MultAlg) (h4 : TensMul) (t t' : PT B) (ht : t.Ok) (ht' : t'.
 
 theorem mulOp (h1 : OpEx) (h3 : TensTest) (h4 : TensMul) (t t' : PT B) (ht : t.Ok) (ht' : t'.Ok) :
     (t.mul t').op = t.op * t'.op := by
-  haveI := B.ha; haveI := B.hb; haveI := B.hν
+  have := B.ha; have := B.hb; have := B.hν
   have hm := h4 E B.a B.b B.D B.μa B.μb B.ν B.Ma B.Mb B.κ t.ka t'.ka t.kb t'.kb t.va t'.va t.vb t'.vb t.T t'.T t.ψ t'.ψ
       B.compat ht.ka ht.kb ht'.ka ht'.kb ht.ψ ht'.ψ
   have hΦ : (t.mul t').Φ = mulM B.D.μ t.Φ t'.Φ := hm.2.symm
@@ -137,7 +138,7 @@ theorem mulOp (h1 : OpEx) (h3 : TensTest) (h4 : TensMul) (t t' : PT B) (ht : t.O
   exact opOf_eq B h1 h.1 h.2.1
 
 theorem adjOk (h2 : MultAlg) (t : PT B) (ht : t.Ok) : t.adj.Ok := by
-  haveI := B.ha; haveI := B.hb
+  have := B.ha; have := B.hb
   refine ⟨ht.T, ht.r, fun v => (adjVal_spec h2 B.μa t.ka t.va t.T v (ht.ka v)).1,
     fun v => (adjVal_spec h2 B.μb t.kb t.vb t.T v (ht.kb v)).1, fun x y => ⟨?_, ?_⟩, ?_⟩
   · exact Complex.continuous_conj.comp ((ht.ψ y x).1.comp continuous_inv)
@@ -150,7 +151,7 @@ theorem adjOk (h2 : MultAlg) (t : PT B) (ht : t.Ok) : t.adj.Ok := by
 
 theorem adjOp (h1 : OpEx) (h2 : MultAlg) (h3 : TensTest) (t : PT B) (ht : t.Ok) :
     t.adj.op = ContinuousLinearMap.adjoint t.op := by
-  haveI := B.ha; haveI := B.hb
+  have := B.ha; have := B.hb
   have ha := h3 E B.a B.b B.μa B.μb B.Ma B.Mb B.κ t.ka t.kb t.va t.vb t.T t.ψ ht.ka ht.kb ht.ψ
   have hΦ : t.adj.Φ = adjM t.Φ := ha.2.symm
   have h := (h1 E B.a B.b B.D B.I).2 t.Φ t.Φ t.op t.op (test B h3 t ht) (test B h3 t ht) (rop B h1 h3 t ht)
@@ -168,7 +169,7 @@ theorem mulVal (t t' : PT B) (χa : InfinitePlace E → Inf B.a) (χb : Infinite
 theorem adjValEq (h2 : MultAlg) (t : PT B) (ht : t.Ok) (χa : InfinitePlace E → Inf B.a)
     (χb : InfinitePlace E → Inf B.b) (ha : ∀ v, IsHerm (χa v)) (hb : ∀ v, IsHerm (χb v)) :
     t.adj.val χa χb = starRingEnd ℂ (t.val χa χb) := by
-  haveI := B.ha; haveI := B.hb
+  have := B.ha; have := B.hb
   simp only [PT.val, PT.adj, valA]
   rw [map_mul, map_prod, map_prod]
   congr 1
@@ -177,7 +178,7 @@ theorem adjValEq (h2 : MultAlg) (t : PT B) (ht : t.Ok) (χa : InfinitePlace E �
 
 theorem commPhi (h2 : MultAlg) (t t' : PT B) (ht : t.Ok) (ht' : t'.Ok)
     (hψ : mulF B.ν t.ψ t'.ψ = mulF B.ν t'.ψ t.ψ) : (t.mul t').Φ = (t'.mul t).Φ := by
-  haveI := B.ha; haveI := B.hb
+  have := B.ha; have := B.hb
   have ea : ∀ v (g : GA E B.a), convK B.μa t.ka t'.ka v (gInf v g).val = convK B.μa t'.ka t.ka v (gInf v g).val :=
     fun v g => (h2 B.a B.μa (B.Ma v) (t.ka v) (t'.ka v) (t.va v) (t'.va v) t.T t'.T (ht.ka v) (ht'.ka v)).2.1 _
       (Matrix.isUnits_det_units _).ne_zero

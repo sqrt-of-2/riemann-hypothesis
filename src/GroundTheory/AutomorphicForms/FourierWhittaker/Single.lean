@@ -90,7 +90,7 @@ theorem supSum_zero (m : ℕ) : supSum m (0 : Pos n → 𝔸[K]) = 0 := by simp 
 theorem supSum_colX_succ (k : ℕ) (x : Fin k → 𝔸[K]) : supSum (k + 1) (colX (n := n) k x) = 0 := by
   refine Finset.sum_eq_zero fun p hp => ?_
   simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hp
-  rw [colX_apply, dif_neg (by omega)]
+  rw [colX_apply, dite_eq_right (by omega)]
 
 theorem supSum_colX (k : ℕ) (hk : k < n) (x : Fin k → 𝔸[K]) :
     supSum k (colX (n := n) k x) = pair (lastVec k) x := by
@@ -99,7 +99,7 @@ theorem supSum_colX (k : ℕ) (hk : k < n) (x : Fin k → 𝔸[K]) :
   · rw [supSum]
     simp only [pair, Finset.univ_eq_empty, Finset.sum_empty]
     refine Finset.sum_eq_zero fun p _ => ?_
-    rw [colX_apply, dif_neg]
+    rw [colX_apply, dite_eq_right]
     have := p.2
     rw [Fin.lt_def] at this
     omega
@@ -109,23 +109,23 @@ theorem supSum_colX (k : ℕ) (hk : k < n) (x : Fin k → 𝔸[K]) :
       apply Subtype.ext
       apply Prod.ext <;> apply Fin.ext <;> simp <;> omega
     rw [supSum, Finset.sum_eq_single ⟨(⟨k - 1, by omega⟩, ⟨k, hk⟩), by rw [Fin.lt_def]; simp; omega⟩]
-    · rw [colX_apply, dif_pos rfl, pair, Finset.sum_eq_single ⟨k - 1, by omega⟩]
-      · simp [lastVec]; congr 1; omega
+    · rw [colX_apply, dite_eq_left rfl, pair, Finset.sum_eq_single ⟨k - 1, by omega⟩]
+      · simp [lastVec]; omega
       · intro i _ hi
-        rw [lastVec, if_neg (fun h => hi (Fin.ext (by show i.val = k - 1; omega))), map_zero, zero_mul]
+        rw [lastVec, ite_eq_right (fun h => hi (Fin.ext (by show i.val = k - 1; omega))), map_zero, zero_mul]
       · simp
     · intro p hp hne
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hp
-      rw [colX_apply, dif_neg (fun h => hne (hmem p hp h))]
+      rw [colX_apply, dite_eq_right (fun h => hne (hmem p hp h))]
     · intro h
       exfalso
       apply h
       simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      constructor <;> (try simp) <;> omega
+      constructor <;> (try simp); omega
 
 theorem extGe_eq_zero {R : Type*} [Zero R] {k : ℕ} (Z : GePos n (k + 1) → R) (p : Pos n)
     (hp : p.1.2.val ≤ k) : extGe Z p = 0 := by
-  rw [extGe, dif_neg (by omega)]
+  rw [extGe, dite_eq_right (by omega)]
 
 def colSplit (k : ℕ) (hk : k < n) : GePos n k ≃ Fin k ⊕ GePos n (k + 1) where
   toFun p := if h : p.1.1.2.val = k then
@@ -135,16 +135,16 @@ def colSplit (k : ℕ) (hk : k < n) : GePos n k ≃ Fin k ⊕ GePos n (k + 1) wh
     le_refl k⟩) (fun q => ⟨q.1, by have := q.2; omega⟩)
   left_inv p := by
     by_cases h : p.1.1.2.val = k
-    · simp only [dif_pos h, Sum.elim_inl]
+    · simp only [dite_eq_left h, Sum.elim_inl]
       apply Subtype.ext; apply Subtype.ext
       apply Prod.ext <;> apply Fin.ext <;> simp [h]
-    · simp only [dif_neg h, Sum.elim_inr]
+    · simp only [dite_eq_right h, Sum.elim_inr]
   right_inv q := by
     rcases q with a | q
     · simp
     · have := q.2
       show (if h : q.1.1.2.val = k then _ else _) = _
-      rw [dif_neg (show ¬ q.1.1.2.val = k by omega)]
+      rw [dite_eq_right (show ¬ q.1.1.2.val = k by omega)]
       rfl
 
 theorem extGe_colSplit {R : Type*} [CommRing R] (k : ℕ) (hk : k < n) (x : Fin k → R)
@@ -153,15 +153,15 @@ theorem extGe_colSplit {R : Type*} [CommRing R] (k : ℕ) (hk : k < n) (x : Fin 
   funext p
   simp only [extGe, colX_apply, Pi.add_apply]
   by_cases h1 : k ≤ p.1.2.val
-  · rw [dif_pos h1]
+  · rw [dite_eq_left h1]
     by_cases h2 : p.1.2.val = k
-    · rw [dif_neg (by omega), dif_pos h2, zero_add]
+    · rw [dite_eq_right (by omega), dite_eq_left h2, zero_add]
       show Sum.elim x y (colSplit k hk ⟨p, h1⟩) = _
-      simp only [colSplit, Equiv.coe_fn_mk, dif_pos h2, Sum.elim_inl]
-    · rw [dif_pos (by omega), dif_neg h2, add_zero]
+      simp only [colSplit, Equiv.coe_fn_mk, dite_eq_left h2, Sum.elim_inl]
+    · rw [dite_eq_left (by omega), dite_eq_right h2, add_zero]
       show Sum.elim x y (colSplit k hk ⟨p, h1⟩) = _
-      simp only [colSplit, Equiv.coe_fn_mk, dif_neg h2, Sum.elim_inr]
-  · rw [dif_neg h1, dif_neg (by omega), dif_neg (by omega), add_zero]
+      simp only [colSplit, Equiv.coe_fn_mk, dite_eq_right h2, Sum.elim_inr]
+  · rw [dite_eq_right h1, dite_eq_right (by omega), dite_eq_right (by omega), add_zero]
 
 theorem continuous_extGe {k : ℕ} : Continuous (extGe (n := n) (k := k) (R := 𝔸[K])) := by
   refine continuous_pi fun p => ?_
@@ -195,7 +195,7 @@ def wInt (m : ℕ) (ϕ : AdelicGLn.AdelicGL K n → ℂ) (g : AdelicGLn.AdelicGL
 theorem continuous_wInt (m : ℕ) {ϕ : AdelicGLn.AdelicGL K n → ℂ} (hϕ : Continuous ϕ)
     (g : AdelicGLn.AdelicGL K n) : Continuous (wInt m ϕ g) :=
   (hϕ.comp (continuous_uGL.mul continuous_const)).mul
-    (continuous_subtype_val.comp (GroundTheory.Global.continuous_adelicChar.comp (continuous_supSum m).neg))
+    (continuous_subtypeVal.comp (GroundTheory.Global.continuous_adelicChar.comp (continuous_supSum m).neg))
 
 theorem setIntegral_geCols (k : ℕ) (hk : k < n) {H : (Pos n → 𝔸[K]) → ℂ} (hH : Continuous H) :
     ∫ Z in vecDomain K (GePos n k), H (extGe Z) ∂vecMeasure K (GePos n k) =
@@ -215,7 +215,7 @@ theorem partialCoeff_eq_setIntegral {ϕ : AdelicGLn.AdelicGL K n → ℂ} (hϕ :
     obtain rfl : k = n := by omega
     rw [partialCoeff_self]
     have hz : ∀ Z : GePos k k → 𝔸[K], extGe Z = 0 := fun Z => by
-      funext p; rw [extGe, dif_neg (by have := p.1.2.2; omega)]; rfl
+      funext p; rw [extGe, dite_eq_right (by have := p.1.2.2; omega)]; rfl
     simp only [hz, wInt, uGL_zero, one_mul, supSum_zero, neg_zero, AddChar.map_zero_eq_one,
       Circle.coe_one, mul_one]
     rw [setIntegral_const, measureReal_def, vecMeasure_vecDomain, ENNReal.toReal_one, one_smul]
@@ -265,15 +265,15 @@ def lowSplit (k : ℕ) : GePos n k ≃ LowPos n k ⊕ AutomorphicForm.UPos n k w
     (fun u => ⟨⟨u.1, by have := u.2; rw [Fin.lt_def]; omega⟩, u.2.2⟩)
   left_inv p := by
     by_cases h : k ≤ p.1.1.1.val
-    · simp only [dif_pos h, Sum.elim_inl]
-    · simp only [dif_neg h, Sum.elim_inr]
+    · simp only [dite_eq_left h, Sum.elim_inl]
+    · simp only [dite_eq_right h, Sum.elim_inr]
   right_inv q := by
     rcases q with q | u
     · show (if h : k ≤ q.1.1.1.val then _ else _) = _
-      rw [dif_pos q.2]
+      rw [dite_eq_left q.2]
       rfl
     · show (if h : k ≤ u.1.1.val then _ else _) = _
-      rw [dif_neg (by have := u.2; omega)]
+      rw [dite_eq_right (by have := u.2; omega)]
       rfl
 
 def extLow {R : Type*} [Zero R] {k : ℕ} (B : LowPos n k → R) : Pos n → R :=
@@ -288,23 +288,23 @@ theorem extGe_lowSplit {R : Type*} [AddCommGroup R] (k : ℕ) (B : LowPos n k �
   funext p
   simp only [extGe, extLow, extU, Pi.add_apply]
   by_cases h1 : k ≤ p.1.2.val
-  · rw [dif_pos h1]
+  · rw [dite_eq_left h1]
     by_cases h2 : k ≤ p.1.1.val
-    · rw [dif_pos h2, dif_neg (by omega), add_zero]
+    · rw [dite_eq_left h2, dite_eq_right (by omega), add_zero]
       show Sum.elim B A (lowSplit k ⟨p, h1⟩) = _
-      simp only [lowSplit, Equiv.coe_fn_mk, dif_pos h2, Sum.elim_inl]
-    · rw [dif_neg h2, dif_pos ⟨by omega, h1⟩, zero_add]
+      simp only [lowSplit, Equiv.coe_fn_mk, dite_eq_left h2, Sum.elim_inl]
+    · rw [dite_eq_right h2, dite_eq_left ⟨by omega, h1⟩, zero_add]
       show Sum.elim B A (lowSplit k ⟨p, h1⟩) = _
-      simp only [lowSplit, Equiv.coe_fn_mk, dif_neg h2, Sum.elim_inr]
+      simp only [lowSplit, Equiv.coe_fn_mk, dite_eq_right h2, Sum.elim_inr]
   · have hp := p.2
     rw [Fin.lt_def] at hp
-    rw [dif_neg h1, dif_neg (by omega), dif_neg (by omega), add_zero]
+    rw [dite_eq_right h1, dite_eq_right (by omega), dite_eq_right (by omega), add_zero]
 
 theorem supSum_extU (k : ℕ) (A : AutomorphicForm.UPos n k → 𝔸[K]) :
     supSum (k + 1) (extU A) = 0 := by
   refine Finset.sum_eq_zero fun p hp => ?_
   simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hp
-  rw [extU, dif_neg (by omega)]
+  rw [extU, dite_eq_right (by omega)]
 
 theorem vecCoeff_zero_eq_setIntegral_low {ϕ : AdelicGLn.AdelicGL K n → ℂ} (hϕ : Continuous ϕ)
     {k : ℕ} (hk : k < n) (g : AdelicGLn.AdelicGL K n) :

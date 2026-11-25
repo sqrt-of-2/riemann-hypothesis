@@ -90,18 +90,18 @@ theorem exists_pow_eq_of_torusExtension {k : Type} [Field k] [IsAlgClosed k] (G 
     [IsCommMonObj G] [LocallyOfFiniteType G.hom] (E : TorusExtension G) (m : ℕ) (hm : m ≠ 0)
     (x : 𝟙_ (Over (Sp k)) ⟶ G) : ∃ y : 𝟙_ (Over (Sp k)) ⟶ G, y ^ m = x := by
   classical
-  letI := E.addCommGroup
-  letI := E.free
-  letI := E.grpB
-  haveI := E.q_hom
-  haveI := E.i_hom
+  let := E.addCommGroup
+  let := E.free
+  let := E.grpB
+  have := E.q_hom
+  have := E.i_hom
   have hB := E.isAbelian
-  haveI := hB.smooth
-  haveI := hB.comm
+  have := hB.smooth
+  have := hB.comm
 
   have hsB := GlobalTheory.AbelianLimit.surjective_pow E.B hB m (Nat.one_le_iff_ne_zero.2 hm)
-  haveI : LocallyOfFiniteType (((𝟙 E.B) ^ m : E.B ⟶ E.B).left ≫ E.B.hom) := by rw [Over.w]; infer_instance
-  haveI : LocallyOfFiniteType ((𝟙 E.B) ^ m : E.B ⟶ E.B).left := locallyOfFiniteType_of_comp _ E.B.hom
+  have : LocallyOfFiniteType (((𝟙 E.B) ^ m : E.B ⟶ E.B).left ≫ E.B.hom) := by rw [Over.w]; infer_instance
+  have : LocallyOfFiniteType ((𝟙 E.B) ^ m : E.B ⟶ E.B).left := locallyOfFiniteType_of_comp _ E.B.hom
   obtain ⟨p, hp⟩ := GlobalTheory.GeomSurj.exists_lift_of_surjective ((𝟙 E.B) ^ m : E.B ⟶ E.B).left (x ≫ E.q).left
   let b' : 𝟙_ (Over (Sp k)) ⟶ E.B := Over.homMk p (by
     have := Over.w (x ≫ E.q)
@@ -111,9 +111,9 @@ theorem exists_pow_eq_of_torusExtension {k : Type} [Field k] [IsAlgClosed k] (G 
     rw [← Category.comp_id b', ← MonObj.comp_pow]
     exact Over.OverMorphism.ext hp.symm
 
-  haveI : LocallyOfFiniteType (E.q.left ≫ E.B.hom) := by rw [Over.w]; infer_instance
-  haveI : LocallyOfFiniteType E.q.left := locallyOfFiniteType_of_comp _ E.B.hom
-  haveI := E.q_surjective
+  have : LocallyOfFiniteType (E.q.left ≫ E.B.hom) := by rw [Over.w]; infer_instance
+  have : LocallyOfFiniteType E.q.left := locallyOfFiniteType_of_comp _ E.B.hom
+  have := E.q_surjective
   obtain ⟨p', hp'⟩ := GlobalTheory.GeomSurj.exists_lift_of_surjective E.q.left b'.left
   let g' : 𝟙_ (Over (Sp k)) ⟶ G := Over.homMk p' (by
     have := Over.w b'
@@ -145,19 +145,19 @@ theorem surjective_pow : ∀ (S : Scheme.{0}) (G : Over S) [GrpObj G] [IsCommMon
     ∀ m : ℕ, m ≠ 0 → Surjective ((𝟙 G) ^ m : G ⟶ G).left := by
   intro S G _ _ hG m hm
   have hfl := (GlobalTheory.SemiAbMulFlat.flat_and_locallyQuasiFinite_pow S G hG m hm).1
-  haveI := hG.smooth
+  have := hG.smooth
   refine ⟨fun x => ?_⟩
   let K := AlgebraicClosure (S.residueField (G.hom x))
   let t : Sp K ⟶ S := spMap (algebraMap (S.residueField (G.hom x)) K) ≫ S.fromSpecResidueField (G.hom x)
   have ht : G.hom x = t (IsLocalRing.closedPoint K) := (Scheme.fromSpecResidueField_apply _ _).symm
   let B := (Over.pullback t).obj G
   have hP := GlobalTheory.AbelianLimit.isPullback_pow (isGrpPullback_pullback G t) m
-  haveI : LocallyOfFiniteType B.hom := inferInstanceAs (LocallyOfFiniteType (pullback.snd G.hom t))
-  haveI : IsLocallyNoetherian B.left := LocallyOfFiniteType.isLocallyNoetherian B.hom
-  haveI : Flat ((𝟙 B) ^ m : B ⟶ B).left := MorphismProperty.of_isPullback hP hfl
-  haveI : LocallyOfFiniteType (((𝟙 B) ^ m : B ⟶ B).left ≫ B.hom) := by rw [Over.w]; infer_instance
-  haveI : LocallyOfFiniteType ((𝟙 B) ^ m : B ⟶ B).left := locallyOfFiniteType_of_comp _ B.hom
-  haveI : LocallyOfFinitePresentation ((𝟙 B) ^ m : B ⟶ B).left := inferInstance
+  have : LocallyOfFiniteType B.hom := inferInstanceAs (LocallyOfFiniteType (pullback.snd G.hom t))
+  have : IsLocallyNoetherian B.left := LocallyOfFiniteType.isLocallyNoetherian B.hom
+  have : Flat ((𝟙 B) ^ m : B ⟶ B).left := MorphismProperty.of_isPullback hP hfl
+  have : LocallyOfFiniteType (((𝟙 B) ^ m : B ⟶ B).left ≫ B.hom) := by rw [Over.w]; infer_instance
+  have : LocallyOfFiniteType ((𝟙 B) ^ m : B ⟶ B).left := locallyOfFiniteType_of_comp _ B.hom
+  have : LocallyOfFinitePresentation ((𝟙 B) ^ m : B ⟶ B).left := inferInstance
   obtain ⟨E⟩ := hG.fibres K t
   have hs : Surjective ((𝟙 B) ^ m : B ⟶ B).left := by
     refine surjective_of_rationalPoints _ fun y => ?_

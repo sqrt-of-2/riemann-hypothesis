@@ -56,7 +56,7 @@ theorem chart_eq_of_comp : Sites (fun {D L hT Gi Gl Kc Dx cX ex u μ w hg Lv I H
   intro D L hT Gi Gl Kc Dx cX ex u μ w hg Lv I H X _ std t J S _ _ j hj c La Lb hLa hLb
   unfold Joint.chart
   rcases j with _ | j
-  · haveI := J.ch0
+  · have := J.ch0
     exact Subsingleton.elim _ _
   · simp only
     rw [Formalism.MainNotions.G.KAat.clsAt_succ X H j hj c La, Formalism.MainNotions.G.KAat.clsAt_succ X H j hj c Lb]

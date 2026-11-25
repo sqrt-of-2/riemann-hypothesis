@@ -27,10 +27,10 @@ theorem ptPar_anti {K : Type*} [Zero K] : ∀ (bs : List (K × ℕ)) (x y : ℕ)
     simp only [blkOf] at h
     rw [ptPar_cons, ptPar_cons]
     by_cases hys : y < s
-    · rw [if_pos hys, if_pos (by omega)]; omega
+    · rw [ite_eq_left hys, ite_eq_left (by omega)]; omega
     · by_cases hxs : x < s
-      · rw [if_pos hxs, if_neg hys] at h; omega
-      · rw [if_neg hxs, if_neg hys] at h ⊢
+      · rw [ite_eq_left hxs, ite_eq_right hys] at h; omega
+      · rw [ite_eq_right hxs, ite_eq_right hys] at h ⊢
         have := ptPar_anti bs (x - s) (y - s) (by omega) (by omega) (by omega)
         omega
 
@@ -87,16 +87,16 @@ theorem gram_frm (v : InfinitePlace X.B.I.F) (w : D.what₂.Word) (sc : ℝ) (a 
         exact Formalism.L2.SG.RealObj.InfCut.UnitaryIsometries.hermitian_z_z_eq_neg (X := X) v w
       | cast j =>
         simp only [fam, Fin.snoc_last, Fin.snoc_castSucc, lastDiag, Matrix.of_apply]
-        rw [if_neg (fun h => (Fin.castSucc_lt_last j).ne h.2), Formalism.L2.SG.PoincareInHH.Cut.hJ_conj,
+        rw [ite_eq_right (fun h => (Fin.castSucc_lt_last j).ne h.2), Formalism.L2.SG.PoincareInHH.Cut.hJ_conj,
           hez_v X v w j, map_zero]
     | cast i =>
       induction j using Fin.lastCases with
       | last =>
         simp only [fam, Fin.snoc_last, Fin.snoc_castSucc, lastDiag, Matrix.of_apply]
-        rw [if_neg (fun h => (Fin.castSucc_lt_last i).ne h.1), hez_v X v w i]
+        rw [ite_eq_right (fun h => (Fin.castSucc_lt_last i).ne h.1), hez_v X v w i]
       | cast j =>
         simp only [fam, Fin.snoc_castSucc, lastDiag, Matrix.of_apply]
-        rw [if_neg (fun h => (Fin.castSucc_lt_last i).ne h.1), hee_v X v i j]
+        rw [ite_eq_right (fun h => (Fin.castSucc_lt_last i).ne h.1), hee_v X v i j]
   simp only [frm, famSc, hJs_l, _root_.Formalism.L2.SG.Pf.Carrier.JointQuot.hJ_smul_r, h0]
   by_cases ha : a = Fin.last _
   · by_cases hb : b = Fin.last _

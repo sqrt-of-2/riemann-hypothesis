@@ -106,19 +106,19 @@ theorem weyl_cell_mul_apply (k r : ℕ) (l : Fin r) (d : ℂ) (M : Mx k r) (p q 
   rw [Matrix.mul_apply]
   by_cases h1 : p = esI k r l
   · subst h1
-    rw [if_pos rfl, Finset.sum_eq_single (eI k r l)]
+    rw [ite_eq_left rfl, Finset.sum_eq_single (eI k r l)]
     · simp [w1]
     · intro x _ hx
       simp [w1, hx, Ne.symm hne]
     · intro h; exact absurd (Finset.mem_univ _) h
   · by_cases h2 : p = eI k r l
     · subst h2
-      rw [if_neg h1, if_pos rfl, Finset.sum_eq_single (esI k r l)]
+      rw [ite_eq_right h1, ite_eq_left rfl, Finset.sum_eq_single (esI k r l)]
       · simp [w1, hne]
       · intro x _ hx
         simp [w1, hx, hne]
       · intro h; exact absurd (Finset.mem_univ _) h
-    · rw [if_neg h1, if_neg h2, Finset.sum_eq_single p]
+    · rw [ite_eq_right h1, ite_eq_right h2, Finset.sum_eq_single p]
       · simp [w1, h1, h2]
       · intro x _ hx
         simp [w1, h1, h2, Ne.symm hx]
@@ -141,15 +141,15 @@ theorem reflection_mul_weyl_cell (k r : ℕ) (S : Finset ℕ) (c : Fin r → ℂ
   have vS : (esI k r a).val = 2 * r + k - a.val := rfl
   simp only [Wm, Finset.mem_insert]
   by_cases h1 : q.val = a.val
-  · simp only [h1, ha, or_false, if_true, if_false]
-    split_ifs <;> (try simp only [Fin.ext_iff, vE, vS] at *) <;> first | rfl | (exfalso; omega) | (simp; done)
+  · simp only [h1, ha, or_false, ite_true, ite_false]
+    split_ifs <;> (try simp only [Fin.ext_iff, vE, vS] at *) <;> first | (exfalso; omega) | (simp)
   · by_cases h2 : q.val = 2 * r + k - a.val
     · have e2 : 2 * r + k - (2 * r + k - a.val) = a.val := by omega
-      simp only [h2, e2, ha, or_false, if_true, if_false]
-      split_ifs <;> (try simp only [Fin.ext_iff, vE, vS] at *) <;> first | rfl | (exfalso; omega) | (simp; done)
+      simp only [h2, e2, ha, or_false, ite_true, ite_false]
+      split_ifs <;> (try simp only [Fin.ext_iff, vE, vS] at *) <;> first | (exfalso; omega) | (simp)
     · have h3 : 2 * r + k - q.val ≠ a.val := by omega
       simp only [h1, h3, false_or]
-      split_ifs <;> (try simp only [Fin.ext_iff, vE, vS] at *) <;> first | rfl | (exfalso; omega) | (simp; done)
+      split_ifs <;> (try simp only [Fin.ext_iff, vE, vS] at *) <;> first | (exfalso; omega) | (simp)
 
 theorem prod_eq_Wm (k r : ℕ) (c : Fin r → ℂ) : ∀ L : List (Fin r), L.Nodup →
     (L.map fun a => w1 k r a (c a)).prod = Wm k r (L.map Fin.val).toFinset c
@@ -181,7 +181,7 @@ theorem Wm_range_apply (k r : ℕ) (c : Fin r → ℂ) (p x : Fin (2 * r + k + 1
   have hp := p.isLt
   have hx := x.isLt
   simp only [Wm, Finset.mem_range, cf, Fin.ext_iff, swp_val]
-  split_ifs <;> first | rfl | (exfalso; omega) | (congr 1 <;> omega) | (congr 1 <;> congr 1 <;> congr 1 <;> omega)
+  split_ifs <;> first | rfl | (exfalso; omega) | (congr 1 <;> omega) | (congr 1; congr 1; congr 1; omega)
 
 theorem Wm_mul_apply (k r : ℕ) (c : Fin r → ℂ) (M : Mx k r) (p q : Fin (2 * r + k + 1)) :
     (Wm k r (Finset.range r) c * M) p q = cf k r c p * M (swp k r p) q := by
@@ -207,21 +207,21 @@ theorem bigCell_apply (k r : ℕ) (c : Fin r → ℂ) (μ : Matrix (Fin (k + 1))
   have hq := q.isLt
   simp only [bigCell]
   by_cases h1 : q.val < r
-  · rw [dite_eq_left h1, if_pos h1, cN_mk r c q.val h1]
+  · rw [dite_eq_left h1, ite_eq_left h1, cN_mk r c q.val h1]
     have e : (p = esI k r ⟨q.val, h1⟩) ↔ p.val = 2 * r + k - q.val := by
       rw [Fin.ext_iff]
       rfl
     by_cases h : p.val = 2 * r + k - q.val
-    · rw [if_pos (e.mpr h), if_pos h]
-    · rw [if_neg (mt e.mp h), if_neg h]
-  · rw [dite_eq_right h1, if_neg h1]
+    · rw [ite_eq_left (e.mpr h), ite_eq_left h]
+    · rw [ite_eq_right (mt e.mp h), ite_eq_right h]
+  · rw [dite_eq_right h1, ite_eq_right h1]
     by_cases h2 : q.val ≤ r + k
-    · rw [dite_eq_left h2, if_pos h2]
+    · rw [dite_eq_left h2, ite_eq_left h2]
       by_cases h3 : r ≤ p.val ∧ p.val ≤ r + k
-      · rw [dite_eq_left h3, if_pos h3]
+      · rw [dite_eq_left h3, ite_eq_left h3]
         exact μE_mk μ _ _ _ _
-      · rw [dite_eq_right h3, if_neg h3]
-    · rw [dite_eq_right h2, if_neg h2]
+      · rw [dite_eq_right h3, ite_eq_right h3]
+    · rw [dite_eq_right h2, ite_eq_right h2]
       have h4 : 2 * r + k - q.val < r := by omega
       rw [cN_mk r c _ h4]
 

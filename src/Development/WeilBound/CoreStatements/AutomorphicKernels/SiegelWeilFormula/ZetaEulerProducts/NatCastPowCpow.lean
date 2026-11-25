@@ -107,7 +107,7 @@ theorem local_factor (h2 : Module.finrank F E = 2) (v : HeightOneSpectrum (𝓞 
   classical
   set p := v.asIdeal with hpdef
   have hp0 : p ≠ ⊥ := v.ne_bot
-  haveI hpm : p.IsMaximal := v.isMaximal
+  have hpm : p.IsMaximal := v.isMaximal
   have hmap0 : Ideal.map (algebraMap (𝓞 F) (𝓞 E)) p ≠ ⊥ := Ideal.map_ne_bot_of_ne_bot hp0
   have hunr : ∀ w : HeightOneSpectrum (𝓞 E), w.asIdeal.LiesOver p →
       Algebra.IsUnramifiedAt (𝓞 F) w.asIdeal := by
@@ -131,8 +131,8 @@ theorem local_factor (h2 : Module.finrank F E = 2) (v : HeightOneSpectrum (𝓞 
     rw [← hmapfib, Finset.card_map]
   have he : ∀ P ∈ fib F E v, p.ramificationIdx' P.asIdeal = 1 := by
     intro P hP
-    haveI := hlies P hP
-    haveI := hunr P (hlies P hP)
+    have := hlies P hP
+    have := hunr P (hlies P hP)
     rw [Ideal.ramificationIdx'_eq_ramificationIdx' p P.asIdeal hmap0]
     exact Ideal.ramificationIdx_eq_one _ _
   have hsum : ∑ P ∈ fib F E v, p.inertiaDeg' P.asIdeal = 2 := by

@@ -154,9 +154,9 @@ theorem saturate (j : K₁ ↪ K₂) (o₀ : K₁) (pt : (Σ k, ι₂ k) → Φ)
     intro v
     rw [hΛ]
     by_cases hv : v.1 = o₀
-    · simp only [Λ₁, if_pos hv]
+    · simp only [Λ₁, ite_eq_left hv]
       exact (hg₂ v hv).1
-    · simp only [Λ₁, if_neg hv]
+    · simp only [Λ₁, ite_eq_right hv]
       rw [hg₁ v hv]
       exact isWeightedHomogeneous_X O (blockWeight ι₂) (FieldNumbers.blockIncl j ι₂ v)
   have hform : ∀ (d : K₁ → ℕ) (q : MRing (fun k => ι₂ (j k)) O), IsMultiHomog q d → q ∈ I →

@@ -21,8 +21,8 @@ theorem exists_scale (r : ℕ) (c : Fin r → ℂ) (hc : ∀ a, c a ≠ 0) :
   obtain ⟨c', hc'd⟩ : ∃ f : ℕ → ℂ, f = fun m => if h : m < r then c ⟨m, h⟩ else 1 := ⟨_, rfl⟩
   have hc' : ∀ m, c' m ≠ 0 := fun m => by
     by_cases h : m < r
-    · simp only [hc'd, dif_pos h]; exact hc _
-    · simp only [hc'd, dif_neg h]; exact one_ne_zero
+    · simp only [hc'd, dite_eq_left h]; exact hc _
+    · simp only [hc'd, dite_eq_right h]; exact one_ne_zero
   refine ⟨fun n => ∏ m ∈ Finset.Ico n r, (cStd / c' m), ?_, ?_, ?_⟩
   · intro n
     exact Finset.prod_ne_zero_iff.mpr fun m _ => div_ne_zero cStd_ne (hc' m)
@@ -31,7 +31,7 @@ theorem exists_scale (r : ℕ) (c : Fin r → ℂ) (hc : ∀ a, c a ≠ 0) :
   · intro a
     simp only
     rw [Finset.prod_eq_prod_Ico_succ_bot a.isLt]
-    have hca : c' a.val = c a := by simp only [hc'd, dif_pos a.isLt]
+    have hca : c' a.val = c a := by simp only [hc'd, dite_eq_left a.isLt]
     rw [hca]
     have hcz := hc a
     field_simp
@@ -43,13 +43,13 @@ theorem hpk_row (k r : ℕ) (p q : Fin (2 * r + k + 1)) (hpq : p.val + q.val = 2
   unfold Hpk
   by_cases hjq : j = q
   · subst hjq
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     rcases h with h | h
-    · rw [if_pos ⟨h, hpq⟩]
-    · rw [if_neg (by omega), if_pos ⟨h, hpq⟩]
-  · rw [if_neg hjq]
+    · rw [ite_eq_left ⟨h, hpq⟩]
+    · rw [ite_eq_right (by omega), ite_eq_left ⟨h, hpq⟩]
+  · rw [ite_eq_right hjq]
     have hjv : j.val ≠ q.val := fun e => hjq (Fin.ext e)
-    rw [if_neg (by omega), if_neg (by omega), if_neg]
+    rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right]
     rintro ⟨h1, h2, -⟩
     omega
 
@@ -94,12 +94,12 @@ theorem torConj : CompanionTheory.Bmu.TorConj := by
       if i.val < r then T i.val else if i.val ≤ r + k then 1 else (star (T (2 * r + k - i.val)))⁻¹ :=
     ⟨_, rfl⟩
   have hdlow : ∀ i : Fin (2 * r + k + 1), i.val < r → d i = T i.val := fun i hi => by
-    rw [hd]; simp only; rw [if_pos hi]
+    rw [hd]; simp only; rw [ite_eq_left hi]
   have hdmid : ∀ i : Fin (2 * r + k + 1), r ≤ i.val → i.val ≤ r + k → d i = 1 := fun i h1 h2 => by
-    rw [hd]; simp only; rw [if_neg (by omega), if_pos h2]
+    rw [hd]; simp only; rw [ite_eq_right (by omega), ite_eq_left h2]
   have hdhigh : ∀ i : Fin (2 * r + k + 1), r + k < i.val → d i = (star (T (2 * r + k - i.val)))⁻¹ :=
     fun i hi => by
-      rw [hd]; simp only; rw [if_neg (by omega), if_neg (by omega)]
+      rw [hd]; simp only; rw [ite_eq_right (by omega), ite_eq_right (by omega)]
   have hd0 : ∀ i, d i ≠ 0 := by
     intro i
     by_cases h1 : i.val < r
@@ -158,16 +158,16 @@ theorem torConj : CompanionTheory.Bmu.TorConj := by
     by_cases hij : i = j
     · subst hij; ring
     by_cases hi : i.val < r ∨ r + k < i.val
-    · rw [uw_row k r z h hh i hi j, if_neg (fun e => hij e.symm)]; ring
+    · rw [uw_row k r z h hh i hi j, ite_eq_right (fun e => hij e.symm)]; ring
     by_cases hj : j.val < r ∨ r + k < j.val
-    · rw [uw_col k r z h hh j hj i, if_neg hij]; ring
-    push_neg at hi hj
+    · rw [uw_col k r z h hh j hj i, ite_eq_right hij]; ring
+    push Not at hi hj
     rw [hdmid i hi.1 hi.2, hdmid j hj.1 hj.2]; ring
   have hzd : ∀ j, (d j)⁻¹ * z j = z j := by
     intro j
     by_cases hj : j.val < r ∨ r + k < j.val
     · rw [hz j hj, mul_zero]
-    · push_neg at hj; rw [hdmid j hj.1 hj.2, inv_one, one_mul]
+    · push Not at hj; rw [hdmid j hj.1 hj.2, inv_one, one_mul]
   refine ⟨diagonal d, hτU, hcomm, fun m hm => ?_⟩
   rw [hτinv]
   obtain ⟨hmU, hm2, hm3⟩ := hm

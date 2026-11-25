@@ -51,17 +51,17 @@ theorem isAlgebraic_of_etale (S R : Type) [CommRing S] [IsDomain S] [CommRing R]
     [Algebra S R] [Algebra.Etale S R] [FaithfulSMul S R] : Algebra.IsAlgebraic S R := by
   let K := FractionRing S
   let L := FractionRing R
-  letI : Algebra K L := FractionRing.liftAlgebra S L
-  haveI : IsScalarTower S K L := FractionRing.isScalarTower_liftAlgebra S L
-  haveI : Algebra.FormallyEtale R L := .of_isLocalization (nonZeroDivisors _)
-  haveI : Algebra.FormallyUnramified S L := Algebra.FormallyUnramified.comp S R L
-  haveI : Algebra.FormallyUnramified K L := Algebra.FormallyUnramified.of_restrictScalars S K L
-  haveI : Algebra.EssFiniteType R L := .of_isLocalization L (nonZeroDivisors _)
-  haveI : Algebra.EssFiniteType S L := Algebra.EssFiniteType.comp S R L
-  haveI : Algebra.EssFiniteType K L := Algebra.EssFiniteType.of_comp S K L
-  haveI : Algebra.IsSeparable K L := Algebra.FormallyUnramified.isSeparable K L
-  haveI : Algebra.IsAlgebraic K L := inferInstance
-  haveI : Algebra.IsAlgebraic S L := (IsFractionRing.comap_isAlgebraic_iff (A := S) (K := K)).2 inferInstance
+  let : Algebra K L := FractionRing.liftAlgebra S L
+  have : IsScalarTower S K L := FractionRing.isScalarTower_liftAlgebra S L
+  have : Algebra.FormallyEtale R L := .of_isLocalization (nonZeroDivisors _)
+  have : Algebra.FormallyUnramified S L := Algebra.FormallyUnramified.comp S R L
+  have : Algebra.FormallyUnramified K L := Algebra.FormallyUnramified.of_restrictScalars S K L
+  have : Algebra.EssFiniteType R L := .of_isLocalization L (nonZeroDivisors _)
+  have : Algebra.EssFiniteType S L := Algebra.EssFiniteType.comp S R L
+  have : Algebra.EssFiniteType K L := Algebra.EssFiniteType.of_comp S K L
+  have : Algebra.IsSeparable K L := Algebra.FormallyUnramified.isSeparable K L
+  have : Algebra.IsAlgebraic K L := inferInstance
+  have : Algebra.IsAlgebraic S L := (IsFractionRing.comap_isAlgebraic_iff (A := S) (K := K)).2 inferInstance
   exact Algebra.IsAlgebraic.of_injective (IsScalarTower.toAlgHom S R L)
     (IsFractionRing.injective R L)
 
@@ -80,7 +80,7 @@ theorem exists_line (m : ℕ) (q : MvPolynomial (Fin m) ℂ) (hq : q ≠ 0) (b�
       ∀ u ∈ Metric.ball (0 : ℂ) ρ, u ≠ 0 → MvPolynomial.eval (b₀ + u • v) q ≠ 0 := by
   obtain ⟨w, hw⟩ : ∃ w, MvPolynomial.eval w q ≠ 0 := by
     by_contra h
-    push_neg at h
+    push Not at h
     exact hq (MvPolynomial.funext fun x => by simpa using h x)
   let v := w - b₀
   let Q : Polynomial ℂ := MvPolynomial.aeval
@@ -90,7 +90,7 @@ theorem exists_line (m : ℕ) (q : MvPolynomial (Fin m) ℂ) (hq : q ≠ 0) (b�
         (MvPolynomial.aeval (R := ℂ) (fun i => Polynomial.C (b₀ i) + Polynomial.X * Polynomial.C (v i)) :
           MvPolynomial (Fin m) ℂ →ₐ[ℂ] Polynomial ℂ).toRingHom =
         MvPolynomial.eval (b₀ + u • v) := by
-      refine MvPolynomial.ringHom_ext (fun a => ?_) fun i => ?_ <;> simp <;> ring
+      refine MvPolynomial.ringHom_ext (fun a => ?_) fun i => ?_ <;> simp; ring
     exact congrArg (fun f : MvPolynomial (Fin m) ℂ →+* ℂ => f q) this
   have hQ0 : Q ≠ 0 := fun h => hw (by
     have := hQ 1
@@ -99,7 +99,7 @@ theorem exists_line (m : ℕ) (q : MvPolynomial (Fin m) ℂ) (hq : q ≠ 0) (b�
     (Finset.finite_toSet _).isClosed.isOpen_compl.mem_nhds (by simp)
   obtain ⟨ρ, hρ, hb⟩ := Metric.mem_nhds_iff.1 hfin
   refine ⟨v, ρ, hρ, fun u hu hu0 h => hb hu ?_⟩
-  simp only [Finset.coe_erase, Set.mem_diff, Finset.mem_coe, Multiset.mem_toFinset,
+  simp only [Finset.coe_erase, Set.mem_sdiff, Finset.mem_coe, Multiset.mem_toFinset,
     Set.mem_singleton_iff, Polynomial.mem_roots hQ0, Polynomial.IsRoot.def, hQ, h]
   simpa using hu0
 
@@ -112,8 +112,8 @@ namespace GlobalTheory.HolArc
 
 theorem exists_holPts_ne_zero : ∀ (F A : Type) [Field F] [CommRing A] [IsDomain A] [Algebra F A], Algebra.Smooth F A → ∀ (ψ₀ : A →+* ℂ) (p : A), p ≠ 0 → ∃ (ψ : ℂ → (A →+* ℂ)) (r : ℝ), IsHolPts ψ r ∧ ψ 0 = ψ₀ ∧ (∀ u ∈ Metric.ball (0 : ℂ) r, (ψ u).comp (algebraMap F A) = ψ₀.comp (algebraMap F A)) ∧ ∀ u ∈ Metric.ball (0 : ℂ) r, u ≠ 0 → ψ u p ≠ 0 := by
   intro F A _ _ _ _ hS ψ₀ p hp
-  haveI := hS
-  haveI : (RingHom.ker ψ₀).IsPrime := RingHom.ker_isPrime ψ₀
+  have := hS
+  have : (RingHom.ker ψ₀).IsPrime := RingHom.ker_isPrime ψ₀
   obtain ⟨g, m, s, hg, het⟩ := SmoothPointFamily.exists_etale_away (R := F) (RingHom.ker ψ₀)
   have hg₀ : ψ₀ g ≠ 0 := hg
   have hgne : g ≠ 0 := fun h => hg₀ (by simp [h])
@@ -122,7 +122,7 @@ theorem exists_holPts_ne_zero : ∀ (F A : Type) [Field F] [CommRing A] [IsDomai
   let ι : A →+* R := algebraMap A R
   have hle : Submonoid.powers g ≤ nonZeroDivisors A :=
     powers_le_nonZeroDivisors_of_noZeroDivisors hgne
-  haveI : IsDomain R := IsLocalization.isDomain_localization hle
+  have : IsDomain R := IsLocalization.isDomain_localization hle
   have hι : Function.Injective ι := IsLocalization.injective R hle
   let e : R →+* ℂ := IsLocalization.Away.lift g (g := ψ₀) (isUnit_iff_ne_zero.2 hg₀)
   have he : ∀ a, e (ι a) = ψ₀ a := fun a => IsLocalization.Away.lift_eq g _ a
@@ -134,11 +134,11 @@ theorem exists_holPts_ne_zero : ∀ (F A : Type) [Field F] [CommRing A] [IsDomai
   have heC : ∀ k, e (P (MvPolynomial.C k)) = σ k := fun k => by rw [hPC, he]; rfl
 
   obtain ⟨c, hc0, hc⟩ : ∃ c : MvPolynomial (Fin m) F, c ≠ 0 ∧ ι p ∣ P c := by
-    letI : Algebra (MvPolynomial (Fin m) F) R := P.toAlgebra
-    haveI : Algebra.Etale (MvPolynomial (Fin m) F) R := het
-    haveI : FaithfulSMul (MvPolynomial (Fin m) F) R := faithfulSMul_of_flat _ _
-    haveI := isAlgebraic_of_etale (MvPolynomial (Fin m) F) R
-    exact (Algebra.IsAlgebraic.isAlgebraic (ι p)).exists_nonzero_dvd
+    let : Algebra (MvPolynomial (Fin m) F) R := P.toAlgebra
+    have : Algebra.Etale (MvPolynomial (Fin m) F) R := het
+    have : FaithfulSMul (MvPolynomial (Fin m) F) R := faithfulSMul_of_flat _ _
+    have := isAlgebraic_of_etale (MvPolynomial (Fin m) F) R
+    exact (Algebra.IsAlgebraic.isAlgebraic (ι p)).exists_ne_zero_dvd
       (mem_nonZeroDivisors_of_ne_zero ((map_ne_zero_iff ι hι).2 hp))
   obtain ⟨N, τ, n, f, O, hN, hO, hO₀, hd, hτ, hrec⟩ :=
     GlobalTheory.EtaleFamily.exists_holomorphic_sections 0 m F R P Set.univ (fun _ => σ) 0 e het

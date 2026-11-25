@@ -112,8 +112,8 @@ theorem cut_admissible : Formalism.FourierDecayAlt.M.CutAdm := by
   have hz : a.pt = ((a.pt.re : ℝ) : ℂ) := eq_ofReal him
   rw [hz]
   refine ⟨?_, ?_, ?_, qpos _ hcut, qsh _ hcut⟩
-  · convert key _ hcut 0 (by norm_num) using 1 <;> push_cast <;> ring
-  · convert key _ hcut 1 (by norm_num) using 1 <;> push_cast <;> ring
-  · convert key _ hcut (-1) (by norm_num) using 1 <;> push_cast <;> ring
+  · convert key _ hcut 0 (by norm_num) using 1; push_cast; ring
+  · convert key _ hcut 1 (by norm_num) using 1; push_cast; ring
+  · convert key _ hcut (-1) (by norm_num) using 1; push_cast; ring
 
 end Formalism.FourierDecayAlt.P

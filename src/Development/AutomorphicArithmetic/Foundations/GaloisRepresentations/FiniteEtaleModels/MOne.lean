@@ -47,17 +47,17 @@ open NumberField GlobalTheory.UPel.HT
 theorem UpperTheory.Gal.FiniteEtaleModels.O.mOne :
     UpperTheory.Gal.FiniteEtaleModels.O.MOne := by
   intro q _ D hm
-  haveI := D.freeLa
-  haveI := D.finLa
+  have := D.freeLa
+  have := D.finLa
   have hb : Function.Bijective (algebraMap (𝓞 D.F) D.O) :=
     ⟨D.algebraMap_injective hm, Datum.algebraMap_surjective_of_m_eq_one q D hm⟩
   have hfin : Module.Finite D.O D.La := Module.Finite.of_restrictScalars_finite ℤ D.O D.La
   refine ⟨hb, ?_, hfin⟩
   let e : 𝓞 D.F ≃+* D.O := RingEquiv.ofBijective _ hb
-  letI : Module (𝓞 D.F) D.La := Module.compHom D.La (algebraMap (𝓞 D.F) D.O)
+  let : Module (𝓞 D.F) D.La := Module.compHom D.La (algebraMap (𝓞 D.F) D.O)
   have hsmul : ∀ (r : 𝓞 D.F) (x : D.La), r • x = algebraMap (𝓞 D.F) D.O r • x :=
     fun _ _ => rfl
-  haveI : IsScalarTower ℤ (𝓞 D.F) D.La :=
+  have : IsScalarTower ℤ (𝓞 D.F) D.La :=
     ⟨fun n r x => by rw [hsmul, hsmul, map_zsmul, smul_assoc]⟩
   have htors : Submodule.torsion (𝓞 D.F) D.La = ⊥ := by
     rw [eq_bot_iff]
@@ -75,13 +75,13 @@ theorem UpperTheory.Gal.FiniteEtaleModels.O.mOne :
         exact (Nat.cast_smul_eq_nsmul (𝓞 D.F) _ x).symm
       rw [h1, ← hs, mul_smul, hx', smul_zero]
     exact (smul_eq_zero.mp hz).resolve_left (by exact_mod_cast hN)
-  haveI : Module.Flat (𝓞 D.F) D.La := IsDedekindDomain.flat_iff_torsion_eq_bot.mpr htors
-  haveI : Module.Finite (𝓞 D.F) D.La := Module.Finite.of_restrictScalars_finite ℤ _ _
-  haveI : Module.FinitePresentation (𝓞 D.F) D.La := Module.finitePresentation_of_finite _ _
-  haveI : Module.Projective (𝓞 D.F) D.La := Module.Flat.projective_of_finitePresentation
-  haveI h1 : RingHomInvPair (e : 𝓞 D.F →+* D.O) (e.symm : D.O →+* 𝓞 D.F) :=
+  have : Module.Flat (𝓞 D.F) D.La := IsDedekindDomain.flat_iff_torsion_eq_bot.mpr htors
+  have : Module.Finite (𝓞 D.F) D.La := Module.Finite.of_restrictScalars_finite ℤ _ _
+  have : Module.FinitePresentation (𝓞 D.F) D.La := Module.finitePresentation_of_finite _ _
+  have : Module.Projective (𝓞 D.F) D.La := Module.Flat.projective_of_finitePresentation
+  have h1 : RingHomInvPair (e : 𝓞 D.F →+* D.O) (e.symm : D.O →+* 𝓞 D.F) :=
     RingHomInvPair.of_ringEquiv e
-  haveI h2 : RingHomInvPair (e.symm : D.O →+* 𝓞 D.F) (e : 𝓞 D.F →+* D.O) :=
+  have h2 : RingHomInvPair (e.symm : D.O →+* 𝓞 D.F) (e : 𝓞 D.F →+* D.O) :=
     RingHomInvPair.symm _ _
   let f : D.La ≃ₛₗ[(e : 𝓞 D.F →+* D.O)] D.La :=
     { AddEquiv.refl D.La with map_smul' := fun _ _ => rfl }

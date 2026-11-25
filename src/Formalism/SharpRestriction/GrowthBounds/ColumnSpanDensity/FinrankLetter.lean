@@ -58,11 +58,11 @@ theorem hwt_apply (m A B : ℕ) (i : Fin (m + 2)) :
   induction i using Fin.cases with
   | zero => simp
   | succ j =>
-    rw [Fin.cons_succ, if_neg (Fin.succ_ne_zero j)]
+    rw [Fin.cons_succ, ite_eq_right (Fin.succ_ne_zero j)]
     induction j using Fin.lastCases with
     | last => simp [Fin.succ_last]
     | cast j =>
-      rw [Fin.snoc_castSucc, if_neg]
+      rw [Fin.snoc_castSucc, ite_eq_right]
       intro h
       have := congrArg Fin.val h
       simp at this
@@ -73,7 +73,7 @@ theorem cov_apply (m : ℕ) (d : ℤ) (i : Fin (m + 2)) :
       if i = Fin.last (m + 1) then 0 else d := by
   induction i using Fin.cases with
   | zero =>
-    rw [Fin.cons_zero, if_neg]
+    rw [Fin.cons_zero, ite_eq_right]
     intro h
     have := congrArg Fin.val h
     simp at this
@@ -82,7 +82,7 @@ theorem cov_apply (m : ℕ) (d : ℤ) (i : Fin (m + 2)) :
     induction j using Fin.lastCases with
     | last => simp [Fin.succ_last]
     | cast j =>
-      rw [Fin.snoc_castSucc, if_neg]
+      rw [Fin.snoc_castSucc, ite_eq_right]
       intro h
       have := congrArg Fin.val h
       simp at this
@@ -109,7 +109,7 @@ theorem prod_tops {n' : ℕ} (TT : Finset (Fin n')) (f : TT → ℚ) :
     rw [dite_eq_right hs]
   rw [h1, ← Finset.prod_attach, Finset.univ_eq_attach]
   refine Finset.prod_congr rfl fun s _ => ?_
-  rw [dif_pos s.2]
+  rw [dite_eq_left s.2]
 
 theorem flatW_dom {n' : ℕ} (m : ℕ) {TT : Finset (Fin n')} (A B : TT → ℕ) : IsDominant (flatW (m + 1) A B) := by
   intro s i j hij
@@ -127,7 +127,7 @@ theorem lamAt_flat {n' : ℕ} (m : ℕ) {TT : Finset (Fin n')} (A B : TT → ℕ
     weylDim (m + 2) (lamAt (flatW (m + 1) A B) s) =
       if h : s ∈ TT then (dimHar (m + 1) (A ⟨s, h⟩) (B ⟨s, h⟩) : ℚ) else 1 := by
   by_cases hs : s ∈ TT
-  · rw [dif_pos hs]
+  · rw [dite_eq_left hs]
     unfold lamAt
     split_ifs with he
     · have : flatW (m + 1) A B s = hwt m (A ⟨s, hs⟩) (B ⟨s, hs⟩) := by

@@ -17,11 +17,12 @@ open Formalism.ConjugateSelfDual ReciprocityTheory.Gal NumberField IsDedekindDom
 
 variable {F Ω : Type} [Field F] [NumberField F] [Field Ω] [Algebra F Ω] [IsAlgClosure F Ω] {p : ℕ} [Fact p.Prime]
 
-theorem exists_res (ι : Ω →+* PadicAlgCl p) (σ : GK F ι) : ∃ τ : Ω ≃ₐ[F] Ω, ∀ x, ι (τ x) = σ (ι x) := by
-  letI : Algebra Ω (PadicAlgCl p) := ι.toAlgebra
-  letI : Algebra F (PadicAlgCl p) := (ι.comp (algebraMap F Ω)).toAlgebra
-  haveI : IsScalarTower F Ω (PadicAlgCl p) := IsScalarTower.of_algebraMap_eq fun _ => rfl
-  haveI : Normal F Ω := IsAlgClosure.normal F Ω
+omit [NumberField F] [Field Ω] [Algebra F Ω] [IsAlgClosure F Ω] p [Fact p.Prime] in
+theorem exists_res [NumberField F] [Field Ω] [Algebra F Ω] [IsAlgClosure F Ω] {p : ℕ} [Fact p.Prime] (ι : Ω →+* PadicAlgCl p) (σ : GK F ι) : ∃ τ : Ω ≃ₐ[F] Ω, ∀ x, ι (τ x) = σ (ι x) := by
+  let : Algebra Ω (PadicAlgCl p) := ι.toAlgebra
+  let : Algebra F (PadicAlgCl p) := (ι.comp (algebraMap F Ω)).toAlgebra
+  have : IsScalarTower F Ω (PadicAlgCl p) := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  have : Normal F Ω := IsAlgClosure.normal F Ω
   let χ : PadicAlgCl p ≃ₐ[F] PadicAlgCl p := AlgEquiv.ofRingEquiv (f := σ.toRingEquiv) fun c =>
     σ.commutes ⟨ι (algebraMap F Ω c), IntermediateField.subset_adjoin _ _ ⟨c, rfl⟩⟩
   exact ⟨χ.restrictNormal Ω, fun x => χ.restrictNormal_commutes Ω x⟩
@@ -55,13 +56,13 @@ theorem res_injective (ι : Ω →+* PadicAlgCl p) : Function.Injective (res (F 
     ((denseRange F ι).equalizer (continuous_GK ι σ) (continuous_GK ι τ) h2))
 
 theorem continuous_res (ι : Ω →+* PadicAlgCl p) : Continuous (res (F := F) ι) := by
-  letI : Algebra Ω (PadicAlgCl p) := ι.toAlgebra
-  letI : Algebra F (PadicAlgCl p) := (ι.comp (algebraMap F Ω)).toAlgebra
-  haveI : IsScalarTower F Ω (PadicAlgCl p) := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  let : Algebra Ω (PadicAlgCl p) := ι.toAlgebra
+  let : Algebra F (PadicAlgCl p) := (ι.comp (algebraMap F Ω)).toAlgebra
+  have : IsScalarTower F Ω (PadicAlgCl p) := IsScalarTower.of_algebraMap_eq fun _ => rfl
   let φ : F →+* Kloc F ι := (ι.comp (algebraMap F Ω)).codRestrict (Kloc F ι)
     fun c => IntermediateField.subset_adjoin _ _ ⟨c, rfl⟩
-  letI : Algebra F (Kloc F ι) := φ.toAlgebra
-  haveI : IsScalarTower F (Kloc F ι) (PadicAlgCl p) := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  let : Algebra F (Kloc F ι) := φ.toAlgebra
+  have : IsScalarTower F (Kloc F ι) (PadicAlgCl p) := IsScalarTower.of_algebraMap_eq fun _ => rfl
   have hint : ∀ x : Ω, IsIntegral (Kloc F ι) (ι x) := fun x =>
     ((Algebra.IsAlgebraic.isAlgebraic (R := F) x).isIntegral.map
       (IsScalarTower.toAlgHom F Ω (PadicAlgCl p))).tower_top
@@ -69,11 +70,11 @@ theorem continuous_res (ι : Ω →+* PadicAlgCl p) : Continuous (res (F := F) �
   rw [ContinuousAt, map_one]
   intro s hs
   obtain ⟨E, hEfin, hEs⟩ := (krullTopology_mem_nhds_one_iff F Ω s).1 hs
-  haveI := hEfin
+  have := hEfin
   let b := Module.finBasis F E
   let E' : IntermediateField (Kloc F ι) (PadicAlgCl p) :=
     IntermediateField.adjoin (Kloc F ι) (Set.range fun i => ι (b i))
-  haveI : FiniteDimensional (Kloc F ι) E' :=
+  have : FiniteDimensional (Kloc F ι) E' :=
     IntermediateField.finiteDimensional_adjoin (by rintro _ ⟨i, rfl⟩; exact hint _)
   have hE' : (E'.fixingSubgroup : Set (GK F ι)) ∈ nhds (1 : GK F ι) :=
     (krullTopology_mem_nhds_one_iff (Kloc F ι) (PadicAlgCl p) _).2 ⟨E', inferInstance, le_rfl⟩

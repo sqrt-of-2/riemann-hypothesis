@@ -94,10 +94,10 @@ theorem khw_big_weight (hE : IsGlRep E) (hV : IsKIrrHW ε E Λ V) {k : ℕ} {F :
         rw [← h, Prod.mk.eta, Function.update_eq_self]
       simp only [root, Pi.sub_apply, Pi.single_apply]
       by_cases h1 : (κ i).1 = a <;> by_cases h2 : (κ i).2 = a
-      · rw [if_pos h1, if_pos h2, e1 h1, e2 h2, if_pos h1.symm, if_pos h2.symm]; simp
-      · rw [if_pos h1, if_neg h2, e1 h1, if_pos h1.symm, if_neg (Ne.symm h2)]; simp
-      · rw [if_neg h1, if_pos h2, e2 h2, if_neg (Ne.symm h1), if_pos h2.symm]; simp
-      · rw [if_neg h1, if_neg h2, if_neg (Ne.symm h1), if_neg (Ne.symm h2)]; simp
+      · rw [ite_eq_left h1, ite_eq_left h2, e1 h1, e2 h2, ite_eq_left h1.symm, ite_eq_left h2.symm]; simp
+      · rw [ite_eq_left h1, ite_eq_right h2, e1 h1, ite_eq_left h1.symm, ite_eq_right (Ne.symm h2)]; simp
+      · rw [ite_eq_right h1, ite_eq_left h2, e2 h2, ite_eq_right (Ne.symm h1), ite_eq_left h2.symm]; simp
+      · rw [ite_eq_right h1, ite_eq_right h2, ite_eq_right (Ne.symm h1), ite_eq_right (Ne.symm h2)]; simp
     rw [Finset.sum_congr rfl (fun i _ => hterm i), ← Finset.sum_smul] at h0
     rw [eq_sub_of_add_eq h0, ← sub_smul]
     congr 1

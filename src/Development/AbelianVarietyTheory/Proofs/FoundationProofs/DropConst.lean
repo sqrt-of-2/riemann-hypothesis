@@ -54,7 +54,8 @@ namespace GlobalTheory.KummerEisensteinGalois.UnitPieceMu
 
 variable {K : Type} [Field K] [CharZero K]
 
-theorem ffMu_eq (N p m k : ℕ) (ψ : DirichletCharacter K (p ^ m)) (a₀ : ℤ) (s : ℕ) :
+omit [CharZero K] in
+theorem ffMu_eq [CharZero K] (N p m k : ℕ) (ψ : DirichletCharacter K (p ^ m)) (a₀ : ℤ) (s : ℕ) :
     ffMu N p m k ψ a₀ s = ∑ q ∈ (s : ℤ).divisorsAntidiag,
       if ¬ (p : ℤ) ∣ q.1 ∧ ¬ (p : ℤ) ∣ q.2 ∧ q.1 ≡ a₀ [ZMOD N] then
         (q.2.sign : K) * (ψ (q.1 : ZMod (p ^ m)) * (q.1 : K) ^ (k - 2)) else 0 := by
@@ -69,7 +70,8 @@ theorem ffMu_eq (N p m k : ℕ) (ψ : DirichletCharacter K (p ^ m)) (a₀ : ℤ)
     by_cases h3 : ((s / d : ℕ) : ℤ) ≡ a₀ [ZMOD N] <;> by_cases h4 : -((s / d : ℕ) : ℤ) ≡ a₀ [ZMOD N] <;>
     simp [h1, h2, h3, h4, sub_eq_add_neg, -Nat.cast_div_charZero, -Int.natCast_div, -Int.natCast_ediv]
 
-theorem eeMu_eq (N p m : ℕ) (ψ : DirichletCharacter K (p ^ m)) (b₀ : ℤ) (s : ℕ) :
+omit [CharZero K] in
+theorem eeMu_eq [CharZero K] (N p m : ℕ) (ψ : DirichletCharacter K (p ^ m)) (b₀ : ℤ) (s : ℕ) :
     eeMu N p m ψ b₀ s = ∑ q ∈ (s : ℤ).divisorsAntidiag,
       if ¬ (p : ℤ) ∣ q.1 ∧ ¬ (p : ℤ) ∣ q.2 ∧ q.1 ≡ b₀ [ZMOD N] then
         (q.2.sign : K) * ψ⁻¹ (q.2 : ZMod (p ^ m)) else 0 := by
@@ -96,7 +98,7 @@ theorem drop_const (p m N k : ℕ) [Fact p.Prime] (hm : 1 ≤ m) (hpN : ¬ p ∣
   by_cases hi : i = 0
   · subst hi
     have hk1 : k - 1 ≠ 1 := by omega
-    simp only [eisF, const0, if_true, if_neg hk1]
+    simp only [eisF, const0, ite_true, ite_eq_right hk1]
     rw [sum_zero_left p m hm ψ hψ]
     simp [coefPos]
   by_cases hj : j = 0
@@ -115,10 +117,10 @@ theorem drop_const (p m N k : ℕ) [Fact p.Prime] (hm : 1 ≤ m) (hpN : ¬ p ∣
         rcases (Nat.prime_iff_prime_int.mp hp).dvd_or_dvd h2 with h3 | h3
         · exact hpN (Int.natCast_dvd_natCast.mp h3)
         · exact (mem_filter.mp hv).2 (Int.natCast_dvd_natCast.mp h3)
-      simp only [eisF, const0, if_true, if_neg this]
+      simp only [eisF, const0, ite_true, ite_eq_right this]
     rw [sum_congr rfl fun u _ => sum_congr rfl fun a _ => sum_congr rfl fun v hv => sum_congr rfl fun b _ => by
       rw [e v hv], sum_zero_right p m hm ψ hψ]
     simp [coefPos]
-  simp only [eisF, if_neg hi, if_neg hj]
+  simp only [eisF, ite_eq_right hi, ite_eq_right hj]
 
 end GlobalTheory.KummerEisensteinGalois.UnitPieceMu

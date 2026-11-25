@@ -236,7 +236,7 @@ theorem blockM_one_partner_eq_one : ∀ {F E : Type} [inst : Field F] [inst_1 : 
   [inst_2 : Algebra F E] (R : Type) [inst_3 : CommRing R] [inst_4 : Algebra F R] (σ : E →ₐ[F] E) {M : ℕ}
   (J : Matrix (Fin M) (Fin M) E) [inst_5 : TopologicalSpace R], d18 R σ J Set.univ := by
   intro F E _ _ _ R _ _ σ M J _
-  letI : TopologicalSpace (TensorProduct F R E) := topTens R
+  let : TopologicalSpace (TensorProduct F R E) := topTens R
   exact ⟨Set.univ, isOpen_univ, rfl⟩
 
 theorem blockM_mul_alt : ∀ {F E : Type} [inst : Field F] [inst_1 : Field E]
@@ -245,7 +245,7 @@ theorem blockM_mul_alt : ∀ {F E : Type} [inst : Field F] [inst_1 : Field E]
   d18 R σ J s →
     d18 R σ J t → d18 R σ J (s ∩ t) := by
   intro F E _ _ _ R _ _ σ M J _ s t hs ht
-  letI : TopologicalSpace (TensorProduct F R E) := topTens R
+  let : TopologicalSpace (TensorProduct F R E) := topTens R
   obtain ⟨a, ha, rfl⟩ := hs
   obtain ⟨b, hb, rfl⟩ := ht
   exact ⟨a ∩ b, ha.inter hb, rfl⟩
@@ -256,7 +256,7 @@ theorem conj_invariant_character_mem : ∀ {F E : Type} [inst : Field F]
   (s : Set (Set (HA R σ J))),
   (∀ t ∈ s, d18 R σ J t) → d18 R σ J (⋃₀ s) := by
   intro F E _ _ _ R _ _ σ M J _ s hs
-  letI : TopologicalSpace (TensorProduct F R E) := topTens R
+  let : TopologicalSpace (TensorProduct F R E) := topTens R
   refine ⟨⋃₀ {u : Set (Matrix.GeneralLinearGroup (Fin M) (TensorProduct F R E)) |
     IsOpen u ∧ Subtype.val ⁻¹' u ∈ s}, isOpen_sUnion (fun u hu => hu.1), ?_⟩
   ext x
@@ -306,10 +306,10 @@ private theorem lcsc_GL {A : Type} [CommRing A] [TopologicalSpace A] [IsTopologi
     LocallyCompactSpace (Matrix.GeneralLinearGroup n A) ∧
       SecondCountableTopology (Matrix.GeneralLinearGroup n A) ∧
       T2Space (Matrix.GeneralLinearGroup n A) := by
-  haveI : LocallyCompactSpace (Matrix n n A) := inferInstanceAs (LocallyCompactSpace (n → n → A))
-  haveI : SecondCountableTopology (Matrix n n A) :=
+  have : LocallyCompactSpace (Matrix n n A) := inferInstanceAs (LocallyCompactSpace (n → n → A))
+  have : SecondCountableTopology (Matrix n n A) :=
     inferInstanceAs (SecondCountableTopology (n → n → A))
-  haveI : SecondCountableTopology (Matrix n n A)ᵐᵒᵖ :=
+  have : SecondCountableTopology (Matrix n n A)ᵐᵒᵖ :=
     MulOpposite.opHomeomorph.symm.isEmbedding.secondCountableTopology
   have he : Topology.IsClosedEmbedding (Units.embedProduct (Matrix n n A)) :=
     Units.isClosedEmbedding_embedProduct
@@ -327,7 +327,7 @@ private theorem props_of_free {R D : Type} [CommRing R] [TopologicalSpace R] [Is
     [IsModuleTopology R D] :
     IsTopologicalRing D ∧ LocallyCompactSpace D ∧ SecondCountableTopology D ∧ T2Space D := by
   have hr := IsModuleTopology.isTopologicalRing R D
-  haveI := IsModuleTopology.toContinuousAdd R D
+  have := IsModuleTopology.toContinuousAdd R D
   let e := B.equivFun
   have c1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
   have c2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
@@ -340,7 +340,7 @@ private theorem sigR_continuous {F E : Type} [Field F] [Field E] [Algebra F E]
     [IsTopologicalRing R] [TopologicalSpace (TensorProduct F R E)]
     [IsModuleTopology R (TensorProduct F R E)] (σ : E →ₐ[F] E) :
     Continuous (sigR R σ) := by
-  haveI := IsModuleTopology.toContinuousAdd R (TensorProduct F R E)
+  have := IsModuleTopology.toContinuousAdd R (TensorProduct F R E)
   have h : (⇑(sigR R σ) : TensorProduct F R E → TensorProduct F R E) =
       ⇑(LinearMap.baseChange R σ.toLinearMap) := by
     funext x

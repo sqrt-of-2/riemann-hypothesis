@@ -62,33 +62,33 @@ theorem ptEntry_inv (bs : List (K × ℕ)) (h : ∀ b ∈ bs, b.1 ≠ 0 ∧ 1 �
     refine ⟨fun i => if i < s then s - 1 - i else s + g (i - s), fun i hi => ?_⟩
     simp only [List.map_cons, List.sum_cons] at hi ⊢
     by_cases his : i < s
-    · have e1 : (if i < s then s - 1 - i else s + g (i - s)) = s - 1 - i := if_pos his
+    · have e1 : (if i < s then s - 1 - i else s + g (i - s)) = s - 1 - i := ite_eq_left his
       have e2 : (if s - 1 - i < s then s - 1 - (s - 1 - i) else s + g (s - 1 - i - s)) = i := by
-        rw [if_pos (show s - 1 - i < s by omega)]; omega
+        rw [ite_eq_left (show s - 1 - i < s by omega)]; omega
       rw [e1, e2]
       refine ⟨by omega, rfl, ?_, fun j hj => ?_⟩
       · simp only [ptEntry]
-        rw [if_pos (show i < s ∧ s - 1 - i < s by omega), if_pos (show i + (s - 1 - i) + 1 = s by omega)]
+        rw [ite_eq_left (show i < s ∧ s - 1 - i < s by omega), ite_eq_left (show i + (s - 1 - i) + 1 = s by omega)]
         exact hb.1
       · simp only [ptEntry]
         by_cases hjs : j < s
-        · rw [if_pos (show i < s ∧ j < s from ⟨his, hjs⟩), if_neg (show ¬ (i + j + 1 = s) by omega)]
-        · rw [if_neg (show ¬ (i < s ∧ j < s) by omega), if_neg (show ¬ (s ≤ i ∧ s ≤ j) by omega)]
+        · rw [ite_eq_left (show i < s ∧ j < s from ⟨his, hjs⟩), ite_eq_right (show ¬ (i + j + 1 = s) by omega)]
+        · rw [ite_eq_right (show ¬ (i < s ∧ j < s) by omega), ite_eq_right (show ¬ (s ≤ i ∧ s ≤ j) by omega)]
     · have hi' : i - s < (bs.map Prod.snd).sum := by omega
       obtain ⟨h1, h2, h3, h4⟩ := hg (i - s) hi'
-      have e1 : (if i < s then s - 1 - i else s + g (i - s)) = s + g (i - s) := if_neg his
+      have e1 : (if i < s then s - 1 - i else s + g (i - s)) = s + g (i - s) := ite_eq_right his
       have e2 : (if s + g (i - s) < s then s - 1 - (s + g (i - s)) else s + g (s + g (i - s) - s)) = i := by
-        rw [if_neg (show ¬ (s + g (i - s) < s) by omega), Nat.add_sub_cancel_left, h2]; omega
+        rw [ite_eq_right (show ¬ (s + g (i - s) < s) by omega), Nat.add_sub_cancel_left, h2]; omega
       rw [e1, e2]
       refine ⟨by omega, rfl, ?_, fun j hj => ?_⟩
       · simp only [ptEntry]
-        rw [if_neg (show ¬ (i < s ∧ s + g (i - s) < s) by omega),
-          if_pos (show s ≤ i ∧ s ≤ s + g (i - s) by omega), Nat.add_sub_cancel_left]
+        rw [ite_eq_right (show ¬ (i < s ∧ s + g (i - s) < s) by omega),
+          ite_eq_left (show s ≤ i ∧ s ≤ s + g (i - s) by omega), Nat.add_sub_cancel_left]
         exact h3
       · simp only [ptEntry]
         by_cases hjs : j < s
-        · rw [if_neg (show ¬ (i < s ∧ j < s) by omega), if_neg (show ¬ (s ≤ i ∧ s ≤ j) by omega)]
-        · rw [if_neg (show ¬ (i < s ∧ j < s) by omega), if_pos (show s ≤ i ∧ s ≤ j by omega)]
+        · rw [ite_eq_right (show ¬ (i < s ∧ j < s) by omega), ite_eq_right (show ¬ (s ≤ i ∧ s ≤ j) by omega)]
+        · rw [ite_eq_right (show ¬ (i < s ∧ j < s) by omega), ite_eq_left (show s ≤ i ∧ s ≤ j by omega)]
           exact h4 (j - s) (by omega)
 
 theorem ptMat_monomial (p : Point K N) :
@@ -119,11 +119,11 @@ theorem mono_mul_inv (hd : ∀ i, d i ≠ 0) (hw : ∀ i j, w i j = if j = σ i 
     w * (Matrix.of fun k j => if k = σ j then (d j)⁻¹ else 0) = 1 := by
   ext i j
   rw [Matrix.mul_apply, Finset.sum_eq_single (σ i)]
-  · rw [hw, if_pos rfl, Matrix.of_apply, Matrix.one_apply]
+  · rw [hw, ite_eq_left rfl, Matrix.of_apply, Matrix.one_apply]
     by_cases hij : i = j
-    · subst hij; rw [if_pos rfl, if_pos rfl, mul_inv_cancel₀ (hd i)]
-    · rw [if_neg (fun h => hij (σ.injective h)), if_neg hij, mul_zero]
-  · intro k _ hk; rw [hw, if_neg hk, zero_mul]
+    · subst hij; rw [ite_eq_left rfl, ite_eq_left rfl, mul_inv_cancel₀ (hd i)]
+    · rw [ite_eq_right (fun h => hij (σ.injective h)), ite_eq_right hij, mul_zero]
+  · intro k _ hk; rw [hw, ite_eq_right hk, zero_mul]
   · intro h; exact absurd (Finset.mem_univ _) h
 
 theorem mono_conj (hd : ∀ i, d i ≠ 0) (hw : ∀ i j, w i j = if j = σ i then d i else 0)
@@ -131,10 +131,10 @@ theorem mono_conj (hd : ∀ i, d i ≠ 0) (hw : ∀ i j, w i j = if j = σ i the
     (w * x * w⁻¹) i j = d i * x (σ i) (σ j) * (d j)⁻¹ := by
   rw [Matrix.inv_eq_right_inv (mono_mul_inv hd hw), Matrix.mul_apply, Finset.sum_eq_single (σ j)]
   · rw [Matrix.mul_apply, Finset.sum_eq_single (σ i)]
-    · rw [hw, if_pos rfl, Matrix.of_apply, if_pos rfl]
-    · intro k _ hk; rw [hw, if_neg hk, zero_mul]
+    · rw [hw, ite_eq_left rfl, Matrix.of_apply, ite_eq_left rfl]
+    · intro k _ hk; rw [hw, ite_eq_right hk, zero_mul]
     · intro h; exact absurd (Finset.mem_univ _) h
-  · intro k _ hk; rw [Matrix.of_apply, if_neg hk, mul_zero]
+  · intro k _ hk; rw [Matrix.of_apply, ite_eq_right hk, mul_zero]
   · intro h; exact absurd (Finset.mem_univ _) h
 
 theorem mono_roots (hd : ∀ i, d i ≠ 0) (hw : ∀ i j, w i j = if j = σ i then d i else 0)
@@ -148,7 +148,7 @@ theorem mono_roots (hd : ∀ i, d i ≠ 0) (hw : ∀ i j, w i j = if j = σ i th
       · rw [hk, Equiv.symm_apply_apply]
       · exact absurd rfl h
     · rintro rfl
-      rw [if_pos (Equiv.apply_symm_apply σ k).symm]
+      rw [ite_eq_left (Equiv.apply_symm_apply σ k).symm]
       exact hd _
   simp only [roots, Finset.mem_filter, Finset.mem_univ, true_and]
   constructor
@@ -173,30 +173,30 @@ theorem isUpUni_iff_sub (a : Matrix (Fin N) (Fin N) K) : IsUpUni a ↔ StrUp (a 
   constructor
   · intro h i j hji
     rcases hji.lt_or_eq with hlt | heq
-    · rw [(h i j).1 hlt, if_neg hlt.ne', sub_zero]
-    · subst heq; rw [(h j j).2 rfl, if_pos rfl, sub_self]
+    · rw [(h i j).1 hlt, ite_eq_right hlt.ne', sub_zero]
+    · subst heq; rw [(h j j).2 rfl, ite_eq_left rfl, sub_self]
   · intro h i j
     refine ⟨fun hlt => ?_, fun hij => ?_⟩
     · have := h i j hlt.le
-      rwa [if_neg hlt.ne', sub_zero] at this
+      rwa [ite_eq_right hlt.ne', sub_zero] at this
     · subst hij
       have := h i i le_rfl
-      rwa [if_pos rfl, sub_eq_zero] at this
+      rwa [ite_eq_left rfl, sub_eq_zero] at this
 
 theorem isLoUni_iff_sub (a : Matrix (Fin N) (Fin N) K) : IsLoUni a ↔ StrLo (a - 1) := by
   simp only [IsLoUni, StrLo, Matrix.sub_apply, Matrix.one_apply]
   constructor
   · intro h i j hij
     rcases hij.lt_or_eq with hlt | heq
-    · rw [(h i j).1 hlt, if_neg hlt.ne, sub_zero]
-    · subst heq; rw [(h i i).2 rfl, if_pos rfl, sub_self]
+    · rw [(h i j).1 hlt, ite_eq_right hlt.ne, sub_zero]
+    · subst heq; rw [(h i i).2 rfl, ite_eq_left rfl, sub_self]
   · intro h i j
     refine ⟨fun hlt => ?_, fun hij => ?_⟩
     · have := h i j hlt.le
-      rwa [if_neg hlt.ne, sub_zero] at this
+      rwa [ite_eq_right hlt.ne, sub_zero] at this
     · subst hij
       have := h i i le_rfl
-      rwa [if_pos rfl, sub_eq_zero] at this
+      rwa [ite_eq_left rfl, sub_eq_zero] at this
 
 theorem conj_sub_one {Z : Matrix (Fin N) (Fin N) K} (hZ : IsUnit Z.det)
     (a : Matrix (Fin N) (Fin N) K) : Z * (a - 1) * Z⁻¹ = Z * a * Z⁻¹ - 1 := by
@@ -353,10 +353,10 @@ theorem stab_cell : ∀ (K : Type) [Field K] (N : ℕ) (L U : Matrix (Fin N) (Fi
     · intro h
       refine ⟨fun i j hji => h i j fun hr => absurd (hroot i j hr) (not_lt.2 hji), fun i j hij hr => ?_⟩
       have := h i j hr
-      rwa [Matrix.sub_apply, Matrix.one_apply, if_neg hij.ne, sub_zero] at this
+      rwa [Matrix.sub_apply, Matrix.one_apply, ite_eq_right hij.ne, sub_zero] at this
     · rintro ⟨hu, hr⟩ i j hn
       rcases lt_or_ge i j with hij | hji
-      · rw [Matrix.sub_apply, Matrix.one_apply, if_neg hij.ne, sub_zero]
+      · rw [Matrix.sub_apply, Matrix.one_apply, ite_eq_right hij.ne, sub_zero]
         exact hr i j hij hn
       · exact hu i j hji
 

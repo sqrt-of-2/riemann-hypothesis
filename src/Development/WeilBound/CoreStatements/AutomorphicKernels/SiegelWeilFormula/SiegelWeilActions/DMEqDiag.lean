@@ -70,14 +70,14 @@ theorem wM_apply (a b : R) (u v : Fin n ⊕ Fin n) :
       (if v = Sum.inl i₀ then b else 0) else if u = v then 1 else 0 := by
   simp only [wM, Matrix.add_apply, Matrix.sub_apply, Matrix.single_apply, Matrix.one_apply]
   rcases u with u | u <;> rcases v with v | v <;> simp only [Sum.inl.injEq, Sum.inr.injEq, reduceCtorEq, and_false,
-    false_and, if_false, sub_zero, add_zero, zero_add, and_self] <;> by_cases h : u = v <;> by_cases h' : u = i₀ <;>
+    false_and, ite_false, sub_zero, add_zero, zero_add, and_self] <;> by_cases h : u = v <;> by_cases h' : u = i₀ <;>
     subst_vars <;> simp_all [eq_comm]
 
 theorem wM_dM (a b x y : R) : wM i₀ a b * dM i₀ x y = dM i₀ y x * wM i₀ a b := by
   rw [dM_eq_diag, dM_eq_diag]
   ext u v
   rw [Matrix.mul_diagonal, Matrix.diagonal_mul, wM_apply, dg, dg]
-  rcases u with u | u <;> rcases v with v | v <;> simp only [Sum.inl.injEq, Sum.inr.injEq, reduceCtorEq, if_false] <;>
+  rcases u with u | u <;> rcases v with v | v <;> simp only [Sum.inl.injEq, Sum.inr.injEq, reduceCtorEq, ite_false] <;>
     by_cases h : u = v <;> by_cases h' : u = i₀ <;> by_cases h'' : v = i₀ <;> subst_vars <;> simp_all [mul_comm]
 
 theorem smz {i j k l : Fin n ⊕ Fin n} (h : j ≠ k) (c d : R) : Matrix.single i j c * Matrix.single k l d = 0 :=
@@ -104,7 +104,7 @@ theorem comm_dM (J : Matrix (Fin n ⊕ Fin n) (Fin n ⊕ Fin n) R)
     · by_cases hv : v ∈ ({Sum.inl i₀, Sum.inr i₀} : Set (Fin n ⊕ Fin n))
       · rw [(hJ v hv u).2, Matrix.one_apply_ne huv]; ring
       · simp only [Set.mem_insert_iff, Set.mem_singleton_iff, not_or] at hu hv
-        rw [dg, dg, if_neg hu.1, if_neg hu.2, if_neg hv.1, if_neg hv.2]; ring
+        rw [dg, dg, ite_eq_right hu.1, ite_eq_right hu.2, ite_eq_right hv.1, ite_eq_right hv.2]; ring
 
 end Alg
 

@@ -56,28 +56,28 @@ theorem character_first_entry : mud k d 0 0 = -conj d := by
 theorem character_last_entry : mud k d (Fin.last k) 0 = -sgd d := by
   have h0 := zero_ne_last hk
   unfold mud sgd
-  rw [if_neg (fun h => h0 h.1.symm), if_pos ⟨rfl, rfl⟩]
+  rw [ite_eq_right (fun h => h0 h.1.symm), ite_eq_left ⟨rfl, rfl⟩]
 theorem mud0L : mud k d 0 (Fin.last k) = sgd d := by
   have h0 := zero_ne_last hk
   unfold mud sgd
-  rw [if_neg (fun h => h0 h.2.symm), if_neg (fun h => h0 h.1), if_pos ⟨rfl, rfl⟩]
+  rw [ite_eq_right (fun h => h0 h.2.symm), ite_eq_right (fun h => h0 h.1), ite_eq_left ⟨rfl, rfl⟩]
 theorem mudLL : mud k d (Fin.last k) (Fin.last k) = d := by
   have h0 := zero_ne_last hk
   unfold mud
-  rw [if_neg (fun h => h0 h.1.symm), if_neg (fun h => h0 h.2.symm), if_neg (fun h => h0 h.1.symm),
-    if_pos ⟨rfl, rfl⟩]
+  rw [ite_eq_right (fun h => h0 h.1.symm), ite_eq_right (fun h => h0 h.2.symm), ite_eq_right (fun h => h0 h.1.symm),
+    ite_eq_left ⟨rfl, rfl⟩]
 
 theorem mud_col {l j : Fin (k + 1)} (hj0 : j ≠ 0) (hjL : j ≠ Fin.last k) :
     mud k d l j = if l = j then 1 else 0 := by
   unfold mud
-  rw [if_neg (fun h => hj0 h.2), if_neg (fun h => hj0 h.2), if_neg (fun h => hjL h.2),
-    if_neg (fun h => hjL h.2)]
+  rw [ite_eq_right (fun h => hj0 h.2), ite_eq_right (fun h => hj0 h.2), ite_eq_right (fun h => hjL h.2),
+    ite_eq_right (fun h => hjL h.2)]
 
 theorem mud_row {l j : Fin (k + 1)} (hl0 : l ≠ 0) (hlL : l ≠ Fin.last k) :
     mud k d l j = if l = j then 1 else 0 := by
   unfold mud
-  rw [if_neg (fun h => hl0 h.1), if_neg (fun h => hlL h.1), if_neg (fun h => hl0 h.1),
-    if_neg (fun h => hlL h.1)]
+  rw [ite_eq_right (fun h => hl0 h.1), ite_eq_right (fun h => hlL h.1), ite_eq_right (fun h => hl0 h.1),
+    ite_eq_right (fun h => hlL h.1)]
 
 theorem sum_two {f : Fin (k + 1) → ℂ} (hf : ∀ l, l ≠ 0 → l ≠ Fin.last k → f l = 0) :
     ∑ l, f l = f 0 + f (Fin.last k) := Finset.sum_eq_add 0 (Fin.last k) (zero_ne_last hk) (fun c _ hc => hf c hc.1 hc.2)
@@ -93,7 +93,7 @@ theorem mul_mud_blk (P : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (i j : Fin (k +
   rw [Matrix.mul_apply]
   apply sum_two hk
   intro l hl0 hlL
-  rw [mud_row hk d hl0 hlL, if_neg, mul_zero]
+  rw [mud_row hk d hl0 hlL, ite_eq_right, mul_zero]
   rintro rfl
   rcases hj with h | h
   · exact hl0 h
@@ -115,29 +115,29 @@ theorem mud_unitary (hk : 1 ≤ k) (d : ℂ) (hd : 1 < ‖d‖) : (mud k d)ᴴ *
   rcases eq_or_ne j 0 with rfl | hj0
   · rw [mul_mud_blk hk d _ _ _ (Or.inl rfl), hP, hP, Hb_apply]
     rcases eq_or_ne i 0 with rfl | hi0
-    · simp only [character_first_entry hk, character_last_entry hk, if_true, if_neg h0L, star_neg, hss, Complex.star_def, Complex.conj_conj]
+    · simp only [character_first_entry hk, character_last_entry hk, ite_true, ite_eq_right h0L, star_neg, hss, Complex.star_def, Complex.conj_conj]
       linear_combination -hs
     rcases eq_or_ne i (Fin.last k) with rfl | hiL
-    · simp only [mud0L hk, mudLL hk, character_first_entry hk, character_last_entry hk, if_true, if_neg h0L, if_neg h0L.symm, hss,
+    · simp only [mud0L hk, mudLL hk, character_first_entry hk, character_last_entry hk, ite_true, ite_eq_right h0L, ite_eq_right h0L.symm, hss,
         Complex.star_def]
       ring
-    · simp only [mud_col hk d hi0 hiL, if_neg (Ne.symm hi0), if_neg (Ne.symm hiL), if_neg hi0]
+    · simp only [mud_col hk d hi0 hiL, ite_eq_right (Ne.symm hi0), ite_eq_right (Ne.symm hiL), ite_eq_right hi0]
       simp
   rcases eq_or_ne j (Fin.last k) with rfl | hjL
   · rw [mul_mud_blk hk d _ _ _ (Or.inr rfl), hP, hP, Hb_apply]
     rcases eq_or_ne i 0 with rfl | hi0
-    · simp only [character_first_entry hk, character_last_entry hk, mud0L hk, mudLL hk, if_true, if_neg h0L, star_neg, hss, Complex.star_def,
+    · simp only [character_first_entry hk, character_last_entry hk, mud0L hk, mudLL hk, ite_true, ite_eq_right h0L, star_neg, hss, Complex.star_def,
         Complex.conj_conj]
       ring
     rcases eq_or_ne i (Fin.last k) with rfl | hiL
-    · simp only [mud0L hk, mudLL hk, if_true, if_neg h0L, hss, Complex.star_def]
+    · simp only [mud0L hk, mudLL hk, ite_true, ite_eq_right h0L, hss, Complex.star_def]
       linear_combination hs
-    · simp only [mud_col hk d hi0 hiL, if_neg (Ne.symm hi0), if_neg (Ne.symm hiL), if_neg hiL]
+    · simp only [mud_col hk d hi0 hiL, ite_eq_right (Ne.symm hi0), ite_eq_right (Ne.symm hiL), ite_eq_right hiL]
       simp
   · rw [mul_mud_col hk d _ hj0 hjL, hP, mud_row hk d hj0 hjL, Hb_apply]
     by_cases hij : i = j
     · subst hij; simp [hjL]
-    · rw [if_neg (Ne.symm hij), if_neg hij]; simp
+    · rw [ite_eq_right (Ne.symm hij), ite_eq_right hij]; simp
 
 theorem mud_conj_mul (hk : 1 ≤ k) (d : ℂ) (hd : 1 < ‖d‖) : (mud k d).map (starRingEnd ℂ) * mud k d = 1 := by
   have hs := sgd_sq d hd
@@ -149,22 +149,22 @@ theorem mud_conj_mul (hk : 1 ≤ k) (d : ℂ) (hd : 1 < ‖d‖) : (mud k d).map
   rcases eq_or_ne j 0 with rfl | hj0
   · rw [mul_mud_blk hk d _ _ _ (Or.inl rfl), hc, hc, Matrix.one_apply]
     rcases eq_or_ne i 0 with rfl | hi0
-    · simp only [character_first_entry hk, mud0L hk, character_last_entry hk, if_true, map_neg, hsc, Complex.conj_conj]
+    · simp only [character_first_entry hk, mud0L hk, character_last_entry hk, ite_true, map_neg, hsc, Complex.conj_conj]
       linear_combination -hs
     rcases eq_or_ne i (Fin.last k) with rfl | hiL
-    · simp only [character_last_entry hk, mudLL hk, character_first_entry hk, if_neg h0L.symm, map_neg, hsc]
+    · simp only [character_last_entry hk, mudLL hk, character_first_entry hk, ite_eq_right h0L.symm, map_neg, hsc]
       ring
-    · simp only [mud_row hk d hi0 hiL, if_neg hi0, if_neg hiL]
+    · simp only [mud_row hk d hi0 hiL, ite_eq_right hi0, ite_eq_right hiL]
       simp
   rcases eq_or_ne j (Fin.last k) with rfl | hjL
   · rw [mul_mud_blk hk d _ _ _ (Or.inr rfl), hc, hc, Matrix.one_apply]
     rcases eq_or_ne i 0 with rfl | hi0
-    · simp only [character_first_entry hk, mud0L hk, mudLL hk, if_neg h0L, map_neg, hsc, Complex.conj_conj]
+    · simp only [character_first_entry hk, mud0L hk, mudLL hk, ite_eq_right h0L, map_neg, hsc, Complex.conj_conj]
       ring
     rcases eq_or_ne i (Fin.last k) with rfl | hiL
-    · simp only [character_last_entry hk, mudLL hk, mud0L hk, if_true, map_neg, hsc]
+    · simp only [character_last_entry hk, mudLL hk, mud0L hk, ite_true, map_neg, hsc]
       linear_combination -hs
-    · simp only [mud_row hk d hi0 hiL, if_neg hi0, if_neg hiL]
+    · simp only [mud_row hk d hi0 hiL, ite_eq_right hi0, ite_eq_right hiL]
       simp
   · rw [mul_mud_col hk d _ hj0 hjL, hc, mud_col hk d hj0 hjL, Matrix.one_apply]
     split_ifs <;> simp

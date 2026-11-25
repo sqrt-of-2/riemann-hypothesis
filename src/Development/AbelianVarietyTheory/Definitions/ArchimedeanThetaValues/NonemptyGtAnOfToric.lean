@@ -81,27 +81,27 @@ def y : letI := H.starRing; Λ.A.La →ₗ[𝓞 E] a.D₀.X :=
   letI := H.starRing; Λ.eX.toLinearMap ∘ₗ Λ.A.yLin
 
 @[simp] theorem y_apply : letI := H.starRing; ∀ la : Λ.A.La, Λ.y la = Λ.eX la.y := by
-  letI := H.starRing
+  let := H.starRing
   intro la
   show Λ.eX (Λ.A.yLin la) = Λ.eX la.y
   rw [AnArc.yLin_apply]
 
 theorem y_onto : Function.Surjective Λ.y := by
-  letI := H.starRing
+  let := H.starRing
   intro x
   obtain ⟨la, hla⟩ := Λ.A.yLin_surjective (Λ.eX.symm x)
   refine ⟨la, ?_⟩
   rw [y_apply, ← AnArc.yLin_apply, hla, LinearEquiv.apply_symm_apply]
 
 theorem ker_y : letI := H.starRing; ∀ v, (Λ.ex₀ v).IsZero ↔ ∃ la, Λ.y la = 0 ∧ v = Λ.A.P0 la := by
-  letI := H.starRing
+  let := H.starRing
   intro v
   rw [Λ.ker v]
   simp only [y_apply, LinearEquiv.map_eq_zero_iff]
 
 theorem shift_be : letI := H.starRing; ∀ (w : ℂ) (la : Λ.A.La),
     IsTorusPt (Λ.ex₀ (w • Λ.A.N la)) fun x => eTwoPi (w * a.be (Λ.y la) x) := by
-  letI := H.starRing
+  let := H.starRing
   intro w la
   have h := Λ.toGtDict.shift w la
   convert h using 3 with x
@@ -113,7 +113,7 @@ def Lifts {k : ℕ} [NeZero k] (p : Out.QkPt a.D₀ (FractionRing ℂ) k) : letI
 
 theorem exists_lifts {k : ℕ} [NeZero k] (p : Out.QkPt a.D₀ (FractionRing ℂ) k) : letI := H.starRing
     ∃ la : Λ.A.La, ∀ la', Λ.Lifts p la' ↔ ∃ m, la' = la + k • m := by
-  letI := H.starRing
+  let := H.starRing
   have hf : (algebraMap (FractionRing ℂ) ℂ).comp (algebraMap (FractionRing ℂ) (FractionRing ℂ)) =
       algebraMap (FractionRing ℂ) ℂ := by
     rw [Algebra.algebraMap_self, RingHom.comp_id]

@@ -77,11 +77,11 @@ theorem finite_of_semilinear_injective {R S N M : Type*} [CommRing R] [IsNoether
     [CommRing S] [AddCommGroup N] [Module R N] [AddCommGroup M] [Module S M] [Module.Finite S M]
     (φ : R →+* S) (hφ : φ.Finite) (f : N →ₛₗ[φ] M) (hf : Function.Injective f) :
     Module.Finite R N := by
-  letI := φ.toAlgebra
-  letI : Module R M := Module.compHom M φ
-  haveI : IsScalarTower R S M := ⟨fun r s m => mul_smul (φ r) s m⟩
-  haveI : Module.Finite R S := hφ
-  haveI : Module.Finite R M := Module.Finite.trans S M
+  let := φ.toAlgebra
+  let : Module R M := Module.compHom M φ
+  have : IsScalarTower R S M := ⟨fun r s m => mul_smul (φ r) s m⟩
+  have : Module.Finite R S := hφ
+  have : Module.Finite R M := Module.Finite.trans S M
   let g : N →ₗ[R] M :=
     { toFun := f
       map_add' := f.map_add
@@ -109,15 +109,15 @@ theorem finite_integralClosure_of_isIntegrallyClosed (k P K F : Type*) [Field k]
     [CommRing P] [IsDomain P] [IsIntegrallyClosed P] [Algebra k P] [Algebra.FiniteType k P]
     [Field K] [Algebra P K] [IsFractionRing P K] [Field F] [Algebra K F] [Algebra P F]
     [IsScalarTower P K F] [FiniteDimensional K F] : Module.Finite P (integralClosure P F) := by
-  haveI : IsNoetherianRing P := Algebra.FiniteType.isNoetherianRing k P
+  have : IsNoetherianRing P := Algebra.FiniteType.isNoetherianRing k P
   obtain ⟨p, hp⟩ := ExpChar.exists k
-  haveI : ExpChar P p := expChar_of_injective_algebraMap (algebraMap k P).injective p
-  haveI : ExpChar K p := expChar_of_injective_algebraMap (IsFractionRing.injective P K) p
-  haveI : ExpChar F p := expChar_of_injective_algebraMap (algebraMap K F).injective p
+  have : ExpChar P p := expChar_of_injective_algebraMap (algebraMap k P).injective p
+  have : ExpChar K p := expChar_of_injective_algebraMap (IsFractionRing.injective P K) p
+  have : ExpChar F p := expChar_of_injective_algebraMap (algebraMap K F).injective p
   let E := separableClosure K F
-  haveI : ExpChar E p := expChar_of_injective_algebraMap (algebraMap K E).injective p
-  haveI : Module.Finite P (integralClosure P E) := IsIntegralClosure.finite P K E _
-  haveI : IsScalarTower P E F := .of_algebraMap_eq' rfl
+  have : ExpChar E p := expChar_of_injective_algebraMap (algebraMap K E).injective p
+  have : Module.Finite P (integralClosure P E) := IsIntegralClosure.finite P K E _
+  have : IsScalarTower P E F := .of_algebraMap_eq' rfl
   let e := IsPurelyInseparable.exponent E F
   have hE : ∀ z : F, z ^ p ^ e ∈ E := fun z => by
     obtain ⟨y, hy⟩ := IsPurelyInseparable.exponent_def' E p z
@@ -140,29 +140,29 @@ theorem finite_integralClosure_of_perfectField (k B F L : Type*) [Field k] [Perf
     [FiniteDimensional F L] : Module.Finite B (integralClosure B L) := by
   obtain ⟨s, g, hinj, hfin⟩ := exists_finite_inj_algHom_of_fg k B
   let P := MvPolynomial (Fin s) k
-  letI : Algebra P B := g.toRingHom.toAlgebra
-  haveI : Module.Finite P B := hfin
-  haveI : FaithfulSMul P B := (faithfulSMul_iff_algebraMap_injective _ _).mpr hinj
-  letI : Algebra P F := ((algebraMap B F).comp (algebraMap P B)).toAlgebra
-  haveI : IsScalarTower P B F := .of_algebraMap_eq' rfl
-  letI : Algebra P L := ((algebraMap B L).comp (algebraMap P B)).toAlgebra
-  haveI : IsScalarTower P B L := .of_algebraMap_eq' rfl
-  haveI : IsScalarTower P F L := .of_algebraMap_eq fun x => IsScalarTower.algebraMap_apply B F L _
-  haveI : FaithfulSMul P F := (faithfulSMul_iff_algebraMap_injective _ _).mpr
+  let : Algebra P B := g.toRingHom.toAlgebra
+  have : Module.Finite P B := hfin
+  have : FaithfulSMul P B := (faithfulSMul_iff_algebraMap_injective _ _).mpr hinj
+  let : Algebra P F := ((algebraMap B F).comp (algebraMap P B)).toAlgebra
+  have : IsScalarTower P B F := .of_algebraMap_eq' rfl
+  let : Algebra P L := ((algebraMap B L).comp (algebraMap P B)).toAlgebra
+  have : IsScalarTower P B L := .of_algebraMap_eq' rfl
+  have : IsScalarTower P F L := .of_algebraMap_eq fun x => IsScalarTower.algebraMap_apply B F L _
+  have : FaithfulSMul P F := (faithfulSMul_iff_algebraMap_injective _ _).mpr
     ((IsFractionRing.injective B F).comp hinj)
   let K := FractionRing P
-  letI : Algebra K F := FractionRing.liftAlgebra P F
-  haveI : FiniteDimensional K F := Module.Finite.of_isLocalization P B (nonZeroDivisors P)
-  letI : Algebra K L := ((algebraMap F L).comp (algebraMap K F)).toAlgebra
-  haveI : IsScalarTower K F L := .of_algebraMap_eq' rfl
-  haveI : IsScalarTower P K L := .of_algebraMap_eq fun x => by
+  let : Algebra K F := FractionRing.liftAlgebra P F
+  have : FiniteDimensional K F := Module.Finite.of_isLocalization P B (nonZeroDivisors P)
+  let : Algebra K L := ((algebraMap F L).comp (algebraMap K F)).toAlgebra
+  have : IsScalarTower K F L := .of_algebraMap_eq' rfl
+  have : IsScalarTower P K L := .of_algebraMap_eq fun x => by
     rw [IsScalarTower.algebraMap_apply K F L, ← IsScalarTower.algebraMap_apply P K F,
       ← IsScalarTower.algebraMap_apply P F L]
-  haveI : FiniteDimensional K L := Module.Finite.trans F L
-  haveI := finite_integralClosure_of_isIntegrallyClosed k P K L
+  have : FiniteDimensional K L := Module.Finite.trans F L
+  have := finite_integralClosure_of_isIntegrallyClosed k P K L
   have h : Module.Finite P ((integralClosure B L).restrictScalars P) := by
     rwa [integralClosure_restrictScalars_of_isIntegral]
-  haveI : Module.Finite P (integralClosure B L) := h
+  have : Module.Finite P (integralClosure B L) := h
   exact Module.Finite.of_restrictScalars_finite P B _
 
 theorem finite_integralClosure_of_isAlgClosed :

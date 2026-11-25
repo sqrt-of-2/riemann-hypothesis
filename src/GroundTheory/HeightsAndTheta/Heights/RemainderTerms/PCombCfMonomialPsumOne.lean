@@ -47,7 +47,7 @@ theorem CombCfMonomialPsumOne.proof : CombCfMonomialPsumOne.Statement := by
     rw [pow_zero, mul_one, cf_monomial]
     by_cases h : l = v
     · subst h; simp
-    · rw [if_neg h, if_neg]
+    · rw [ite_eq_right h, ite_eq_right]
       rintro ⟨hle, hs⟩
       apply h
       funext i
@@ -58,7 +58,7 @@ theorem CombCfMonomialPsumOne.proof : CombCfMonomialPsumOne.Statement := by
     rw [pow_succ, ← mul_assoc, cf_mul_psum]
     simp only [ih]
     by_cases hC : (∀ i, v i ≤ l i) ∧ ∑ i, l i = ∑ i, v i + (n + 1)
-    · rw [if_pos hC]
+    · rw [ite_eq_left hC]
       obtain ⟨hle, hs⟩ := hC
       have hP : (∏ j, ((l j - v j).factorial : ℚ)) ≠ 0 :=
         Finset.prod_ne_zero_iff.2 fun j _ => by positivity
@@ -79,7 +79,7 @@ theorem CombCfMonomialPsumOne.proof : CombCfMonomialPsumOne.Statement := by
             · subst hj; simp; omega
             · simp [Function.update_of_ne hj, hle j]
           have hs' := sum_update_sub_one l i h1
-          rw [if_pos h1, if_pos ⟨hle', by omega⟩, ← prod_factorial_update_sub_one l v i hi]
+          rw [ite_eq_left h1, ite_eq_left ⟨hle', by omega⟩, ← prod_factorial_update_sub_one l v i hi]
           have hne : ((l i - v i : ℕ) : ℚ) ≠ 0 := by exact_mod_cast (by omega : l i - v i ≠ 0)
           have hQ : (∏ j, ((Function.update l i (l i - 1) j - v j).factorial : ℚ)) ≠ 0 :=
             Finset.prod_ne_zero_iff.2 fun j _ => by positivity
@@ -87,16 +87,16 @@ theorem CombCfMonomialPsumOne.proof : CombCfMonomialPsumOne.Statement := by
         · have heq : l i = v i := le_antisymm (not_lt.1 hi) (hle i)
           rw [show ((l i - v i : ℕ) : ℚ) = 0 by rw [heq]; simp, mul_zero, zero_div]
           by_cases h1 : 1 ≤ l i
-          · rw [if_pos h1, if_neg]
+          · rw [ite_eq_left h1, ite_eq_right]
             rintro ⟨h, _⟩
             have := h i
             simp at this
             omega
-          · rw [if_neg h1]
-    · rw [if_neg hC]
+          · rw [ite_eq_right h1]
+    · rw [ite_eq_right hC]
       refine Finset.sum_eq_zero fun i _ => ?_
       by_cases h1 : 1 ≤ l i
-      · rw [if_pos h1]
+      · rw [ite_eq_left h1]
         by_cases h2 : (∀ j, v j ≤ Function.update l i (l i - 1) j) ∧
             ∑ j, Function.update l i (l i - 1) j = ∑ j, v j + n
         · exfalso
@@ -108,7 +108,7 @@ theorem CombCfMonomialPsumOne.proof : CombCfMonomialPsumOne.Statement := by
             · simp [Function.update_of_ne hj])
           have := sum_update_sub_one l i h1
           exact ⟨hle, by omega⟩
-        · rw [if_neg h2]
-      · rw [if_neg h1]
+        · rw [ite_eq_right h2]
+      · rw [ite_eq_right h1]
 
 end GroundTheory.Heights₂.Heights.RestTerms

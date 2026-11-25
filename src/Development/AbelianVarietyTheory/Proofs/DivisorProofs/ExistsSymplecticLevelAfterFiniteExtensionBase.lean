@@ -66,18 +66,18 @@ theorem exists_galois_root (K K' : Type) [Field K] [CharZero K] [Field K'] [Alge
     ∃ (E : Type) (_ : Field E) (_ : Algebra K E) (_ : FiniteDimensional K E) (_ : IsGalois K E) (j : K' →ₐ[K] E) (ζ : E),
       IsPrimitiveRoot ζ m := by
   let Ω := AlgebraicClosure K'
-  haveI : CharZero K' := (algebraMap K K').charZero_iff (algebraMap K K').injective |>.1 inferInstance
-  haveI : CharZero Ω := (algebraMap K' Ω).charZero_iff (algebraMap K' Ω).injective |>.1 inferInstance
-  haveI : NeZero m := ⟨by omega⟩
-  obtain ⟨ζ₀, hζ₀⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot Ω m
+  have : CharZero K' := (algebraMap K K').charZero_iff (algebraMap K K').injective |>.1 inferInstance
+  have : CharZero Ω := (algebraMap K' Ω).charZero_iff (algebraMap K' Ω).injective |>.1 inferInstance
+  have : NeZero m := ⟨by omega⟩
+  obtain ⟨ζ₀, hζ₀⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot Ω m
   let K'' : IntermediateField K' Ω := IntermediateField.adjoin K' {ζ₀}
-  haveI : FiniteDimensional K' K'' :=
+  have : FiniteDimensional K' K'' :=
     IntermediateField.adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := K') ζ₀)
-  haveI : FiniteDimensional K K'' := Module.Finite.trans K' K''
-  haveI : IsScalarTower K K'' Ω := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  have : FiniteDimensional K K'' := Module.Finite.trans K' K''
+  have : IsScalarTower K K'' Ω := IsScalarTower.of_algebraMap_eq fun _ => rfl
   let E := IntermediateField.normalClosure K K'' Ω
-  haveI : IsGalois K E := inferInstance
-  haveI : FiniteDimensional K E := inferInstance
+  have : IsGalois K E := inferInstance
+  have : FiniteDimensional K E := inferInstance
   let t : K'' →ₐ[K] E := (IsScalarTower.toAlgHom K K'' Ω).codRestrict _
     fun y => AlgHom.fieldRange_le_normalClosure _ ⟨y, rfl⟩
   have hz : ζ₀ ∈ K'' := IntermediateField.mem_adjoin_simple_self K' ζ₀
@@ -99,13 +99,13 @@ theorem omegaStd_single (g : ℕ) (a b : Fin g ⊕ Fin g) :
       | .inr p, .inl q => if p = q then -1 else 0
       | _, _ => 0 := by
   rcases a with p | p <;> rcases b with q | q <;>
-    simp [omegaStd, Pi.single_apply, Finset.sum_ite_eq, eq_comm] <;> split_ifs <;> simp
+    simp [omegaStd, Pi.single_apply, Finset.sum_ite_eq, eq_comm]; split_ifs <;> simp
 
 theorem stdSymp_eq (g : ℕ) (i j : Fin (2 * g)) :
     stdSymp g i j = omegaStd (Pi.single (half g i) (1 : ℤ)) (Pi.single (half g j) 1) := by
   rw [omegaStd_single]
   unfold half stdSymp
-  by_cases hi : (i : ℕ) < g <;> by_cases hj : (j : ℕ) < g <;> simp only [hi, hj, dif_pos, dif_neg, not_false_eq_true, true_and, false_and, if_false]
+  by_cases hi : (i : ℕ) < g <;> by_cases hj : (j : ℕ) < g <;> simp only [hi, hj, dite_eq_left, dite_eq_right, not_false_eq_true, true_and, false_and, ite_false]
   all_goals (try simp only [Fin.ext_iff])
   all_goals (have := i.2; have := j.2; split_ifs <;> omega)
 
@@ -119,11 +119,11 @@ theorem exists_ring (R : Type) [CommRing R] [IsDomain R] [IsLocalRing R] (hR : B
     ∃ (R₁ : Type) (_ : CommRing R₁) (_ : IsDomain R₁) (_ : IsLocalRing R₁) (ρ : R →+* R₁) (e : E ≃+* FractionRing R₁)
       (ζ₁ : R₁ˣ), FinExt ρ ∧ (∀ r, e (algebraMap (FractionRing R) E (algebraMap R _ r)) = algebraMap R₁ _ (ρ r)) ∧
       e ζ = algebraMap R₁ _ ζ₁ ∧ IsPrimitiveRoot ζ₁ m := by
-  letI : Algebra R E := (GalClosure.baseMap R E).toAlgebra
-  haveI : IsScalarTower R (FractionRing R) E := IsScalarTower.of_algebraMap_eq' rfl
+  let : Algebra R E := (GalClosure.baseMap R E).toAlgebra
+  have : IsScalarTower R (FractionRing R) E := IsScalarTower.of_algebraMap_eq' rfl
   obtain ⟨hloc, hfe⟩ := GalClosure.finExt_integralClosure (E := E) hR
   set R₁ := integralClosure R E
-  haveI : IsFractionRing R₁ E := integralClosure.isFractionRing_of_finite_extension (FractionRing R) E
+  have : IsFractionRing R₁ E := integralClosure.isFractionRing_of_finite_extension (FractionRing R) E
   let e : E ≃+* FractionRing R₁ := (FractionRing.algEquiv R₁ E).symm.toRingEquiv
   have he : ∀ x : R₁, e (algebraMap R₁ E x) = algebraMap R₁ _ x := fun x => (FractionRing.algEquiv R₁ E).symm.commutes x
   have hint : IsIntegral R ζ := by
@@ -146,9 +146,9 @@ namespace GlobalTheory.MumLevel
 
 theorem exists_level_finExt : ∀ (R : Type) [CommRing R] [IsDomain R] [IsLocalRing R], Base R → ∀ (A : PolAV (Sp (FractionRing R))), (letI := A.isAb.comm; GlobalTheory.ZH.HypS A.A A.L) → ∀ m : ℕ, 1 ≤ m → IsUnit (m : R) → ∃ (R₁ : Type) (_ : CommRing R₁) (_ : IsDomain R₁) (_ : IsLocalRing R₁) (ρ : R →+* R₁) (A₁ : PolAV (Sp (FractionRing R₁))) (a : A₁.A.left ⟶ A.A.left) (ζ : R₁ˣ) (_ : ReciprocityTheory.ChartRestriction.G.Out.Level A₁ m (unitOn (Units.map (algebraMap R₁ (FractionRing R₁)).toMonoidHom ζ))), FinExt ρ ∧ IsFib ρ A A₁ a ∧ A₁.g = A.g ∧ (letI := A₁.isAb.comm; GlobalTheory.ZH.HypS A₁.A A₁.L) := by
   intro R _ _ _ hR A hS m hm _
-  haveI : CharZero R := hR.2
+  have : CharZero R := hR.2
   obtain ⟨K', _, _, hfin, H⟩ := LevelAfterExt.exists_ext_level (FractionRing R) A m hm
-  haveI : FiniteDimensional (FractionRing R) K' := hfin
+  have : FiniteDimensional (FractionRing R) K' := hfin
   obtain ⟨E, _, _, _, _, j, ζ, hζ⟩ := exists_galois_root (FractionRing R) K' m hm
   obtain ⟨R₁, _, _, _, ρ, e, ζ₁, hρ, he, -, hζ₁⟩ := exists_ring R hR E ζ m hm hζ
   let f : FractionRing R →+* FractionRing R₁ := ArcPull.fracMap hρ.2.1
@@ -158,7 +158,7 @@ theorem exists_level_finExt : ∀ (R : Type) [CommRing R] [IsDomain R] [IsLocalR
     simp only [RingHom.comp_apply]
     show e (j (algebraMap _ K' _)) = _
     rw [j.commutes, he, ArcPull.fracMap_algebraMap]
-  haveI : CharZero (FractionRing R₁) := f.charZero_iff f.injective |>.1 inferInstance
+  have : CharZero (FractionRing R₁) := f.charZero_iff f.injective |>.1 inferInstance
   obtain ⟨A₁, ψ, hA⟩ := exists_isPolFibre GlobalTheory.laws_without_cohomology.2.2.1 f A
   let ze : (FractionRing R₁)ˣ := Units.map (algebraMap R₁ (FractionRing R₁)).toMonoidHom ζ₁
   have hze : IsPrimitiveRoot (ze : FractionRing R₁) m :=

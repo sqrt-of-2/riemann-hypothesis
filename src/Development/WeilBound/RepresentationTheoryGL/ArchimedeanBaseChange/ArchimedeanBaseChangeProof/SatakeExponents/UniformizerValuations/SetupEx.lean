@@ -105,8 +105,8 @@ theorem runT_of (h1 : PeakTraceBound) (h2 : SetupEx) : RunT := by
   obtain ⟨K, W, hK, hW, hX⟩ := h2 E hE n hn π hπ S hS
   refine ⟨K, W, hK, hW, fun T => ?_⟩
   obtain ⟨X⟩ := hX T
-  letI := X.cr; letI := X.sr; letI := X.al; letI := X.sm; letI := X.ft; letI := X.ne; letI := X.ng; letI := X.ip
-  letI := X.cs; letI := X.ag; letI := X.md; letI := X.fd
+  let := X.cr; let := X.sr; let := X.al; let := X.sm; let := X.ft; let := X.ne; let := X.ng; let := X.ip
+  let := X.cs; let := X.ag; let := X.md; let := X.fd
   obtain ⟨s, χ, h1', h2', h3'⟩ := h1 X.A X.ι X.H X.R X.β X.m X.V X.ρ X.u X.p X.a₀ X.comm X.commU X.pa₀ X.bound X.eig
   exact X.read s χ h1' h2' h3'
 

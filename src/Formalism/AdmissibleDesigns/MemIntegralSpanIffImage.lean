@@ -75,7 +75,7 @@ variable {O : Type} [CommRing O] [IsDomain O] {LL : Type} [Field LL] [Topologica
 abbrev modOL : Module OL (TrV e V) := Module.compHom _ (algebraMap OL LL)
 
 theorem towOL : @IsScalarTower OL LL (TrV e V) _ _ (modOL e OL).toSMul := by
-  letI := modOL (V := V) e OL
+  let := modOL (V := V) e OL
   exact ⟨fun a b v => by
     show (a • b) • v = (algebraMap OL LL a) • (b • v)
     rw [Algebra.smul_def, mul_smul]⟩
@@ -123,7 +123,7 @@ variable {O : Type} [CommRing O] [IsDomain O] {LL : Type} [Field LL] [Topologica
 include hσ hb in
 theorem iL_mem_latT (m : L) : letI := modOL (V := V) e OL
     tr e (iL m) ∈ latT e (OL := OL) bV := by
-  letI := modOL (V := V) e OL
+  let := modOL (V := V) e OL
   have hm : tr e (iL m) = ∑ j, σ (bL.repr m j) • tr e (bV j) := by
     show iL m = ∑ j, e.symm (algebraMap OL LL (σ (bL.repr m j))) • bV j
     conv_lhs => rw [← bL.sum_repr m]
@@ -137,7 +137,7 @@ theorem iL_mem_latT (m : L) : letI := modOL (V := V) e OL
 include hσ hb in
 theorem exists_of_mem_latT (x : TrV e V) (hx : letI := modOL (V := V) e OL; x ∈ latT e (OL := OL) bV) :
     ∃ m : L, tr e (iL m) = x := by
-  letI := modOL (V := V) e OL
+  let := modOL (V := V) e OL
   induction hx using Submodule.span_induction with
   | mem x hx =>
     obtain ⟨j, rfl⟩ := hx
@@ -158,7 +158,7 @@ theorem exists_of_mem_latT (x : TrV e V) (hx : letI := modOL (V := V) e OL; x �
 include hσ in
 theorem linInd_latT : letI := modOL (V := V) e OL
     LinearIndependent OL (fun j => tr e (bV j)) := by
-  letI := modOL (V := V) e OL
+  let := modOL (V := V) e OL
   rw [Fintype.linearIndependent_iff]
   intro o ho j
   have h2 : ∑ k, (e.symm (algebraMap OL LL (o k))) • bV k = 0 := ho
@@ -170,7 +170,7 @@ theorem linInd_latT : letI := modOL (V := V) e OL
 
 theorem span_latT : letI := modOL (V := V) e OL
     Submodule.span LL ((latT e (OL := OL) bV : Set (TrV e V))) = ⊤ := by
-  letI := modOL (V := V) e OL
+  let := modOL (V := V) e OL
   rw [eq_top_iff]
   intro v _
   have hv := bV.sum_repr (show V from v)
@@ -185,7 +185,7 @@ theorem span_latT : letI := modOL (V := V) e OL
 include hσ in
 theorem free_latT : letI := modOL (V := V) e OL
     Module.Free OL ↥(latT e (OL := OL) bV) := by
-  letI := modOL (V := V) e OL
+  let := modOL (V := V) e OL
   exact Module.Free.of_basis (Basis.span (linInd_latT e σ hσ bV))
 
 def latV (ρ : Representation O Γ V) (ι : G →* Γ) (hc : ∀ v : TrV e V, Continuous fun g => repL e ρ ι g v)
@@ -207,7 +207,7 @@ end Lat
 
 theorem finite_compHom {R S M : Type} [CommRing R] [CommRing S] [AddCommGroup M] [Module S M] (σ : R ≃+* S)
     [hM : Module.Finite S M] : @Module.Finite R M _ _ (Module.compHom M σ.toRingHom) := by
-  letI : Module R M := Module.compHom M σ.toRingHom
+  let : Module R M := Module.compHom M σ.toRingHom
   obtain ⟨s, hs⟩ := hM.fg_top
   refine ⟨⟨s, eq_top_iff.2 fun x hx0 => ?_⟩⟩
   clear hx0
@@ -272,9 +272,9 @@ theorem finite_FfG (hι : Function.Surjective ι) (hinj : Function.Injective iL)
     (hfin : Module.Finite OL (LatticeCohomology (latV e σ hσ bV bL iL hb (Qp := Qp) ρ ι hc ρL hiL))) :
     Module.Finite O ↥(KFin.FfG ρL iL (finZ e PD ρ ι)) := by
   set LA := latV e σ hσ bV bL iL hb (Qp := Qp) ρ ι hc ρL hiL with hLA
-  letI : Module O (LatticeCohomology LA) := Module.compHom (LatticeCohomology LA) σ.toRingHom
-  haveI : Module.Finite O (LatticeCohomology LA) := finite_compHom σ
-  haveI : IsNoetherian O (LatticeCohomology LA) := isNoetherian_of_isNoetherianRing_of_finite O _
+  let : Module O (LatticeCohomology LA) := Module.compHom (LatticeCohomology LA) σ.toRingHom
+  have : Module.Finite O (LatticeCohomology LA) := finite_compHom σ
+  have : IsNoetherian O (LatticeCohomology LA) := isNoetherian_of_isNoetherianRing_of_finite O _
   set P := (KFin.finPreG iL (finZ e PD ρ ι)).comap (coZ1s ρL).subtype with hP
   set Φ := transportToH1Lattice e PD σ hσ bV bL iL hb ρ ι hc ρL hiL (Qp := Qp) with hΦ
   have hker : LinearMap.ker Φ ≤ LinearMap.ker ((Submodule.mkQ ((coB1 ρL).comap (coZ1s ρL).subtype)).comp P.subtype) := by
@@ -292,7 +292,7 @@ theorem finite_FfG (hι : Function.Surjective ι) (hinj : Function.Injective iL)
     show iL (ρL (ι g) m - m) = iL (((p : coZ1s ρL) : Γ → L) (ι g))
     rw [map_sub, hiL]
     exact h
-  haveI : Module.Finite O (↥P ⧸ LinearMap.ker Φ) := Module.Finite.equiv (Φ.quotKerEquivRange).symm
+  have : Module.Finite O (↥P ⧸ LinearMap.ker Φ) := Module.Finite.equiv (Φ.quotKerEquivRange).symm
   have hF : KFin.FfG ρL iL (finZ e PD ρ ι) =
       LinearMap.range ((LinearMap.ker Φ).liftQ ((Submodule.mkQ ((coB1 ρL).comap (coZ1s ρL).subtype)).comp P.subtype) hker) := by
     rw [Submodule.range_liftQ, LinearMap.range_comp, Submodule.range_subtype]
@@ -367,7 +367,7 @@ theorem finite_H1V (LA : Lattice (O := OL) A.ρ) (hopen : IsOpen (LA.T : Set A.V
   obtain ⟨c, rfl⟩ := Submodule.Quotient.mk_surjective _ x
   obtain ⟨a, ha, hac⟩ := bound_cont A LA.T hopen hdiv c.1 c.2.1
   have hT : a • c.1 ∈ latticeCocycles LA := ⟨(continuousCocycles A.ρ).restrictScalars OL |>.smul_mem a c.2, fun g _ => hac g⟩
-  letI := Module.compHom (H1V A.ρ) (algebraMap OL LL)
+  let := Module.compHom (H1V A.ρ) (algebraMap OL LL)
   have hrange : h1TV A LA (Submodule.Quotient.mk ⟨_, hT⟩) ∈
       Submodule.span OL ((s.image (h1TV A LA) : Finset (H1V A.ρ)) : Set (H1V A.ρ)) := by
     have h1 : (Submodule.Quotient.mk ⟨_, hT⟩ : LatticeCohomology LA) ∈ Submodule.span OL (s : Set (LatticeCohomology LA)) := by
@@ -378,7 +378,7 @@ theorem finite_H1V (LA : Lattice (O := OL) A.ρ) (hopen : IsOpen (LA.T : Set A.V
   have hle : ∀ y ∈ (letI := Module.compHom (H1V A.ρ) (algebraMap OL LL)
       Submodule.span OL ((s.image (h1TV A LA) : Finset (H1V A.ρ)) : Set (H1V A.ρ))),
       y ∈ Submodule.span LL ((s.image (h1TV A LA) : Finset (H1V A.ρ)) : Set (H1V A.ρ)) := by
-    letI := Module.compHom (H1V A.ρ) (algebraMap OL LL)
+    let := Module.compHom (H1V A.ρ) (algebraMap OL LL)
     intro y hy
     induction hy using Submodule.span_induction with
     | mem y hy => exact Submodule.subset_span hy
@@ -463,7 +463,7 @@ theorem basis_mem_integral_span (j : n) : b j ∈ T0 A b := by
   rw [Basis.equivFun_self]
   by_cases h : j = k
   · exact ⟨1, by simp [h]⟩
-  · exact ⟨0, by rw [map_zero, if_neg h]⟩
+  · exact ⟨0, by rw [map_zero, ite_eq_right h]⟩
 
 theorem integral_span_coordinates (x : A.V) (hx : x ∈ T0 A b) : ∃ o : n → OL, x = ∑ j, o j • b j := by
   choose o ho using hx
@@ -521,9 +521,9 @@ def latSt [CompactSpace G] [IsNoetherianRing OL] [IsPrincipalIdealRing OL] [IsTo
   fg := by
     have hinj : Function.Injective (algebraMap OL LL) := IsFractionRing.injective OL LL
     obtain ⟨a, ha, hab⟩ := Tst_bound A b (integral_span_open A b hO) (integral_span_divisible A b)
-    haveI : Module.Finite OL ↥(Submodule.span OL (Set.range b)) :=
+    have : Module.Finite OL ↥(Submodule.span OL (Set.range b)) :=
       Module.Finite.span_of_finite OL (Set.finite_range b)
-    haveI := noZero A hinj
+    have := noZero A hinj
     let f : ↥(Tst A b) →ₗ[OL] ↥(Submodule.span OL (Set.range b)) :=
       { toFun := fun x => ⟨a • x.1, by
           obtain ⟨o, ho⟩ := integral_span_coordinates A b _ (hab x.1 x.2)
@@ -538,14 +538,14 @@ def latSt [CompactSpace G] [IsNoetherianRing OL] [IsPrincipalIdealRing OL] [IsTo
       rcases smul_eq_zero.1 h' with h0 | h0
       · exact absurd h0 ha
       · exact Subtype.ext (sub_eq_zero.1 h0)
-    haveI : Module.Finite OL ↥(Tst A b) := Module.Finite.of_injective f hf
+    have : Module.Finite OL ↥(Tst A b) := Module.Finite.of_injective f hf
     exact Module.Finite.iff_fg.1 inferInstance
   free := by
-    haveI := noZero A (IsFractionRing.injective OL LL)
-    haveI : Module.Finite OL ↥(Tst A b) := by
+    have := noZero A (IsFractionRing.injective OL LL)
+    have : Module.Finite OL ↥(Tst A b) := by
       have hinj : Function.Injective (algebraMap OL LL) := IsFractionRing.injective OL LL
       obtain ⟨a, ha, hab⟩ := Tst_bound A b (integral_span_open A b hO) (integral_span_divisible A b)
-      haveI : Module.Finite OL ↥(Submodule.span OL (Set.range b)) :=
+      have : Module.Finite OL ↥(Submodule.span OL (Set.range b)) :=
         Module.Finite.span_of_finite OL (Set.finite_range b)
       let f : ↥(Tst A b) →ₗ[OL] ↥(Submodule.span OL (Set.range b)) :=
         { toFun := fun x => ⟨a • x.1, by
@@ -570,11 +570,11 @@ def latSt [CompactSpace G] [IsNoetherianRing OL] [IsPrincipalIdealRing OL] [IsTo
 theorem latSt_open [CompactSpace G] [IsNoetherianRing OL] [IsPrincipalIdealRing OL] [IsTopologicalRing LL]
     (hO : IsOpen (Set.range (algebraMap OL LL))) [IsFractionRing OL LL] :
     IsOpen (((latSt A b hO).T : Submodule OL A.V) : Set A.V) := by
-  haveI : ContinuousNeg A.V := ⟨by
+  have : ContinuousNeg A.V := ⟨by
     have h : (fun v : A.V => -v) = fun v => (-1 : LL) • v := funext fun v => (neg_one_smul LL v).symm
     rw [h]
     exact continuous_const_smul _⟩
-  haveI : IsTopologicalAddGroup A.V := {}
+  have : IsTopologicalAddGroup A.V := {}
   exact Submodule.isOpen_mono (integral_span_le_stable A b) (integral_span_open A b hO)
 
 theorem latSt_div [CompactSpace G] [IsNoetherianRing OL] [IsPrincipalIdealRing OL] [IsTopologicalRing LL]
@@ -592,8 +592,8 @@ theorem finDim_of_tate [CompactSpace G] [IsNoetherianRing OL] [IsPrincipalIdealR
     [IsScalarTower K₀ Kk BdR] [IsScalarTower Qp K₀ BdR]
     (PD : PeriodData G Qp K₀ Kk B BdR) : FiniteDimensional LL (FiniteCohomology PD A.ρ) := by
   let b₀ := Module.finBasis LL A.V
-  haveI := hT (latSt A b₀ hO)
-  haveI := finite_H1V A (latSt A b₀ hO) (latSt_open A b₀ hO) (latSt_div A b₀ hO) (IsFractionRing.injective OL LL)
+  have := hT (latSt A b₀ hO)
+  have := finite_H1V A (latSt A b₀ hO) (latSt_open A b₀ hO) (latSt_div A b₀ hO) (IsFractionRing.injective OL LL)
   exact finDim_H1fV A PD
 
 end Stab
@@ -890,7 +890,7 @@ theorem finrank_Ff (hι : Function.Bijective ι) (hO : IsOpen (Set.range (algebr
     (hinj : Function.Injective iL) :
     Module.finrank O (↥(KFin.FfG ρL iL (finZ e PD ρ ι)) ⧸ Submodule.torsion O ↥(KFin.FfG ρL iL (finZ e PD ρ ι))) =
       Module.finrank LL (FiniteCohomology PD (repL e ρ ι)) := by
-  haveI := thet_loc e PD σ hσ bV bL iL hb ρ ι hc ρL hiL (Qp := Qp) hι hO hinj
+  have := thet_loc e PD σ hσ bV bL iL hb ρ ι hc ρL hiL (Qp := Qp) hι hO hinj
   have h1 : Module.finrank O (↥(KFin.FfG ρL iL (finZ e PD ρ ι)) ⧸ Submodule.torsion O ↥(KFin.FfG ρL iL (finZ e PD ρ ι))) =
       Module.finrank O ↥(KFin.FfG ρL iL (finZ e PD ρ ι)) := by
     unfold Module.finrank
@@ -1002,9 +1002,9 @@ theorem rankFf_of (hO : Formalism.MainNotions.N.LitGoodO) (l : K.Col i dc) (hOrb
     (hdim : DimV i dc Dd ρ π l) : KFin.RankFf i dc Dd ρ π l := by
   have hn := KDim.col_over i dc l
   obtain ⟨⟨_, hdvr, hfr⟩, -, -, htop, hopen⟩ := hO (D.nd.l i) (D.nbr i _ hn).LL
-  haveI := hfr
-  haveI := htop
-  haveI := compact_G i hn
+  have := hfr
+  have := htop
+  have := compact_G i hn
   have hZ : KFin.Zf i dc Dd l = finZ (eK (D.nbr i _ hn)) (Br.PD D.loc D.nbr i _ hn) (KFin.ρV i dc Dd l)
       (Br.iota D.nbr i _ hn) := KHf.fZ_pos i dc _ hn
   have h1 := finrank_Ff' (eK (D.nbr i _ hn)) (Br.PD D.loc D.nbr i _ hn) (D.nbr i _ hn).eO
@@ -1026,14 +1026,14 @@ variable {D : D7} (i : D.nd.Loc) (dc : TruncatedSeriesCountingIdentities.Decl D 
 
 theorem finX_of (hFin : LargeLevelLemmas.tateH1FinitenessAtPlacesOver i) (hO : Formalism.MainNotions.N.LitGoodO) (x' : X') (l : K.Col i dc)
     (hc : KDim.ContX i dc r χ x' l) : KDim.FinX i dc r χ x' l := by
-  letI := evalModO i (R' := R') x'
-  haveI := evalTower i (R' := R') x'
+  let := evalModO i (R' := R') x'
+  have := evalTower i (R' := R') x'
   have hn := KDim.col_over i dc l
   obtain ⟨⟨_, hdvr, hfr⟩, -, -, htop, hopen⟩ := hO (D.nd.l i) (D.nbr i _ hn).LL
-  haveI := hdvr
-  haveI := hfr
-  haveI := htop
-  haveI := compact_G i hn
+  have := hdvr
+  have := hfr
+  have := htop
+  have := compact_G i hn
   exact finDim_of_tate (KDim.grepX i dc r χ x' l hc) hopen
     (fun LA => hFin _ hn (TruncatedSeriesCountingIdentities.CoefExt.self i _ hn) _ LA) (Br.PD D.loc D.nbr i _ hn)
 
@@ -1128,7 +1128,7 @@ theorem finrank_H1fV_congr (f : V ≃ₗ[LL] W) (hf : Continuous f) (hf' : Conti
         (cocyclesFunctorial_holds G Qp K₀ Kk B BdR PD LL W V ρ' ρ f.symm.toLinearMap hf' heq' c.1).2 c.2⟩
       map_add' := fun a b => Subtype.ext (funext fun g => map_add f.symm _ _)
       map_smul' := fun a b => Subtype.ext (funext fun g => map_smul f.symm _ _) }
-  let E : ↥(finiteCocycles PD ρ) ≃ₗ[LL] ↥(finiteCocycles PD ρ') := LinearEquiv.ofLinear φ ψ
+  let E : ↥(finiteCocycles PD ρ) ≃ₗ[LL] ↥(finiteCocycles PD ρ') := LinearEquiv.ofLinearMap φ ψ
     (LinearMap.ext fun c => Subtype.ext (funext fun g => f.apply_symm_apply _))
     (LinearMap.ext fun c => Subtype.ext (funext fun g => f.symm_apply_apply _))
   have hpq : ((B1 ρ).comap (finiteCocycles PD ρ).subtype).map E.toLinearMap = (B1 ρ').comap (finiteCocycles PD ρ').subtype := by
@@ -1169,7 +1169,7 @@ theorem dimV_of_iso (l : K.Col i dc) (h : IsoV i dc Dd ρ π l) : DimV i dc Dd �
   obtain ⟨f, hf⟩ := h
   have hn := KDim.col_over i dc l
   obtain ⟨-, -, -, htop, -⟩ := Formalism.MainNotions.N.T2.litGoodO (D.nd.l i) (D.nbr i _ hn).LL
-  haveI := htop
+  have := htop
   exact finrank_H1fV_congr (Br.PD D.loc D.nbr i _ hn) _ _ f
     (IsModuleTopology.continuous_of_linearMap f.toLinearMap)
     (IsModuleTopology.continuous_of_linearMap f.symm.toLinearMap) hf

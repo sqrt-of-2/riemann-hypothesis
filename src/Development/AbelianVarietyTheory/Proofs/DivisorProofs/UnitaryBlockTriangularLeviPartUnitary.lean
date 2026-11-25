@@ -65,20 +65,20 @@ theorem blockDiagPart_mul {L : Type} [Field L] {n : ℕ} (β : Fin n → ℕ) (A
     refine Finset.sum_congr rfl fun l _ => ?_
     rcases lt_trichotomy (β l) (β i) with h1 | h1 | h1
     · rw [hA h1]; simp
-    · rw [if_pos h1.symm, if_pos (h1.trans h)]
+    · rw [ite_eq_left h1.symm, ite_eq_left (h1.trans h)]
     · rw [hB (h ▸ h1 : β j < β l)]; simp
   · rw [Matrix.one_apply_ne (fun e => h (by rw [e]))]
     refine Finset.sum_eq_zero fun l _ => ?_
     by_cases hl : β i = β l
-    · rw [if_neg (hl ▸ h : ¬ β l = β j), mul_zero]
-    · rw [if_neg hl, zero_mul]
+    · rw [ite_eq_right (hl ▸ h : ¬ β l = β j), mul_zero]
+    · rw [ite_eq_right hl, zero_mul]
 
 theorem leviPart : LeviPart := by
   intro L _ _ σ n β hβ g hg
   have hβ' : ∀ a b, β a = β b ↔ β a.rev = β b.rev := fun a b =>
     ⟨hβ a b, fun h => by simpa using hβ _ _ h⟩
   have h0 : (mat g⁻¹).BlockTriangular β := by
-    letI : Invertible (mat g) := (g : GL (Fin n) L).invertible
+    let : Invertible (mat g) := (g : GL (Fin n) L).invertible
     have e : mat g⁻¹ = (mat g)⁻¹ := by simp [mat]
     rw [e]
     exact Matrix.blockTriangular_inv_of_blockTriangular hg
@@ -89,8 +89,8 @@ theorem leviPart : LeviPart := by
     ext a b
     rw [antiJ_mul_apply, P.fSatake_cTJ, Matrix.of_apply, mat_inv_apply, hM, Matrix.of_apply]
     by_cases h : β a = β b
-    · rw [if_pos h, if_pos ((hβ' _ _).1 h.symm)]
-    · rw [if_neg h, if_neg (fun e => h ((hβ' _ _).2 e).symm), map_zero]
+    · rw [ite_eq_left h, ite_eq_left ((hβ' _ _).1 h.symm)]
+    · rw [ite_eq_right h, ite_eq_right (fun e => h ((hβ' _ _).2 e).symm), map_zero]
   have h3 : cT σ M * antiJ L n * M = antiJ L n := by
     rw [← h2] at h1
     calc cT σ M * antiJ L n * M
@@ -99,8 +99,8 @@ theorem leviPart : LeviPart := by
             GlobalTheory.UnitarySwap.antiJ_mul_self, Matrix.one_mul]
       _ = antiJ L n := by rw [h1, Matrix.mul_one]
   obtain ⟨m, hm⟩ := exists_mat M h3
-  have hmL : m ∈ leviU σ β := fun i j h => by rw [hm, hM, Matrix.of_apply, if_neg h]
-  refine ⟨m, hmL, fun a b h => by rw [hm, hM, Matrix.of_apply, if_pos h], fun i j h => ?_⟩
+  have hmL : m ∈ leviU σ β := fun i j h => by rw [hm, hM, Matrix.of_apply, ite_eq_right h]
+  refine ⟨m, hmL, fun a b h => by rw [hm, hM, Matrix.of_apply, ite_eq_left h], fun i j h => ?_⟩
   rw [← mat_inv_mul m, mat_mul, Matrix.mul_apply, Matrix.mul_apply]
   refine Finset.sum_congr rfl fun l _ => ?_
   by_cases hl : β i = β l

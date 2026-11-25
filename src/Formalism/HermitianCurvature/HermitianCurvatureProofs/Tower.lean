@@ -60,14 +60,14 @@ theorem lift_lift_V (j ρ n r : ℕ) (hn : 1 + ρ = n) (h1 : j + n = r) (h2 : j 
     (v : Fin (2 * ρ + k + 1) → ℂ) :
     D.castV h1 (liftVec k j n (D.castV hn (liftVec k 1 ρ v))) = D.castV h2 (liftVec k (j + 1) ρ v) := by
   funext i
-  simp only [D.castV, liftVec, Fin.coe_cast]
+  simp only [D.castV, liftVec, Fin.val_cast]
   split_ifs <;> (try simp only at *) <;> first | rfl | omega
 
 theorem lift_lift_M (j ρ n r : ℕ) (hn : 1 + ρ = n) (h1 : j + n = r) (h2 : j + 1 + ρ = r) (y : B.Mat k ρ) :
     D.castM h1 (ιLev k j n (D.castM hn (ιLev k 1 ρ y))) = D.castM h2 (ιLev k (j + 1) ρ y) := by
   ext p q
-  simp only [D.castM, Matrix.reindex_apply, Matrix.submatrix_apply, finCongr_symm, finCongr_apply, Fin.coe_cast, ιLev]
-  split_ifs <;> (try simp only [Fin.ext_iff, Fin.coe_cast] at *) <;> first | rfl | omega
+  simp only [D.castM, Matrix.reindex_apply, Matrix.submatrix_apply, finCongr_symm, finCongr_apply, Fin.val_cast, ιLev]
+  split_ifs <;> (try simp only [Fin.ext_iff, Fin.val_cast] at *) <;> first | rfl | omega
 
 theorem castV_inj {a b : ℕ} (h : a = b) {v w : Fin (2 * a + k + 1) → ℂ} (e : D.castV h v = D.castV h w) : v = w := by
   subst h

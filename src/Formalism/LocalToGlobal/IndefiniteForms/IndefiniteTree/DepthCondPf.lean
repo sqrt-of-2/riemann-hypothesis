@@ -58,16 +58,16 @@ theorem content_prime_condition_holds : FjPCore := by
   intro Nd j p
   refine ⟨fun h => ?_, fun h0 h1 h => ?_, fun h0 h1 h2 hq hd => ?_⟩
   · unfold NumDatum.FjP
-    rw [if_pos h]
+    rw [ite_eq_left h]
   · have hc : Nd.cls p = PrimeClass.ram2 ∨ Nd.cls p = PrimeClass.ramQ := by
       unfold NumDatum.cls primeClass
       by_cases hs : p ∈ Nd.H.small
       · left
-        rw [if_pos hs]
+        rw [ite_eq_left hs]
       · right
-        rw [if_neg hs, if_pos (h.resolve_left hs)]
+        rw [ite_eq_right hs, ite_eq_left (h.resolve_left hs)]
     unfold NumDatum.FjP
-    rw [if_neg (by rintro (h' | h') <;> contradiction)]
+    rw [ite_eq_right (by rintro (h' | h') <;> contradiction)]
     rcases hc with hc | hc <;> simp [hc]
   · have hs : p ∉ Nd.H.small := by
       intro hmem
@@ -78,9 +78,9 @@ theorem content_prime_condition_holds : FjPCore := by
       exact Nat.not_prime_one (Nat.Coprime.eq_one_of_dvd hQd.symm hdv ▸ hpr)
     have hc : Nd.cls p = PrimeClass.ramD := by
       unfold NumDatum.cls primeClass
-      rw [if_neg hs, if_neg hq, if_pos hd]
+      rw [ite_eq_right hs, ite_eq_right hq, ite_eq_left hd]
     unfold NumDatum.FjP
-    rw [if_neg (by rintro (h' | h') <;> contradiction), if_pos hc]
+    rw [ite_eq_right (by rintro (h' | h') <;> contradiction), ite_eq_left hc]
 
 theorem ramified_discriminant_condition_holds : FRamDCore := by
   intro Nd j b hk hw

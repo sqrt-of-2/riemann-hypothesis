@@ -62,9 +62,9 @@ theorem locCpt_Qv {p : ℕ} [Fact p.Prime] (v : AwayP p) : LocallyCompactSpace (
     (ho.mem_nhds (zero_mem _))
 
 theorem secCount_Qv {p : ℕ} [Fact p.Prime] (v : AwayP p) : SecondCountableTopology (Qv v) := by
-  haveI := locCpt_Qv v
-  letI : NontriviallyNormedField (Qv v) := Valued.toNontriviallyNormedField _ _
-  haveI : ProperSpace (Qv v) := ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
+  have := locCpt_Qv v
+  let : NontriviallyNormedField (Qv v) := Valued.toNontriviallyNormedField _ _
+  have : ProperSpace (Qv v) := ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
   exact secondCountable_of_proper
 
 theorem units_topA (K : Type) [Field K] [TopologicalSpace K] [IsTopologicalRing K] [T2Space K]
@@ -73,27 +73,27 @@ theorem units_topA (K : Type) [Field K] [TopologicalSpace K] [IsTopologicalRing 
     T2Space Aˣ ∧ LocallyCompactSpace Aˣ ∧ SigmaCompactSpace Aˣ := by
   let b := Module.finBasis K A
   let e : A ≃ₗ[K] (Fin (Module.finrank K A) → K) := b.equivFun
-  haveI : ContinuousAdd A := IsModuleTopology.toContinuousAdd K A
+  have : ContinuousAdd A := IsModuleTopology.toContinuousAdd K A
   have hc1 : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
   have hc2 : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
   let h : A ≃ₜ (Fin (Module.finrank K A) → K) := ⟨e.toEquiv, hc1, hc2⟩
-  haveI : T2Space A := h.isEmbedding.t2Space
-  haveI : LocallyCompactSpace A := h.isClosedEmbedding.locallyCompactSpace
-  haveI : SecondCountableTopology A := h.isEmbedding.secondCountableTopology
-  haveI : IsTopologicalRing A := IsModuleTopology.isTopologicalRing K A
-  haveI : LocallyCompactSpace Aᵐᵒᵖ := MulOpposite.opHomeomorph.symm.isClosedEmbedding.locallyCompactSpace
-  haveI : SecondCountableTopology Aᵐᵒᵖ := MulOpposite.opHomeomorph.symm.isEmbedding.secondCountableTopology
-  haveI : LocallyCompactSpace Aˣ := Units.isClosedEmbedding_embedProduct.locallyCompactSpace
-  haveI : SecondCountableTopology Aˣ := Units.isClosedEmbedding_embedProduct.isEmbedding.secondCountableTopology
-  haveI : T2Space Aˣ := Units.isEmbedding_embedProduct.t2Space
+  have : T2Space A := h.isEmbedding.t2Space
+  have : LocallyCompactSpace A := h.isClosedEmbedding.locallyCompactSpace
+  have : SecondCountableTopology A := h.isEmbedding.secondCountableTopology
+  have : IsTopologicalRing A := IsModuleTopology.isTopologicalRing K A
+  have : LocallyCompactSpace Aᵐᵒᵖ := MulOpposite.opHomeomorph.symm.isClosedEmbedding.locallyCompactSpace
+  have : SecondCountableTopology Aᵐᵒᵖ := MulOpposite.opHomeomorph.symm.isEmbedding.secondCountableTopology
+  have : LocallyCompactSpace Aˣ := Units.isClosedEmbedding_embedProduct.locallyCompactSpace
+  have : SecondCountableTopology Aˣ := Units.isClosedEmbedding_embedProduct.isEmbedding.secondCountableTopology
+  have : T2Space Aˣ := Units.isEmbedding_embedProduct.t2Space
   exact ⟨inferInstance, inferInstance, sigmaCompactSpace_of_locallyCompact_secondCountable⟩
 
 theorem topA : ∀ (p : ℕ) [Fact p.Prime] (G : HTGroup p) (v : AwayP p), letI : TopologicalSpace (Qv v ⊗[ℚ] G.C) := moduleTopology (Qv v) (Qv v ⊗[ℚ] G.C); T2Space (Qv v ⊗[ℚ] G.C)ˣ ∧ LocallyCompactSpace (Qv v ⊗[ℚ] G.C)ˣ ∧ SigmaCompactSpace (Qv v ⊗[ℚ] G.C)ˣ := by
   intro p _ G v
-  letI : TopologicalSpace (Qv v ⊗[ℚ] G.C) := moduleTopology (Qv v) (Qv v ⊗[ℚ] G.C)
-  haveI : IsModuleTopology (Qv v) (Qv v ⊗[ℚ] G.C) := ⟨rfl⟩
-  haveI := locCpt_Qv v
-  haveI := secCount_Qv v
+  let : TopologicalSpace (Qv v ⊗[ℚ] G.C) := moduleTopology (Qv v) (Qv v ⊗[ℚ] G.C)
+  have : IsModuleTopology (Qv v) (Qv v ⊗[ℚ] G.C) := ⟨rfl⟩
+  have := locCpt_Qv v
+  have := secCount_Qv v
   exact units_topA (Qv v) (Qv v ⊗[ℚ] G.C)
 
 end GlobalTheory.OrbFinAf

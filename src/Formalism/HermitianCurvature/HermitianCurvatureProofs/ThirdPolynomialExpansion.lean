@@ -78,19 +78,19 @@ theorem zb_det (i0 s : ℕ) (h : Matrix (Fin i0) (Fin i0) ℂ) (t : ℂ) :
           Matrix.of fun a b : Fin (i0 + s) => Zb i0 s h t a.val b.val := by
         ext a b
         simp only [Matrix.submatrix_apply, Matrix.of_apply, succAbove_val, Fin.succAbove_last,
-          Fin.coe_castSucc]
+          Fin.val_castSucc]
         have hb := b.isLt
         by_cases ha : (a : ℕ) < i0
-        · simp only [ha, if_true]
+        · simp only [ha, ite_true]
           unfold Zb
           split_ifs <;> first | rfl
-        · simp only [ha, if_false]
+        · simp only [ha, ite_false]
           unfold Zb
           split_ifs <;> first | rfl | omega
       rw [hsub, ih, sgnW_succ']
       have he : Zb i0 (s + 1) h t i0 (i0 + s) = t := by
         simp only [Zb]
-        rw [dite_eq_right (lt_irrefl _), if_pos (by omega)]
+        rw [dite_eq_right (lt_irrefl _), ite_eq_left (by omega)]
       simp only [Matrix.of_apply, Fin.val_last]
       rw [he]
       rw [show i0 + (i0 + s) = 2 * i0 + s by ring, pow_add, pow_mul]
@@ -101,7 +101,7 @@ theorem zb_det (i0 s : ℕ) (h : Matrix (Fin i0) (Fin i0) ℂ) (t : ℂ) :
       have he : Zb i0 (s + 1) h t i0 j = 0 := by
         have := j.isLt
         simp only [Zb]
-        rw [dite_eq_right (lt_irrefl _), if_neg (by omega)]
+        rw [dite_eq_right (lt_irrefl _), ite_eq_right (by omega)]
       simp only [Matrix.of_apply]
       rw [he, mul_zero, zero_mul]
     · intro hn
@@ -118,19 +118,19 @@ theorem derivative_leading_zb : DleadZb := by
 theorem minors_first_case : MinorsFirstCase := by
   intro i0 s' h t c
   by_cases hc : c.val = i0
-  · rw [if_pos hc, ← zb_det i0 s' h t]
+  · rw [ite_eq_left hc, ← zb_det i0 s' h t]
     congr 1
     ext a l
     simp only [Matrix.of_apply, succAbove_val, hc]
     have hl := l.isLt
     by_cases hl0 : (l : ℕ) < i0
-    · simp only [hl0, if_true]
+    · simp only [hl0, ite_true]
       unfold Zb
       split_ifs <;> first | rfl | omega
-    · simp only [hl0, if_false]
+    · simp only [hl0, ite_false]
       unfold Zb
       split_ifs <;> first | rfl | omega
-  · rw [if_neg hc]
+  · rw [ite_eq_right hc]
     have hne : (⟨i0, by omega⟩ : Fin (i0 + s' + 1)) ≠ c := fun e => hc (by rw [← e])
     obtain ⟨l0, hl0⟩ := Fin.exists_succAbove_eq hne
     apply Matrix.det_eq_zero_of_column_eq_zero l0
@@ -149,7 +149,7 @@ theorem third_polynomial_expansion : MinorsThirdCase := by
   have ha := a.isLt
   have hb := b.isLt
   by_cases ha0 : (a : ℕ) < i0 <;> by_cases hb0 : (b : ℕ) < i0 <;>
-    simp only [ha0, hb0, if_true, if_false] <;>
+    simp only [ha0, hb0, ite_true, ite_false] <;>
     unfold Zb <;> split_ifs <;> first | rfl | omega
 
 end Formalism.FourierDecayAlt.P.SignAntidiagonal

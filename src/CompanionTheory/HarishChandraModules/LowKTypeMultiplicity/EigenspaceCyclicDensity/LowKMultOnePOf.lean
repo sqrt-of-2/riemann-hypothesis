@@ -24,7 +24,7 @@ section
 variable {V : Type} [AddCommGroup V] [Module ℂ V]
 
 theorem evK_allT (E : Fin n → Fin n → Module.End ℂ V) : evK (allT n) E = ev E := by
-  simp only [CompanionTheory.D.LK.evK, CompanionTheory.D.LK.ev, CompanionTheory.D.LK.allT, if_true]
+  simp only [CompanionTheory.D.LK.evK, CompanionTheory.D.LK.ev, CompanionTheory.D.LK.allT, ite_true]
 
 theorem evd_eig (F : Fin n → Module.End ℂ V) (τ : Fin n → ℂ) (x : V) (h : ∀ c, F c x = τ c • x)
     (b : FreeAlgebra ℂ (Fin n)) : evd F b x = FreeAlgebra.lift ℂ τ b • x := by
@@ -32,7 +32,7 @@ theorem evd_eig (F : Fin n → Module.End ℂ V) (τ : Fin n → ℂ) (x : V) (h
   · simp only [AlgHom.commutes, Module.algebraMap_end_apply]
     rfl
   · simp only [CompanionTheory.D.LK.evd, FreeAlgebra.lift_ι_apply, h]
-  · rw [map_mul, Module.End.mul_apply, hb, map_smul, ha, map_mul, smul_smul, mul_comm]
+  · rw [map_mul, mul_apply_eq_comp, hb, map_smul, ha, map_mul, smul_smul, mul_comm]
   · rw [map_add (f := _), LinearMap.add_apply, ha, hb, map_add (f := _), add_smul]
 
 theorem mem_cyc {E : Fin n → Fin n → Module.End ℂ V} {v w : V} : w ∈ Cyc E v ↔ ∃ a, ev E a v = w := by
@@ -44,7 +44,7 @@ theorem cyc_stab {E : Fin n → Fin n → Module.End ℂ V} {v w : V} (c d : Fin
     E c d w ∈ Cyc E v := by
   obtain ⟨a, rfl⟩ := mem_cyc.1 h
   refine mem_cyc.2 ⟨FreeAlgebra.ι ℂ (c, d) * a, ?_⟩
-  rw [map_mul, Module.End.mul_apply]
+  rw [map_mul, mul_apply_eq_comp]
   simp only [CompanionTheory.D.LK.ev, FreeAlgebra.lift_ι_apply]
 
 end
@@ -60,32 +60,32 @@ theorem multAlg_of (hL : LowSpan) (hH : HWMap) (hD : Dens) (hI : InvLift) (hC : 
     if h : ε a = ε b then (E a b).restrict (fun x hx => hLst a b h x hx) else 0
   have hET : ∀ a b (h : ε a = ε b) (x : L), ((ET a b x : L) : V) = E a b x := by
     intro a b h x
-    simp only [ET, dif_pos h, LinearMap.coe_restrict_apply]
+    simp only [ET, dite_eq_left h, LinearMap.coe_restrict_apply]
   have kET : CompanionTheory.D.DSIC.KRel ε ET := by
     intro a b c d hab hcd
     apply LinearMap.ext
     intro x
     apply Subtype.ext
     have key := LinearMap.congr_fun (hGl a b c d) (x : V)
-    simp only [LinearMap.sub_apply, Module.End.mul_apply, Submodule.coe_sub] at key ⊢
+    simp only [LinearMap.sub_apply, mul_apply_eq_comp, Submodule.coe_sub] at key ⊢
     rw [hET a b hab, hET c d hcd x, hET c d hcd, hET a b hab x]
     by_cases h1 : b = c <;> by_cases h2 : d = a
     · have e1 : ε a = ε d := by rw [h1] at hab; exact hab.trans hcd
       have e2 : ε c = ε b := by rw [h2] at hcd; exact hcd.trans hab
-      rw [if_pos h1, if_pos h2] at key ⊢
+      rw [ite_eq_left h1, ite_eq_left h2] at key ⊢
       rw [hET a d e1, hET c b e2]
       exact key
     · have e1 : ε a = ε d := by rw [h1] at hab; exact hab.trans hcd
-      rw [if_pos h1, if_neg h2] at key ⊢
+      rw [ite_eq_left h1, ite_eq_right h2] at key ⊢
       rw [hET a d e1]
       simp only [LinearMap.zero_apply, ZeroMemClass.coe_zero] at key ⊢
       exact key
     · have e2 : ε c = ε b := by rw [h2] at hcd; exact hcd.trans hab
-      rw [if_neg h1, if_pos h2] at key ⊢
+      rw [ite_eq_right h1, ite_eq_left h2] at key ⊢
       rw [hET c b e2]
       simp only [LinearMap.zero_apply, ZeroMemClass.coe_zero] at key ⊢
       exact key
-    · rw [if_neg h1, if_neg h2] at key ⊢
+    · rw [ite_eq_right h1, ite_eq_right h2] at key ⊢
       simp only [LinearMap.zero_apply, ZeroMemClass.coe_zero] at key ⊢
       exact key
   have uET : CompanionTheory.D.DSIC.KUnit ε ET := by
@@ -145,7 +145,7 @@ theorem multAlg_of (hL : LowSpan) (hH : HWMap) (hD : Dens) (hI : InvLift) (hC : 
     intro A hA
     by_contra hne
     apply hA
-    rw [Pi.single_apply, if_neg hne]
+    rw [Pi.single_apply, ite_eq_right hne]
   have hSup : CompanionTheory.D.LK.Sup (CompanionTheory.D.LK.allT n) ∅ (CompanionTheory.D.LK.om ε).card (Pi.single (CompanionTheory.D.LK.om ε) v) := by
     intro A hA
     rw [hfilt A hA]
@@ -193,30 +193,30 @@ private lemma commute_E_cas_of_glRel {A : Type} [Ring A] {n : ℕ} (E : Fin n �
   have T1 : (∑ a, ∑ b, (if d = a then E c b else 0) * E b a) = ∑ b, E c b * E b d := by
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl (fun b _ => ?_)
-    simp only [ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+    simp only [ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
   have T2 : (∑ a, ∑ b, (if b = c then E a d else 0) * E b a) = ∑ a, E a d * E c a := by
     refine Finset.sum_congr rfl (fun a _ => ?_)
-    simp only [ite_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    simp only [ite_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   have T3 : (∑ a, ∑ b, E a b * (if d = b then E c a else 0)) = ∑ a, E a d * E c a := by
     refine Finset.sum_congr rfl (fun a _ => ?_)
-    simp only [mul_ite, mul_zero, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+    simp only [mul_ite, mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
   have T4 : (∑ a, ∑ b, E a b * (if a = c then E b d else 0)) = ∑ b, E c b * E b d := by
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl (fun b _ => ?_)
-    simp only [mul_ite, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    simp only [mul_ite, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   rw [hsplit, T1, T2, T3, T4]
   abel
 
 theorem lowKMultOneP_of (hM : MultAlg) (hE : KModExists) (hD : CycDense) (hO : OrthCyc) : LowKMultOneP := by
   intro N ε lam H _ _ σ hHC hDS S S' hS hS'
   obtain ⟨hcomp, -, hUR, hIR, -, -, hmin⟩ := hDS
-  haveI := hcomp
+  have := hcomp
   obtain ⟨D, E, hK⟩ := hE N ε H σ hUR hIR
   have hGl : GlRel E := hK.gl
   have hU : CompanionTheory.D.DSIC.KUnit ε E := by
     intro a b h x y
     rw [hK.unit a b x y]
-    simp only [Formalism.REAL.sgn, if_pos h, Complex.ofReal_one, one_mul]
+    simp only [Formalism.REAL.sgn, ite_eq_left h, Complex.ofReal_one, one_mul]
   have hLF : CompanionTheory.D.LK.LocFin ε E := hK.locFin
   have hIM : CompanionTheory.D.LK.IsMin ε E lam := by
     intro μ x hx hxh
@@ -228,8 +228,8 @@ theorem lowKMultOneP_of (hM : MultAlg) (hE : KModExists) (hD : CycDense) (hO : O
     fun w hw hwc => hM N ε lam D E hHC.1 hGl hU hLF hIM v w hv0 hv hw hwc
   have hcv : KHighest ε E (lowK ε lam) (Cas E v) := by
     refine ⟨fun a => ?_, fun a b hab h => ?_⟩
-    · rw [← Module.End.mul_apply, commute_E_cas_of_glRel E hGl a a, Module.End.mul_apply, hv.1 a, map_smul]
-    · rw [← Module.End.mul_apply, commute_E_cas_of_glRel E hGl a b, Module.End.mul_apply, hv.2 a b hab h, map_zero]
+    · rw [← mul_apply_eq_comp, commute_E_cas_of_glRel E hGl a a, mul_apply_eq_comp, hv.1 a, map_smul]
+    · rw [← mul_apply_eq_comp, commute_E_cas_of_glRel E hGl a b, mul_apply_eq_comp, hv.2 a b hab h, map_zero]
   have hcc : Cas E v ∈ Cyc E v := by
     refine mem_cyc.2 ⟨∑ a, ∑ b, FreeAlgebra.ι ℂ (a, b) * FreeAlgebra.ι ℂ (b, a), ?_⟩
 

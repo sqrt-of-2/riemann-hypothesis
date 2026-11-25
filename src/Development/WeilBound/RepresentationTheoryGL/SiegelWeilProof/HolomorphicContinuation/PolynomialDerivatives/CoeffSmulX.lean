@@ -113,20 +113,20 @@ theorem rdeg_single (ε : Fin m → Bool) (k : Fin m × Fin n × Bool) (hk : inF
   subst hk
   by_cases ha : a = a0
   · subst ha
-    rw [if_pos rfl, Finset.sum_eq_single i0]
+    rw [ite_eq_left rfl, Finset.sum_eq_single i0]
     · simp
     · intro i _ hi; simp [Ne.symm hi]
     · simp
-  · rw [if_neg ha]
+  · rw [ite_eq_right ha]
     refine Finset.sum_eq_zero fun i _ => ?_
-    rw [Finsupp.single_apply, if_neg]
+    rw [Finsupp.single_apply, ite_eq_right]
     intro h; exact ha (congrArg Prod.fst h).symm
 
 theorem term_mem_box (ε : Fin m → Bool) (R : Set (Fin m → ℕ)) (k l : Fin m × Fin n × Bool)
     (hk : inF1 ε k) (hl : inF1 ε l) (hkl : k.1 = l.1) (s : Fin m × Fin n × Bool →₀ ℕ)
     (hs : ∀ k ∈ s.support, inF1 ε k) (hR : rdeg ε s ∈ R) :
     X k * pderiv l (monomial s (1 : ℂ)) ∈ box ε R := by
-  rw [pderiv_monomial, X, monomial_mul, one_mul, one_mul]
+  rw [pderiv_monomial, X, MvPolynomial.monomial_mul_monomial, one_mul, one_mul]
   by_cases h0 : s l = 0
   · simp [h0]
   · rw [show (monomial (Finsupp.single k 1 + (s - Finsupp.single l 1)) ((s l : ℕ) : ℂ) : PX m n) =
@@ -134,7 +134,7 @@ theorem term_mem_box (ε : Fin m → Bool) (R : Set (Fin m → ℕ)) (k l : Fin 
         rw [smul_monomial, smul_eq_mul, mul_one]]
     refine Submodule.smul_mem _ _ (Submodule.subset_span ⟨_, fun k' hk' => ?_, ?_, rfl⟩)
     · rcases Finset.mem_union.mp (Finsupp.support_add hk') with h | h
-      · rw [Finsupp.support_single_ne_zero _ one_ne_zero, Finset.mem_singleton] at h; rw [h]; exact hk
+      · rw [Finsupp.support_single _ one_ne_zero, Finset.mem_singleton] at h; rw [h]; exact hk
       · exact hs k' (Finsupp.support_tsub h)
     · have hle : Finsupp.single l 1 ≤ s := Finsupp.single_le_iff.mpr (Nat.one_le_iff_ne_zero.mpr h0)
       have e1 : rdeg ε (Finsupp.single k 1) = rdeg ε (Finsupp.single l 1) := by
@@ -186,10 +186,10 @@ theorem symW_step (u : (Fin m × Fin n × Bool) ⊕ (Fin m × Fin n × Bool) →
 
 theorem coeff_smul_X {τ : Type} [DecidableEq τ] (c : ℂ) (w0 u : τ) :
     (c • X w0 : MvPolynomial τ ℂ).coeff (Finsupp.single u 1) = if w0 = u then c else 0 := by
-  rw [MvPolynomial.coeff_smul, coeff_X']
+  rw [MvPolynomial.coeff_smul, MvPolynomial.coeff_X]
   by_cases h : w0 = u
   · subst h; simp
-  · rw [if_neg (fun e => h ((Finsupp.single_left_inj one_ne_zero).mp e)), if_neg h]; simp
+  · rw [ite_eq_right (fun e => h ((Finsupp.single_left_inj one_ne_zero).mp e)), if_neg h]; simp
 
 theorem expand_lin {τ : Type} [Fintype τ] [DecidableEq τ] (c : ℂ) (w0 : τ) :
     (c • X w0 : MvPolynomial τ ℂ) = ∑ u, (c • X w0 : MvPolynomial τ ℂ).coeff (Finsupp.single u 1) • X u := by

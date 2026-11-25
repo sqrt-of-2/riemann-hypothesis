@@ -61,7 +61,7 @@ open NumberField Cardinal
 private lemma countable_of_intermediateField_fg {K Ω : Type} [Field K] [Countable K] [Field Ω] [Algebra K Ω]
     (hfg : (⊤ : IntermediateField K Ω).FG) : Countable Ω := by
   obtain ⟨S, hS⟩ := hfg
-  haveI : Countable (MvPolynomial (S : Set Ω) K) := by
+  have : Countable (MvPolynomial (S : Set Ω) K) := by
     first
     | infer_instance
   let f : MvPolynomial (S : Set Ω) K × MvPolynomial (S : Set Ω) K → Ω := fun pq =>
@@ -81,15 +81,15 @@ private lemma countable_of_intermediateField_fg {K Ω : Type} [Field K] [Countab
 theorem exists_embedding_over {K Ω : Type} [Field K] [NumberField K] [Field Ω] [Algebra K Ω]
     (hfg : (⊤ : IntermediateField K Ω).FG) (sg : K →+* ℂ) :
     ∃ P : Ω →+* ℂ, P.comp (algebraMap K Ω) = sg := by
-  haveI hKc : Countable K := by
+  have hKc : Countable K := by
     first
     | exact (Module.finBasis ℚ K).equivFun.injective.countable
-  haveI hΩc : Countable Ω := countable_of_intermediateField_fg hfg
-  letI : Algebra K ℂ := sg.toAlgebra
-  haveI : FaithfulSMul K ℂ := by
+  have hΩc : Countable Ω := countable_of_intermediateField_fg hfg
+  let : Algebra K ℂ := sg.toAlgebra
+  have : FaithfulSMul K ℂ := by
     first
     | infer_instance
-  haveI : FaithfulSMul K Ω := by
+  have : FaithfulSMul K Ω := by
     first
     | infer_instance
   obtain ⟨s, hs⟩ := exists_isTranscendenceBasis K Ω
@@ -114,16 +114,16 @@ theorem exists_embedding_over {K Ω : Type} [Field K] [NumberField K] [Field Ω]
   let φ : Algebra.adjoin K (Set.range (Subtype.val : s → Ω)) →ₐ[K] ℂ :=
     (Algebra.adjoin K (Set.range u)).val.comp E.toAlgHom
   have hφ : Function.Injective φ := Subtype.val_injective.comp E.injective
-  letI : Algebra (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) ℂ := φ.toRingHom.toAlgebra
-  haveI : Algebra.IsAlgebraic (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) Ω :=
+  let : Algebra (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) ℂ := φ.toRingHom.toAlgebra
+  have : Algebra.IsAlgebraic (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) Ω :=
     hs.isAlgebraic
   try haveI : NoZeroSMulDivisors (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) ℂ :=
     NoZeroSMulDivisors.of_algebraMap_injective hφ
-  try haveI : FaithfulSMul (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) ℂ :=
+  try have : FaithfulSMul (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) ℂ :=
     (faithfulSMul_iff_algebraMap_injective _ ℂ).mpr hφ
   try haveI : NoZeroSMulDivisors (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) Ω :=
     NoZeroSMulDivisors.of_algebraMap_injective Subtype.val_injective
-  try haveI : FaithfulSMul (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) Ω :=
+  try have : FaithfulSMul (Algebra.adjoin K (Set.range (Subtype.val : s → Ω))) Ω :=
     (faithfulSMul_iff_algebraMap_injective _ Ω).mpr Subtype.val_injective
   let g : Ω →ₐ[Algebra.adjoin K (Set.range (Subtype.val : s → Ω))] ℂ := IsAlgClosed.lift
   refine ⟨g.toRingHom, ?_⟩

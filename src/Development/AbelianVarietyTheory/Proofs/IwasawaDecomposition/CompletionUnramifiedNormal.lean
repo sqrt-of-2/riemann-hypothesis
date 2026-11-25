@@ -81,34 +81,34 @@ theorem formallyUnramified_of_map_maximalIdeal {R S : Type*} [CommRing R] [CommR
 theorem isDomain_and_isIntegrallyClosed : ∀ (D E : Type) [CommRing D] [IsDomain D] [IsLocalRing D] [CommRing E] [IsLocalRing E] (h : D →+* E), IsNoetherianRing D → IsDomain (AdicCompletion (IsLocalRing.maximalIdeal D) D) → IsIntegrallyClosed (AdicCompletion (IsLocalRing.maximalIdeal D) D) → IsNoetherianRing E → IsAdicComplete (IsLocalRing.maximalIdeal E) E → IsLocalHom h → GlobalTheory.Toroidal.IsEtaleCompletion h → ((IsLocalRing.residue E).comp h).FormallyUnramified → IsDomain E ∧ IsIntegrallyClosed E := by
   intro D E _ _ _ _ _ h hD hAd hAi hE hEc _ het hfu
   obtain ⟨hflat, hmap, hfin⟩ := het
-  haveI := hD; haveI := hE; haveI := hEc; haveI := hAd; haveI := hAi
+  have := hD; have := hE; have := hEc; have := hAd; have := hAi
   let A := AdicCompletion (maximalIdeal D) D
-  haveI : IsNoetherianRing A := AdicNoeth.isNoetherianRing_adicCompletion D _
-  haveI : IsAdicComplete ((maximalIdeal D).map h) E := by rw [hmap]; exact hEc
+  have : IsNoetherianRing A := AdicNoeth.isNoetherianRing_adicCompletion D _
+  have : IsAdicComplete ((maximalIdeal D).map h) E := by rw [hmap]; exact hEc
   obtain ⟨g, hg⟩ := _root_.GlobalTheory.PowerExtensionEvaluation.exists_extension (maximalIdeal D) h
-  letI : Algebra A E := g.toAlgebra
+  let : Algebra A E := g.toAlgebra
   have hgA : ∀ a, g (algebraMap D A a) = h a := fun a => RingHom.congr_fun hg a
   have hmA : (maximalIdeal A).map (algebraMap A E) = maximalIdeal E := by
     rw [AdicCompletion.maximalIdeal_eq_map, Ideal.map_map]
     change (maximalIdeal D).map (g.comp _) = _
     rw [hg, hmap]
-  haveI : IsLocalHom (algebraMap A E) := ((local_hom_tfae _).out 1 3).mpr hmA.le
+  have : IsLocalHom (algebraMap A E) := ((local_hom_tfae _).out 1 3).mpr hmA.le
 
   have hres : ((residue E).comp g).Finite :=
     RingHom.Finite.of_comp_finite (f := algebraMap D A) (by rw [RingHom.comp_assoc, hg]; exact hfin)
-  haveI : Module.Finite A (E ⧸ (maximalIdeal A).map (algebraMap A E)) := by
+  have : Module.Finite A (E ⧸ (maximalIdeal A).map (algebraMap A E)) := by
     rw [← RingHom.finite_algebraMap]
     show ((Ideal.Quotient.mk _).comp (algebraMap A E)).Finite
     rw [hmA]
     exact hres
-  haveI : IsHausdorff ((maximalIdeal A).map (algebraMap A E)) E := by rw [hmA]; infer_instance
-  haveI : Module.Finite A E := FormalIsogeny.finite_of_finite_quotient_map (maximalIdeal A)
+  have : IsHausdorff ((maximalIdeal A).map (algebraMap A E)) E := by rw [hmA]; infer_instance
+  have : Module.Finite A E := FormalIsogeny.finite_of_finite_quotient_map (maximalIdeal A)
 
-  haveI : Module.Flat A E := by
+  have : Module.Flat A E := by
     refine LocalFlat.flat_of_relationsLift E (I := maximalIdeal A)
       (hmA.le.trans (maximalIdeal_le_jacobson _)) fun n => ?_
-    letI : Algebra D E := h.toAlgebra
-    haveI : Module.Flat D E := hflat
+    let : Algebra D E := h.toAlgebra
+    have : Module.Flat D E := hflat
     have fg := (maximalIdeal D).fg_of_isNoetherianRing
     have hkerA : ∀ x : A, AdicCompletion.evalₐ (maximalIdeal D) n x = 0 ↔ x ∈ maximalIdeal A ^ n := by
       intro x
@@ -148,16 +148,16 @@ theorem isDomain_and_isIntegrallyClosed : ∀ (D E : Type) [CommRing D] [IsDomai
       exact Module.Flat.of_linearEquiv
         (Algebra.TensorProduct.quotIdealMapEquivQuotTensor E (maximalIdeal D ^ n)).toLinearEquiv
 
-  haveI : Algebra.FormallyUnramified A (ResidueField E) := by
+  have : Algebra.FormallyUnramified A (ResidueField E) := by
     rw [← RingHom.formallyUnramified_algebraMap]
     have e : (algebraMap A (ResidueField E)).comp (algebraMap D A) = (residue E).comp h := by
       rw [← hg]; rfl
     exact RingHom.FormallyUnramified.of_comp (f := algebraMap D A) (by rw [e]; exact hfu)
-  haveI : Algebra.FormallyUnramified A E := formallyUnramified_of_map_maximalIdeal hmA
-  haveI : Algebra.FinitePresentation A E :=
+  have : Algebra.FormallyUnramified A E := formallyUnramified_of_map_maximalIdeal hmA
+  have : Algebra.FinitePresentation A E :=
     (Algebra.FinitePresentation.of_finiteType (R := A) (A := E)).1 inferInstance
-  haveI : Algebra.Etale A E := Algebra.Etale.of_formallyUnramified_of_flat
-  haveI : IsLocalization.AtPrime E (maximalIdeal E) :=
+  have : Algebra.Etale A E := Algebra.Etale.of_formallyUnramified_of_flat
+  have : IsLocalization.AtPrime E (maximalIdeal E) :=
     IsLocalization.self fun a ha => by_contra fun h' => ha h'
   exact isDomain_and_isIntegrallyClosed_atPrime_of_etale A (maximalIdeal E) E
 

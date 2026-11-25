@@ -64,11 +64,11 @@ theorem isScalarTower_base : IsScalarTower k (k ⊗[F] E) (k ⊗[F] Fld P) :=
     rw [Algebra.TensorProduct.map_tmul, map_one]; rfl
 
 theorem continuous_mulMat (φ : (k ⊗[F] Fld P) ≃ₗ[k ⊗[F] E] (Fin n → k ⊗[F] E)) : Continuous (mulMat φ) := by
-  haveI : IsModuleTopology k (k ⊗[F] E) := ⟨rfl⟩
-  haveI : IsModuleTopology k (k ⊗[F] Fld P) := ⟨rfl⟩
+  have : IsModuleTopology k (k ⊗[F] E) := ⟨rfl⟩
+  have : IsModuleTopology k (k ⊗[F] Fld P) := ⟨rfl⟩
   haveI : FiniteDimensional F (Fld P) := Module.Finite.trans E _
-  haveI : ContinuousAdd (k ⊗[F] E) := IsModuleTopology.toContinuousAdd k _
-  haveI := isScalarTower_base (k := k) (P := P)
+  have : ContinuousAdd (k ⊗[F] E) := IsModuleTopology.toContinuousAdd k _
+  have := isScalarTower_base (k := k) (P := P)
   refine continuous_matrix fun i j => ?_
   have e : ∀ l, mulMat φ l i j = φ (l * φ.symm (Pi.single j 1)) i := fun l => by
     rw [← mulMat_mulVec, φ.apply_symm_apply, Matrix.mulVec_single_one, Matrix.col_apply]

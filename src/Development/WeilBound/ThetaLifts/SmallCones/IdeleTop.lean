@@ -61,19 +61,19 @@ def IdeleTop : Prop :=
 
 theorem ideleTop : IdeleTop := by
   intro F E _ _ _ _ _
-  haveI : Module.Finite F E := Module.Finite.of_restrictScalars_finite ℚ _ _
-  haveI h1 : IsTopologicalRing (AE F E) := IsModuleTopology.isTopologicalRing (AF F) _
-  haveI := GlobalTheory.AdelicUnitaryTop.secondCountable_adele F
-  haveI := GlobalTheory.AdelicUnitaryTop.t2Space_adeleRing_numberField F
+  have : Module.Finite F E := Module.Finite.of_restrictScalars_finite ℚ _ _
+  have h1 : IsTopologicalRing (AE F E) := IsModuleTopology.isTopologicalRing (AF F) _
+  have := GlobalTheory.AdelicUnitaryTop.secondCountable_adele F
+  have := GlobalTheory.AdelicUnitaryTop.t2Space_adeleRing_numberField F
   obtain ⟨e0⟩ := GlobalTheory.AdelicUnitaryTop.nonempty_homeomorph (F := F) (E := E) (AF F)
-  haveI h2 : LocallyCompactSpace (AE F E) := e0.isClosedEmbedding.locallyCompactSpace
-  haveI h3 : SecondCountableTopology (AE F E) := e0.secondCountableTopology
-  haveI h4 : T2Space (AE F E) := e0.isEmbedding.t2Space
-  haveI : SecondCountableTopology (AE F E)ᵐᵒᵖ := MulOpposite.opHomeomorph.symm.secondCountableTopology
-  haveI : LocallyCompactSpace (AE F E)ᵐᵒᵖ := MulOpposite.opHomeomorph.symm.isClosedEmbedding.locallyCompactSpace
-  haveI h5 : SecondCountableTopology (AE F E)ˣ := Units.isEmbedding_embedProduct.secondCountableTopology
-  haveI h6 : LocallyCompactSpace (AE F E)ˣ := Units.isClosedEmbedding_embedProduct.locallyCompactSpace
-  haveI h7 : BorelSpace (AE F E)ˣ := ⟨rfl⟩
+  have h2 : LocallyCompactSpace (AE F E) := e0.isClosedEmbedding.locallyCompactSpace
+  have h3 : SecondCountableTopology (AE F E) := e0.secondCountableTopology
+  have h4 : T2Space (AE F E) := e0.isEmbedding.t2Space
+  have : SecondCountableTopology (AE F E)ᵐᵒᵖ := MulOpposite.opHomeomorph.symm.secondCountableTopology
+  have : LocallyCompactSpace (AE F E)ᵐᵒᵖ := MulOpposite.opHomeomorph.symm.isClosedEmbedding.locallyCompactSpace
+  have h5 : SecondCountableTopology (AE F E)ˣ := Units.isEmbedding_embedProduct.secondCountableTopology
+  have h6 : LocallyCompactSpace (AE F E)ˣ := Units.isClosedEmbedding_embedProduct.locallyCompactSpace
+  have h7 : BorelSpace (AE F E)ˣ := ⟨rfl⟩
   exact ⟨⟨h1, h2, h3, h4⟩, h6, h5, inferInstance, inferInstance, h7, fun μ _ =>
     ⟨inferInstance, inferInstance, inferInstance, inferInstance⟩⟩
 

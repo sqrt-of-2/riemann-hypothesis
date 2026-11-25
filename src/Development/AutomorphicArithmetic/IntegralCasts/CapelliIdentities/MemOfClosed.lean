@@ -90,7 +90,7 @@ theorem aux4 : ∀ (K : Type) [inst : Field K] [inst_1 : ValuativeRel K]
   [inst_5 : CharP (IsLocalRing.ResidueField ↥(ValuativeRel.valuation K).integer) l],
   Module.Free (ZMod l) (IsLocalRing.ResidueField ↥(ValuativeRel.valuation K).integer) := by
   intro K _ _ _ _ l _ _
-  letI := algRes K l
+  let := algRes K l
   exact Module.Free.of_divisionRing (ZMod l) _
 
 theorem aux5 : ∀ (l : ℕ) [Fact (Nat.Prime l)], StrongRankCondition (ZMod l) := by
@@ -102,8 +102,8 @@ theorem aux6 : ∀ (K : Type) [inst : Field K] [inst_1 : ValuativeRel K]
   [inst_5 : CharP (IsLocalRing.ResidueField ↥(ValuativeRel.valuation K).integer) l],
   Module.Finite (ZMod l) (IsLocalRing.ResidueField ↥(ValuativeRel.valuation K).integer) := by
   intro K _ _ _ _ l _ _
-  letI := algRes K l
-  haveI : Finite (IsLocalRing.ResidueField (ValuativeRel.valuation K).integer) := inferInstance
+  let := algRes K l
+  have : Finite (IsLocalRing.ResidueField (ValuativeRel.valuation K).integer) := inferInstance
   exact Module.Finite.of_finite
 
 attribute [local instance] aux4 aux6
@@ -202,7 +202,7 @@ private theorem mem_of_closed {l : ℕ} [Fact l.Prime] {K : Type} [Field K]
     algebraMap ℚ_[l] K (c : ℚ_[l]) ∈ O := by
   refine PadicInt.denseRange_natCast.induction_on
     (p := fun c : ℤ_[l] => algebraMap ℚ_[l] K (c : ℚ_[l]) ∈ O) c ?_ ?_
-  · exact hO.preimage (hc.comp continuous_subtype_val)
+  · exact hO.preimage (hc.comp continuous_subtypeVal)
   · intro n
     rw [PadicInt.coe_natCast, map_natCast]
     exact natCast_mem O n
@@ -213,7 +213,7 @@ theorem linIndep : ∀ (K : Type) [inst : Field K] [inst_1 : ValuativeRel K]
   Continuous ⇑(Algebra.algebraMap ℚ_[l] K) →
     LinearIndependent ℚ_[l] fun i => (blift K l i : K) := by
   intro K _ _ _ _ l _ _ _ hc
-  letI := algRes K l
+  let := algRes K l
   refine key (ValuativeRel.valuation K).integer
     (IsLocalRing.residue (ValuativeRel.valuation K).integer)
     (mem_of_closed _ Valuation.isClosed_integer hc)

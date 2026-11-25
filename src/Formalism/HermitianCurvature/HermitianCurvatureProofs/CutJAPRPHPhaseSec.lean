@@ -97,43 +97,43 @@ theorem first_diagonal_phase_mem_unitary (θ : ℝ) : D1 k θ ∈ UH (Hb k) := b
   refine diag_mem _ fun j => ?_
   have hc := expPlus_mul_expMinus θ
   by_cases hj : j = 0
-  · simp only [hj, if_true, star_eM]; exact hc
-  · simp only [hj, if_false, star_one, mul_one]
+  · simp only [hj, ite_true, star_eM]; exact hc
+  · simp only [hj, ite_false, star_one, mul_one]
 
 theorem diagonal_phase_mem_unitary (θ : ℝ) : D2 k θ ∈ UH (Hb k) := by
   refine diag_mem _ fun j => ?_
   have hc := expPlus_mul_expMinus θ
   by_cases hj : j = Fin.last k
-  · simp only [hj, if_true, star_one, mul_one]
-  · simp only [hj, if_false, star_eM]; exact hc
+  · simp only [hj, ite_true, star_one, mul_one]
+  · simp only [hj, ite_false, star_eM]; exact hc
 
 theorem first_diagonal_phase_fixes_tail (θ : ℝ) {x : Fin (k + 1) → ℂ} (hx : x 0 = 0) : D1 k θ *ᵥ x = x := by
   funext i
   rw [D1, Matrix.mulVec_diagonal]
   by_cases hi : i = 0
   · subst hi; rw [hx, mul_zero]
-  · rw [if_neg hi, one_mul]
+  · rw [ite_eq_right hi, one_mul]
 
 theorem diagonal_phase_first_vector (θ : ℝ) : D1 k θ *ᵥ Pi.single 0 1 = eM θ • (Pi.single 0 1 : Fin (k + 1) → ℂ) := by
   funext i
   rw [D1, Matrix.mulVec_diagonal, Pi.smul_apply, smul_eq_mul]
   by_cases hi : i = 0
-  · subst hi; rw [if_pos rfl]
-  · rw [if_neg hi, Pi.single_apply, if_neg hi, mul_zero, mul_zero]
+  · subst hi; rw [ite_eq_left rfl]
+  · rw [ite_eq_right hi, Pi.single_apply, ite_eq_right hi, mul_zero, mul_zero]
 
 theorem diagonal_phase_scalar_action (θ : ℝ) {x : Fin (k + 1) → ℂ} (hx : x (Fin.last k) = 0) : D2 k θ *ᵥ x = eM θ • x := by
   funext i
   rw [D2, Matrix.mulVec_diagonal, Pi.smul_apply, smul_eq_mul]
   by_cases hi : i = Fin.last k
   · subst hi; rw [hx, mul_zero, mul_zero]
-  · rw [if_neg hi]
+  · rw [ite_eq_right hi]
 
 theorem second_diagonal_phase_last_vector (θ : ℝ) : D2 k θ *ᵥ Pi.single (Fin.last k) 1 = (Pi.single (Fin.last k) 1 : Fin (k + 1) → ℂ) := by
   funext i
   rw [D2, Matrix.mulVec_diagonal]
   by_cases hi : i = Fin.last k
-  · subst hi; rw [if_pos rfl, one_mul]
-  · rw [if_neg hi, Pi.single_apply, if_neg hi, mul_zero]
+  · subst hi; rw [ite_eq_left rfl, one_mul]
+  · rw [ite_eq_right hi, Pi.single_apply, ite_eq_right hi, mul_zero]
 
 theorem nu_rot (hk : 1 ≤ k) (θ : ℝ) (w s : ℂ) : D1 k θ * (eP θ • nu k w s) * D2 k θ = nu k (eP θ * w) s := by
   have h0 := zero_ne_last hk
@@ -146,35 +146,35 @@ theorem nu_rot (hk : 1 ≤ k) (θ : ℝ) (w s : ℂ) : D1 k θ * (eP θ • nu k
   · subst hi0
     by_cases hj0 : j = 0
     · subst hj0
-      simp only [h0, if_true, if_false]
+      simp only [h0, ite_true, ite_false]
       linear_combination (eM θ * star w) * hc
     · by_cases hjl : j = Fin.last k
       · subst hjl
-        simp only [h0, h0.symm, if_true, if_false]
+        simp only [h0, h0.symm, ite_true, ite_false]
         linear_combination s * hc
-      · simp only [h0, hj0, hjl, Ne.symm hj0, if_true, if_false]
+      · simp only [h0, hj0, hjl, Ne.symm hj0, ite_true, ite_false]
         ring
   · by_cases hil : i = Fin.last k
     · subst hil
       by_cases hj0 : j = 0
       · subst hj0
-        simp only [h0, h0.symm, if_true, if_false]
+        simp only [h0, h0.symm, ite_true, ite_false]
         linear_combination s * hc
       · by_cases hjl : j = Fin.last k
         · subst hjl
-          simp only [h0.symm, if_true, if_false]
+          simp only [h0.symm, ite_true, ite_false]
           ring
-        · simp only [h0.symm, hj0, hjl, Ne.symm hjl, if_true, if_false]
+        · simp only [h0.symm, hj0, hjl, Ne.symm hjl, ite_true, ite_false]
           ring
     · by_cases hj0 : j = 0
       · subst hj0
-        simp only [h0, hi0, hil, if_true, if_false]
+        simp only [h0, hi0, hil, ite_true, ite_false]
         ring
       · by_cases hjl : j = Fin.last k
         · subst hjl
-          simp only [h0.symm, hi0, hil, if_true, if_false]
+          simp only [h0.symm, hi0, hil, ite_true, ite_false]
           ring
-        · simp only [hi0, hil, hj0, hjl, if_false]
+        · simp only [hi0, hil, hj0, hjl, ite_false]
           linear_combination (if i = j then (1 : ℂ) else 0) * hc
 
 theorem wZ_rot (T T' : ℝ) (θ : ℝ) (ζ : ℂ) : wZ T T' (rot θ ζ) = eP θ * wZ T T' ζ := by
@@ -233,7 +233,7 @@ theorem hA_perp (hk : 1 ≤ k) {a : Fin (k + 1) → ℂ} {T : ℝ} (hT : 0 < T) 
   have h0 := zero_ne_last hk
   have hy : ((gA k a T)⁻¹ *ᵥ x) 0 = 0 := by
     have h := form_of_unitary (Hb k) (gA_spec k hT ha).1 ((gA k a T)⁻¹ *ᵥ x) (Pi.single 0 1)
-    rw [Matrix.mulVec_mulVec, Matrix.mul_nonsing_inv _ uA, Matrix.one_mulVec, hx, herm_Hb_right, if_neg h0, one_mul] at h
+    rw [Matrix.mulVec_mulVec, Matrix.mul_nonsing_inv _ uA, Matrix.one_mulVec, hx, herm_Hb_right, ite_eq_right h0, one_mul] at h
     exact h.symm
   unfold hA
   rw [← Matrix.mulVec_mulVec, ← Matrix.mulVec_mulVec, first_diagonal_phase_fixes_tail θ hy, Matrix.mulVec_mulVec, Matrix.mul_nonsing_inv _ uA,
@@ -249,7 +249,7 @@ theorem hB_perp {b : Fin (k + 1) → ℂ} {T' : ℝ} (hT' : 0 < T') (hb : herm (
   have uB := DC.gB_unit hT' hb
   have hne : ((Real.sqrt T' : ℝ) : ℂ) ≠ 0 := by exact_mod_cast (Real.sqrt_pos.2 hT').ne'
   have cl : (gB k b T' *ᵥ x) (Fin.last k) = 0 := by
-    rw [← form_of_unitary (Hb k) (gB_spec k hT' hb).1, (gB_spec k hT' hb).2, herm_smul_right, herm_Hb_right, if_pos rfl] at hxb
+    rw [← form_of_unitary (Hb k) (gB_spec k hT' hb).1, (gB_spec k hT' hb).2, herm_smul_right, herm_Hb_right, ite_eq_left rfl] at hxb
     have h1 : star ((Real.sqrt T' : ℝ) : ℂ) ≠ 0 := by
       rw [show star ((Real.sqrt T' : ℝ) : ℂ) = _ from Complex.conj_ofReal _]; exact hne
     have h2 := (mul_eq_zero.1 hxb).resolve_left h1

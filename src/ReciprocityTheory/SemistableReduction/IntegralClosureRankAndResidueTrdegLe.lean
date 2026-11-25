@@ -22,14 +22,14 @@ theorem integralClosureRank (O F L : Type) [CommRing O] [IsDomain O] [IsDiscrete
       ∑ᶠ Q : {Q : Ideal (integralClosure O L) // Q.IsMaximal},
           Q.1.ramificationIdx O * Q.1.inertiaDeg O = Module.finrank F L := by
   set C := integralClosure O L
-  haveI hD : IsDedekindDomain C := integralClosure.isDedekindDomain O F L
-  haveI hFin : Module.Finite O C := IsIntegralClosure.finite O F L C
-  haveI : Module.IsTorsionFree O L := by
+  have hD : IsDedekindDomain C := integralClosure.isDedekindDomain O F L
+  have hFin : Module.Finite O C := IsIntegralClosure.finite O F L C
+  have : Module.IsTorsionFree O L := by
     rw [Module.isTorsionFree_iff_algebraMap_injective, IsScalarTower.algebraMap_eq O F L]
     exact (algebraMap F L).injective.comp (IsFractionRing.injective O F)
-  haveI : Module.IsTorsionFree O C := inferInstance
-  haveI hFr : Module.Free O C := Module.free_of_finite_type_torsion_free'
-  haveI : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension O F L C
+  have : Module.IsTorsionFree O C := inferInstance
+  have hFr : Module.Free O C := Module.free_of_finite_type_torsion_free'
+  have : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension O F L C
   set m := IsLocalRing.maximalIdeal O
   have hm : m ≠ ⊥ := IsDiscreteValuationRing.not_a_field O
   have key : ∀ Q : Ideal C, Q.IsMaximal ↔ Q ∈ IsDedekindDomain.primesOverFinset m C := by
@@ -54,11 +54,11 @@ theorem integralClosureRank (O F L : Type) [CommRing O] [IsDomain O] [IsDiscrete
     refine Finset.sum_congr rfl fun P _ => ?_
     have hP := P.2
     rw [IsDedekindDomain.mem_primesOverFinset_iff hm C] at hP
-    haveI := hP.1
-    haveI := hP.2
-    haveI : P.1.IsMaximal := ((key P.1).2 P.2)
+    have := hP.1
+    have := hP.2
+    have : P.1.IsMaximal := ((key P.1).2 P.2)
     simp only [Equiv.subtypeEquivRight_symm_apply_coe]
-    rw [Ideal.ramificationIdx_eq_ramificationIdx' m P.1 hm, Ideal.inertiaDeg_eq_inertiaDeg' m P.1]
+    rw [Ideal.ramificationIdx'_eq_ramificationIdx m P.1 hm, Ideal.inertiaDeg_eq_inertiaDeg' m P.1]
 
 open MvPolynomial
 

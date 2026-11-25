@@ -63,23 +63,23 @@ theorem rows_num_Q {f r : ℕ} {b pe E1 cr δ : ℝ} (hb : 2 ≤ b) (hδ0 : 0 �
     calc (41 : ℝ) ^ f ≤ (b ^ 6) ^ f := by gcongr
       _ = b ^ (6 * (f : ℝ)) := by
         rw [← pow_mul, ← Real.rpow_natCast]
-        congr 1 <;> push_cast <;> ring
+        congr 1; push_cast; ring
   have e0 : (b ^ pe) ^ 3 = b ^ (3 * pe) := by
     rw [rows_rpow_pow hb0]
-    congr 1 <;> push_cast <;> ring
+    congr 1; push_cast; ring
   have hA : (41 : ℝ) ^ f * (b ^ pe) ^ 3 ≤ b ^ (6 * (f : ℝ) + 3 * pe) := by
     rw [Real.rpow_add hb0, e0]
     gcongr
   have e1 : ((b ^ pe) ^ E1) ^ 2 = b ^ (2 * pe * E1) := by
     rw [hrp, rows_rpow_pow hb0]
-    congr 1 <;> push_cast <;> ring
+    congr 1; push_cast; ring
   have e2 : ((b ^ pe) ^ cr) ^ 2 = b ^ (2 * pe * cr) := by
     rw [hrp, rows_rpow_pow hb0]
-    congr 1 <;> push_cast <;> ring
+    congr 1; push_cast; ring
   have e3 : ((b ^ (6 * (f : ℝ) + 3 * pe)) ^ ((r + 1) ^ 2)) ^ 2 =
       b ^ (12 * (f : ℝ) * ((r : ℝ) + 1) ^ 2 + 6 * pe * ((r : ℝ) + 1) ^ 2) := by
     rw [rows_rpow_pow hb0, rows_rpow_pow hb0]
-    congr 1 <;> push_cast <;> ring
+    congr 1; push_cast; ring
   have h1δ : 1 + δ ≤ b ^ (1 : ℝ) := by
     rw [Real.rpow_one]
     linarith

@@ -136,16 +136,16 @@ def kapG (j : ℕ) : Fin j → coZ1s ρL :=
 
 theorem kapG_fin (j : ℕ) (a : Fin j) : (fun g => iL ((kapG ρL iL Zf j a : Γ → L) g)) ∈ Zf := by
   by_cases h : LatBasisG ρL iL Zf j
-  · have e : kapG ρL iL Zf j = h.choose := dif_pos h
+  · have e : kapG ρL iL Zf j = h.choose := dite_eq_left h
     rw [e]
     exact h.choose_spec.1 a
-  · have e : kapG ρL iL Zf j = fun _ => 0 := dif_neg h
+  · have e : kapG ρL iL Zf j = fun _ => 0 := dite_eq_right h
     rw [e]
     convert Zf.zero_mem using 1
     ext g
     simp
 
-theorem kapG_eq {j : ℕ} (h : LatBasisG ρL iL Zf j) : kapG ρL iL Zf j = h.choose := dif_pos h
+theorem kapG_eq {j : ℕ} (h : LatBasisG ρL iL Zf j) : kapG ρL iL Zf j = h.choose := dite_eq_left h
 
 theorem kapG_basis {j : ℕ} (h : LatBasisG ρL iL Zf j) :
     (∀ z ∈ FfG ρL iL Zf, ∃ (b : Fin j → O) (c : O), c ≠ 0 ∧
@@ -167,8 +167,8 @@ theorem latBasisG_of [IsPrincipalIdealRing O] (j : ℕ) (hfg : Module.Finite O �
     (hrk : Module.finrank O (↥(FfG ρL iL Zf) ⧸ Submodule.torsion O ↥(FfG ρL iL Zf)) = j) :
     LatBasisG ρL iL Zf j := by
   classical
-  haveI := hfg
-  haveI hfree : Module.Free O (↥(FfG ρL iL Zf) ⧸ Submodule.torsion O ↥(FfG ρL iL Zf)) := by
+  have := hfg
+  have hfree : Module.Free O (↥(FfG ρL iL Zf) ⧸ Submodule.torsion O ↥(FfG ρL iL Zf)) := by
     first
       | exact Module.free_of_finite_type_torsion_free'
   let e := Module.finBasisOfFinrankEq _ _ hrk
@@ -306,7 +306,7 @@ theorem cobFin_of (l : K.Col i dc) (h : KHf.OrbC i dc (ρV i dc Dd l)) : CobFin 
   split
   · rename_i hn
     have hO := h hn
-    simp only [KHf.finZ, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+    simp only [KHf.finZ, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_ofPred_eq]
     refine ⟨⟨?_, ?_⟩, TensorProduct.tmul _ v 1, ?_⟩
     · exact (hO v).sub continuous_const
     · intro g g'
@@ -341,7 +341,7 @@ theorem latBasis_of (l : K.Col i dc) (hf : FinFf i dc Dd l) (hr : RankFf i dc Dd
 theorem κ_mem (l : K.Col i dc) a (g : ↥(Γc i dc l)) :
     κ i dc Dd ρ π l a g = (κz i dc Dd ρ π l a : ↥(Γc i dc l) → Lr i Dd) g := by
   unfold κ
-  rw [dif_pos g.2]
+  rw [dite_eq_left g.2]
 
 theorem iL_equiv (l : K.Col i dc) (g : ↥(Γc i dc l)) (m : Lr i Dd) :
     iLr i Dd (ρL i dc Dd l g m) = ρV i dc Dd l g (iLr i Dd m) := iLM_smul (D.nd.O i) _ (Dd.ρk 0).toRingHom (Formalism.NG.uElt Dd.r Dd.χ (g : D.nd.Om ≃ₐ[D.host.E] D.nd.Om)) m
@@ -410,11 +410,11 @@ def uCol (l : K.Col i dc) : ↥(Γc i dc l) → D.nd.O i :=
 
 theorem uCol_add (l : K.Col i dc) (g h : ↥(Γc i dc l)) : uCol i dc l (g * h) = uCol i dc l g + uCol i dc l h := by
   by_cases hU : UnrHom i dc l
-  · have e : uCol i dc l = hU.choose := dif_pos hU
+  · have e : uCol i dc l = hU.choose := dite_eq_left hU
     rw [e]
     obtain ⟨⟨hadd, _, _⟩, _⟩ := hU.choose_spec
     exact hadd g h
-  · have e : uCol i dc l = 0 := dif_neg hU
+  · have e : uCol i dc l = 0 := dite_eq_right hU
     rw [e]
     simp
 
@@ -426,11 +426,11 @@ def uz (l : K.Col i dc) : Formalism.NG.coZ1s (Representation.trivial (D.nd.O i) 
 
 theorem u_mem (l : K.Col i dc) (g : ↥(Γc i dc l)) : u i dc l g = uCol i dc l g := by
   unfold u
-  rw [dif_pos g.2]
+  rw [dite_eq_left g.2]
 
 theorem uCol_spec (l : K.Col i dc) (hU : UnrHom i dc l) :
     UnrAdm i dc l (uCol i dc l) ∧ ∃ g, uCol i dc l g = 1 := by
-  have e : uCol i dc l = hU.choose := dif_pos hU
+  have e : uCol i dc l = hU.choose := dite_eq_left hU
   rw [e]
   exact hU.choose_spec
 

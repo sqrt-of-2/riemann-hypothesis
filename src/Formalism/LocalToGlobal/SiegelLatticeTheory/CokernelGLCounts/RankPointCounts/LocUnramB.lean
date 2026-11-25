@@ -48,10 +48,10 @@ theorem isUpUni_of {A : Matrix (Fin n) (Fin n) B} (h : IsUpU A) : Formalism.Doub
   ⟨fun i j hij => h.2 i j hij, h.1⟩
 
 theorem isLoU_of {A : Matrix (Fin n) (Fin n) B} (h : Formalism.DoubleCosetMeasures.IsLowUni A) : IsLoU A :=
-  ⟨h.2, fun i j hij => h.1 hij⟩
+  ⟨h.2, fun _i _j hij => h.1 hij⟩
 
 theorem isUpU_of {A : Matrix (Fin n) (Fin n) B} (h : Formalism.DoubleCosetMeasures.IsUpUni A) : IsUpU A :=
-  ⟨h.2, fun i j hij => h.1 hij⟩
+  ⟨h.2, fun _i _j hij => h.1 hij⟩
 
 theorem isLoU_mul {A A' : Matrix (Fin n) (Fin n) B} (h : IsLoU A) (h' : IsLoU A') : IsLoU (A * A') :=
   isLoU_of (Formalism.DoubleCosetMeasures.isLowUni_mul B (isLowUni_of h) (isLowUni_of h'))
@@ -108,7 +108,7 @@ theorem clsOf_triv (M : Loc.Model F E) {m : ℕ} (A : Matrix (Fin (m + 1)) (Fin 
   obtain ⟨hA, C, hC, hAC⟩ := h
   have hu : IsUnit A.det := Matrix.isUnit_det_of_right_inverse hAC
   unfold clsOf
-  rw [dif_pos ⟨hA, hu⟩]
+  rw [dite_eq_left ⟨hA, hu⟩]
   congr 1
   apply (LocModel.sub_iff_triv M _).1
   exact cok_sub_of_isGL M _ ⟨hA, C, hC, hAC⟩
@@ -153,10 +153,10 @@ theorem pSt_lt : ∀ (bs : List (K × ℕ)) (i j : ℕ), i < j → pSt bs i ≠ 
     simp only [pSt, pSz] at h ⊢
     by_cases hi : i < s
     · by_cases hj : j < s
-      · rw [if_pos hi, if_pos hj] at h; exact absurd rfl h
-      · rw [if_pos hi, if_pos hi, if_neg hj]; omega
-    · rw [if_neg hi, if_neg (by omega)] at h
-      rw [if_neg hi, if_neg hi, if_neg (by omega)]
+      · rw [ite_eq_left hi, ite_eq_left hj] at h; exact absurd rfl h
+      · rw [ite_eq_left hi, ite_eq_left hi, ite_eq_right hj]; omega
+    · rw [ite_eq_right hi, ite_eq_right (by omega)] at h
+      rw [ite_eq_right hi, ite_eq_right hi, ite_eq_right (by omega)]
       have h' : pSt bs (i - s) ≠ pSt bs (j - s) := fun e => h (by rw [e])
       have := ih (by omega) h'
       omega
@@ -179,10 +179,10 @@ theorem sameBlock_of : ∀ {E : Type} [CommRing E] (bs : List (Eˣ × ℕ+)) (cs
     by_cases ha' : a < s'
     · by_cases hb' : b < s'
       · exact Or.inl ⟨ha', hb'⟩
-      · rw [if_pos ha', if_neg hb'] at hab; omega
+      · rw [ite_eq_left ha', ite_eq_right hb'] at hab; omega
     · by_cases hb' : b < s'
-      · rw [if_neg ha', if_pos hb'] at hab; omega
-      · rw [if_neg ha', if_neg hb'] at hab
+      · rw [ite_eq_right ha', ite_eq_left hb'] at hab; omega
+      · rw [ite_eq_right ha', ite_eq_right hb'] at hab
         refine Or.inr ⟨⟨by omega, by omega⟩, sameBlock_of bs cs hrest (a - s') (b - s') (by omega) (by omega) (by omega)⟩
 
 end Blocks
@@ -210,12 +210,12 @@ def inv : Matrix (Fin m) (Fin m) E := fun a b => if b = H.σ a then Ring.inverse
 theorem mul_inv : W * H.inv = 1 := by
   ext a b
   rw [Matrix.mul_apply, Finset.sum_eq_single (H.σ a)]
-  · rw [H.hW, if_pos rfl]
+  · rw [H.hW, ite_eq_left rfl]
     unfold inv
     by_cases hb : b = a
-    · subst hb; rw [if_pos (H.σσ b).symm, H.cσ, Matrix.one_apply_eq, Ring.mul_inverse_cancel _ (H.hcu b)]
-    · rw [if_neg (fun h => hb (by rw [h, H.σσ])), mul_zero, Matrix.one_apply_ne (Ne.symm hb)]
-  · intro k _ hk; rw [H.hW, if_neg hk, zero_mul]
+    · subst hb; rw [ite_eq_left (H.σσ b).symm, H.cσ, Matrix.one_apply_eq, Ring.mul_inverse_cancel _ (H.hcu b)]
+    · rw [ite_eq_right (fun h => hb (by rw [h, H.σσ])), mul_zero, Matrix.one_apply_ne (Ne.symm hb)]
+  · intro k _ hk; rw [H.hW, ite_eq_right hk, zero_mul]
   · simp
 
 theorem inv_mul : H.inv * W = 1 := by
@@ -241,12 +241,12 @@ theorem conj_apply (N : Matrix (Fin m) (Fin m) E) (a b : Fin m) :
   rw [Matrix.mul_apply, Finset.sum_eq_single (H.σ b)]
   · rw [Matrix.mul_apply, Finset.sum_eq_single (H.σ a)]
     · unfold inv
-      rw [H.hW, if_pos rfl, if_pos (H.σσ b).symm, H.cσ]
-    · intro k _ hk; rw [H.hW, if_neg hk, zero_mul]
+      rw [H.hW, ite_eq_left rfl, ite_eq_left (H.σσ b).symm, H.cσ]
+    · intro k _ hk; rw [H.hW, ite_eq_right hk, zero_mul]
     · simp
   · intro k _ hk
     unfold inv
-    rw [if_neg (fun h => hk (by rw [h, H.σσ])), mul_zero]
+    rw [ite_eq_right (fun h => hk (by rw [h, H.σσ])), mul_zero]
   · simp
 
 end Mono
@@ -288,8 +288,8 @@ theorem pTau_mem {K : Type} [Zero K] : ∀ (bs : List (K × ℕ)) (i : ℕ), i <
     simp only [List.map_cons, List.sum_cons] at h
     simp only [pTau, List.map_cons, List.mem_cons]
     by_cases hi : i < s
-    · rw [if_pos hi]; exact Or.inl rfl
-    · rw [if_neg hi]; exact Or.inr (pTau_mem bs (i - s) (by omega))
+    · rw [ite_eq_left hi]; exact Or.inl rfl
+    · rw [ite_eq_right hi]; exact Or.inr (pTau_mem bs (i - s) (by omega))
 
 theorem uLow_zero {E : Type} [CommRing E] {n : ℕ} : Loc.uLow (0 : Loc.IL n → E) = 1 := by
   ext a b
@@ -410,7 +410,7 @@ theorem conj_upU (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (hA 
     have hσ : H.σ = sgF w := rfl
     have hne : H.σ a ≠ H.σ b := fun h => (ne_of_gt hba) (by rw [← H.σσ a, ← H.σσ b, h])
     unfold Loc.uUp
-    rw [if_neg hne, dite_eq_right]
+    rw [ite_eq_right hne, dite_eq_right]
     rintro ⟨hlt, hsb⟩
     obtain ⟨a1, a2, a3, -, -⟩ := pBlock w.1 a.val (by rw [hsum]; exact a.2)
     obtain ⟨b1, b2, b3, -, -⟩ := pBlock w.1 b.val (by rw [hsum]; exact b.2)
@@ -507,7 +507,7 @@ theorem shift_isGL (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (h
     (hg : Good δ M w p) : IsGL (M p).R (modMat δ T T' p w + cornerM p (cornerSh δ T T' p w)) := by
   set H := monoW T T' w p hA hg
   by_cases hD : Dmin w D.R.rS = 0
-  · have : cornerSh δ T T' p w = 0 := by unfold cornerSh; rw [if_pos hD]
+  · have : cornerSh δ T T' p w = 0 := by unfold cornerSh; rw [ite_eq_left hD]
     rw [this]
     have h0 : cornerM p (0 : (D.s.atP p).Ep) = 0 := by ext a b; simp [cornerM]
     rw [h0, add_zero]
@@ -520,9 +520,9 @@ theorem shift_isGL (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (h
   rw [ptMat_apply'] at hpm
   have hσl : sgF w (Fin.last _) = Fin.last _ := by
     by_contra h
-    rw [if_neg (Ne.symm h)] at hpm
+    rw [ite_eq_right (Ne.symm h)] at hpm
     exact ht0 hpm.symm
-  rw [if_pos hσl.symm] at hpm
+  rw [ite_eq_left hσl.symm] at hpm
   obtain ⟨c1, c2⟩ := (cond_iff w (Fin.last _)).2 ⟨rfl, hσl⟩
   have hst : pSt w.1 (Fin.last D.R.rS).val = D.R.rS := by
     simp only [Fin.val_last] at c1 c2 ⊢; omega
@@ -536,20 +536,20 @@ theorem shift_isGL (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (h
     simp only [Fin.val_zero, Nat.cast_zero, add_zero] at h
     exact (blkMod_good T T' p hA hg.1 hg.2.1.1 hg.2.1.2 hg.2.2.1 ht0 h _ _).2.2.2 (by simp only [nu]; omega)
   have hcs : cornerSh δ T T' p w = ((nSh ((D.s.atP p).ιE t) : ℕ) : (D.s.atP p).Ep) := by
-    unfold cornerSh; rw [if_neg hD, hz, hcl']
+    unfold cornerSh; rw [ite_eq_right hD, hz, hcl']
 
   have htt : (D.s.atP p).ιE t * (D.s.atP p).ιE t⁻¹ = 1 := by rw [← map_mul, mul_inv_cancel₀ ht0, map_one]
   have hc : ∃ k : Fin 3, IsUnit ((D.s.atP p).ιE t + (((k : Fin 3) : ℕ) : (D.s.atP p).Ep)) :=
     ⟨0, by simpa using IsUnit.of_mul_eq_one _ htt⟩
   set k := hc.choose with hk
   have hku : IsUnit ((D.s.atP p).ιE t + (((k : Fin 3) : ℕ) : (D.s.atP p).Ep)) := hc.choose_spec
-  have hnsh : nSh ((D.s.atP p).ιE t) = ((k : Fin 3) : ℕ) := by unfold nSh; rw [dif_pos hc]
+  have hnsh : nSh ((D.s.atP p).ιE t) = ((k : Fin 3) : ℕ) := by unfold nSh; rw [dite_eq_left hc]
   have he : (D.s.atP p).ιE t + (((k : Fin 3) : ℕ) : (D.s.atP p).Ep) =
       (D.s.atP p).ιE (t + (((k : Fin 3) : ℕ) : D.host.E)) := by rw [map_add (f := _), map_natCast]
   have hne : t + (((k : Fin 3) : ℕ) : D.host.E) ≠ 0 := by
     intro h0'
     rw [he, h0', map_zero] at hku
-    haveI := PI.ProdFormulaE.Base.nontrivial (D.s.atP p)
+    have := PI.ProdFormulaE.Base.nontrivial (D.s.atP p)
     exact not_isUnit_zero hku
   have hmem : t ∈ (w.1.map Prod.fst).toFinset := List.mem_toFinset.2 (by rw [hb]; simp)
   obtain ⟨hk1, hk2⟩ := hg.2.2.2 t hmem k hne
@@ -575,20 +575,20 @@ theorem shift_isGL (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (h
       cσ := fun a => by
         by_cases ha : a = Fin.last _
         · have hs' : H.σ a = Fin.last _ := by rw [ha]; exact hσl
-          simp only [c', if_pos hs', if_pos ha]
-        · simp only [c', if_neg ha, if_neg (hσne a ha)]; exact H.cσ a
+          simp only [c', ite_eq_left hs', ite_eq_left ha]
+        · simp only [c', ite_eq_right ha, ite_eq_right (hσne a ha)]; exact H.cσ a
       hc := fun a => by
         by_cases ha : a = Fin.last _
-        · simp only [c', if_pos ha]; rw [hR]; exact hk1
-        · simp only [c', if_neg ha]; exact H.hc a
+        · simp only [c', ite_eq_left ha]; rw [hR]; exact hk1
+        · simp only [c', ite_eq_right ha]; exact H.hc a
       hci := fun a => by
         by_cases ha : a = Fin.last _
-        · simp only [c', if_pos ha]; rw [hinvt, hR]; exact hk2
-        · simp only [c', if_neg ha]; exact H.hci a
+        · simp only [c', ite_eq_left ha]; rw [hinvt, hR]; exact hk2
+        · simp only [c', ite_eq_right ha]; exact H.hci a
       hcu := fun a => by
         by_cases ha : a = Fin.last _
-        · simp only [c', if_pos ha]; rw [← he]; exact hku
-        · simp only [c', if_neg ha]; exact H.hcu a
+        · simp only [c', ite_eq_left ha]; rw [← he]; exact hku
+        · simp only [c', ite_eq_right ha]; exact H.hcu a
       hW := fun a b => by
         rw [Matrix.add_apply, H.hW]
         simp only [cornerM, Matrix.of_apply, c']
@@ -596,14 +596,14 @@ theorem shift_isGL (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (h
         · have hs' : H.σ a = Fin.last _ := by rw [ha]; exact hσl
           by_cases hbl : b = Fin.last _
           · have hb' : b = H.σ a := by rw [hs', hbl]
-            rw [if_pos hb', if_pos ⟨ha, hbl⟩, if_pos hb', if_pos ha, ha, hcl, hcl', hcs, hnsh, he]
+            rw [ite_eq_left hb', ite_eq_left ⟨ha, hbl⟩, ite_eq_left hb', ite_eq_left ha, ha, hcl, hcl', hcs, hnsh, he]
           · have hb' : ¬ b = H.σ a := by rw [hs']; exact hbl
-            rw [if_neg hb', if_neg (show ¬ (a = Fin.last D.R.rS ∧ b = Fin.last D.R.rS) from fun h => hbl h.2),
-              if_neg hb', add_zero]
-        · rw [if_neg (show ¬ (a = Fin.last D.R.rS ∧ b = Fin.last D.R.rS) from fun h => ha h.1), add_zero]
+            rw [ite_eq_right hb', ite_eq_right (show ¬ (a = Fin.last D.R.rS ∧ b = Fin.last D.R.rS) from fun h => hbl h.2),
+              ite_eq_right hb', add_zero]
+        · rw [ite_eq_right (show ¬ (a = Fin.last D.R.rS ∧ b = Fin.last D.R.rS) from fun h => ha h.1), add_zero]
           by_cases hb' : b = H.σ a
-          · rw [if_pos hb', if_pos hb', if_neg ha]
-          · rw [if_neg hb', if_neg hb'] }
+          · rw [ite_eq_left hb', ite_eq_left hb', ite_eq_right ha]
+          · rw [ite_eq_right hb', ite_eq_right hb'] }
   exact H'.isGL
 
 theorem local_unram (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (hA : ∀ p, Agree δ M p)
@@ -629,7 +629,7 @@ theorem local_unram (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (
       x0L M δ T T' p w = kkOrb M p (repL M δ T T' p w (x0L M δ T T' p w)) := by
     have := hx0.choose_spec
     unfold repL
-    rw [dif_pos hx0]
+    rw [dite_eq_left hx0]
     exact this
   rw [hw₀] at hw₀'
   cases hw₀'
@@ -643,7 +643,7 @@ theorem local_unram (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (
     unfold phL
     rw [hw₀]
     simp only
-    rw [dif_pos hex, hd, one_mul]
+    rw [dite_eq_left hex, hd, one_mul]
     obtain ⟨h1, h2⟩ := hint _ _ (by rw [← hex.choose_spec]; exact hY0i)
     apply hψ
     refine (M p).R.add_mem ?_ ?_
@@ -659,7 +659,7 @@ theorem local_unram (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (
         · exact (M p).R.zero_mem
 
   have hOK := (hA p).1
-  haveI := hOK.haar.sf
+  have := hOK.haar.sf
   have hwt : wtL M δ T T' p w Y0 = 1 := by
     unfold wtL
     rw [hw₀]
@@ -669,7 +669,7 @@ theorem local_unram (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (
         (Set.univ.pi fun _ => ((M p).R : Set (D.s.atP p).Ep)) ×ˢ
           (Set.univ.pi fun _ => ((M p).R : Set (D.s.atP p).Ep)) := by
       ext ⟨x, y⟩
-      simp only [Set.mem_setOf_eq, Set.mem_prod, Set.mem_univ_pi, SetLike.mem_coe]
+      simp only [Set.mem_ofPred_eq, Set.mem_prod, Set.mem_univ_pi, SetLike.mem_coe]
       rw [← hO0]
       constructor
       · rintro ⟨l, ρ, hl, hρ, he⟩
@@ -678,10 +678,10 @@ theorem local_unram (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (
         obtain ⟨h1, h2⟩ := hint x y hYint
         refine ⟨fun i => ?_, fun i => ?_⟩
         · have := h1 i.1.1 i.1.2
-          simp only [Loc.uLow, if_neg (ne_of_gt i.2), dif_pos i.2] at this
+          simp only [Loc.uLow, ite_eq_right (ne_of_gt i.2), dite_eq_left i.2] at this
           exact this
         · have := h2 i.1.1 i.1.2
-          simp only [Loc.uUp, if_neg (ne_of_lt i.2.1), dif_pos i.2] at this
+          simp only [Loc.uUp, ite_eq_right (ne_of_lt i.2.1), dite_eq_left i.2] at this
           exact this
       · rintro ⟨hx, hy⟩
         have hL := isLoU_of (Formalism.MainNotions.LocalModelPeriodLattices.isLowUni_uLow x)
@@ -722,31 +722,31 @@ theorem local_unram (T T' : ℕ) (w : Point D.host.E (D.R.rS + 1)) (p : PlF D) (
     | none => simp [nIsoO, LocModel.thTriv]
     | some c =>
       simp only [nIsoO, LocModel.thTriv, Option.some.injEq]
-      haveI hT : Subsingleton ((M p).Cok (Quotient.out (LocModel.trivCls (M p) D.R.rS))) :=
+      have hT : Subsingleton ((M p).Cok (Quotient.out (LocModel.trivCls (M p) D.R.rS))) :=
         (LocModel.sub_iff_triv (M p) _).2 (Quotient.out_eq (s := (M p).isoSetoid D.R.rS) _)
       by_cases hc : c = LocModel.trivCls (M p) D.R.rS
-      · rw [if_pos hc, hc, LocModel.nIso_self_eq_one (M p) _ hT, Nat.cast_one]
-      · rw [if_neg hc, Nat.cast_eq_zero]
+      · rw [ite_eq_left hc, hc, LocModel.nIso_self_eq_one (M p) _ hT, Nat.cast_one]
+      · rw [ite_eq_right hc, Nat.cast_eq_zero]
         unfold Loc.Model.nIso
         rw [Nat.card_eq_zero]
         refine Or.inl ⟨fun φ => hc ?_⟩
-        haveI : Subsingleton ((M p).Cok (Quotient.out c)) := φ.1.injective.subsingleton
+        have : Subsingleton ((M p).Cok (Quotient.out c)) := φ.1.injective.subsingleton
         exact (Quotient.out_eq (s := (M p).isoSetoid D.R.rS) c).symm.trans
           ((LocModel.sub_iff_triv (M p) (Quotient.out c)).1 this)
   by_cases hO : O = x0L M δ T T' p w
   · subst hO
     constructor
     · unfold fL
-      rw [if_pos hx0, hph, hwt, hth, hnIso]
+      rw [ite_eq_left hx0, hph, hwt, hth, hnIso]
       by_cases hτ : τ = LocModel.thTriv M p <;> simp [hτ]
     · unfold gL
       by_cases hτ : τ = LocModel.thTriv M p
-      · rw [if_pos ⟨hx0, by rw [hth, hτ]; rfl⟩, hph, hwt, if_pos ⟨rfl, hτ⟩]; simp
-      · rw [if_neg (fun h => hτ (by rw [← h.2, hth]; rfl)), if_neg (fun h => hτ h.2)]
+      · rw [ite_eq_left ⟨hx0, by rw [hth, hτ]; rfl⟩, hph, hwt, ite_eq_left ⟨rfl, hτ⟩]; simp
+      · rw [ite_eq_right (fun h => hτ (by rw [← h.2, hth]; rfl)), ite_eq_right (fun h => hτ h.2)]
   · have hn : ¬ IsLCls M δ T T' p w O := fun h => hO (hcls O h)
     constructor
-    · unfold fL; rw [if_neg hn, if_neg (fun h => hO h.1)]
-    · unfold gL; rw [if_neg (fun h => hn h.1), if_neg (fun h => hO h.1)]
+    · unfold fL; rw [ite_eq_right hn, ite_eq_right (fun h => hO h.1)]
+    · unfold gL; rw [ite_eq_right (fun h => hn h.1), ite_eq_right (fun h => hO h.1)]
 
 theorem locUnram_triv (hA : ∀ p, Agree δ M p) (u u' : D.what₂.Word) :
     LocUnram M δ u u' (LocModel.thTriv M) := by

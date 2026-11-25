@@ -232,7 +232,7 @@ private theorem vw_pow {K : Type} [Field K] [NumberField K] (w : HeightOneSpectr
 
 private theorem vw_nonneg {K : Type} [Field K] [NumberField K] (w : HeightOneSpectrum (𝓞 K))
     (a : 𝓞 K) : 0 ≤ vw w (algebraMap (𝓞 K) K a) := by
-  simpa only [vw, ← FractionalIdeal.coeIdeal_span_singleton] using FractionalIdeal.count_coe_nonneg K w (Ideal.span {a})
+  simpa only [vw, ← FractionalIdeal.coeIdeal_span_singleton] using FractionalIdeal.count_coeIdeal_nonneg K w (Ideal.span {a})
 
 private theorem vw_eq_zero {K : Type} [Field K] [NumberField K] (w : HeightOneSpectrum (𝓞 K))
     (a : 𝓞 K) (ha : a ∉ w.asIdeal) : vw w (algebraMap (𝓞 K) K a) = 0 := by
@@ -242,7 +242,7 @@ private theorem vw_eq_zero {K : Type} [Field K] [NumberField K] (w : HeightOneSp
     rw [Submodule.zero_eq_bot, Ideal.span_singleton_eq_bot] at h
     exact ha (h ▸ w.asIdeal.zero_mem)
   unfold vw
-  rw [← FractionalIdeal.coeIdeal_span_singleton, FractionalIdeal.count_coe K w h0]
+  rw [← FractionalIdeal.coeIdeal_span_singleton, FractionalIdeal.count_coeIdeal K w h0]
   by_contra hne
   have := (Associates.count_ne_zero_iff_dvd h0 w.irreducible).1 (by exact_mod_cast hne)
   exact ha (Ideal.dvd_span_singleton.1 this)
@@ -320,7 +320,7 @@ theorem main : ∀ {K : Type} [inst : Field K] [inst_1 : NumberField K]
   by_cases hG : gramR (quotGram P H) e = 0
   · rw [hG, vw, FractionalIdeal.spanSingleton_zero, FractionalIdeal.count_zero]
     positivity
-  haveI : Nonempty (Fin D) := ⟨⟨0, hD⟩⟩
+  have : Nonempty (Fin D) := ⟨⟨0, hD⟩⟩
   set E : Matrix (Fin D) (Fin D) K := (Matrix.of e)ᵀ with hE
   have hgram : gramR (quotGram P H) e = (Eᴴ * (P * H⁻¹ * Pᴴ)⁻¹ * E).det := by
     unfold gramR quotGram

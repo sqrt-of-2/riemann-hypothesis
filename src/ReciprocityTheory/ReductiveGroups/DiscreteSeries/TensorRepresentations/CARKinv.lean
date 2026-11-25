@@ -141,9 +141,9 @@ theorem dOp_comm_diagE {E cp cm : Fin n → Fin n → Module.End ℂ W} (hE : Is
           E c i * (sgE ε cp cm a b * cp i c - cp i c * sgE ε cp cm a b) =
         (if a = c then E a i * cp i b else 0) - (if b = c then E a i * cp i b else 0) by
       rw [carKinv_sg_cp_minus hC ε a b i c hεa hεb hi']
-      split_ifs <;> subst_vars <;> (try simp_all) <;> (try noncomm_ring)]
-    rw [Finset.sum_sub_distrib, Finset.sum_ite_eq, Finset.sum_ite_eq, if_pos ((hmi a).2 hεa),
-      if_pos ((hmi b).2 hεb), sub_self]
+      split_ifs <;> subst_vars <;> (try simp_all)]
+    rw [Finset.sum_sub_distrib, Finset.sum_ite_eq, Finset.sum_ite_eq, ite_eq_left ((hmi a).2 hεa),
+      ite_eq_left ((hmi b).2 hεb), sub_self]
   ·
     have hεb : ε b = true := by rw [← hab]; exact hεa
     rw [Finset.sum_comm]
@@ -155,9 +155,9 @@ theorem dOp_comm_diagE {E cp cm : Fin n → Fin n → Module.End ℂ W} (hE : Is
           E c i * (sgE ε cp cm a b * cp i c - cp i c * sgE ε cp cm a b) =
         (if i = a then E c b * cp a c else 0) - (if b = i then E c b * cp a c else 0) by
       rw [carKinv_sg_cp_plus hC ε a b i c hεa hεb hc']
-      split_ifs <;> subst_vars <;> (try simp_all) <;> (try noncomm_ring)]
-    rw [Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.sum_ite_eq, if_pos ((hpl a).2 hεa),
-      if_pos ((hpl b).2 hεb), sub_self]
+      split_ifs <;> subst_vars <;> (try simp_all)]
+    rw [Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.sum_ite_eq, ite_eq_left ((hpl a).2 hεa),
+      ite_eq_left ((hpl b).2 hεb), sub_self]
 
 theorem dOp'_comm_diagE {E cp cm : Fin n → Fin n → Module.End ℂ W} (hE : IsGlRep E) (hC : IsCAR cp cm)
     (hEC : CommutesCAR E cp cm) (ε : Fin n → Bool) (a b : Fin n) (hab : ε a = ε b) :
@@ -179,9 +179,9 @@ theorem dOp'_comm_diagE {E cp cm : Fin n → Fin n → Module.End ℂ W} (hE : I
           E i c * (sgE ε cp cm a b * cm i c - cm i c * sgE ε cp cm a b) =
         (if c = a then E i b * cm i a else 0) - (if c = b then E i b * cm i a else 0) by
       rw [carKinv_sg_cm_minus hC ε a b i c hεa hεb hi']
-      split_ifs <;> subst_vars <;> (try simp_all) <;> (try noncomm_ring)]
-    rw [Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.sum_ite_eq', if_pos ((hmi a).2 hεa),
-      if_pos ((hmi b).2 hεb), sub_self]
+      split_ifs <;> subst_vars <;> (try simp_all)]
+    rw [Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.sum_ite_eq', ite_eq_left ((hmi a).2 hεa),
+      ite_eq_left ((hmi b).2 hεb), sub_self]
   ·
     have hεb : ε b = true := by rw [← hab]; exact hεa
     rw [Finset.sum_comm]
@@ -193,8 +193,8 @@ theorem dOp'_comm_diagE {E cp cm : Fin n → Fin n → Module.End ℂ W} (hE : I
           E i c * (sgE ε cp cm a b * cm i c - cm i c * sgE ε cp cm a b) =
         (if i = a then E a c * cm b c else 0) - (if b = i then E a c * cm b c else 0) by
       rw [carKinv_sg_cm_plus hC ε a b i c hεa hεb hc']
-      split_ifs <;> subst_vars <;> (try simp_all) <;> (try noncomm_ring)]
-    rw [Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.sum_ite_eq, if_pos ((hpl a).2 hεa),
-      if_pos ((hpl b).2 hεb), sub_self]
+      split_ifs <;> subst_vars <;> (try simp_all)]
+    rw [Finset.sum_sub_distrib, Finset.sum_ite_eq', Finset.sum_ite_eq, ite_eq_left ((hpl a).2 hεa),
+      ite_eq_left ((hpl b).2 hεb), sub_self]
 
 end ReciprocityTheory.ChartRestriction.DS

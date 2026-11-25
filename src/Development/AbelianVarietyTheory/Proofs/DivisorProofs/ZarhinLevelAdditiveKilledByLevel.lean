@@ -65,19 +65,22 @@ section Obj
 
 variable (A B : Over S) [GrpObj A] [GrpObj B] [IsCommMonObj A] [IsCommMonObj B]
 
-theorem mkZ_pa {T : Over S} (u : Fin 4 → (T ⟶ A)) (v : Fin 4 → (T ⟶ B)) (i : Fin 4) :
+omit [GrpObj A] [GrpObj B] [IsCommMonObj A] [IsCommMonObj B] in
+theorem mkZ_pa [GrpObj A] [GrpObj B] [IsCommMonObj A] [IsCommMonObj B] {T : Over S} (u : Fin 4 → (T ⟶ A)) (v : Fin 4 → (T ⟶ B)) (i : Fin 4) :
     mkZ A B u v ≫ pa A B i = u i := by
   unfold mkZ pa
   rw [lift_fst_assoc]
   exact (Out.powIsLimit A 4).fac (Fan.mk T u) ⟨i⟩
 
-theorem mkZ_pb {T : Over S} (u : Fin 4 → (T ⟶ A)) (v : Fin 4 → (T ⟶ B)) (j : Fin 4) :
+omit [GrpObj A] [GrpObj B] [IsCommMonObj A] [IsCommMonObj B] in
+theorem mkZ_pb [GrpObj A] [GrpObj B] [IsCommMonObj A] [IsCommMonObj B] {T : Over S} (u : Fin 4 → (T ⟶ A)) (v : Fin 4 → (T ⟶ B)) (j : Fin 4) :
     mkZ A B u v ≫ pb A B j = v j := by
   unfold mkZ pb
   rw [lift_snd_assoc]
   exact (Out.powIsLimit B 4).fac (Fan.mk T v) ⟨j⟩
 
-theorem zob_ext {T : Over S} (f g : T ⟶ Zob A B) (ha : ∀ i, f ≫ pa A B i = g ≫ pa A B i)
+omit [GrpObj A] [GrpObj B] [IsCommMonObj A] [IsCommMonObj B] in
+theorem zob_ext [GrpObj A] [GrpObj B] [IsCommMonObj A] [IsCommMonObj B] {T : Over S} (f g : T ⟶ Zob A B) (ha : ∀ i, f ≫ pa A B i = g ≫ pa A B i)
     (hb : ∀ j, f ≫ pb A B j = g ≫ pb A B j) : f = g := by
   apply CartesianMonoidalCategory.hom_ext
   · apply (Out.powIsLimit A 4).hom_ext
@@ -98,10 +101,10 @@ theorem isMonHom_mkZ {T : Over S} [GrpObj T] (u : Fin 4 → (T ⟶ A)) (v : Fin 
   isMonHom_of_mulComp _ fun T' x y ↦ by
     apply zob_ext
     · intro i
-      haveI := hu i
+      have := hu i
       simp only [Category.assoc, mkZ_pa, MonObj.mul_comp]
     · intro j
-      haveI := hv j
+      have := hv j
       simp only [Category.assoc, mkZ_pb, MonObj.mul_comp]
 
 theorem isMonHom_incZ : IsMonHom (incZ A B) := by
@@ -121,15 +124,15 @@ theorem isMonHom_actZ (d : ℕ) (la : A ⟶ B) (mu : B ⟶ A) [IsMonHom la] [IsM
   · intro i
     apply _root_.GlobalTheory.SharpExt.isMonHom_prod
     intro j
-    haveI := _root_.GlobalTheory.Serre.isMonHom_zpow (pa A B j) ((N : Matrix (Fin 4 ⊕ Fin 4) (Fin 4 ⊕ Fin 4) ℤ) (Sum.inl j) (Sum.inl i))
-    haveI := _root_.GlobalTheory.Serre.isMonHom_zpow (pb A B j ≫ mu)
+    have := _root_.GlobalTheory.Serre.isMonHom_zpow (pa A B j) ((N : Matrix (Fin 4 ⊕ Fin 4) (Fin 4 ⊕ Fin 4) ℤ) (Sum.inl j) (Sum.inl i))
+    have := _root_.GlobalTheory.Serre.isMonHom_zpow (pb A B j ≫ mu)
       ((N : Matrix (Fin 4 ⊕ Fin 4) (Fin 4 ⊕ Fin 4) ℤ) (Sum.inr j) (Sum.inl i) / (d : ℤ))
     exact _root_.GlobalTheory.Serre.isMonHom_mul _ _
   · intro i
     apply _root_.GlobalTheory.SharpExt.isMonHom_prod
     intro j
-    haveI := _root_.GlobalTheory.Serre.isMonHom_zpow (pa A B j ≫ la) ((N : Matrix (Fin 4 ⊕ Fin 4) (Fin 4 ⊕ Fin 4) ℤ) (Sum.inl j) (Sum.inr i))
-    haveI := _root_.GlobalTheory.Serre.isMonHom_zpow (pb A B j) ((N : Matrix (Fin 4 ⊕ Fin 4) (Fin 4 ⊕ Fin 4) ℤ) (Sum.inr j) (Sum.inr i))
+    have := _root_.GlobalTheory.Serre.isMonHom_zpow (pa A B j ≫ la) ((N : Matrix (Fin 4 ⊕ Fin 4) (Fin 4 ⊕ Fin 4) ℤ) (Sum.inl j) (Sum.inr i))
+    have := _root_.GlobalTheory.Serre.isMonHom_zpow (pb A B j) ((N : Matrix (Fin 4 ⊕ Fin 4) (Fin 4 ⊕ Fin 4) ℤ) (Sum.inr j) (Sum.inr i))
     exact _root_.GlobalTheory.Serre.isMonHom_mul _ _
 
 end Obj
@@ -140,24 +143,24 @@ namespace GlobalTheory.ZarhinFam.LevAlg
 
 theorem levZ_add_tors : ∀ (h M d : ℕ) (S : Scheme.{0}) (t : S ⟶ Sp (cycAway M)) (c : SiegPre h M (zetaAway M) t) (B : Over S) [GrpObj B] [IsCommMonObj B] (Q : LB (c.A ⊗ B).left) (la : c.A ⟶ B) (mu : B ⟶ c.A) (hZ : GlobalTheory.ZarhinFam.ZData c d B Q la mu), 1 ≤ h → 3 ≤ M → Odd M → 0 < d → M.Coprime d → IsUnit ((d : ℕ) : Γ(S, ⊤)) → SiegKerBy c d → ∀ (κ : Fin 8 → (Fin (8 * h) ⊕ Fin (8 * h) → ℤ) →+ (Fin h ⊕ Fin h → ℤ)), GlobalTheory.ZarhinFam.KappaOK h M d κ → (∀ a b, (GlobalTheory.ZarhinFam.levZ c.lev (GlobalTheory.ZarhinFam.incZ c.A B) (GlobalTheory.ZarhinFam.actZ c.A B d la mu) (GlobalTheory.ZarhinFam.oMat d) κ) (a + b) = (GlobalTheory.ZarhinFam.levZ c.lev (GlobalTheory.ZarhinFam.incZ c.A B) (GlobalTheory.ZarhinFam.actZ c.A B d la mu) (GlobalTheory.ZarhinFam.oMat d) κ) a * (GlobalTheory.ZarhinFam.levZ c.lev (GlobalTheory.ZarhinFam.incZ c.A B) (GlobalTheory.ZarhinFam.actZ c.A B d la mu) (GlobalTheory.ZarhinFam.oMat d) κ) b) ∧ ∀ a, (GlobalTheory.ZarhinFam.levZ c.lev (GlobalTheory.ZarhinFam.incZ c.A B) (GlobalTheory.ZarhinFam.actZ c.A B d la mu) (GlobalTheory.ZarhinFam.oMat d) κ) a ^ M = 1 := by
   intro h M d S t c B _ _ Q la mu hZ _ _ _ _ _ _ _ κ _
-  haveI : IsMonHom la := hZ.2.2.2.1
-  haveI : IsMonHom mu := hZ.2.2.2.2.1
+  have : IsMonHom la := hZ.2.2.2.1
+  have : IsMonHom mu := hZ.2.2.2.2.1
   have hg : ∀ k, IsMonHom (incZ c.A B ≫ actZ c.A B d la mu (oMat d k)) := fun k => by
-    haveI := isMonHom_incZ c.A B
-    haveI := isMonHom_actZ c.A B d la mu (oMat d k)
+    have := isMonHom_incZ c.A B
+    have := isMonHom_actZ c.A B d la mu (oMat d k)
     infer_instance
   constructor
   · intro a b
     simp only [levZ, List.prod_ofFn]
     rw [← Finset.prod_mul_distrib]
     refine Finset.prod_congr rfl fun k _ => ?_
-    haveI := hg k
+    have := hg k
     rw [map_add (f := _), c.lev_add, MonObj.mul_comp]
   · intro a
     simp only [levZ, List.prod_ofFn]
     rw [← Finset.prod_pow]
     refine Finset.prod_eq_one fun k _ => ?_
-    haveI := hg k
+    have := hg k
     rw [← MonObj.pow_comp, c.lev_tors]
     simp
 

@@ -53,23 +53,23 @@ namespace GlobalTheory.CompanionTheory.LocVan
 variable {n : ℕ}
 
 theorem locallyCompact_GL (n : ℕ) : LocallyCompactSpace (GL (Fin n) ℂ) := by
-  haveI : LocallyCompactSpace (Matrix (Fin n) (Fin n) ℂ) :=
+  have : LocallyCompactSpace (Matrix (Fin n) (Fin n) ℂ) :=
     inferInstanceAs (LocallyCompactSpace (Fin n → Fin n → ℂ))
   exact Units.isClosedEmbedding_embedProduct.locallyCompactSpace
 
 theorem secondCountable_GL (n : ℕ) : SecondCountableTopology (GL (Fin n) ℂ) := by
-  haveI : SecondCountableTopology (Matrix (Fin n) (Fin n) ℂ) :=
+  have : SecondCountableTopology (Matrix (Fin n) (Fin n) ℂ) :=
     inferInstanceAs (SecondCountableTopology (Fin n → Fin n → ℂ))
-  haveI : SecondCountableTopology (Matrix (Fin n) (Fin n) ℂ)ᵐᵒᵖ :=
+  have : SecondCountableTopology (Matrix (Fin n) (Fin n) ℂ)ᵐᵒᵖ :=
     MulOpposite.opHomeomorph.symm.isEmbedding.secondCountableTopology
   exact Units.isEmbedding_embedProduct.secondCountableTopology
 
 theorem isClosed_nilrad (W₁ W₂ : Submodule ℂ (Fin n → ℂ)) :
     IsClosed (nilrad W₁ W₂ : Set (Matrix (Fin n) (Fin n) ℂ)) := by
-  haveI : FiniteDimensional ℂ (Matrix (Fin n) (Fin n) ℂ) := inferInstance
-  letI : NormedAddCommGroup (Matrix (Fin n) (Fin n) ℂ) := Matrix.normedAddCommGroup
-  letI : NormedSpace ℂ (Matrix (Fin n) (Fin n) ℂ) := Matrix.normedSpace
-  exact Submodule.closed_of_finiteDimensional (nilrad W₁ W₂)
+  have : FiniteDimensional ℂ (Matrix (Fin n) (Fin n) ℂ) := inferInstance
+  let : NormedAddCommGroup (Matrix (Fin n) (Fin n) ℂ) := Matrix.normedAddCommGroup
+  let : NormedSpace ℂ (Matrix (Fin n) (Fin n) ℂ) := Matrix.normedSpace
+  exact Submodule.isClosed_of_finiteDimensional (nilrad W₁ W₂)
 
 theorem nil_mul_mem {W₁ W₂ : Submodule ℂ (Fin n → ℂ)} (hW : W₁ ≤ W₂)
     {X Y : Matrix (Fin n) (Fin n) ℂ} (hX : X ∈ nilrad W₁ W₂) (hY : Y ∈ nilrad W₁ W₂) :
@@ -89,26 +89,26 @@ theorem isClosed_twCent (d : GL (Fin n) ℂ) :
   exact isClosed_eq h continuous_const
 
 theorem locallyCompact_twCent (d : GL (Fin n) ℂ) : LocallyCompactSpace (twCent (thC n) d) := by
-  haveI := locallyCompact_GL n
+  have := locallyCompact_GL n
   exact (isClosed_twCent d).isClosedEmbedding_subtypeVal.locallyCompactSpace
 
 theorem sigmaFinite_twCent [MeasurableSpace (GL (Fin n) ℂ)] [BorelSpace (GL (Fin n) ℂ)]
     (d : GL (Fin n) ℂ) (μd : Measure (twCent (thC n) d)) [μd.IsHaarMeasure] : SigmaFinite μd := by
-  haveI := locallyCompact_twCent d
-  haveI := secondCountable_GL n
-  haveI : SecondCountableTopology (twCent (thC n) d) :=
+  have := locallyCompact_twCent d
+  have := secondCountable_GL n
+  have : SecondCountableTopology (twCent (thC n) d) :=
     TopologicalSpace.Subtype.secondCountableTopology _
   infer_instance
 
 theorem invInvariant_twCent [MeasurableSpace (GL (Fin n) ℂ)] [BorelSpace (GL (Fin n) ℂ)]
     (d : GL (Fin n) ℂ) (μd : Measure (twCent (thC n) d)) [μd.IsHaarMeasure]
     (hc : ∀ a ∈ twCent (thC n) d, ∀ b ∈ twCent (thC n) d, a * b = b * a) : μd.IsInvInvariant := by
-  haveI := locallyCompact_twCent d
-  haveI := secondCountable_GL n
-  letI : CommGroup (twCent (thC n) d) :=
+  have := locallyCompact_twCent d
+  have := secondCountable_GL n
+  let : CommGroup (twCent (thC n) d) :=
     { (inferInstance : Group (twCent (thC n) d)) with
       mul_comm := fun a b => Subtype.ext (hc a a.2 b b.2) }
-  haveI : SecondCountableTopology (twCent (thC n) d) :=
+  have : SecondCountableTopology (twCent (thC n) d) :=
     TopologicalSpace.Subtype.secondCountableTopology _
   exact Measure.IsHaarMeasure.isInvInvariant_of_regular μd
 

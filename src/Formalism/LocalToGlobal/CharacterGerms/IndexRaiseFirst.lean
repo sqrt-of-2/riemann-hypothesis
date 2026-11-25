@@ -28,7 +28,7 @@ theorem index_raise_first (i : Fin dd) (L : ℕ) (γ : Fin 2 × Fin dd →₀ �
     rintro ⟨q, hq⟩
     simp only [up, Prod.mk.injEq] at hq
     exact Fin.succ_ne_zero _ hq.1
-  simp only [ix, Finsupp.add_apply, Finsupp.mapDomain_notin_range _ _ hn, add_zero, Finsupp.single_apply,
+  simp only [ix, Finsupp.add_apply, Finsupp.mapDomain_of_notMem_range _ _ hn, add_zero, Finsupp.single_apply,
     Prod.mk.injEq, true_and]
   by_cases h : j = i
   · subst h; simp
@@ -56,7 +56,7 @@ private theorem v_intCast_nonneg' (V : VF C) (a : ℤ) : 0 ≤ V.v (a : C) := by
 
 private theorem v_natCast_nonpos_of_not_dvd (V : VF C) (n : ℕ) (hn : ¬ V.l ∣ n) : V.v (n : C) ≤ 0 := by
   by_contra hlt
-  push_neg at hlt
+  push Not at hlt
   have hcop : Nat.Coprime n V.l :=
     Nat.Coprime.symm ((Nat.Prime.coprime_iff_not_dvd V.l_prime).mpr hn)
   have hb := Nat.gcd_eq_gcd_ab n V.l
@@ -97,7 +97,7 @@ theorem frobX_of {f : PS C 3 dd} (hi : IntS V f) (hd : FrobD V f) : FrobX V f :=
   unfold VF.MM at h ⊢
   rw [AddValuation.map_mul] at h
   by_contra hc
-  push_neg at hc
+  push Not at hc
   have := add_le_add hc (v_natCast_nonpos_of_not_dvd V _ hj)
   rw [add_zero] at this
   exact absurd h (not_lt.mpr this)
@@ -142,7 +142,7 @@ theorem eq_up_of {p : Fin 3 × Fin dd →₀ ℕ} (hp : ∀ j, p ((0 : Fin 3), j
   ext ⟨k, j⟩
   induction k using Fin.cases with
   | zero =>
-    rw [Finsupp.mapDomain_notin_range, hp]
+    rw [Finsupp.mapDomain_of_notMem_range, hp]
     rintro ⟨q, hq⟩
     simp only [up, Prod.mk.injEq] at hq
     exact Fin.succ_ne_zero _ hq.1
@@ -181,8 +181,8 @@ theorem coeff_free {f : PS C 3 dd} (h1 : ev (rz 2) f = 1) {p : Fin 3 × Fin dd �
         fun s n => (X s : PS C 2 dd) ^ n) = _
       rw [hmon, MvPowerSeries.coeff_monomial]
       by_cases he : e = Finsupp.comapDomain (up 2) d ((up_inj 2).injOn)
-      · rw [if_pos he, if_pos (by rw [he])]
-      · rw [if_neg he, if_neg (fun h => he (inj h).symm)]
+      · rw [ite_eq_left he, ite_eq_left (by rw [he])]
+      · rw [ite_eq_right he, if_neg (fun h => he (inj h).symm)]
     · push_neg at hx
       obtain ⟨j, hj⟩ := hx
       have h0 : (d.prod fun s n => (fun q : Fin 3 × Fin dd => rz (C := C) (dd := dd) 2 q.1 q.2) s ^ n) = 0 := by

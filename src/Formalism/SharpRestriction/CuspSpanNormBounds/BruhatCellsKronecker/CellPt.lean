@@ -132,50 +132,50 @@ theorem cpt_nat {K : Type} [Field K] : ∀ (n : ℕ) (σ : ℕ → ℕ) (τ : �
       · intro a ha b hb
         simp only [ptEntry]
         by_cases h1 : a < s ∧ b < s
-        · rw [if_pos h1]
+        · rw [ite_eq_left h1]
           obtain ⟨e1, e2⟩ := c1 b h1.2
           by_cases h2 : a + b + 1 = s
-          · rw [if_pos h2, if_pos (by omega), e2]
-          · rw [if_neg h2, if_neg (by omega)]
-        · rw [if_neg h1]
+          · rw [ite_eq_left h2, ite_eq_left (by omega), e2]
+          · rw [ite_eq_right h2, ite_eq_right (by omega)]
+        · rw [ite_eq_right h1]
           by_cases h2 : s ≤ a ∧ s ≤ b
-          · rw [if_pos h2, hb3 (a - s) (by omega) (b - s) (by omega)]
+          · rw [ite_eq_left h2, hb3 (a - s) (by omega) (b - s) (by omega)]
             have e0 : b - s + s = b := Nat.sub_add_cancel h2.2
             have h3 := c2 b h2.2 hb
             simp only [e0]
             by_cases h4 : a = σ b
-            · rw [if_pos h4, if_pos (by omega)]
-            · rw [if_neg h4, if_neg (by omega)]
-          · rw [if_neg h2]
+            · rw [ite_eq_left h4, ite_eq_left (by omega)]
+            · rw [ite_eq_right h4, ite_eq_right (by omega)]
+          · rw [ite_eq_right h2]
             rcases Nat.lt_or_ge b s with hbs | hbs
             · have := (c1 b hbs).1
-              rw [if_neg (by omega)]
+              rw [ite_eq_right (by omega)]
             · have := c2 b hbs hb
-              rw [if_neg (by omega)]
+              rw [ite_eq_right (by omega)]
 
 theorem cell_point : MonomialMatrixIsPoint := by
   intro K _ n σ τ hσ hτ hP
   obtain ⟨bs, h1, h2, h3⟩ := cpt_nat n (fun i => if h : i < n then (σ ⟨i, h⟩).val else 0)
     (fun i => if h : i < n then τ ⟨i, h⟩ else 0)
-    (fun i hi => by simp only [dif_pos hi]; exact (σ ⟨i, hi⟩).isLt)
+    (fun i hi => by simp only [dite_eq_left hi]; exact (σ ⟨i, hi⟩).isLt)
     (fun i hi j hj hij => by
-      simp only [dif_pos hi, dif_pos hj] at hij
+      simp only [dite_eq_left hi, dite_eq_left hj] at hij
       have := hσ.1 (Fin.ext hij)
       exact congrArg Fin.val this)
     (fun v hv => by
       obtain ⟨i, hi⟩ := hσ.2 ⟨v, hv⟩
       refine ⟨i.val, i.isLt, ?_⟩
-      simp only [dif_pos i.isLt, Fin.eta, hi])
-    (fun i hi => by simp only [dif_pos hi]; exact hτ _)
+      simp only [dite_eq_left i.isLt, Fin.eta, hi])
+    (fun i hi => by simp only [dite_eq_left hi]; exact hτ _)
     (fun c b hcb hbn hv => by
       have hcn : c < n := lt_trans hcb hbn
-      simp only [dif_pos hcn, dif_pos hbn] at hv ⊢
+      simp only [dite_eq_left hcn, dite_eq_left hbn] at hv ⊢
       exact hP ⟨c, hcn⟩ ⟨b, hbn⟩ hcb hv)
   refine ⟨⟨bs, h1, h2⟩, ?_⟩
   ext a b
   show ptEntry bs a.val b.val = mono σ τ a b
   rw [h3 a.val a.isLt b.val b.isLt]
-  simp only [dif_pos b.isLt, Fin.eta, mono, Fin.ext_iff]
+  simp only [dite_eq_left b.isLt, Fin.eta, mono, Fin.ext_iff]
 
 end Formalism.MainNotions.BridgeLemma
 

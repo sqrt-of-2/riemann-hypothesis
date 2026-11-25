@@ -73,7 +73,7 @@ theorem nonempty_algHom_complex_of_countable (R K : Type) [CommRing R] [IsDomain
     Nonempty (K →ₐ[R] ℂ) := by
   obtain ⟨J, v, hv⟩ := exists_isTranscendenceBasis' R K
   obtain ⟨Jc, w, hw⟩ := exists_isTranscendenceBasis' R ℂ
-  haveI : Countable J := hv.1.injective.countable
+  have : Countable J := hv.1.injective.countable
   have hκ : Cardinal.aleph0 < Cardinal.mk Jc := by
     by_contra hlt
     have hle := not_lt.1 hlt
@@ -90,11 +90,11 @@ theorem nonempty_algHom_complex_of_countable (R K : Type) [CommRing R] [IsDomain
     have hind' : Function.Injective (MvPolynomial.aeval (R := R) (w ∘ e)) := hind
     simp only [φ, AlgHom.coe_comp]
     exact hind'.comp hv.1.aevalEquiv.symm.injective
-  letI : Algebra S ℂ := φ.toRingHom.toAlgebra
-  haveI : Module.IsTorsionFree S ℂ := Module.isTorsionFree_iff_algebraMap_injective.2 hφ
-  haveI : Module.IsTorsionFree S K :=
+  let : Algebra S ℂ := φ.toRingHom.toAlgebra
+  have : Module.IsTorsionFree S ℂ := Module.isTorsionFree_iff_algebraMap_injective.2 hφ
+  have : Module.IsTorsionFree S K :=
     Module.isTorsionFree_iff_algebraMap_injective.2 Subtype.val_injective
-  haveI : Algebra.IsAlgebraic S K := hv.isAlgebraic
+  have : Algebra.IsAlgebraic S K := hv.isAlgebraic
   let g : K →ₐ[S] ℂ := (by
     refine @_root_.IsAlgClosed.lift _ _ _ _ _ _ _ _ _ _ _ ?_ ?_ ?_
     solve_by_elim* (maxDepth := 2) only [*,
@@ -108,16 +108,16 @@ theorem nonempty_algHom_complex_of_countable (R K : Type) [CommRing R] [IsDomain
 theorem injective_of_finiteType_int_of_charZero {o K : Type} [CommRing o] [IsDomain o]
     [Ring.DimensionLEOne o] [Algebra.FiniteType ℤ o] [Field K] [CharZero K] (β : o →+* K) :
     Function.Injective β := by
-  haveI := _root_.ReciprocityTheory.AnForm.R.IntegerToRational.isJacobsonRing_int
+  have := _root_.ReciprocityTheory.AnForm.R.IntegerToRational.isJacobsonRing_int
   by_contra hβ
   have hker : RingHom.ker β ≠ ⊥ := fun h => hβ ((RingHom.injective_iff_ker_eq_bot β).2 h)
-  haveI : (RingHom.ker β).IsMaximal := (RingHom.ker_isPrime β).isMaximal hker
-  letI : Field (o ⧸ RingHom.ker β) := Ideal.Quotient.field _
-  haveI : Algebra.FiniteType ℤ (o ⧸ RingHom.ker β) :=
+  have : (RingHom.ker β).IsMaximal := (RingHom.ker_isPrime β).isMaximal hker
+  let : Field (o ⧸ RingHom.ker β) := Ideal.Quotient.field _
+  have : Algebra.FiniteType ℤ (o ⧸ RingHom.ker β) :=
     Algebra.FiniteType.of_surjective (Ideal.Quotient.mkₐ ℤ _)
       (Ideal.Quotient.mkₐ_surjective ℤ _)
-  haveI : Module.Finite ℤ (o ⧸ RingHom.ker β) := finite_of_finite_type_of_isJacobsonRing ℤ _
-  haveI : Algebra.IsIntegral ℤ (o ⧸ RingHom.ker β) := Algebra.IsIntegral.of_finite ℤ _
+  have : Module.Finite ℤ (o ⧸ RingHom.ker β) := finite_of_finite_type_of_isJacobsonRing ℤ _
+  have : Algebra.IsIntegral ℤ (o ⧸ RingHom.ker β) := Algebra.IsIntegral.of_finite ℤ _
   have hinj : Function.Injective (algebraMap ℤ (o ⧸ RingHom.ker β)) := by
     intro a b hab
     have hk := congrArg (RingHom.kerLift β) hab
@@ -128,8 +128,8 @@ theorem injective_of_finiteType_int_of_charZero {o K : Type} [CommRing o] [IsDom
 theorem exists_ringHom_complex_comp_eq_of_countable :
     ∀ (o : Type) [CommRing o] (em : o →+* ℂ) (K₀ : Type) [Field K₀] [CharZero K₀] [Countable K₀] (β : o →+* K₀), IsDedekindDomain o → Algebra.FiniteType ℤ o → Function.Injective em → Countable o ∧ ∃ j : K₀ →+* ℂ, j.comp β = em := by
   intro o _ em K₀ _ _ _ β hD hF hem
-  haveI := hD
-  haveI := hF
+  have := hD
+  have := hF
   have hβ : Function.Injective β := injective_of_finiteType_int_of_charZero β
   have hcount : Countable o := by
     obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 hF
@@ -139,11 +139,11 @@ theorem exists_ringHom_complex_comp_eq_of_countable :
         (max_le (max_le Cardinal.mk_le_aleph0 Cardinal.mk_le_aleph0) le_rfl)
     exact hf.countable
   refine ⟨hcount, ?_⟩
-  haveI := hcount
-  letI : Algebra o K₀ := β.toAlgebra
-  letI : Algebra o ℂ := em.toAlgebra
-  haveI : FaithfulSMul o K₀ := (faithfulSMul_iff_algebraMap_injective o K₀).2 hβ
-  haveI : FaithfulSMul o ℂ := (faithfulSMul_iff_algebraMap_injective o ℂ).2 hem
+  have := hcount
+  let : Algebra o K₀ := β.toAlgebra
+  let : Algebra o ℂ := em.toAlgebra
+  have : FaithfulSMul o K₀ := (faithfulSMul_iff_algebraMap_injective o K₀).2 hβ
+  have : FaithfulSMul o ℂ := (faithfulSMul_iff_algebraMap_injective o ℂ).2 hem
   obtain ⟨g⟩ := nonempty_algHom_complex_of_countable o K₀
   exact ⟨g.toRingHom, RingHom.ext fun x => g.commutes x⟩
 

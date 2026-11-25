@@ -44,7 +44,7 @@ theorem conj_facts [NumberField F] [NumberField E] {σ : E →ₐ[F] E} (h : IsC
   refine ⟨hinv, ?_⟩
   have hne : ∃ x, σ x ≠ x := by
     by_contra hall
-    push_neg at hall
+    push Not at hall
     have hc : ¬ ComplexEmbedding.IsReal v.embedding :=
       InfinitePlace.isComplex_iff.mp (htc.isComplex v)
     apply hc
@@ -151,12 +151,12 @@ theorem hermMat_mem {σ : E →ₐ[F] E} (hinv : ∀ x, σ (σ x) = x) (n : ℕ)
     hermMat R σ n x ∈ HermR R σ n := by
   intro a b
   rcases lt_trichotomy a b with h | h | h
-  · simp only [hermMat, dif_pos h, dif_neg (not_lt_of_gt h)]
+  · simp only [hermMat, dite_eq_left h, dite_eq_right (not_lt_of_gt h)]
     exact sigR_sigR R hinv _
   · subst h
     simp only [hermMat, lt_irrefl, dite_false]
     rw [sigR_tmul, map_one]
-  · simp only [hermMat, dif_pos h, dif_neg (not_lt_of_gt h)]
+  · simp only [hermMat, dite_eq_left h, dite_eq_right (not_lt_of_gt h)]
 
 variable [TopologicalSpace R]
 
@@ -166,7 +166,8 @@ def hermCoord (σ : E →ₐ[F] E) (n : ℕ) (S : HermR R σ n) :
       Algebra.trace R (R ⊗[F] E) ((S : Matrix (Fin n) (Fin n) (R ⊗[F] E)) i i)),
     (fun p : {p : Fin n × Fin n // p.1 < p.2} => (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)) p.1.1 p.1.2))
 
-theorem hermCoord_add (σ : E →ₐ[F] E) (n : ℕ) (S T : HermR R σ n) :
+omit [TopologicalSpace R] in
+theorem hermCoord_add [TopologicalSpace R] (σ : E →ₐ[F] E) (n : ℕ) (S T : HermR R σ n) :
     hermCoord R σ n (S + T) = hermCoord R σ n S + hermCoord R σ n T := by
   refine Prod.ext ?_ ?_
   · funext i
@@ -196,13 +197,13 @@ theorem hermCoord_isHomeomorph [IsTopologicalRing R] [CharZero F] {σ : E →ₐ
         apply Subtype.ext
         funext a b
         rcases lt_trichotomy a b with hab | hab | hab
-        · simp [hermMat, dif_pos hab, hermCoord]
+        · simp [hermMat, dite_eq_left hab, hermCoord]
         · subst hab
           obtain ⟨r, hr⟩ := fixed_eq_tmul R hinv h2 hδ hσδ
             ((S : Matrix (Fin n) (Fin n) (R ⊗[F] E)) a a) (S.2 a a)
           simp only [hermMat, lt_irrefl, dite_false, hermCoord]
           rw [hr, half_trace_tmul R h2]
-        · simp only [hermMat, dif_pos hab, dif_neg (not_lt_of_gt hab), hermCoord]
+        · simp only [hermMat, dite_eq_left hab, dite_eq_right (not_lt_of_gt hab), hermCoord]
           exact S.2 a b
       right_inv := by
         intro x
@@ -213,21 +214,21 @@ theorem hermCoord_isHomeomorph [IsTopologicalRing R] [CharZero F] {σ : E →ₐ
         · funext p
           obtain ⟨⟨a, b⟩, hp⟩ := p
           simp only [hermCoord, hermMat]
-          exact dif_pos hp
+          exact dite_eq_left hp
       continuous_toFun := by
         refine Continuous.prodMk (continuous_pi fun i => ?_) (continuous_pi fun p => ?_)
         · exact continuous_const.mul (htr.comp
-            ((continuous_apply_apply i i).comp continuous_subtype_val))
-        · exact (continuous_apply_apply p.1.1 p.1.2).comp continuous_subtype_val
+            ((continuous_apply_apply i i).comp continuous_subtypeVal))
+        · exact (continuous_apply_apply p.1.1 p.1.2).comp continuous_subtypeVal
       continuous_invFun := by
         refine Continuous.subtype_mk (continuous_matrix fun a b => ?_) _
         by_cases hab : a < b
-        · simp only [hermMat, dif_pos hab]
+        · simp only [hermMat, dite_eq_left hab]
           exact (continuous_apply _).comp continuous_snd
         · by_cases hba : b < a
-          · simp only [hermMat, dif_neg hab, dif_pos hba]
+          · simp only [hermMat, dite_eq_right hab, dite_eq_left hba]
             exact hsig.comp ((continuous_apply _).comp continuous_snd)
-          · simp only [hermMat, dif_neg hab, dif_neg hba]
+          · simp only [hermMat, dite_eq_right hab, dite_eq_right hba]
             exact hincl.comp ((continuous_apply _).comp continuous_fst) }
   exact h.isHomeomorph
 
@@ -242,27 +243,27 @@ theorem coord_measures_haar : ∀ (F E : Type) [Field F] [NumberField F] [Field 
   obtain ⟨t1, t2, t3, t4, t5, t6, t7, -, -, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hcm R
   have h2 : Module.finrank F E = 2 := hcm.2.2.1
   obtain ⟨hinv, δ, hδ, hσδ⟩ := HaarCoord.conj_facts hcm
-  haveI : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
-  haveI : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
-  haveI : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R _
+  have : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
+  have : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
+  have : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R _
   have hK : (coordK R b lam).IsAddHaarMeasure := by
     refine HaarCoord.haar_comap _ ?_ (t7 d b) _
     intro x y
     funext k
     simp
-  haveI a1 : MeasurableAdd (R ⊗[F] E) := inferInstance
-  haveI a2 : SigmaFinite (coordK R b lam) := inferInstance
+  have a1 : MeasurableAdd (R ⊗[F] E) := inferInstance
+  have a2 : SigmaFinite (coordK R b lam) := inferInstance
   refine ⟨hK, ?_, ?_⟩
   · intro n M
     unfold coordW
-    haveI a3 : (Measure.pi fun _ : Fin M => coordK R b lam).IsAddHaarMeasure := inferInstance
+    have a3 : (Measure.pi fun _ : Fin M => coordK R b lam).IsAddHaarMeasure := inferInstance
     infer_instance
   · intro n
-    haveI : BorelSpace (HermR R σ n) := ⟨rfl⟩
-    haveI a3 : (Measure.pi fun _ : {p : Fin n × Fin n // p.1 < p.2} => coordK R b lam).IsAddHaarMeasure :=
+    have : BorelSpace (HermR R σ n) := ⟨rfl⟩
+    have a3 : (Measure.pi fun _ : {p : Fin n × Fin n // p.1 < p.2} => coordK R b lam).IsAddHaarMeasure :=
       inferInstance
-    haveI a4 : (Measure.pi fun _ : Fin n => lam).IsAddHaarMeasure := inferInstance
-    haveI a5 : ((Measure.pi fun _ : Fin n => lam).prod
+    have a4 : (Measure.pi fun _ : Fin n => lam).IsAddHaarMeasure := inferInstance
+    have a5 : ((Measure.pi fun _ : Fin n => lam).prod
         (Measure.pi fun _ : {p : Fin n × Fin n // p.1 < p.2} => coordK R b lam)).IsAddHaarMeasure :=
       inferInstance
     exact HaarCoord.haar_comap (HaarCoord.hermCoord R σ n) (HaarCoord.hermCoord_add R σ n)

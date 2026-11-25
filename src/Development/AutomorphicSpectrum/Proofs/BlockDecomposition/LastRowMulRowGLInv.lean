@@ -82,7 +82,7 @@ theorem lastEnt_eq (r : Fin k → R) (l : Fin k) (hl : (l : ℕ) + 1 = k) : last
   rw [lastEnt, Finset.sum_eq_single l]
   · simp [hl]
   · intro b _ hb
-    rw [if_neg]
+    rw [ite_eq_right]
     intro h
     exact hb (Fin.ext (by omega))
   · simp
@@ -92,27 +92,27 @@ theorem rowM_mul_rowM (r t : Fin k → R) (l : Fin k) (hl : (l : ℕ) + 1 = k) (
       (if (c : ℕ) + 1 = k then r l * t c else r c + r l * t c) else rowM t i c := by
   have hlast : ∀ j : Fin k, (j : ℕ) + 1 = k → j = l := fun j hj => Fin.ext (by omega)
   by_cases hi : (i : ℕ) + 1 = k
-  · rw [if_pos hi, Matrix.mul_apply]
+  · rw [ite_eq_left hi, Matrix.mul_apply]
     have e : ∀ j, rowM r i j * rowM t j c =
         r j * (if j = l then t c else (1 : Matrix (Fin k) (Fin k) R) j c) := fun j => by
       rw [rowM_apply_last r i j hi]
       by_cases hj : j = l
-      · subst hj; rw [rowM_apply_last t _ c hl, if_pos rfl]
-      · rw [rowM_apply_ne t j c (fun h => hj (hlast j h)), if_neg hj]
+      · subst hj; rw [rowM_apply_last t _ c hl, ite_eq_left rfl]
+      · rw [rowM_apply_ne t j c (fun h => hj (hlast j h)), ite_eq_right hj]
     simp only [e]
     rw [← Finset.add_sum_erase _ _ (Finset.mem_univ l)]
     have e2 : ∀ j ∈ Finset.univ.erase l, r j * (if j = l then t c else (1 : Matrix (Fin k) (Fin k) R) j c) =
         if j = c then r j else 0 := fun j hj => by
-      rw [if_neg (Finset.ne_of_mem_erase hj), Matrix.one_apply]
+      rw [ite_eq_right (Finset.ne_of_mem_erase hj), Matrix.one_apply]
       split_ifs <;> simp
-    rw [Finset.sum_congr rfl e2, if_pos rfl, Finset.sum_ite_eq' ]
+    rw [Finset.sum_congr rfl e2, ite_eq_left rfl, Finset.sum_ite_eq' ]
     by_cases hc : (c : ℕ) + 1 = k
     · have : c = l := hlast c hc
       subst this
       simp [hc]
     · have : c ≠ l := fun h => hc (h ▸ hl)
       simp [hc, this, add_comm]
-  · rw [if_neg hi, Matrix.mul_apply]
+  · rw [ite_eq_right hi, Matrix.mul_apply]
     simp only [rowM_apply_ne r i _ hi, Matrix.one_apply]
     simp
 
@@ -133,12 +133,12 @@ theorem rowM_mul_rowI (h : IsUnit (lastEnt r)) : rowM r * rowM (rowI r) = 1 := b
       by_cases hc : (c : ℕ) + 1 = k
       · have hcl : c = i := Fin.ext (by omega)
         subst hcl
-        simp only [if_pos hl, rowI, e, Matrix.one_apply, if_true]
+        simp only [ite_eq_left hl, rowI, e, Matrix.one_apply, ite_true]
         exact hu
       · have hcl : i ≠ c := fun h => hc (h ▸ hl)
-        simp only [if_pos hl, if_neg hc, rowI, e, Matrix.one_apply, if_neg hcl]
+        simp only [ite_eq_left hl, ite_eq_right hc, rowI, e, Matrix.one_apply, ite_eq_right hcl]
         linear_combination (- r c) * hu
-    · rw [if_neg hi, rowM_apply_ne _ _ _ hi]
+    · rw [ite_eq_right hi, rowM_apply_ne _ _ _ hi]
   · exact absurd ⟨⟨k - 1, by have := i.2; omega⟩, by have := i.2; simp; omega⟩ hk
 
 theorem rowI_mul_rowM (h : IsUnit (lastEnt r)) : rowM (rowI r) * rowM r = 1 := by
@@ -157,13 +157,13 @@ theorem rowI_mul_rowM (h : IsUnit (lastEnt r)) : rowM (rowI r) * rowM r = 1 := b
       by_cases hc : (c : ℕ) + 1 = k
       · have hcl : c = i := Fin.ext (by omega)
         subst hcl
-        simp only [if_pos hl, el, Matrix.one_apply, if_true]
+        simp only [ite_eq_left hl, el, Matrix.one_apply, ite_true]
         linear_combination hu
       · have hcl : i ≠ c := fun h => hc (h ▸ hl)
-        simp only [if_pos hl, if_neg hc, el, Matrix.one_apply, if_neg hcl]
-        simp only [rowI, if_neg hc, e]
+        simp only [ite_eq_left hl, ite_eq_right hc, el, Matrix.one_apply, ite_eq_right hcl]
+        simp only [rowI, ite_eq_right hc, e]
         ring
-    · rw [if_neg hi, rowM_apply_ne _ _ _ hi]
+    · rw [ite_eq_right hi, rowM_apply_ne _ _ _ hi]
   · exact absurd ⟨⟨k - 1, by have := i.2; omega⟩, by have := i.2; simp; omega⟩ hk
 
 
@@ -186,8 +186,8 @@ theorem rowM_eRow : rowM (eRow R k) = 1 := by
   by_cases hi : (i : ℕ) + 1 = k
   · rw [rowM_apply_last _ _ _ hi, eRow, Matrix.one_apply]
     by_cases hc : (c : ℕ) + 1 = k
-    · rw [if_pos hc, if_pos (Fin.ext (by omega))]
-    · rw [if_neg hc, if_neg (fun h : i = c => hc (h ▸ hi))]
+    · rw [ite_eq_left hc, ite_eq_left (Fin.ext (by omega))]
+    · rw [ite_eq_right hc, ite_eq_right (fun h : i = c => hc (h ▸ hi))]
   · rw [rowM_apply_ne _ _ _ hi]
 
 theorem rowGL_eRow (hk : 1 ≤ k) : rowGL (eRow R k) = 1 := by
@@ -201,9 +201,9 @@ theorem lastRow_mul_rowGL_inv (A : GL (Fin k) R) (h : IsUnit (lastEnt r)) (hA : 
   have hi : (i : ℕ) + 1 = k := by have := i.2; have := j.2; omega
   have e1 : ∀ m, A.val i m = rowM r i m := fun m => by
     rw [rowM_apply_last _ _ _ hi, ← hA, lastRowM, Finset.sum_eq_single i]
-    · rw [if_pos hi]
+    · rw [ite_eq_left hi]
     · intro b _ hb
-      rw [if_neg]
+      rw [ite_eq_right]
       intro h
       exact hb (Fin.ext (by omega))
     · simp

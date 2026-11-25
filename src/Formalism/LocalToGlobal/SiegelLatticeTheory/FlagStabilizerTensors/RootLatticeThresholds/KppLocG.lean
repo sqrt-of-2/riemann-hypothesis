@@ -22,13 +22,13 @@ theorem gram_of {I : AutInst} {w : HeightOneSpectrum (𝓞 I.E)} {u v : VA I} {P
     hhat I u v - (if Q then 1 else 0) ∈ Wq I w := by
   have e : (if P then (1 : I.E ⊗[I.F] Af I.F) else 0) = if Q then 1 else 0 := by
     by_cases hp : P
-    · rw [if_pos hp, if_pos (hPQ.1 hp)]
-    · rw [if_neg hp, if_neg (fun hq => hp (hPQ.2 hq))]
+    · rw [ite_eq_left hp, ite_eq_left (hPQ.1 hp)]
+    · rw [ite_eq_right hp, ite_eq_right (fun hq => hp (hPQ.2 hq))]
   rwa [e] at h
 
 theorem gram_ne {I : AutInst} {w : HeightOneSpectrum (𝓞 I.E)} {u v : VA I} {Q : Prop} [Decidable Q]
     (h : hhat I u v ∈ Wq I w) (hQ : ¬ Q) : hhat I u v - (if Q then 1 else 0) ∈ Wq I w := by
-  rwa [if_neg hQ, sub_zero]
+  rwa [ite_eq_right hQ, sub_zero]
 
 variable {D : D7} (X : HidaSetting D)
 
@@ -69,86 +69,86 @@ theorem gram (ob : Bool) (hg : ((X.B.g : ℕ) : 𝓞 X.B.I.E) ∈ w.asIdeal)
     rw [map_sub, sg_hA, sg_ite] at h
     exact gram_of h (by rw [xI_inj]; exact eq_comm)
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI]; omega))
     cases ob
     · rw [dual_frame_isotropic, fr_wf]; exact wq X hg ((X.weightVectorsIntegral (rv b)).2.2 a).2.2.2
     · rw [dual_frame_isotropic, fr_wt]; exact wq X hg ((X.weightVectorsIntegral b).2.2 a).2.1
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, zI]; omega))
     rw [dual_frame_isotropic, frame_anisotropic]; exact wq X hg (X.formsAtZero.2 a).2
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, yI]; omega))
     rw [dual_frame_isotropic, fr_y]; exact wq X hg (X.gramIntegral a (rv b)).2.1
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI]; omega))
     cases ob
     · rw [frd_wf, frame_isotropic]; have := wqs X hg ((X.weightVectorsIntegral (rv a)).2.2 b).1; rwa [sg_hA] at this
     · rw [frd_wt, frame_isotropic]; have := wqs X hg ((X.weightVectorsIntegral a).2.2 b).2.2.1; rwa [sg_hA] at this
   ·
     cases ob
     · rw [frd_wf, fr_wf]
-      simp only [Bool.false_eq_true, if_false] at hsew
+      simp only [Bool.false_eq_true, ite_false] at hsew
       have h := wqs X hg (X.bw_dual (rv b) (rv a))
       rw [map_sub, sg_hA] at h
       by_cases hab : a = b
       · subst hab
-        rw [if_pos rfl] at h ⊢
+        rw [ite_eq_left rfl] at h ⊢
         have := add_mem h hsew
         convert this using 1; ring
-      · rw [if_neg (fun h' => hab (rv_inj.1 h'.symm)), map_zero, sub_zero] at h
+      · rw [ite_eq_right (fun h' => hab (rv_inj.1 h'.symm)), map_zero, sub_zero] at h
         exact gram_ne h (fun h' => hab (wI_inj.1 h'))
     · rw [frd_wt, fr_wt]
-      simp only [if_true] at hew
+      simp only [ite_true] at hew
       have h := wq X hg (X.bw_dual a b)
       by_cases hab : a = b
       · subst hab
-        rw [if_pos rfl] at h ⊢
+        rw [ite_eq_left rfl] at h ⊢
         change hhat X.B.I (X.bwd a) (X.bw a) - X.ew ∈ _ at h
         have := add_mem h hew
         convert this using 1; ring
-      · rw [if_neg hab, sub_zero] at h
+      · rw [ite_eq_right hab, sub_zero] at h
         exact gram_ne h (fun h' => hab (wI_inj.1 h'))
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [wI, zI]; omega))
     cases ob
     · rw [frd_wf, frame_anisotropic]; have := wqs X hg (X.weightVectorsIntegral (rv a)).1; rwa [sg_hA] at this
     · rw [frd_wt, frame_anisotropic]; have := wqs X hg (X.weightVectorsIntegral a).2.1; rwa [sg_hA] at this
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [wI, yI]; omega))
     cases ob
     · rw [frd_wf, fr_y]; have := wqs X hg ((X.weightVectorsIntegral (rv a)).2.2 (rv b)).2.1; rwa [sg_hA] at this
     · rw [frd_wt, fr_y]; have := wqs X hg ((X.weightVectorsIntegral a).2.2 (rv b)).2.2.2; rwa [sg_hA] at this
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, zI]; omega))
     rw [dual_frame_anisotropic, frame_isotropic, hhat_neg_left]
     refine neg_mem ?_
     have := wqs X hg (X.formsAtZero.2 b).1; rwa [sg_hA] at this
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [wI, zI]; omega))
     cases ob
     · rw [dual_frame_anisotropic, fr_wf, hhat_neg_left]; exact neg_mem (wq X hg (X.weightVectorsIntegral (rv b)).2.1)
     · rw [dual_frame_anisotropic, fr_wt, hhat_neg_left]; exact neg_mem (wq X hg (X.weightVectorsIntegral b).1)
   ·
-    rw [dual_frame_anisotropic, frame_anisotropic, hhat_neg_left, if_pos rfl]
+    rw [dual_frame_anisotropic, frame_anisotropic, hhat_neg_left, ite_eq_left rfl]
     have := neg_mem (wq X hg X.formsAtZero.1)
     convert this using 1
     show -hhat X.B.I X.z0 X.z0 - 1 = -(hA X.B.I X.z0 X.z0 + 1)
     rw [show hA X.B.I X.z0 X.z0 = hhat X.B.I X.z0 X.z0 from rfl]; ring
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [yI, zI]; omega))
     rw [dual_frame_anisotropic, fr_y, hhat_neg_left]
     refine neg_mem ?_
     have := wqs X hg (X.formsAtZero.2 (rv b)).2; rwa [sg_hA] at this
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, yI]; omega))
     rw [frd_y, frame_isotropic]; exact wq X hg (X.gramIntegral (rv a) b).1
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [wI, yI]; omega))
     cases ob
     · rw [frd_y, fr_wf]; exact wq X hg ((X.weightVectorsIntegral (rv b)).2.2 (rv a)).2.2.1
     · rw [frd_y, fr_wt]; exact wq X hg ((X.weightVectorsIntegral b).2.2 (rv a)).1
   ·
-    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [xI, wI, yI, zI] <;> omega))
+    refine gram_ne ?_ (_root_.Fin.ne_of_val_ne (by simp [yI, zI]; omega))
     rw [frd_y, frame_anisotropic]; exact wq X hg (X.formsAtZero.2 (rv a)).1
   ·
     rw [frd_y, fr_y]

@@ -33,7 +33,7 @@ theorem cW_three (g2 g3 : K) : cW g2 g3 3 = g3 / 28 := by rw [cW_eq]; simp
 theorem cW_rec (g2 g3 : K) (m : ℕ) (hm : 2 ≤ m) : cW g2 g3 (m + 2) =
     3 / ((2 * ((m + 2 : ℕ) : K) + 1) * (((m + 2 : ℕ) : K) - 3)) *
       ∑ a ∈ Finset.range (m + 1), cW g2 g3 (a + 1) * cW g2 g3 (m - a + 1) := by
-  rw [cW_eq, if_neg (by omega), if_neg (by omega), if_pos (by omega)]
+  rw [cW_eq, ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_left (by omega)]
   congr 1
   rw [Fin.sum_univ_eq_sum_range (fun j => cW g2 g3 (j + 2) * cW g2 g3 (m + 2 - (j + 2))) (m + 2 - 3)]
   obtain ⟨t, rfl⟩ : ∃ t, m = t + 1 := ⟨m - 1, by omega⟩
@@ -49,7 +49,7 @@ theorem cW_rec (g2 g3 : K) (m : ℕ) (hm : 2 ≤ m) : cW g2 g3 (m + 2) =
 theorem coeff_pOf (g2 g3 : K) (n : ℕ) :
     coeff n (pOf g2 g3) = if Even n then cW g2 g3 (n / 2 + 1) else 0 := by
   unfold pOf wpNum
-  rw [coeff_mk, coeff_mk, if_neg (by omega)]
+  rw [coeff_mk, coeff_mk, ite_eq_right (by omega)]
   have h1 : Even (n + 2) ↔ Even n := by simp [Nat.even_add]
   have h2 : (n + 2) / 2 = n / 2 + 1 := by omega
   simp only [h1, h2]
@@ -65,7 +65,7 @@ theorem sum_even_range (F : ℕ → K) (m : ℕ) :
     have e1 : ¬ Even (2 * m + 1) := by simp
     have e2 : Even (2 * m + 1 + 1) := ⟨m + 1, by ring⟩
     have e3 : (2 * m + 1 + 1) / 2 = m + 1 := by omega
-    rw [if_neg e1, if_pos e2, e3, add_zero]
+    rw [ite_eq_right e1, ite_eq_left e2, e3, add_zero]
 
 theorem coeff_pOf_sq_even (g2 g3 : K) (m : ℕ) :
     coeff (2 * m) (pOf g2 g3 ^ 2)
@@ -82,8 +82,8 @@ theorem coeff_pOf_sq_even (g2 g3 : K) (m : ℕ) :
     have : (2 * m - i) / 2 = m - i / 2 := by
       obtain ⟨a, rfl⟩ := he
       omega
-    rw [if_pos he, if_pos he', if_pos he, this]
-  · rw [if_neg he, if_neg he, zero_mul]
+    rw [ite_eq_left he, ite_eq_left he', ite_eq_left he, this]
+  · rw [ite_eq_right he, ite_eq_right he, zero_mul]
 
 theorem coeff_pOf_sq_odd (g2 g3 : K) (n : ℕ) (hn : ¬ Even n) :
     coeff n (pOf g2 g3 ^ 2) = 0 := by
@@ -93,8 +93,8 @@ theorem coeff_pOf_sq_odd (g2 g3 : K) (n : ℕ) (hn : ¬ Even n) :
   simp only [coeff_pOf]
   by_cases he : Even p.1
   · have : ¬ Even p.2 := fun h2 => hn (hp' ▸ he.add h2)
-    rw [if_neg this, mul_zero]
-  · rw [if_neg he, zero_mul]
+    rw [ite_eq_right this, mul_zero]
+  · rw [ite_eq_right he, zero_mul]
 
 section CharZero
 variable [CharZero K]
@@ -109,19 +109,19 @@ theorem second_order (g2 g3 : K) :
   simp only [map_add (f := _), map_sub, coeff_C_mul, coeff_X_pow_mul', coeff_X_pow]
   by_cases hn : 2 ≤ n
   · obtain ⟨j, rfl⟩ : ∃ j, n = j + 2 := ⟨n - 2, by omega⟩
-    simp only [if_pos hn, Nat.add_sub_cancel, coeff_derivative]
+    simp only [ite_eq_left hn, Nat.add_sub_cancel, coeff_derivative]
     by_cases he : Even j
     · obtain ⟨m, rfl⟩ : ∃ m, j = 2 * m := by
         obtain ⟨a, rfl⟩ := he
         exact ⟨a, by ring⟩
-      rw [coeff_pOf_sq_even, coeff_pOf, if_pos (by simp [Nat.even_add])]
+      rw [coeff_pOf_sq_even, coeff_pOf, ite_eq_left (by simp [Nat.even_add])]
       have e : (2 * m + 1 + 1) / 2 + 1 = m + 2 := by omega
       have e' : (2 * m + 2) / 2 + 1 = m + 2 := by omega
       rw [e]
       rcases m with _ | _ | m
       · simp [cW_one, cW_two]; ring
       · simp [Finset.sum_range_succ, cW_one]; ring
-      · rw [cW_rec g2 g3 (m + 2) (by omega), if_neg (by omega)]
+      · rw [cW_rec g2 g3 (m + 2) (by omega), ite_eq_right (by omega)]
         set S := ∑ a ∈ Finset.range (m + 2 + 1), cW g2 g3 (a + 1) * cW g2 g3 (m + 2 - a + 1)
         have h1 : (2 * ((m + 2 + 2 : ℕ) : K) + 1) ≠ 0 := by
           have : (2 * ((m + 2 + 2 : ℕ) : K) + 1) = ((2 * (m + 2 + 2) + 1 : ℕ) : K) := by push_cast; ring
@@ -133,11 +133,11 @@ theorem second_order (g2 g3 : K) :
         push_cast
         ring
     · have he2 : ¬ Even (j + 2) := by simpa [Nat.even_add] using he
-      rw [coeff_pOf_sq_odd _ _ _ he, coeff_pOf, if_neg he2, if_neg (by
+      rw [coeff_pOf_sq_odd _ _ _ he, coeff_pOf, ite_eq_right he2, ite_eq_right (by
         rintro h; apply he; have : j = 0 := by omega
         simp [this])]
       simp
-  · rw [if_neg hn, if_neg hn, if_neg (by omega), coeff_pOf]
+  · rw [ite_eq_right hn, ite_eq_right hn, ite_eq_right (by omega), coeff_pOf]
     have : n = 0 ∨ n = 1 := by omega
     rcases this with rfl | rfl <;> simp [cW_one]
 
@@ -150,7 +150,8 @@ def defect (g2 g3 : K) (P : PowerSeries K) : PowerSeries K :=
   (-2 + X ^ 3 * PowerSeries.derivative P) ^ 2 - 4 * (1 + X ^ 2 * P) ^ 3
     + C g2 * X ^ 4 * (1 + X ^ 2 * P) + C g3 * X ^ 6
 
-theorem deriv_defect (g2 g3 : K) (P : PowerSeries K) :
+omit [CharZero K] in
+theorem deriv_defect [CharZero K] (g2 g3 : K) (P : PowerSeries K) :
     PowerSeries.derivative (defect g2 g3 P) =
       2 * (-2 + X ^ 3 * PowerSeries.derivative P) * (3 * X ^ 2 * PowerSeries.derivative P
           + X ^ 3 * PowerSeries.derivative (PowerSeries.derivative P))
@@ -182,7 +183,8 @@ theorem coeff_X_mul_derivative (f : PowerSeries K) (n : ℕ) :
   · simp
   · rw [coeff_succ_X_mul, coeff_derivative]; push_cast; ring
 
-theorem pOf_split (g2 g3 : K) :
+omit [CharZero K] in
+theorem pOf_split [CharZero K] (g2 g3 : K) :
     pOf g2 g3 = C (g2 / 20) * X ^ 2 + C (g3 / 28) * X ^ 4
       + X ^ 6 * PowerSeries.mk fun n => coeff (n + 6) (pOf g2 g3) := by
   ext n
@@ -229,7 +231,7 @@ theorem defect_eq_zero (g2 g3 : K) : defect g2 g3 (pOf g2 g3) = 0 := by
   rw [map_zero]
   by_cases hn : n = 6
   · obtain ⟨S, hS⟩ := defect_split g2 g3
-    rw [hS, hn, coeff_X_pow_mul', if_neg (by omega)]
+    rw [hS, hn, coeff_X_pow_mul', ite_eq_right (by omega)]
   · have h := congrArg (coeff n) (euler_defect g2 g3)
     have h6 : (6 : PowerSeries K) = C (6 : K) := (map_ofNat C 6).symm
     rw [coeff_X_mul_derivative, h6, coeff_C_mul] at h
@@ -255,7 +257,7 @@ theorem weierstrass_numerator_denominator : WpNumDen := by
     rcases n with _ | _ | n
     · simp [wpNum]
     · simp [wpNum]
-    · rw [if_neg (by omega), if_pos (by omega), zero_add, show n + 1 + 1 - 2 = n from rfl]
+    · rw [ite_eq_right (by omega), ite_eq_left (by omega), zero_add, show n + 1 + 1 - 2 = n from rfl]
       simp [pOf]
   · ext n
     rw [map_sub, mul_assoc, coeff_C_mul, coeff_X_pow_mul', coeff_one]
@@ -263,13 +265,13 @@ theorem weierstrass_numerator_denominator : WpNumDen := by
     · simp [wpDen]
     · simp [wpDen]
     · simp [wpDen]
-    · rw [if_neg (by omega), if_pos (by omega), show n + 1 + 1 + 1 - 3 = n from rfl, coeff_derivative, coeff_pOf]
+    · rw [ite_eq_right (by omega), ite_eq_left (by omega), show n + 1 + 1 + 1 - 3 = n from rfl, coeff_derivative, coeff_pOf]
       unfold wpDen
-      rw [coeff_mk, if_neg (by omega)]
+      rw [coeff_mk, ite_eq_right (by omega)]
       have e1 : Even (n + 1 + 1 + 1) ↔ Even (n + 1) := by simp [Nat.even_add]
       simp only [e1]
       by_cases he : Even (n + 1)
-      · rw [if_pos he, if_pos he]
+      · rw [ite_eq_left he, ite_eq_left he]
         obtain ⟨a, ha⟩ := he
         have e2 : (n + 1 + 1 + 1) / 2 = a + 1 := by omega
         have e3 : (n + 1) / 2 + 1 = a + 1 := by omega
@@ -279,14 +281,14 @@ theorem weierstrass_numerator_denominator : WpNumDen := by
         rw [e2, e3, e4]
         push_cast
         ring
-      · rw [if_neg he, if_neg he]; simp
+      · rw [ite_eq_right he, ite_eq_right he]; simp
 
 theorem weierstrass_p_of_series : POfIsWp := by
   intro K _ _ g2 g3
   refine ⟨?_, ?_, ?_⟩
   · rw [← coeff_zero_eq_constantCoeff_apply, coeff_pOf]; simp [cW_one]
   · intro n hn
-    rw [coeff_pOf, if_neg (Nat.not_even_iff_odd.mpr hn)]
+    rw [coeff_pOf, ite_eq_right (Nat.not_even_iff_odd.mpr hn)]
   · have h := defect_eq_zero g2 g3
     unfold defect at h
     unfold Formalism.L2.Th1.B.dz

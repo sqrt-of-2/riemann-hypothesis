@@ -41,17 +41,17 @@ theorem col_mul {g h : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     (hg : col k r g) (hh : col k r h) : col k r (g * h) := by
   intro i j hj hi
   rw [Matrix.mul_apply, Finset.sum_eq_single j]
-  · rw [hh j j hj (by omega), if_pos rfl, mul_one]
+  · rw [hh j j hj (by omega), ite_eq_left rfl, mul_one]
     exact hg i j hj hi
   · intro m _ hmj
     by_cases hm : j.val ≤ m.val ∨ r ≤ m.val
-    · rw [hh m j hj hm, if_neg hmj, mul_zero]
+    · rw [hh m j hj hm, ite_eq_right hmj, mul_zero]
     · push Not at hm
       have hne : i ≠ m := by
         intro e
         subst e
         omega
-      rw [hg i m (by omega) (by omega), if_neg hne, zero_mul]
+      rw [hg i m (by omega) (by omega), ite_eq_right hne, zero_mul]
   · intro hj'
     exact absurd (Finset.mem_univ j) hj'
 
@@ -66,17 +66,17 @@ theorem col_of_left_inv {g g' : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1
       intro i j hjn hj hi
       have e := congrFun (congrFun hm i) j
       rw [Matrix.mul_apply, Finset.sum_eq_single j] at e
-      · rw [hg j j hj (by omega), if_pos rfl, mul_one] at e
+      · rw [hg j j hj (by omega), ite_eq_left rfl, mul_one] at e
         rw [e, Matrix.one_apply]
       · intro m _ hmj
         by_cases hmc : j.val ≤ m.val ∨ r ≤ m.val
-        · rw [hg m j hj hmc, if_neg hmj, mul_zero]
+        · rw [hg m j hj hmc, ite_eq_right hmj, mul_zero]
         · push Not at hmc
           have hne : i ≠ m := by
             intro e
             subst e
             omega
-          rw [ih i m (by omega) (by omega) (by omega), if_neg hne, zero_mul]
+          rw [ih i m (by omega) (by omega) (by omega), ite_eq_right hne, zero_mul]
       · intro hj'
         exact absurd (Finset.mem_univ j) hj'
   intro i j hj hi
@@ -96,9 +96,9 @@ theorem hpk_row (i m : Fin (2 * r + k + 1)) :
 theorem hpk_mul_apply (A : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ)
     (i j : Fin (2 * r + k + 1)) : (Hpk k r * A) i j = sgn k r i * A (tau k r i) j := by
   rw [Matrix.mul_apply, Finset.sum_eq_single (tau k r i)]
-  · rw [hpk_row, if_pos rfl]
+  · rw [hpk_row, ite_eq_left rfl]
   · intro m _ hm
-    rw [hpk_row, if_neg hm, zero_mul]
+    rw [hpk_row, ite_eq_right hm, zero_mul]
   · intro h
     exact absurd (Finset.mem_univ _) h
 
@@ -120,7 +120,7 @@ theorem sgn_mul_self (i : Fin (2 * r + k + 1)) : sgn k r i * sgn k r i = 1 := by
 theorem hpk_sq : Hpk k r * Hpk k r = 1 := by
   first
   | exact _root_.Formalism.SharedLemmas.upq_hpk_mul_self
-  | (apply _root_.Formalism.SharedLemmas.upq_hpk_mul_self <;> assumption)
+
 
 theorem isUnit_of_uh {g : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     (hg : g ∈ UH (Hpk k r)) : IsUnit g.det := by
@@ -174,23 +174,23 @@ theorem mul_apply_add {g h : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) 
         intro e
         subst e
         omega
-      rw [if_neg hmj, add_zero]
+      rw [ite_eq_right hmj, add_zero]
       by_cases e : m = i
       · subst e
-        rw [if_pos rfl, if_pos rfl, one_mul]
-      · rw [if_neg (Ne.symm e), if_neg e, zero_mul]
+        rw [ite_eq_left rfl, ite_eq_left rfl, one_mul]
+      · rw [ite_eq_right (Ne.symm e), ite_eq_right e, zero_mul]
     · rw [hh m j hj (by omega)]
       have hm : m ≠ i := by
         intro e
         subst e
         omega
-      rw [if_neg hm, zero_add]
+      rw [ite_eq_right hm, zero_add]
       by_cases e : m = j
       · subst e
-        rw [if_pos rfl, if_pos rfl, mul_one]
-      · rw [if_neg e, if_neg e, mul_zero]
+        rw [ite_eq_left rfl, ite_eq_left rfl, mul_one]
+      · rw [ite_eq_right e, ite_eq_right e, mul_zero]
   rw [Matrix.mul_apply, Finset.sum_congr rfl (fun m _ => term m), Finset.sum_add_distrib,
-    Finset.sum_ite_eq', Finset.sum_ite_eq', if_pos (Finset.mem_univ _), if_pos (Finset.mem_univ _),
+    Finset.sum_ite_eq', Finset.sum_ite_eq', ite_eq_left (Finset.mem_univ _), ite_eq_left (Finset.mem_univ _),
     add_comm]
 
 theorem ellA_mul (z : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z)

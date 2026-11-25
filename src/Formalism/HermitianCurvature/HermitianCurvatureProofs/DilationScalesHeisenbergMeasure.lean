@@ -85,11 +85,11 @@ lemma aDil_eq (k r : ℕ) (t : ℝ) : aDil k r t = Matrix.diagonal fun i => ((dg
 lemma dgR_mul_inv (k r : ℕ) (t : ℝ) (ht : t ≠ 0) (i : Fin (2 * r + k + 1)) : dgR k r t i * dgR k r t⁻¹ i = 1 := by
   unfold dgR
   by_cases h1 : i.val < r
-  · simp only [h1, if_true]
+  · simp only [h1, ite_true]
     rw [← mul_pow, mul_inv_cancel₀ ht]; simp
   · by_cases h2 : i.val ≤ r + k
     · simp [h1, h2]
-    · simp only [h1, h2, if_false]
+    · simp only [h1, h2, ite_false]
       rw [← mul_inv, ← mul_pow, mul_inv_cancel₀ ht]; simp
 
 lemma dgR_shift (t : ℝ) (i : Fin (2 * (1 + r') + k + 1)) (hi : 1 ≤ i.val ∧ i.val < 2 * r' + k + 1 + 1) :
@@ -97,13 +97,13 @@ lemma dgR_shift (t : ℝ) (i : Fin (2 * (1 + r') + k + 1)) (hi : 1 ≤ i.val ∧
   unfold dgR
   dsimp only
   by_cases h1 : i.val < 1 + r'
-  · rw [if_pos h1, if_pos (show i.val - 1 < r' by omega)]
+  · rw [ite_eq_left h1, ite_eq_left (show i.val - 1 < r' by omega)]
     have : 1 + r' - i.val = r' - (i.val - 1) := by omega
     rw [this]
-  · rw [if_neg h1, if_neg (show ¬ (i.val - 1 < r') by omega)]
+  · rw [ite_eq_right h1, ite_eq_right (show ¬ (i.val - 1 < r') by omega)]
     by_cases h2 : i.val ≤ 1 + r' + k
-    · rw [if_pos h2, if_pos (show i.val - 1 ≤ r' + k by omega)]
-    · rw [if_neg h2, if_neg (show ¬ (i.val - 1 ≤ r' + k) by omega)]
+    · rw [ite_eq_left h2, ite_eq_left (show i.val - 1 ≤ r' + k by omega)]
+    · rw [ite_eq_right h2, ite_eq_right (show ¬ (i.val - 1 ≤ r' + k) by omega)]
       have : i.val - (1 + r' + k) = i.val - 1 - (r' + k) := by omega
       rw [this]
 
@@ -113,15 +113,15 @@ lemma dgR_rev (k r : ℕ) (t : ℝ) (ht : t ≠ 0) (i : Fin (2 * r + k + 1)) : d
   have hi := i.isLt
   rw [hr]
   by_cases h1 : i.val < r
-  · rw [if_pos h1, if_neg (show ¬ (2 * r + k - i.val < r) by omega), if_neg (show ¬ (2 * r + k - i.val ≤ r + k) by omega)]
+  · rw [ite_eq_left h1, ite_eq_right (show ¬ (2 * r + k - i.val < r) by omega), ite_eq_right (show ¬ (2 * r + k - i.val ≤ r + k) by omega)]
     have : 2 * r + k - i.val - (r + k) = r - i.val := by omega
     rw [this]
     exact mul_inv_cancel₀ (pow_ne_zero _ ht)
-  · rw [if_neg h1]
+  · rw [ite_eq_right h1]
     by_cases h2 : i.val ≤ r + k
-    · rw [if_pos h2, if_neg (show ¬ (2 * r + k - i.val < r) by omega), if_pos (show 2 * r + k - i.val ≤ r + k by omega)]
+    · rw [ite_eq_left h2, ite_eq_right (show ¬ (2 * r + k - i.val < r) by omega), ite_eq_left (show 2 * r + k - i.val ≤ r + k by omega)]
       simp
-    · rw [if_neg h2, if_pos (show 2 * r + k - i.val < r by omega)]
+    · rw [ite_eq_right h2, ite_eq_left (show 2 * r + k - i.val < r by omega)]
       have : r - (2 * r + k - i.val) = i.val - (r + k) := by omega
       rw [this]
       exact inv_mul_cancel₀ (pow_ne_zero _ ht)
@@ -163,7 +163,7 @@ lemma herm_smul_right {ι : Type*} [Fintype ι] (H : Matrix ι ι ℂ) (c : ℂ)
 lemma herm_sum {m : ℕ} (H : Matrix (Fin m) (Fin m) ℂ) (u v : Fin m → ℂ) :
     ∑ j, herm H (bvec j) v * u j = herm H u v := by
   simp only [herm, dotProduct, mulVec, bvec, Pi.single_apply, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
-    Finset.mem_univ, if_true, Finset.sum_mul, Finset.mul_sum]
+    Finset.mem_univ, ite_true, Finset.sum_mul, Finset.mul_sum]
   rw [Finset.sum_comm]
   apply Finset.sum_congr rfl; intro i _
   apply Finset.sum_congr rfl; intro j _
@@ -214,16 +214,16 @@ lemma aDil_lift (t : ℝ) (y : Fin (2 * r' + k + 1) → ℂ) :
   rw [Matrix.mulVec_diagonal]
   unfold liftVec
   by_cases hi : 1 ≤ i.val ∧ i.val < 2 * r' + k + 1 + 1
-  · rw [dif_pos hi, dif_pos hi, Matrix.mulVec_diagonal, dgR_shift t i hi]
-  · rw [dif_neg hi, dif_neg hi, mul_zero]
+  · rw [dite_eq_left hi, dite_eq_left hi, Matrix.mulVec_diagonal, dgR_shift t i hi]
+  · rw [dite_eq_right hi, dite_eq_right hi, mul_zero]
 
 lemma liftVec_smul (c : ℂ) (y : Fin (2 * r' + k + 1) → ℂ) : liftVec k 1 r' (c • y) = c • liftVec k 1 r' y := by
   ext i
   rw [Pi.smul_apply]
   unfold liftVec
   by_cases hi : 1 ≤ i.val ∧ i.val < 2 * r' + k + 1 + 1
-  · rw [dif_pos hi, dif_pos hi, Pi.smul_apply]
-  · rw [dif_neg hi, dif_neg hi, smul_zero]
+  · rw [dite_eq_left hi, dite_eq_left hi, Pi.smul_apply]
+  · rw [dite_eq_right hi, dite_eq_right hi, smul_zero]
 
 lemma hb_dil (t : ℝ) (ht : t ≠ 0) (y : Fin (2 * r' + k + 1) → ℂ) (s : ℝ) :
     hb k r' (((t ^ (1 + r') : ℝ) : ℂ) • (aDil k r' t *ᵥ y)) (t ^ (2 * (1 + r')) * s) =
@@ -252,15 +252,15 @@ theorem dilation_levi_conjugation : Formalism.FourierDecayAlt.B2.DilLev := by
   rw [Matrix.mul_diagonal, Matrix.diagonal_mul]
   unfold ιLev
   by_cases hi : 1 ≤ i.val ∧ i.val < 2 * r' + k + 1 + 1
-  · rw [dif_pos hi, dif_pos hi]
+  · rw [dite_eq_left hi, dite_eq_left hi]
     by_cases hj : 1 ≤ j.val ∧ j.val < 2 * r' + k + 1 + 1
-    · rw [dif_pos hj, dif_pos hj, Matrix.mul_diagonal, Matrix.diagonal_mul, dgR_shift t i hi, dgR_shift t⁻¹ j hj]
-    · rw [dif_neg hj, dif_neg hj]; simp
-  · rw [dif_neg hi, dif_neg hi]
+    · rw [dite_eq_left hj, dite_eq_left hj, Matrix.mul_diagonal, Matrix.diagonal_mul, dgR_shift t i hi, dgR_shift t⁻¹ j hj]
+    · rw [dite_eq_right hj, dite_eq_right hj]; simp
+  · rw [dite_eq_right hi, dite_eq_right hi]
     by_cases h : i = j
     · subst h
-      rw [if_pos rfl, mul_one, ← Complex.ofReal_mul, dgR_mul_inv _ _ _ ht, Complex.ofReal_one]
-    · rw [if_neg h]; simp
+      rw [ite_eq_left rfl, mul_one, ← Complex.ofReal_mul, dgR_mul_inv _ _ _ ht, Complex.ofReal_one]
+    · rw [ite_eq_right h]; simp
 
 theorem modular_exponent_recursion : Formalism.FourierDecayAlt.B2.KapRec := by
   intro k r'
@@ -287,8 +287,8 @@ lemma liftVec_cont : Continuous (fun y : Fin (2 * r' + k + 1) → ℂ => liftVec
   intro p
   unfold liftVec
   by_cases hp : 1 ≤ p.val ∧ p.val < 2 * r' + k + 1 + 1
-  · simp only [dif_pos hp]; exact continuous_apply _
-  · simp only [dif_neg hp]; exact continuous_const
+  · simp only [dite_eq_left hp]; exact continuous_apply _
+  · simp only [dite_eq_right hp]; exact continuous_const
 
 lemma herm_cont {ι X : Type*} [Fintype ι] [TopologicalSpace X] (H : Matrix ι ι ℂ) {f g : X → ι → ℂ}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun x => herm H (f x) (g x) := by
@@ -375,7 +375,7 @@ lemma aDil_zero (k : ℕ) (t : ℝ) : aDil k 0 t = 1 := by
   funext i
   have h : i.val ≤ 0 + k := by have := i.isLt; omega
   unfold dgR
-  rw [if_neg (Nat.not_lt_zero _), if_pos h, Complex.ofReal_one]
+  rw [ite_eq_right (Nat.not_lt_zero _), ite_eq_left h, Complex.ofReal_one]
 
 lemma conjM_one (k r : ℕ) : (conjM (1 : Mat k r) : Mt k r → Mt k r) = id := by
   funext x
@@ -392,12 +392,12 @@ lemma levM_cont : Continuous (levM k r') := by
   show Continuous fun x : Mt k r' => ιLev k 1 r' (Matrix.of x) p q
   unfold ιLev
   by_cases hp : 1 ≤ p.val ∧ p.val < 2 * r' + k + 1 + 1
-  · simp only [dif_pos hp]
+  · simp only [dite_eq_left hp]
     by_cases hq : 1 ≤ q.val ∧ q.val < 2 * r' + k + 1 + 1
-    · simp only [dif_pos hq]
+    · simp only [dite_eq_left hq]
       exact (continuous_apply _).comp (continuous_apply _)
-    · simp only [dif_neg hq]; exact continuous_const
-  · simp only [dif_neg hp]; exact continuous_const
+    · simp only [dite_eq_right hq]; exact continuous_const
+  · simp only [dite_eq_right hp]; exact continuous_const
 
 lemma conjM_mulM {k r : ℕ} (a : Mat k r) (ha : a⁻¹ * a = 1) :
     (conjM a : Mt k r → Mt k r) ∘ mulM = mulM ∘ Prod.map (conjM a) (conjM a) := by

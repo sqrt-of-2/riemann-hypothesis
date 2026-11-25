@@ -60,27 +60,27 @@ theorem norm_sq_integral_inner_smul_le (Ω V : Type) [MeasurableSpace Ω] [Norme
         ∫⁻ x, ENNReal.ofReal (‖g x‖ ^ 2) ∂ν := by
   set F : Ω → ℝ≥0∞ := fun x => ‖ph x‖ₑ * ‖f x‖ₑ with hF
   set G : Ω → ℝ≥0∞ := fun x => ‖g x‖ₑ with hG
-  have hFm : AEMeasurable F ν := hp.enorm.mul hf.enorm
-  have hGm : AEMeasurable G ν := hg.enorm
+  have hFm : AEMeasurable F ν := hp.eNorm.mul hf.eNorm
+  have hGm : AEMeasurable G ν := hg.eNorm
   have h1 : ‖∫ x, ⟪f x, ph x • g x⟫_ℂ ∂ν‖ₑ ≤ ∫⁻ x, (F * G) x ∂ν := by
-    refine (enorm_integral_le_lintegral_enorm _).trans (lintegral_mono fun x => ?_)
+    refine (MeasureTheory.eNorm_integral_le_lintegral_eNorm _).trans (lintegral_mono fun x => ?_)
     have h : ‖⟪f x, ph x • g x⟫_ℂ‖ ≤ ‖ph x‖ * ‖f x‖ * ‖g x‖ := by
       refine (norm_inner_le_norm _ _).trans (le_of_eq ?_)
       rw [norm_smul]; ring
     have := ENNReal.ofReal_le_ofReal h
     rw [ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_mul (by positivity),
-      ofReal_norm_eq_enorm, ofReal_norm_eq_enorm, ofReal_norm_eq_enorm,
-      ofReal_norm_eq_enorm] at this
+      ofReal_norm, ofReal_norm, ofReal_norm,
+      ofReal_norm] at this
     exact this
   have h2 := ENNReal.lintegral_mul_le_Lp_mul_Lq ν Real.HolderConjugate.two_two hFm hGm
   have e1 : (∫⁻ x, ENNReal.ofReal (‖ph x‖ ^ 2 * ‖f x‖ ^ 2) ∂ν) = ∫⁻ x, F x ^ (2 : ℝ) ∂ν := by
     refine lintegral_congr fun x => ?_
     rw [← mul_pow, ENNReal.ofReal_pow (by positivity), ENNReal.ofReal_mul (by positivity),
-      ofReal_norm_eq_enorm, ofReal_norm_eq_enorm, ENNReal.rpow_two]
+      ofReal_norm, ofReal_norm, ENNReal.rpow_two]
   have e2 : (∫⁻ x, ENNReal.ofReal (‖g x‖ ^ 2) ∂ν) = ∫⁻ x, G x ^ (2 : ℝ) ∂ν := by
     refine lintegral_congr fun x => ?_
-    rw [ENNReal.ofReal_pow (by positivity), ofReal_norm_eq_enorm, ENNReal.rpow_two]
-  rw [e1, e2, ENNReal.ofReal_pow (by positivity), ofReal_norm_eq_enorm]
+    rw [ENNReal.ofReal_pow (by positivity), ofReal_norm, ENNReal.rpow_two]
+  rw [e1, e2, ENNReal.ofReal_pow (by positivity), ofReal_norm]
   refine (pow_le_pow_left' (h1.trans h2) 2).trans (le_of_eq ?_)
   have k : ∀ a : ℝ≥0∞, (a ^ (1 / 2 : ℝ)) ^ 2 = a := fun a => by
     rw [← ENNReal.rpow_two, ← ENNReal.rpow_mul]; norm_num

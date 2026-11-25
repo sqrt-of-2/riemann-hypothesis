@@ -57,22 +57,22 @@ variable {D : D7} {B : WeightFamilies.Prov D} {P : ModuliIntegralCharts.Prov D} 
 
 theorem subsingleton_sections_of_no_leadingTerm (G : GlobalFamilyData X ka wL wF) (hd : G.del = 0) (la : HeightOneSpectrum (𝓞 B.KO))
     (hB : InBasis G la) : Subsingleton (SectionSheafQuotient X la G.w wF) := by
-  haveI : IsEmpty (Fin G.del) := by rw [hd]; infer_instance
+  have : IsEmpty (Fin G.del) := by rw [hd]; infer_instance
   have h := hB.2
   rw [Set.range_eq_empty, Submodule.span_empty] at h
   exact (Submodule.subsingleton_iff (Kp X la G.N)).1 (subsingleton_of_bot_eq_top h)
 
 theorem heights_of_del_zero (G : GlobalFamilyData X ka wL wF) (Q : ∀ la, LocalPointData G la) (Gc PH Prw Pet : ℝ) (hd : G.del = 0)
     (hB : ∀ la, InBasis G la) (hC : ∀ la, (Q la).InCurve) : Heights Q Gc PH Prw Pet := by
-  haveI : IsEmpty (Fin G.del) := by rw [hd]; infer_instance
+  have : IsEmpty (Fin G.del) := by rw [hd]; infer_instance
   have hI : ∀ la, (Q la).Ila = 0 := fun la => by
-    haveI := subsingleton_sections_of_no_leadingTerm G hd la (hB la)
+    have := subsingleton_sections_of_no_leadingTerm G hd la (hB la)
     unfold LocalPointData.Ila
     exact Module.length_eq_zero
   have hN : ∀ la, (Q la).Net = 0 := fun la => by
-    haveI := subsingleton_sections_of_no_leadingTerm G hd la (hB la)
-    haveI : Subsingleton (OsK X la G.w) := (hC la).2.2.1.subsingleton
-    haveI : IsEmpty (PtsG G la) := ⟨fun ζ => ζ.isMaximal.ne_top (Subsingleton.elim _ _)⟩
+    have := subsingleton_sections_of_no_leadingTerm G hd la (hB la)
+    have : Subsingleton (OsK X la G.w) := (hC la).2.2.1.subsingleton
+    have : IsEmpty (PtsG G la) := ⟨fun ζ => ζ.isMaximal.ne_top (Subsingleton.elim _ _)⟩
     unfold LocalPointData.Net
     exact finsum_of_isEmpty _
   have hd' : (G.del : ℝ) = 0 := by rw [hd]; exact Nat.cast_zero

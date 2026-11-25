@@ -45,7 +45,8 @@ theorem gramR_mem {σ : E →ₐ[F] E} (h : ∀ x, σ (σ x) = x) {n M : ℕ} {J
 
 variable [TopologicalSpace R] [IsTopologicalRing R]
 
-theorem isModTop : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
+omit [IsTopologicalRing R] in
+theorem isModTop [IsTopologicalRing R] : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
 
 theorem isTopRing [Module.Finite F E] : IsTopologicalRing (R ⊗[F] E) :=
   haveI := isModTop (F := F) (E := E) R
@@ -53,15 +54,15 @@ theorem isTopRing [Module.Finite F E] : IsTopologicalRing (R ⊗[F] E) :=
 
 theorem exists_homeo [Module.Finite F E] :
     Nonempty ((R ⊗[F] E) ≃ₜ (Fin (Module.finrank F E) → R)) := by
-  haveI := isModTop (F := F) (E := E) R
-  haveI := isTopRing (F := F) (E := E) R
+  have := isModTop (F := F) (E := E) R
+  have := isTopRing (F := F) (E := E) R
   let e := (Algebra.TensorProduct.basis R (Module.finBasis F E)).equivFun
   exact ⟨{ e.toEquiv with
     continuous_toFun := IsModuleTopology.continuous_of_linearMap e.toLinearMap
     continuous_invFun := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap }⟩
 
 theorem continuous_sigR [Module.Finite F E] (σ : E →ₐ[F] E) : Continuous (sigR R σ) := by
-  haveI := isModTop (F := F) (E := E) R
+  have := isModTop (F := F) (E := E) R
   haveI := isTopRing (F := F) (E := E) R
   exact IsModuleTopology.continuous_of_linearMap
     (Algebra.TensorProduct.map (AlgHom.id R R) σ).toLinearMap

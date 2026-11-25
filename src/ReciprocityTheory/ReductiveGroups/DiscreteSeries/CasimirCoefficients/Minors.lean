@@ -31,7 +31,7 @@ private lemma sub_lower_mul {i : ℕ} (hi : i ≤ n) {c : Matrix (Fin n) (Fin n)
     by_contra h
     exact hk ⟨⟨k, by omega⟩, Fin.ext rfl⟩
   have ha := a.2
-  rw [hc _ _ (by rw [Fin.lt_def, Fin.coe_castLE]; omega), zero_mul]
+  rw [hc _ _ (by rw [Fin.lt_def, Fin.val_castLE]; omega), zero_mul]
 
 private lemma sub_mul_upper {i : ℕ} (hi : i ≤ n) {c' : Matrix (Fin n) (Fin n) ℂ} (hc' : IsUpperTri c')
     (M : Matrix (Fin n) (Fin n) ℂ) :
@@ -47,14 +47,14 @@ private lemma sub_mul_upper {i : ℕ} (hi : i ≤ n) {c' : Matrix (Fin n) (Fin n
     exact hk ⟨⟨k, by omega⟩, Fin.ext rfl⟩
   have hb := b.2
   unfold IsUpperTri at hc'
-  rw [hc' _ _ (by rw [Fin.lt_def, Fin.coe_castLE]; omega), mul_zero]
+  rw [hc' _ _ (by rw [Fin.lt_def, Fin.val_castLE]; omega), mul_zero]
 
 private lemma lowerTri_sub {i : ℕ} (hi : i ≤ n) {c : Matrix (Fin n) (Fin n) ℂ} (hc : IsLowerTri c) :
     (c.submatrix (Fin.castLE hi) (Fin.castLE hi)).IsLowerTriangular := by
   intro a b hab
   have hab' : a < b := hab
   apply hc
-  rw [Fin.lt_def, Fin.coe_castLE, Fin.coe_castLE]
+  rw [Fin.lt_def, Fin.val_castLE, Fin.val_castLE]
   exact hab'
 
 private lemma upperTri_sub {i : ℕ} (hi : i ≤ n) {c' : Matrix (Fin n) (Fin n) ℂ} (hc' : IsUpperTri c') :
@@ -62,7 +62,7 @@ private lemma upperTri_sub {i : ℕ} (hi : i ≤ n) {c' : Matrix (Fin n) (Fin n)
   intro a b hab
   have hab' : b < a := hab
   apply hc'
-  rw [Fin.lt_def, Fin.coe_castLE, Fin.coe_castLE]
+  rw [Fin.lt_def, Fin.val_castLE, Fin.val_castLE]
   exact hab'
 
 theorem lead_tri_mul {c z c' : Matrix (Fin n) (Fin n) ℂ} (hc : IsLowerTri c) (hc' : IsUpperTri c') (i : ℕ) (hi : i ≤ n) :
@@ -74,14 +74,14 @@ theorem lead_tri_mul {c z c' : Matrix (Fin n) (Fin n) ℂ} (hc : IsLowerTri c) (
     rw [Finset.prod_filter]
     refine Fintype.prod_of_injective (Fin.castLE hi) (Fin.castLE_injective hi) _ _ ?_ ?_
     · intro k hk
-      rw [if_neg]
+      rw [ite_eq_right]
       intro hlt
       exact hk ⟨⟨k, hlt⟩, Fin.ext rfl⟩
     · intro a
-      rw [if_pos (by rw [Fin.coe_castLE]; exact a.2)]
+      rw [ite_eq_left (by rw [Fin.val_castLE]; exact a.2)]
   unfold lead
   rw [dite_eq_left hi, dite_eq_left hi, sub_mul_upper hi hc', sub_lower_mul hi hc, Matrix.det_mul, Matrix.det_mul,
-    Matrix.det_of_lowerTriangular _ (lowerTri_sub hi hc), Matrix.det_of_upperTriangular (upperTri_sub hi hc'),
+    Matrix.det_of_isLowerTriangular _ (lowerTri_sub hi hc), Matrix.det_of_isUpperTriangular (upperTri_sub hi hc'),
     Finset.prod_mul_distrib, ← hp (fun l => c l l), ← hp (fun l => c' l l)]
   simp only [Matrix.submatrix_apply]
   ring

@@ -123,15 +123,15 @@ theorem simpleSum_eq_sum_ent {k : Type} [Field k] (g : GL (n ⊕ Fin c) k) :
     GlobalTheory.RootEx.simpleSum g = ∑ i ∈ Finset.range (c - 1), ent g i := by
   have h : ∑ i ∈ Finset.range (c - 1), ent g i = ∑ i ∈ Finset.range c, ent g i :=
     Finset.sum_subset (Finset.range_subset_range.2 (by omega)) fun i _ hi =>
-      dif_neg (by rw [Finset.mem_range] at hi; omega)
+      dite_eq_right (by rw [Finset.mem_range] at hi; omega)
   rw [h, Finset.sum_range]
   refine Finset.sum_congr rfl fun i _ => ?_
   unfold ent
   split_ifs with hi
-  · rw [Finset.sum_eq_single ⟨i + 1, hi⟩, if_pos rfl]
-    · exact fun j _ hj => if_neg fun e => hj (Fin.ext e)
+  · rw [Finset.sum_eq_single ⟨i + 1, hi⟩, ite_eq_left rfl]
+    · exact fun j _ hj => ite_eq_right fun e => hj (Fin.ext e)
     · exact fun e => absurd (Finset.mem_univ _) e
-  · exact Finset.sum_eq_zero fun j _ => if_neg (by omega)
+  · exact Finset.sum_eq_zero fun j _ => ite_eq_right (by omega)
 
 theorem ent_inv {k : Type} [Field k] {p : ℕ} {g : GL (n ⊕ Fin c) k} (hg : g ∈ N k n c p) (i : ℕ) :
     ent g⁻¹ i = -ent g i := by
@@ -170,7 +170,7 @@ open GlobalTheory.RootEx (N embX)
 def colN {m ρ : ℕ} (M : Matrix (Fin m) (Fin ρ) D.host.E) (i : ℕ) : Fin m → D.host.E :=
   if h : i < ρ then fun y => M y ⟨i, h⟩ else 0
 
-theorem colN_fin {m ρ : ℕ} (M : Matrix (Fin m) (Fin ρ) D.host.E) (i : Fin ρ) : colN M i = fun y => M y i := dif_pos i.2
+theorem colN_fin {m ρ : ℕ} (M : Matrix (Fin m) (Fin ρ) D.host.E) (i : Fin ρ) : colN M i = fun y => M y i := dite_eq_left i.2
 
 variable (ψ : AddChar (AF D.host.F) ℂ) {V V₀ A L : HSp D} {ρ : ℕ} (d : HypDec V V₀ ρ) (o : OrthDec V₀ A L)
   (ζ : Fin L.rank → D.host.E)
@@ -185,7 +185,7 @@ variable (ψv : AddChar (Fv D.host.F v) Circle) (τ : D.host.E →ₐ[D.host.F] 
 
 theorem hQ_colN {k l : ℕ} (M : Matrix (Fin V.rank) (Fin k) D.host.E) (M' : Matrix (Fin V.rank) (Fin l) D.host.E) {i j : ℕ}
     (hi : i < k) (hj : j < l) : hQ V (colN M i) (colN M' j) = (M'ᴴ * V.gram * M) ⟨j, hj⟩ ⟨i, hi⟩ := by
-  rw [colN, colN, dif_pos hi, dif_pos hj, Matrix.mul_assoc]; rfl
+  rw [colN, colN, dite_eq_left hi, dite_eq_left hj, Matrix.mul_assoc]; rfl
 
 theorem hQ_mulVec {k l : ℕ} (M : Matrix (Fin V.rank) (Fin k) D.host.E) (M' : Matrix (Fin V.rank) (Fin l) D.host.E) (x y) :
     hQ V (M *ᵥ x) (M' *ᵥ y) = star y ⬝ᵥ (M'ᴴ * V.gram * M) *ᵥ x := by
@@ -193,7 +193,7 @@ theorem hQ_mulVec {k l : ℕ} (M : Matrix (Fin V.rank) (Fin k) D.host.E) (M' : M
 
 theorem colN_eq_mulVec {m k : ℕ} (M : Matrix (Fin m) (Fin k) D.host.E) {i : ℕ} (hi : i < k) :
     colN M i = M *ᵥ Pi.single ⟨i, hi⟩ 1 := by
-  rw [colN, dif_pos hi, mulVec_single_one]; rfl
+  rw [colN, dite_eq_left hi, mulVec_single_one]; rfl
 
 theorem perp_of_gram {k l : ℕ} {M : Matrix (Fin V.rank) (Fin k) D.host.E} {J : Matrix (Fin V.rank) (Fin l) D.host.E}
     (h : Jᴴ * V.gram * M = 0) (x) : star (M *ᵥ x) ᵥ* V.gram ᵥ* J = 0 := by
@@ -251,18 +251,18 @@ theorem isHermitianAuxiliaryVectorSystem_besselVectors (hζ : IsLineVec L ζ) : 
     intro i hi l hl
     unfold besselAuxiliaryVectors
     rcases lt_trichotomy l ρ with h | h | h <;> rcases lt_trichotomy i ρ with h' | h' | h'
-    · rw [if_pos h, if_neg (by omega), if_neg (by omega), hQ_XY d h (by omega), if_neg h'.ne]
+    · rw [ite_eq_left h, ite_eq_right (by omega), ite_eq_right (by omega), hQ_XY d h (by omega), ite_eq_right h'.ne]
       exact if_congr (by omega) rfl rfl
-    · rw [if_pos h, if_neg (by omega), if_pos (by omega), wittDecomposition_hermitian_e_anisotropicPart d h, if_neg (by omega)]
-    · rw [if_pos h, if_pos (by omega), hQ_XX d h (by omega), if_neg (by omega)]
-    · rw [if_neg (by omega), if_pos h, if_neg (by omega), if_neg (by omega), hQ_0Y d (by omega), if_neg (by omega)]
-    · rw [if_neg (by omega), if_pos h, if_neg (by omega), if_pos (by omega), hQ_vecB, if_pos (by omega), if_pos h']
-    · rw [if_neg (by omega), if_pos h, if_pos (by omega), hQ_0X d (by omega), if_neg (by omega)]
-    · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), hQ_YY d (by omega) (by omega),
-        if_neg (by omega)]
-    · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_pos (by omega), wittDecomposition_hermitian_dual_anisotropicPart d (by omega),
-        if_neg (by omega)]
-    · rw [if_neg (by omega), if_neg (by omega), if_pos (by omega), hQ_YX d (by omega) (by omega), if_neg h'.ne']
+    · rw [ite_eq_left h, ite_eq_right (by omega), ite_eq_left (by omega), wittDecomposition_hermitian_e_anisotropicPart d h, ite_eq_right (by omega)]
+    · rw [ite_eq_left h, ite_eq_left (by omega), hQ_XX d h (by omega), ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_left h, ite_eq_right (by omega), ite_eq_right (by omega), hQ_0Y d (by omega), ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_left h, ite_eq_right (by omega), ite_eq_left (by omega), hQ_vecB, ite_eq_left (by omega), ite_eq_left h']
+    · rw [ite_eq_right (by omega), ite_eq_left h, ite_eq_left (by omega), hQ_0X d (by omega), ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), hQ_YY d (by omega) (by omega),
+        ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_left (by omega), wittDecomposition_hermitian_dual_anisotropicPart d (by omega),
+        ite_eq_right (by omega)]
+    · rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_left (by omega), hQ_YX d (by omega) (by omega), ite_eq_right h'.ne']
       exact if_congr (by omega) rfl rfl
   case ne =>
     intro i _
@@ -311,15 +311,15 @@ theorem upSum_blockX (g : GA D V) :
   rw [h, Finset.sum_range]
   refine Finset.sum_congr rfl fun i _ => ?_
   split_ifs with hi
-  · rw [Finset.sum_eq_single ⟨i + 1, hi⟩, if_pos rfl, blockX_apply]
-    · exact fun j _ hj => if_neg fun e => hj (Fin.ext e)
+  · rw [Finset.sum_eq_single ⟨i + 1, hi⟩, ite_eq_left rfl, blockX_apply]
+    · exact fun j _ hj => ite_eq_right fun e => hj (Fin.ext e)
     · exact fun e => absurd (Finset.mem_univ _) e
-  · exact Finset.sum_eq_zero fun j _ => if_neg (by omega)
+  · exact Finset.sum_eq_zero fun j _ => ite_eq_right (by omega)
 
 theorem ell_dot {σ : ℕ} (x : Fin (σ + 1) → AE D) : ell D (σ + 1) ⬝ᵥ x = x (Fin.last σ) := by
-  rw [dotProduct, Finset.sum_eq_single (Fin.last σ), show ell D (σ + 1) (Fin.last σ) = 1 from if_pos rfl, one_mul]
+  rw [dotProduct, Finset.sum_eq_single (Fin.last σ), show ell D (σ + 1) (Fin.last σ) = 1 from ite_eq_left rfl, one_mul]
   · intro j _ hj
-    rw [show ell D (σ + 1) j = 0 from if_neg fun e => hj (Fin.ext (Nat.succ_injective e)), zero_mul]
+    rw [show ell D (σ + 1) j = 0 from ite_eq_right fun e => hj (Fin.ext (Nat.succ_injective e)), zero_mul]
   · exact fun e => absurd (Finset.mem_univ _) e
 
 theorem simpleSum_eq_sum_hA (z : Fin V₀.rank → D.host.E) (g : GA D V) : GlobalTheory.MixPer.simpleSum d z g =
@@ -332,9 +332,9 @@ theorem simpleSum_eq_sum_hA (z : Fin V₀.rank → D.host.E) (g : GA D V) : Glob
     congr 1
     · refine Finset.sum_congr rfl fun i hi => ?_
       have := Finset.mem_range.1 hi
-      rw [besselAuxiliaryVectors, besselAuxiliaryVectors, if_pos (by omega), if_neg (by omega), if_neg (by omega)]
+      rw [besselAuxiliaryVectors, besselAuxiliaryVectors, ite_eq_left (by omega), ite_eq_right (by omega), ite_eq_right (by omega)]
       congr 2; omega
-    · rw [besselAuxiliaryVectors, besselAuxiliaryVectors, if_neg (by omega), if_pos rfl, if_neg (by omega), if_neg (by omega)]
+    · rw [besselAuxiliaryVectors, besselAuxiliaryVectors, ite_eq_right (by omega), ite_eq_left rfl, ite_eq_right (by omega), ite_eq_right (by omega)]
       congr 2; simp; omega
 
 theorem cmHost_imaginaryGenerator_ne_zero : D.host.xi0 ≠ 0 := fun h => by

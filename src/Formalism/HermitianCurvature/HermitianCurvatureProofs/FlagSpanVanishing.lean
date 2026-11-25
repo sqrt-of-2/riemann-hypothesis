@@ -72,8 +72,8 @@ lemma flagSpan_vanish (z : Fin (2 * r + k + 1) → ℂ) (a : Fin (r + 1)) (v : F
   | mem x hx =>
     obtain ⟨⟨b, hb⟩, rfl⟩ := hx
     have hbr : b.val < r := by have := a.isLt; rw [Fin.lt_def] at hb; omega
-    simp only [fvec, dif_pos hbr, bvec, Pi.single_apply, eI]
-    rw [if_neg]
+    simp only [fvec, dite_eq_left hbr, bvec, Pi.single_apply, eI]
+    rw [ite_eq_right]
     intro e; rw [Fin.lt_def] at hb; have := congrArg Fin.val e; simp at this; omega
   | zero => rfl
   | add x y _ _ hx hy => simp [hx, hy]
@@ -98,21 +98,21 @@ lemma zero_block (s : B.Mat k r) (hs : s ∈ B.GV k r)
     rw [Matrix.mul_assoc, Matrix.mul_apply] at e
     simp only [C2x6.Hpk_mul_apply, Matrix.conjTranspose_apply] at e
     have hH : Hpk k r (eI k r a) j = 0 := by
-      rw [GBasic.Hpk_eq, if_neg]
+      rw [GBasic.Hpk_eq, ite_eq_right]
       intro h'; have := congrArg Fin.val h'
       rw [GBasic.sig_lo _ _ _ (by simp [eI])] at this; simp [eI] at this; omega
     rw [hH, Finset.sum_eq_single (eI k r a)] at e
-    · rw [hcol a _ (by simp [eI]), if_pos rfl, star_one, one_mul] at e
+    · rw [hcol a _ (by simp [eI]), ite_eq_left rfl, star_one, one_mul] at e
       have hsig : GBasic.sig k r (eI k r a) = esI k r a := by
         apply Fin.ext; rw [GBasic.sig_lo _ _ _ (by simp [eI])]; simp [eI, esI]
       have hsg : GBasic.sgn k r (eI k r a) = 1 := by
-        unfold GBasic.sgn; rw [if_neg]; simp [eI]; omega
+        unfold GBasic.sgn; rw [ite_eq_right]; simp [eI]; omega
       rw [hsig, hsg, one_mul] at e
       exact e
     · intro p _ hp
       by_cases hpa : a.val ≤ p.val
-      · rw [hcol a p hpa, if_neg hp, star_zero, zero_mul]
-      · push_neg at hpa
+      · rw [hcol a p hpa, ite_eq_right hp, star_zero, zero_mul]
+      · push Not at hpa
         have hpr : p.val < r := by omega
         have hsig : GBasic.sig k r p = esI k r ⟨p.val, hpr⟩ := by
           apply Fin.ext; rw [GBasic.sig_lo _ _ _ hpr]; simp [esI]
@@ -153,10 +153,10 @@ lemma wpart_uh (s : B.Mat k r) (hs : s ∈ B.GV k r)
       refine Finset.sum_congr rfl (fun p _ => ?_)
       by_cases hp : r ≤ p.val ∧ p.val ≤ r + k
       · rw [sig_fixes_middle_block p hp]
-        simp only [wpart, if_pos (And.intro hp.1 (And.intro hp.2 (And.intro hi.1 hi.2))),
-          if_pos (And.intro hp.1 (And.intro hp.2 (And.intro hj.1 hj.2)))]
+        simp only [wpart, ite_eq_left (And.intro hp.1 (And.intro hp.2 (And.intro hi.1 hi.2))),
+          ite_eq_left (And.intro hp.1 (And.intro hp.2 (And.intro hj.1 hj.2)))]
       · have h1 : wpart s p i = 0 := by
-          simp only [wpart]; rw [if_neg (fun h => hp ⟨h.1, h.2.1⟩), if_neg]
+          simp only [wpart]; rw [ite_eq_right (fun h => hp ⟨h.1, h.2.1⟩), ite_eq_right]
           intro e; rw [e] at hp; exact hp hi
         rw [h1, star_zero, zero_mul]
         by_cases hpr : p.val < r
@@ -167,28 +167,28 @@ lemma wpart_uh (s : B.Mat k r) (hs : s ∈ B.GV k r)
     · rw [Finset.sum_eq_single (GBasic.sig k r j)]
       · have h1 : wpart s (GBasic.sig k r j) i = 0 := by
           simp only [wpart]
-          rw [if_neg (fun h => sig_notW j hj ⟨h.1, h.2.1⟩), if_neg]
+          rw [ite_eq_right (fun h => sig_notW j hj ⟨h.1, h.2.1⟩), ite_eq_right]
           intro e; rw [← e] at hi; exact sig_notW j hj hi
-        rw [h1, star_zero, zero_mul, GBasic.Hpk_eq, if_neg]
+        rw [h1, star_zero, zero_mul, GBasic.Hpk_eq, ite_eq_right]
         intro e; rw [sig_fixes_middle_block i hi] at e; rw [e] at hj; exact hj hi
       · intro p _ hp
         have : wpart s (GBasic.sig k r p) j = 0 := by
-          simp only [wpart]; rw [if_neg (fun h => hj ⟨h.2.2.1, h.2.2.2⟩), if_neg]
+          simp only [wpart]; rw [ite_eq_right (fun h => hj ⟨h.2.2.1, h.2.2.2⟩), ite_eq_right]
           intro e; apply hp; rw [← e, GBasic.sig_sig]
         rw [this, mul_zero, mul_zero]
       · simp
   · rw [Finset.sum_eq_single i]
     · have h1 : wpart s i i = 1 := by
-        simp only [wpart]; rw [if_neg (fun h => hi ⟨h.1, h.2.1⟩)]; simp
+        simp only [wpart]; rw [ite_eq_right (fun h => hi ⟨h.1, h.2.1⟩)]; simp
       have h2 : wpart s (GBasic.sig k r i) j = if GBasic.sig k r i = j then 1 else 0 := by
-        simp only [wpart]; rw [if_neg (fun h => sig_notW i hi ⟨h.1, h.2.1⟩)]
+        simp only [wpart]; rw [ite_eq_right (fun h => sig_notW i hi ⟨h.1, h.2.1⟩)]
       rw [h1, star_one, one_mul, h2, GBasic.Hpk_eq]
       by_cases e : GBasic.sig k r i = j
-      · rw [if_pos e, if_pos e.symm, mul_one]
-      · rw [if_neg e, if_neg (fun h => e h.symm), mul_zero]
+      · rw [ite_eq_left e, ite_eq_left e.symm, mul_one]
+      · rw [ite_eq_right e, ite_eq_right (fun h => e h.symm), mul_zero]
     · intro p _ hp
       have : wpart s p i = 0 := by
-        simp only [wpart]; rw [if_neg (fun h => hi ⟨h.2.2.1, h.2.2.2⟩), if_neg hp]
+        simp only [wpart]; rw [ite_eq_right (fun h => hi ⟨h.2.2.1, h.2.2.2⟩), ite_eq_right hp]
       rw [this, star_zero, zero_mul]
     · simp
 
@@ -205,7 +205,7 @@ theorem standard_flag_property : C2.SFlag := by
         s i (eI k r a) = if i = eI k r a then 1 else 0 := by
       intro a i hi
       have h := flagSpan_vanish z (Fin.castSucc a) _ (hfl (Fin.castSucc a)) i (by simpa using hi)
-      have hf : fvec k r z (Fin.castSucc a) = bvec (eI k r a) := by rw [fvec, dif_pos (by simp)]; rfl
+      have hf : fvec k r z (Fin.castSucc a) = bvec (eI k r a) := by rw [fvec, dite_eq_left (by simp)]; rfl
       rw [hf, mulVec_bvec, Pi.sub_apply, sub_eq_zero] at h
       rw [h]; simp [bvec, Pi.single_apply]
     have hzc : ∀ i : Fin (2 * r + k + 1), r ≤ i.val → (s *ᵥ z) i = z i := by
@@ -224,24 +224,24 @@ theorem standard_flag_property : C2.SFlag := by
       refine ⟨hhU, fun a => ⟨?_, ?_⟩, ?_⟩
       · rw [mulVec_bvec]; funext i
         simp only [hh, wpart, bvec, Pi.single_apply]
-        rw [if_neg (by intro h'; have := h'.2.2.1; simp only [eI] at this; omega)]
+        rw [ite_eq_right (by intro h'; have := h'.2.2.1; simp only [eI] at this; omega)]
       · rw [mulVec_bvec]; funext i
         simp only [hh, wpart, bvec, Pi.single_apply]
-        rw [if_neg (by intro h'; have := h'.2.2.2; simp only [esI] at this; omega)]
+        rw [ite_eq_right (by intro h'; have := h'.2.2.2; simp only [esI] at this; omega)]
       · funext i
         by_cases hi : r ≤ i.val ∧ i.val ≤ r + k
         · rw [← hzc i hi.1]
           simp only [Matrix.mulVec, dotProduct]
           refine Finset.sum_congr rfl (fun j _ => ?_)
           by_cases hj : r ≤ j.val ∧ j.val ≤ r + k
-          · simp only [hh, wpart, if_pos (And.intro hi.1 (And.intro hi.2 hj))]
+          · simp only [hh, wpart, ite_eq_left (And.intro hi.1 (And.intro hi.2 hj))]
           · have hzj : z j = 0 := hz.1 j (by omega)
             rw [hzj, mul_zero, mul_zero]
         · simp only [Matrix.mulVec, dotProduct]
           rw [Finset.sum_eq_single i]
-          · simp only [hh, wpart]; rw [if_neg (fun h' => hi ⟨h'.1, h'.2.1⟩)]; simp
+          · simp only [hh, wpart]; rw [ite_eq_right (fun h' => hi ⟨h'.1, h'.2.1⟩)]; simp
           · intro j _ hj
-            simp only [hh, wpart]; rw [if_neg (fun h' => hi ⟨h'.1, h'.2.1⟩), if_neg (Ne.symm hj), zero_mul]
+            simp only [hh, wpart]; rw [ite_eq_right (fun h' => hi ⟨h'.1, h'.2.1⟩), ite_eq_right (Ne.symm hj), zero_mul]
           · simp
     have hhu : IsUnit h.det := WeylGroupFacts.isUnit_of_uh hhU
     have hblk := WeylGroupFacts.uw_block (WeylGroupFacts.uw_inv hhW)
@@ -256,22 +256,22 @@ theorem standard_flag_property : C2.SFlag := by
           by_cases hpr : p.val < r
           · rw [hblk.1 i p (Or.inl hpr)]
           · have := hcol ⟨j.val, hjr⟩ p (by simp; omega)
-            rw [e, if_neg (fun e' => hpr (by rw [e']; exact hjr))] at this
+            rw [e, ite_eq_right (fun e' => hpr (by rw [e']; exact hjr))] at this
             rw [this, mul_zero, mul_zero]
-        simp only [hterm, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+        simp only [hterm, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
         have := hcol ⟨j.val, hjr⟩ i (by simp; omega)
         rw [e] at this; exact this
       · have hir : r ≤ i.val := by omega
         have hterm : ∀ p, h⁻¹ i p * s p j = h⁻¹ i p * h p j := by
           intro p
           by_cases hpr : p.val < r
-          · rw [hblk.1 i p (Or.inl hpr), if_neg (fun e' => by rw [e'] at hir; omega), zero_mul, zero_mul]
+          · rw [hblk.1 i p (Or.inl hpr), ite_eq_right (fun e' => by rw [e'] at hir; omega), zero_mul, zero_mul]
           · by_cases hpk : p.val ≤ r + k
             · simp only [hh, wpart]
-              rw [if_pos ⟨by omega, hpk, by omega, hj⟩]
+              rw [ite_eq_left ⟨by omega, hpk, by omega, hj⟩]
             · rw [hA p j (by omega) (by omega) hj]
               simp only [hh, wpart]
-              rw [if_neg (fun h' => hpk h'.2.1), if_neg (fun e' => by rw [e'] at hpk; exact hpk hj)]
+              rw [ite_eq_right (fun h' => hpk h'.2.1), ite_eq_right (fun e' => by rw [e'] at hpk; exact hpk hj)]
         simp only [hterm]
         rw [← Matrix.mul_apply, Matrix.nonsing_inv_mul _ hhu, Matrix.one_apply]
     · rw [← Matrix.mul_assoc, Matrix.mul_nonsing_inv _ hhu, Matrix.one_mul]
@@ -289,8 +289,8 @@ theorem standard_flag_property : C2.SFlag := by
     · exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨⟨c, hca⟩, rfl⟩)
     · have : U c a - (if c = a then 1 else 0) = 0 := by
         rcases eq_or_lt_of_le (not_lt.mp hca) with e | e
-        · rw [← e, hU2, if_pos rfl, sub_self]
-        · rw [hU1 c a e, if_neg (ne_of_gt e), sub_self]
+        · rw [← e, hU2, ite_eq_left rfl, sub_self]
+        · rw [hU1 c a e, ite_eq_right (ne_of_gt e), sub_self]
       rw [this, zero_smul]; exact Submodule.zero_mem _
 
 end Formalism.FourierDecayAlt.P

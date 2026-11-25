@@ -22,7 +22,7 @@ theorem blkIdx_replicate_top {t : ℕ} (_ht : 0 < t) (j : ℕ) : blkIdx (List.re
   induction j with
   | zero => rfl
   | succ j ih =>
-    rw [List.replicate_succ, blkIdx, if_neg (by rw [Nat.succ_mul]; omega), show (j + 1) * t - t = j * t by rw [Nat.succ_mul]; omega, ih]
+    rw [List.replicate_succ, blkIdx, ite_eq_right (by rw [Nat.succ_mul]; omega), show (j + 1) * t - t = j * t by rw [Nat.succ_mul]; omega, ih]
 
 theorem coarse_rep {r t j x : ℕ} (ht : 0 < t) (hx : x ≤ r + j * t) :
     coarse r (List.replicate j t) x = if x < r then 0 else (x - r) / t + 1 := by
@@ -64,20 +64,20 @@ theorem mem_HJsym_iff_InJSym (e : κ ≃+* k') {n k rS t j : ℕ} (ht : 0 < t) (
       rw [hlv, hlv] at hxy
       by_cases hx : x.val < k + 2 * rS + 1
       · by_cases hy : y.val < k + 2 * rS + 1
-        · rw [if_pos hx, if_pos hy] at hxy
+        · rw [ite_eq_left hx, ite_eq_left hy] at hxy
           have := h1 ⟨x.val, hx⟩ ⟨y.val, hy⟩ hxy
           rwa [blockZero_val] at this
-        · rw [if_pos hx, if_neg hy] at hxy
+        · rw [ite_eq_left hx, ite_eq_right hy] at hxy
           have := hsym x.val hx
           generalize (y.val - (k + 2 * rS + 1)) / t = q at hxy
           omega
       · apply hB
         show coarse (k + 2 * rS + 1) (List.replicate j t) y.val < coarse (k + 2 * rS + 1) (List.replicate j t) x.val
-        rw [hco, hco, if_neg hx]
-        rw [if_neg hx] at hxy
+        rw [hco, hco, ite_eq_right hx]
+        rw [ite_eq_right hx] at hxy
         by_cases hy : y.val < k + 2 * rS + 1
-        · rw [if_pos hy]; generalize (x.val - (k + 2 * rS + 1)) / t = qx; omega
-        · rw [if_neg hy] at hxy ⊢
+        · rw [ite_eq_left hy]; generalize (x.val - (k + 2 * rS + 1)) / t = qx; omega
+        · rw [ite_eq_right hy] at hxy ⊢
           generalize (y.val - (k + 2 * rS + 1)) / t = qy at hxy ⊢
           generalize (x.val - (k + 2 * rS + 1)) / t = qx at hxy ⊢
           omega
@@ -99,11 +99,11 @@ theorem mem_HJsym_iff_InJSym (e : κ ≃+* k') {n k rS t j : ℕ} (ht : 0 < t) (
       generalize hqy : (y.val - (k + 2 * rS + 1)) / t = qy at hxy' ⊢
       generalize hqx : (x.val - (k + 2 * rS + 1)) / t = qx at hxy' ⊢
       by_cases hx : x.val < k + 2 * rS + 1
-      · rw [if_pos hx] at hxy'; split_ifs at hxy' <;> omega
-      · rw [if_neg hx] at hxy' ⊢
+      · rw [ite_eq_left hx] at hxy'; split_ifs at hxy' <;> omega
+      · rw [ite_eq_right hx] at hxy' ⊢
         by_cases hy : y.val < k + 2 * rS + 1
-        · rw [if_pos hy]; have := hsym y.val hy; omega
-        · rw [if_neg hy] at hxy' ⊢
+        · rw [ite_eq_left hy]; have := hsym y.val hy; omega
+        · rw [ite_eq_right hy] at hxy' ⊢
           omega
     refine ⟨hB, ?_⟩
     rw [mem_HPsymF_iff hrS]
@@ -112,7 +112,7 @@ theorem mem_HJsym_iff_InJSym (e : κ ≃+* k') {n k rS t j : ℕ} (ht : 0 < t) (
       apply h1'
       show Formalism.L2.Forms.lvSym k rS t b.val < Formalism.L2.Forms.lvSym k rS t a.val
       unfold Formalism.L2.Forms.lvSym Formalism.L2.Forms.rSym
-      rw [if_pos b.2, if_pos a.2, posSym_eq_symIdx, posSym_eq_symIdx]
+      rw [ite_eq_left b.2, ite_eq_left a.2, posSym_eq_symIdx, posSym_eq_symIdx]
       exact hab
     · rw [blockZero_val]
       exact (z1 _).mp (by rw [← Matrix.map_apply (f := e)]; exact h2 (Fin.castLE h a) a.2)
@@ -152,9 +152,9 @@ theorem supSum_map_eq (e : κ ≃+* k') {n a skip : ℕ} (S : Finset ℕ) (hS : 
   by_cases h : (x : ℕ) + 1 = y ∧ (y : ℕ) < a
   · have h2 : ((x : ℕ) ∈ S ↔ (y : ℕ) ≠ skip) := by rw [← h.1]; exact hS x (by omega)
     by_cases h3 : (x : ℕ) ∈ S
-    · rw [if_pos ⟨h.1, h.2, h3⟩, if_pos ⟨h.1, h.2, h2.1 h3⟩]; rfl
-    · rw [if_neg (fun h' => h3 h'.2.2), if_neg (fun h' => h3 (h2.2 h'.2.2)), map_zero]
-  · rw [if_neg (fun h' => h ⟨h'.1, h'.2.1⟩), if_neg (fun h' => h ⟨h'.1, h'.2.1⟩), map_zero]
+    · rw [ite_eq_left ⟨h.1, h.2, h3⟩, ite_eq_left ⟨h.1, h.2, h2.1 h3⟩]; rfl
+    · rw [ite_eq_right (fun h' => h3 h'.2.2), ite_eq_right (fun h' => h3 (h2.2 h'.2.2)), map_zero]
+  · rw [ite_eq_right (fun h' => h ⟨h'.1, h'.2.1⟩), ite_eq_right (fun h' => h ⟨h'.1, h'.2.1⟩), map_zero]
 
 theorem lamJsym_eq_lamSym (e : κ ≃+* k') (σ₀ : K →+* ℂ) (ψ : AddChar κ K) (χ : ℕ → κˣ →* Kˣ) {n k rS t j : ℕ} (ht : 0 < t)
     (hn : k + 2 * rS + 1 + j * t ≤ n) (h : k + 2 * rS + 1 ≤ n) (M : ↥(HJsym κ n k (k + 2 * rS + 1) t j rS h)) :

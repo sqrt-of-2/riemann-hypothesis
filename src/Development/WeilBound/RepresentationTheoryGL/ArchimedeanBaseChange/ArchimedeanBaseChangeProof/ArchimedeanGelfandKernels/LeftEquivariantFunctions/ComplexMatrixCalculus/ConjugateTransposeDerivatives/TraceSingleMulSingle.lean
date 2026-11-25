@@ -81,7 +81,7 @@ theorem hb_ortho (p q : Fin n × Fin n) : (hb p * hb q).trace = if p = q then 1 
   split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12 h13 h14 h15 h16 h17 h18 h19 h20 <;>
   simp only [Matrix.smul_mul, Matrix.mul_smul, Matrix.add_mul, Matrix.mul_add, Matrix.sub_mul, Matrix.mul_sub,
     trace_add, trace_sub, trace_smul, trace_single_mul_single, smul_eq_mul] <;>
-  simp only [Fin.ext_iff, Fin.lt_iff_val_lt_val] at * <;>
+  simp only [Fin.ext_iff, Fin.lt_def] at * <;>
   split_ifs <;>
   (try (exfalso; omega)) <;>
   (try simp) <;>
@@ -104,13 +104,13 @@ theorem eq_zero_of_trace (D : Mat n) (h : ∀ p, (D * hb p).trace = 0) : D = 0 :
   have hdiag : ∀ i, D i i = 0 := by
     intro i
     have e := h (i, i)
-    simp only [PositivityTheory.RgTw.hb, if_true, trace_mul_single, mul_one] at e
+    simp only [PositivityTheory.RgTw.hb, ite_true, trace_mul_single, mul_one] at e
     exact e
   have key : ∀ i j : Fin n, i < j → D i j = 0 ∧ D j i = 0 := by
     intro i j hij
     have e1 := h (i, j)
     have e2 := h (j, i)
-    simp only [PositivityTheory.RgTw.hb, ne_of_lt hij, (ne_of_lt hij).symm, not_lt_of_gt hij, hij, if_false, if_true,
+    simp only [PositivityTheory.RgTw.hb, ne_of_lt hij, (ne_of_lt hij).symm, not_lt_of_gt hij, hij, ite_false, ite_true,
       Matrix.mul_smul, trace_smul, Matrix.mul_add, Matrix.mul_sub, trace_add, trace_sub, trace_mul_single,
       smul_eq_mul, mul_one] at e1 e2
     have f1 : D j i + D i j = 0 := (mul_eq_zero.mp e1).resolve_left hs

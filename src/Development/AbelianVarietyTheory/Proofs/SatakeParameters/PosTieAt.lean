@@ -47,8 +47,8 @@ attribute [local instance] Formalism.BasicNotions.Host.cmStar
 
 theorem GlobalTheory.TwV.DelA.posTie_at : AllSites (fun {D L hT Gi Gl Kc Dx cX ex u μ w hg Lv I H X} [Fact (D.what₂.places.resChar w).Prime] {std t J} S => S.Pos → ∀ ι : ℂ →+* ℂ_[D.what₂.places.resChar w], (∀ z : TaylorLogMetric.Qbar, ι z = S.lam z) → letI := wittFractionAlgebraCp (D.what₂.places.resChar w); letI := algKfC S.E.toCEmb; PosTie (sysS H X std) D (hT.gat_pos u w hg) ℂ_[D.what₂.places.resChar w] ι (J.rho std) ∧ ∀ r : D.what₂.LL, ι (D.what₂.embLL r) = algebraMap (sysS H X std).G.Kf ℂ_[D.what₂.places.resChar w] (ex.cmp.embW u w hg r)) := by
   intro D L hT Gi Gl Kc Dx cX ex u μ w hg Lv I H X _ std t J S hS ι hι
-  letI := wittFractionAlgebraCp (D.what₂.places.resChar w)
-  letI := algKfC S.E.toCEmb
+  let := wittFractionAlgebraCp (D.what₂.places.resChar w)
+  let := algKfC S.E.toCEmb
   refine ⟨fun v s x => ?_, fun r => ?_⟩
   · have h := hS v s x
     have hz : (embT D (hT.gat_pos u w hg ⟨v, s⟩)) x ∈ TaylorLogMetric.Qbar := by

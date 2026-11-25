@@ -78,12 +78,12 @@ theorem hb_apply (p : Fin n × Fin n) (i j : Fin n) : (hb p : Mat n) i j =
   dsimp only
   by_cases hab : a = b
   · subst hab
-    simp only [if_true, Matrix.single_apply]
-  · rw [if_neg hab, if_neg hab]
+    simp only [ite_true, Matrix.single_apply]
+  · rw [ite_eq_right hab, ite_eq_right hab]
     by_cases hlt : a < b
-    · rw [if_pos hlt, if_pos hlt]
+    · rw [ite_eq_left hlt, ite_eq_left hlt]
       simp only [Matrix.smul_apply, Matrix.add_apply, Matrix.single_apply, smul_eq_mul]
-    · rw [if_neg hlt, if_neg hlt]
+    · rw [ite_eq_right hlt, ite_eq_right hlt]
       simp only [Matrix.smul_apply, Matrix.sub_apply, Matrix.single_apply, smul_eq_mul]
 
 theorem hb_tr (H : Mat n) (p : Fin n × Fin n) : (H * hb p).trace =
@@ -96,12 +96,12 @@ theorem hb_tr (H : Mat n) (p : Fin n × Fin n) : (H * hb p).trace =
   by_cases hab : a = b
   · subst hab
     simp [Matrix.trace_mul_single]
-  · rw [if_neg hab, if_neg hab]
+  · rw [ite_eq_right hab, ite_eq_right hab]
     by_cases hlt : a < b
-    · rw [if_pos hlt, if_pos hlt]
+    · rw [ite_eq_left hlt, ite_eq_left hlt]
       simp [Matrix.mul_add, Matrix.trace_add, Matrix.trace_mul_single]
       ring
-    · rw [if_neg hlt, if_neg hlt]
+    · rw [ite_eq_right hlt, ite_eq_right hlt]
       simp [Matrix.mul_sub, Matrix.trace_smul, Matrix.trace_sub, Matrix.trace_mul_single]
 
 theorem key_pair (h : ℂ) (s : ℝ) (hs : s * s = 2) :
@@ -139,7 +139,7 @@ theorem hb_expand (H : Mat n) (hH : H.IsHermitian) : ∑ p, ((H * hb p).trace.re
       linarith
     rw [Finset.sum_eq_single (i, i)]
     · rw [hb_tr, hb_apply]
-      simp only [if_true, and_self, Complex.real_smul, mul_one]
+      simp only [ite_true, and_self, Complex.real_smul, mul_one]
       apply Complex.ext <;> simp [him]
     · intro p _ hp
       obtain ⟨a, b⟩ := p
@@ -149,24 +149,24 @@ theorem hb_expand (H : Mat n) (hH : H.IsHermitian) : ∑ p, ((H * hb p).trace.re
       dsimp only
       by_cases hab : a = b
       · subst hab
-        rw [if_pos rfl, if_neg hne, smul_zero]
-      · rw [if_neg hab, if_neg hne, if_neg hne']
+        rw [ite_eq_left rfl, ite_eq_right hne, smul_zero]
+      · rw [ite_eq_right hab, ite_eq_right hne, ite_eq_right hne']
         split_ifs <;> simp
     · intro h; exact absurd (Finset.mem_univ _) h
   · have hne : (i, j) ≠ (j, i) := fun h => hij (Prod.mk.inj h).1
     rw [Finset.sum_eq_add (i, j) (j, i) hne]
     · rw [hb_tr, hb_tr, hb_apply, hb_apply]
       dsimp only
-      rw [if_neg hij, if_neg (Ne.symm hij)]
+      rw [ite_eq_right hij, ite_eq_right (Ne.symm hij)]
       simp only [hji, Complex.real_smul]
       rcases lt_or_gt_of_ne hij with hlt | hlt
-      · rw [if_pos hlt, if_pos hlt, if_neg (not_lt.mpr hlt.le), if_neg (not_lt.mpr hlt.le)]
-        simp only [and_self, if_true, hij, Ne.symm hij, false_and, if_false, add_zero, zero_sub, mul_one, mul_neg]
+      · rw [ite_eq_left hlt, ite_eq_left hlt, ite_eq_right (not_lt.mpr hlt.le), ite_eq_right (not_lt.mpr hlt.le)]
+        simp only [and_self, ite_true, hij, Ne.symm hij, false_and, ite_false, add_zero, zero_sub, mul_one, mul_neg]
         have := key_pair (H i j) (Real.sqrt 2) hs
         convert this using 1
         ring
-      · simp only [hlt, not_lt.mpr hlt.le, if_true, if_false]
-        simp only [and_self, if_true, hij, Ne.symm hij, false_and, and_false, if_false, zero_add, sub_zero,
+      · simp only [hlt, not_lt.mpr hlt.le, ite_true, ite_false]
+        simp only [and_self, ite_true, hij, Ne.symm hij, false_and, and_false, ite_false, zero_add, sub_zero,
           mul_one]
         have := key_pair2 (H i j) (Real.sqrt 2) hs
         convert this using 1
@@ -179,8 +179,8 @@ theorem hb_expand (H : Mat n) (hH : H.IsHermitian) : ∑ p, ((H * hb p).trace.re
       by_cases hab : a = b
       · subst hab
         have h3 : ¬(a = i ∧ a = j) := fun h => hij (h.1.symm.trans h.2)
-        rw [if_pos rfl, if_neg h3, smul_zero]
-      · rw [if_neg hab, if_neg h1, if_neg h2]
+        rw [ite_eq_left rfl, ite_eq_right h3, smul_zero]
+      · rw [ite_eq_right hab, ite_eq_right h1, ite_eq_right h2]
         split_ifs <;> simp
     · intro h; exact absurd (Finset.mem_univ _) h
     · intro h; exact absurd (Finset.mem_univ _) h

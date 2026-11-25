@@ -73,7 +73,7 @@ theorem term_comm {c : Fin n → Fin n → Matrix ι ι ℂ} (hc : IsCliff c) (a
     noncomm_ring
   rw [h, h1, h2]
   by_cases hbd : b = d <;> by_cases heg : e = g <;> by_cases hag : a = g <;> by_cases hed : e = d <;>
-    simp only [hbd, heg, hag, hed, and_self, and_true, and_false, true_and, false_and, if_true, if_false,
+    simp only [hbd, heg, hag, hed, and_self, and_true, and_false, true_and, false_and, ite_true, ite_false,
       mul_zero, zero_mul, sub_zero, two_smul, mul_two, two_mul] <;> simp_all [mul_two, two_mul]
 
 theorem quad_c {c : Fin n → Fin n → Matrix ι ι ℂ} (hc : IsCliff c) (a b d g : Fin n) :
@@ -125,7 +125,7 @@ theorem spin_glRel {c : Fin n → Fin n → Matrix ι ι ℂ} (hc : IsCliff c) :
       quadM c a b * quadM c d e - quadM c d e * quadM c a b := by
     simp only [spinM_eq]
     by_cases hab : a = b <;> by_cases hde : d = e <;>
-      simp only [hab, hde, if_true, if_false, sub_zero, sub_mul, mul_sub, smul_mul_assoc, mul_smul_comm,
+      simp only [hab, hde, ite_true, ite_false, sub_zero, sub_mul, mul_sub, smul_mul_assoc, mul_smul_comm,
         one_mul, mul_one] <;> module
   rw [hcomm, h]
   by_cases hbd : b = d

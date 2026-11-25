@@ -105,7 +105,7 @@ theorem Joint.stdCo_cpJ_mat (j : ℕ) (hj : j ≤ D.R.m) (hr : ((sysS H X std).P
     simp only [Joint.cp, cpAt, chAt]
     exact toMatrix'_stdCo_reindex _ _ _
   | succ i =>
-    simp only [Joint.cp, cpAt, chAt, dif_pos hj]
+    simp only [Joint.cp, cpAt, chAt, dite_eq_left hj]
     exact toMatrix'_stdCo_reindex _ _ _
 
 theorem gMat_eq_mul (j : ℕ) (hj : j ≤ D.R.m) (γ : GL (Fin (D.R.N j)) D.host.E) :
@@ -124,7 +124,7 @@ theorem changedFrame_eq_coord_mul_inv_mul_basis : AllSites (fun {D L hT Gi Gl Kc
       (((d.gam j hj La : GL (Fin (D.R.N j)) D.host.E) : Matrix (Fin (D.R.N j)) (Fin (D.R.N j)) D.host.E) *
         (((J.A.crd j hj)⁻¹ : GL (Fin (D.R.N j)) D.host.E) : Matrix (Fin (D.R.N j)) (Fin (D.R.N j)) D.host.E))).submatrix
         (finCongr hr) (finCongr hr) := by
-    rw [Dec.eM, dif_pos ⟨hj, hr⟩, gMat_eq_mul]
+    rw [Dec.eM, dite_eq_left ⟨hj, hr⟩, gMat_eq_mul]
     rfl
   have hC : LinearMap.toMatrix' (stdCo (D.sp.cm.sig : D.host.E →+* D.host.E) ((J.cp std).J j La)).toLinearMap =
       d.eM j La * (((J.A.crd j hj * (d.gam j hj La)⁻¹ : GL (Fin (D.R.N j)) D.host.E) : Matrix _ _ D.host.E).submatrix
@@ -206,7 +206,7 @@ theorem cpB_eq_bAt {D : D7} {L : SizeData₂ D} {hT : GatTies D} {Gi : G.Inst D 
   | zero => rfl
   | succ i =>
     show (chAt _ _ _ _ _ _ _ _ _ I _ _ _ _ (i + 1) La).B.1.submatrix _ _ = _
-    simp only [chAt, dif_pos hj]
+    simp only [chAt, dite_eq_left hj]
     rfl
 
 theorem unitary_product_of_hermitian_relations {E : Type} [Field E] [StarRing E] (σ : E →+* E) (hσ : ∀ x, σ x = star x) {N : ℕ}

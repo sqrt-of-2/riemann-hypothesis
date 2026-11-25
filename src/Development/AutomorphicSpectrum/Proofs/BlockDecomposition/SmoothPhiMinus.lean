@@ -101,7 +101,7 @@ theorem UpperTheory.Reformulated.B.Gwa2.aux4 :
   obtain ⟨h, hθ⟩ := hs m n
   refine Submodule.subset_span ⟨⟨_, h⟩, ρ (s m) v, ?_⟩
   have key : ρ (s m * (n : G) * (s m)⁻¹) (ρ (s m) v) = ρ (s m) (ρ (n : G) v) := by
-    rw [← Module.End.mul_apply, ← map_mul, inv_mul_cancel_right, map_mul, Module.End.mul_apply]
+    rw [← mul_apply_eq_comp, ← map_mul, inv_mul_cancel_right, map_mul, mul_apply_eq_comp]
   rw [hθ, map_sub, map_smul, ← key]
 
 theorem UpperTheory.Reformulated.B.Gwa2.aux5 :
@@ -130,7 +130,7 @@ theorem UpperTheory.Reformulated.B.Gwa2.aux6 :
   refine LinearMap.ext fun x ↦ ?_
   obtain ⟨v, rfl⟩ := Submodule.Quotient.mk_surjective _ x
   change Submodule.Quotient.mk (ρ (s 1) v) = Submodule.Quotient.mk v
-  rw [map_one, map_one, Module.End.one_apply]
+  rw [map_one, map_one, one_apply_eq_self]
 
 theorem UpperTheory.Reformulated.B.Gwa2.aux7 :
     ∀ {G V : Type} [inst : Group G] [inst_1 : AddCommGroup V] [inst_2 : _root_.Module ℂ V] (ρ : Representation ℂ G V)
@@ -163,7 +163,7 @@ theorem UpperTheory.Reformulated.B.Gwa2.aux8 :
   refine LinearMap.ext fun x ↦ ?_
   obtain ⟨v, rfl⟩ := Submodule.Quotient.mk_surjective _ x
   change Submodule.Quotient.mk (ρ (s (a * b)) v) = Submodule.Quotient.mk (ρ (s a) (ρ (s b) v))
-  rw [map_mul, map_mul, Module.End.mul_apply]
+  rw [map_mul, map_mul, mul_apply_eq_comp]
 
 noncomputable def UpperTheory.Reformulated.B.Gwa2.twAct :
     {G V : Type} →
@@ -200,10 +200,10 @@ private theorem UpperTheory.Reformulated.B.Gwa2.isOpen_fixer {M W : Type} [Group
     { carrier := {m : M | τ m x = x}
       one_mem' := by simp
       mul_mem' := fun {a b} (ha : τ a x = x) (hb : τ b x = x) ↦ show τ (a * b) x = x by
-        rw [map_mul, Module.End.mul_apply, hb, ha]
+        rw [map_mul, mul_apply_eq_comp, hb, ha]
       inv_mem' := fun {a} (ha : τ a x = x) ↦ show τ a⁻¹ x = x by
         conv_lhs => rw [← ha]
-        rw [← Module.End.mul_apply, ← map_mul, inv_mul_cancel, map_one, Module.End.one_apply] }
+        rw [← mul_apply_eq_comp, ← map_mul, inv_mul_cancel, map_one, one_apply_eq_self] }
   exact H.isOpen_of_mem_nhds h
 
 theorem UpperTheory.Reformulated.B.Gwa2.isSmooth_twAct :
@@ -251,7 +251,8 @@ end General
 
 variable {k : Type} [Field k] [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k]
 
-theorem continuous_glEmbHom (n : ℕ) : Continuous (glEmbHom k n) := by
+omit [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k] in
+theorem continuous_glEmbHom [ValuativeRel k] [TopologicalSpace k] [IsNonarchimedeanLocalField k] (n : ℕ) : Continuous (glEmbHom k n) := by
   refine continuous_matrix fun i j => ?_
   show Continuous fun A : Matrix (Fin n) (Fin n) k => glEmbMat k n A i j
   induction i using Fin.lastCases with
@@ -275,7 +276,7 @@ theorem smPhiMinus (k : Type) [Field k] [ValuativeRel k] [TopologicalSpace k] [I
     SmPhiMinus k := by
   intro ψ n V _ _ τ hτ
   exact isSmooth_twAct τ (MirUin k (n + 1)) (mirChar k ψ n) ((levi k (n + 1)).comp (Mir k n).subtype) (levi_stab ψ n)
-    ((continuous_levi (n + 1)).comp continuous_subtype_val) hτ
+    ((continuous_levi (n + 1)).comp continuous_subtypeVal) hτ
 
 end GlobalTheory.CompanionTheory.BZMirSmooth
 

@@ -76,9 +76,9 @@ theorem hpk_row (i m : Fin (2 * r + k + 1)) :
 theorem hpk_mul_apply (A : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ)
     (i j : Fin (2 * r + k + 1)) : (Hpk k r * A) i j = sgn k r i * A (tau k r i) j := by
   rw [Matrix.mul_apply, Finset.sum_eq_single (tau k r i)]
-  · rw [hpk_row, if_pos rfl]
+  · rw [hpk_row, ite_eq_left rfl]
   · intro m _ hm
-    rw [hpk_row, if_neg hm, zero_mul]
+    rw [hpk_row, ite_eq_right hm, zero_mul]
   · intro h
     exact absurd (Finset.mem_univ _) h
 
@@ -100,17 +100,17 @@ theorem sgn_mul_self (i : Fin (2 * r + k + 1)) : sgn k r i * sgn k r i = 1 := by
 theorem hpk_sq : Hpk k r * Hpk k r = 1 := by
   first
   | exact _root_.Formalism.SharedLemmas.upq_hpk_mul_self
-  | (apply _root_.Formalism.SharedLemmas.upq_hpk_mul_self <;> assumption)
+
 
 theorem hpk_conjT : (Hpk k r)ᴴ = Hpk k r := by
   ext i j
   rw [Matrix.conjTranspose_apply, hpk_row, hpk_row]
   by_cases h : j = tau k r i
   · have h' : i = tau k r j := by rw [h, tau_tau]
-    rw [if_pos h', if_pos h, h, sgn_tau]
+    rw [ite_eq_left h', ite_eq_left h, h, sgn_tau]
     unfold sgn; split_ifs <;> simp
   · have h' : ¬ i = tau k r j := fun h' => h (by rw [h', tau_tau])
-    rw [if_neg h', if_neg h, star_zero]
+    rw [ite_eq_right h', ite_eq_right h, star_zero]
 
 theorem isUnit_of_uh {g : Mat k r} (hg : g ∈ GV k r) : IsUnit g.det := by
   apply Matrix.isUnit_det_of_left_inverse (B := Hpk k r * gᴴ * Hpk k r)
@@ -143,16 +143,16 @@ lemma emb_out_col (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (q j : Fin (2 * 
   unfold embWb
   rw [dite_eq_right (fun h => hj h.2)]
   by_cases h : q = j
-  · subst h; rw [if_pos ⟨rfl, hj⟩, if_pos rfl]
-  · rw [if_neg (fun h' => h h'.1), if_neg h]
+  · subst h; rw [ite_eq_left ⟨rfl, hj⟩, ite_eq_left rfl]
+  · rw [ite_eq_right (fun h' => h h'.1), ite_eq_right h]
 
 lemma emb_out_row (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (q j : Fin (2 * r + k + 1)) (hq : ¬ mid k r q) :
     embWb k r μ q j = if q = j then 1 else 0 := by
   unfold embWb
   rw [dite_eq_right (fun h => hq h.1)]
   by_cases h : q = j
-  · rw [if_pos ⟨h, hq⟩, if_pos h]
-  · rw [if_neg (fun h' => h h'.1), if_neg h]
+  · rw [ite_eq_left ⟨h, hq⟩, ite_eq_left h]
+  · rw [ite_eq_right (fun h' => h h'.1), ite_eq_right h]
 
 lemma emb_mid (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (q j : Fin (2 * r + k + 1)) (hq : mid k r q)
     (hj : mid k r j) : embWb k r μ q j = μ (midx hq) (midx hj) := by
@@ -164,23 +164,23 @@ def Em (k r : ℕ) : Matrix (Fin (2 * r + k + 1)) (Fin (k + 1)) ℂ := fun i m =
 
 lemma Em_mul_mid {X : Type*} (A : Matrix (Fin (k + 1)) X ℂ) (i : Fin (2 * r + k + 1)) (x : X) (hi : mid k r i) :
     (Em k r * A) i x = A (midx hi) x := by
-  apply Formalism.FourierDecayAlt.P.B2x3.Em_mul_mid <;> assumption
+  apply Formalism.FourierDecayAlt.P.B2x3.Em_mul_mid; assumption
 
 lemma Em_mul_out {X : Type*} (A : Matrix (Fin (k + 1)) X ℂ) (i : Fin (2 * r + k + 1)) (x : X)
     (hi : ¬ mid k r i) : (Em k r * A) i x = 0 := by
   rw [Matrix.mul_apply]
   apply Finset.sum_eq_zero
   intro b _
-  rw [Em, if_neg, zero_mul]
+  rw [Em, ite_eq_right, zero_mul]
   intro h
   exact hi (h ▸ mid_wI b)
 
 lemma mul_EmT_mid {X : Type*} [Fintype X] (A : Matrix X (Fin (k + 1)) ℂ) (j : Fin (2 * r + k + 1)) (x : X)
     (hj : mid k r j) : (A * (Em k r)ᵀ) x j = A x (midx hj) := by
   rw [Matrix.mul_apply, Finset.sum_eq_single (midx hj)]
-  · rw [Matrix.transpose_apply, Em, if_pos (wI_midx hj).symm, mul_one]
+  · rw [Matrix.transpose_apply, Em, ite_eq_left (wI_midx hj).symm, mul_one]
   · intro b _ hb
-    rw [Matrix.transpose_apply, Em, if_neg, mul_zero]
+    rw [Matrix.transpose_apply, Em, ite_eq_right, mul_zero]
     intro h
     apply hb
     apply wI_inj (r := r)
@@ -192,7 +192,7 @@ lemma mul_EmT_out {X : Type*} [Fintype X] (A : Matrix X (Fin (k + 1)) ℂ) (j : 
   rw [Matrix.mul_apply]
   apply Finset.sum_eq_zero
   intro b _
-  rw [Matrix.transpose_apply, Em, if_neg, mul_zero]
+  rw [Matrix.transpose_apply, Em, ite_eq_right, mul_zero]
   intro h
   exact hj (h ▸ mid_wI b)
 

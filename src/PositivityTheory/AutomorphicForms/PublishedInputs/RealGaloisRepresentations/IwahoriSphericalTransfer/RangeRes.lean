@@ -13,7 +13,8 @@ namespace GlobalTheory.RealGal.SignChar
 
 variable {F Ω : Type} [Field F] [NumberField F] [Field Ω] [Algebra F Ω]
 
-theorem range_res (K : IntermediateField F Ω) :
+omit [NumberField F] [Field Ω] [Algebra F Ω] in
+theorem range_res [NumberField F] [Field Ω] [Algebra F Ω] (K : IntermediateField F Ω) :
     (res F Ω ↥K).range = K.fixingSubgroup := by
   ext σ
   constructor
@@ -26,8 +27,8 @@ theorem range_res (K : IntermediateField F Ω) :
 
 theorem index_fix [IsAlgClosure F Ω] (Q : QCM F Ω) :
     Q.K.fixingSubgroup.index = 2 ∧ IsOpen (Q.K.fixingSubgroup : Set (G F Ω)) := by
-  haveI : IsGalois F Ω := IsAlgClosure.isGalois F Ω
-  haveI : FiniteDimensional F Q.K := Module.finite_of_finrank_eq_succ Q.two
+  have : IsGalois F Ω := IsAlgClosure.isGalois F Ω
+  have : FiniteDimensional F Q.K := Module.finite_of_finrank_eq_succ Q.two
   exact ⟨by rw [← IntermediateField.finrank_eq_fixingSubgroup_index, Q.two], Q.K.fixingSubgroup_isOpen⟩
 
 
@@ -38,10 +39,10 @@ noncomputable def sign [IsAlgClosure F Ω] (Q : QCM F Ω) : G F Ω →* ℤˣ wh
   map_mul' a b := by
     have h := Subgroup.mul_mem_iff_of_index_two (index_fix Q).1 (a := a) (b := b)
     by_cases ha : a ∈ Q.K.fixingSubgroup <;> by_cases hb : b ∈ Q.K.fixingSubgroup
-    · rw [if_pos (h.2 (iff_of_true ha hb)), if_pos ha, if_pos hb, mul_one]
-    · rw [if_neg (fun hab => hb ((h.1 hab).1 ha)), if_pos ha, if_neg hb, one_mul]
-    · rw [if_neg (fun hab => ha ((h.1 hab).2 hb)), if_neg ha, if_pos hb, mul_one]
-    · rw [if_pos (h.2 (iff_of_false ha hb)), if_neg ha, if_neg hb]; decide
+    · rw [ite_eq_left (h.2 (iff_of_true ha hb)), ite_eq_left ha, ite_eq_left hb, mul_one]
+    · rw [ite_eq_right (fun hab => hb ((h.1 hab).1 ha)), ite_eq_left ha, ite_eq_right hb, one_mul]
+    · rw [ite_eq_right (fun hab => ha ((h.1 hab).2 hb)), ite_eq_right ha, ite_eq_left hb, mul_one]
+    · rw [ite_eq_left (h.2 (iff_of_false ha hb)), ite_eq_right ha, ite_eq_right hb]; decide
 
 theorem ker_sign [IsAlgClosure F Ω] (Q : QCM F Ω) : (sign Q).ker = Q.K.fixingSubgroup := by
   ext σ
@@ -59,7 +60,7 @@ theorem main : ∀ (F Ω : Type) [Field F] [NumberField F] [Field Ω] [Algebra F
   intro F Ω _ _ _ _ _
   refine ⟨sign, ?_, fun Q => ⟨by rw [ker_sign, range_res], by rw [ker_sign]; exact (index_fix Q).2⟩⟩
   intro Q Q' h
-  haveI : IsGalois F Ω := IsAlgClosure.isGalois F Ω
+  have : IsGalois F Ω := IsAlgClosure.isGalois F Ω
   have hk : Q.K.fixingSubgroup = Q'.K.fixingSubgroup := by rw [← ker_sign, ← ker_sign, h]
   apply QCM.ext'
   rw [← InfiniteGalois.fixedField_fixingSubgroup Q.K, ← InfiniteGalois.fixedField_fixingSubgroup Q'.K, hk]

@@ -71,38 +71,38 @@ theorem dop_split (ε : Fin m → Bool) (c : ℝ) (a b : Fin m) {f g : PX m n} (
     rw [Derivation.leibniz, smul_eq_mul, smul_eq_mul]
   unfold Dop D1 D2
   by_cases hab : ε a = ε b
-  · rw [if_pos hab, if_pos hab, if_pos hab]
+  · rw [ite_eq_left hab, ite_eq_left hab, ite_eq_left hab]
     cases ha : ε a
     · have hb : ε b = false := by rw [← hab, ha]
-      simp only [Bool.false_eq_true, if_false]
+      simp only [Bool.false_eq_true, ite_false]
       simp only [Finset.sum_mul, Finset.mul_sum, mul_neg, ← Finset.sum_neg_distrib,
-        ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
+        ← Finset.sum_add_distrib]
       refine Finset.sum_congr rfl fun i _ => ?_
       rw [hL, hL, partial_deriv_zero_second_family ε (k := (a, i, true)) (by simp [inF1, ha]) hg,
         partial_deriv_zero_first_family ε (k := (b, i, false)) (by simp [inF1, hb]) hf]
       ring
     · have hb : ε b = true := by rw [← hab, ha]
-      simp only [if_true]
+      simp only [ite_true]
       simp only [Finset.sum_mul, Finset.mul_sum, neg_mul, ← Finset.sum_neg_distrib,
-        ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
+        ← Finset.sum_add_distrib]
       refine Finset.sum_congr rfl fun i _ => ?_
       rw [hL, hL, partial_deriv_zero_first_family ε (k := (a, i, true)) (by simp [inF1, ha]) hf,
         partial_deriv_zero_second_family ε (k := (b, i, false)) (by simp [inF1, hb]) hg]
       ring
-  · rw [if_neg hab, if_neg hab, if_neg hab]
+  · rw [ite_eq_right hab, ite_eq_right hab, ite_eq_right hab]
     cases ha : ε a
     · have hb : ε b = true := by cases h' : ε b <;> simp_all
-      simp only [Bool.false_eq_true, if_false]
+      simp only [Bool.false_eq_true, ite_false]
       simp only [Finset.sum_mul, Finset.mul_sum, smul_mul_assoc, mul_smul_comm, Finset.smul_sum, mul_neg,
-        neg_smul, ← Finset.sum_neg_distrib, ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
+        neg_smul, ← Finset.sum_add_distrib]
       refine Finset.sum_congr rfl fun i _ => ?_
       rw [hL, map_add (f := _), hL2 _ f, hL2 _ g, partial_deriv_zero_second_family ε (k := (a, i, true)) (by simp [inF1, ha]) hg,
         partial_deriv_zero_second_family ε (k := (b, i, false)) (by simp [inF1, hb]) hg]
       simp only [mul_zero, zero_add, add_zero, zero_mul, map_zero, smul_eq_C_mul]
       ring
     · have hb : ε b = false := by cases h' : ε b <;> simp_all
-      simp only [if_true]
-      simp only [Finset.sum_mul, Finset.mul_sum, smul_mul_assoc, mul_smul_comm, Finset.smul_sum, neg_mul, neg_smul, ← Finset.sum_neg_distrib, ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
+      simp only [ite_true]
+      simp only [Finset.sum_mul, Finset.mul_sum, smul_mul_assoc, mul_smul_comm, Finset.smul_sum, neg_mul, neg_smul, ← Finset.sum_add_distrib]
       refine Finset.sum_congr rfl fun i _ => ?_
       rw [hL, partial_deriv_zero_first_family ε (k := (a, i, true)) (by simp [inF1, ha]) hf, mul_zero, add_zero, hL2 _ f,
         partial_deriv_zero_first_family ε (k := (b, i, false)) (by simp [inF1, hb]) hf, mul_zero, add_zero]
@@ -111,7 +111,7 @@ theorem dop_split (ε : Fin m → Bool) (c : ℝ) (a b : Fin m) {f g : PX m n} (
 
 theorem X_pderiv_mono (k : Fin m × Fin n × Bool) (v : Fin m × Fin n × Bool →₀ ℕ) :
     (X k * pderiv k (monomial v (1 : ℂ)) : PX m n) = ((v k : ℕ) : ℂ) • monomial v 1 := by
-  rw [pderiv_monomial, X, monomial_mul, one_mul, one_mul]
+  rw [pderiv_monomial, X, MvPolynomial.monomial_mul_monomial, one_mul, one_mul]
   by_cases h0 : v k = 0
   · simp [h0]
   · rw [add_tsub_cancel_of_le (Finsupp.single_le_iff.mpr (Nat.one_le_iff_ne_zero.mpr h0)), smul_monomial, smul_eq_mul,
@@ -125,11 +125,11 @@ theorem centre (ε : Fin m → Bool) (c : ℝ) (Λ : PX m n →ₗ[ℂ] ℂ) (h�
   have hu0 : ∀ k, inF1 ε k → u k = 0 := fun k hk => by
     by_contra h; exact hu k (Finsupp.mem_support_iff.mpr h) hk
   obtain ⟨a, ha⟩ := Function.ne_iff.mp hr
-  rw [monomial_mul, one_mul]
+  rw [MvPolynomial.monomial_mul_monomial, one_mul]
   have hD : Dop ε c a a (monomial (s + u) (1 : ℂ)) =
       ((∑ i, ((s + u) (a, i, true) : ℂ)) - ∑ i, ((s + u) (a, i, false) : ℂ)) • monomial (s + u) 1 := by
     unfold Dop
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     simp only [X_pderiv_mono, ← Finset.sum_sub_distrib, Finset.sum_smul, sub_smul]
   have h0 := hΛ a a (monomial (s + u) 1)
   rw [hD, map_smul, smul_eq_mul] at h0

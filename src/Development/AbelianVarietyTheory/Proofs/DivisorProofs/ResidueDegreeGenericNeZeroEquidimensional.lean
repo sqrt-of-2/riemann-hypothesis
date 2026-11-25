@@ -69,21 +69,21 @@ theorem finiteDimensional_of_trdeg_eq (F A B K L : Type) [Field F] [CommRing A] 
     [IsScalarTower A K L] [IsScalarTower A B L] [IsFractionRing A K] [IsFractionRing B L]
     [Algebra.FiniteType A B] (n : ℕ) (hA : Algebra.trdeg F A = n) (hB : Algebra.trdeg F B = n) :
     FiniteDimensional K L := by
-  letI : Algebra F K := ((algebraMap A K).comp (algebraMap F A)).toAlgebra
-  letI : Algebra F L := ((algebraMap B L).comp (algebraMap F B)).toAlgebra
-  haveI : IsScalarTower F A K := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsScalarTower F B L := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsScalarTower F K L := by
+  let : Algebra F K := ((algebraMap A K).comp (algebraMap F A)).toAlgebra
+  let : Algebra F L := ((algebraMap B L).comp (algebraMap F B)).toAlgebra
+  have : IsScalarTower F A K := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower F B L := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower F K L := by
     refine IsScalarTower.of_algebraMap_eq fun x => ?_
     change algebraMap B L (algebraMap F B x) = algebraMap K L (algebraMap A K (algebraMap F A x))
     rw [← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L,
       ← IsScalarTower.algebraMap_apply F A B]
-  haveI : FaithfulSMul F A := (faithfulSMul_iff_algebraMap_injective _ _).mpr (algebraMap F A).injective
-  haveI : FaithfulSMul F B := (faithfulSMul_iff_algebraMap_injective _ _).mpr (algebraMap F B).injective
-  haveI : FaithfulSMul A K := (faithfulSMul_iff_algebraMap_injective _ _).mpr (IsFractionRing.injective A K)
-  haveI : FaithfulSMul B L := (faithfulSMul_iff_algebraMap_injective _ _).mpr (IsFractionRing.injective B L)
-  haveI : Algebra.IsAlgebraic A K := IsLocalization.isAlgebraic K (nonZeroDivisors A)
-  haveI : Algebra.IsAlgebraic B L := IsLocalization.isAlgebraic L (nonZeroDivisors B)
+  have : FaithfulSMul F A := (faithfulSMul_iff_algebraMap_injective _ _).mpr (algebraMap F A).injective
+  have : FaithfulSMul F B := (faithfulSMul_iff_algebraMap_injective _ _).mpr (algebraMap F B).injective
+  have : FaithfulSMul A K := (faithfulSMul_iff_algebraMap_injective _ _).mpr (IsFractionRing.injective A K)
+  have : FaithfulSMul B L := (faithfulSMul_iff_algebraMap_injective _ _).mpr (IsFractionRing.injective B L)
+  have : Algebra.IsAlgebraic A K := IsLocalization.isAlgebraic K (nonZeroDivisors A)
+  have : Algebra.IsAlgebraic B L := IsLocalization.isAlgebraic L (nonZeroDivisors B)
   have hK : Algebra.trdeg F K = n := (trdeg_eq_of_isAlgebraic_top F A K).trans hA
   have hL : Algebra.trdeg F L = n := (trdeg_eq_of_isAlgebraic_top F B L).trans hB
   have h0 : Algebra.trdeg K L = 0 := by
@@ -92,7 +92,7 @@ theorem finiteDimensional_of_trdeg_eq (F A B K L : Type) [Field F] [CommRing A] 
     rcases (Cardinal.add_eq_left_iff).1 e with h | h
     · exact absurd (le_trans (le_max_left _ _) h) (not_le.2 (Cardinal.natCast_lt_aleph0))
     · exact h
-  haveI : Algebra.IsAlgebraic K L := trdeg_eq_zero_iff.1 h0
+  have : Algebra.IsAlgebraic K L := trdeg_eq_zero_iff.1 h0
   obtain ⟨s, hs⟩ := (inferInstance : Algebra.FiniteType A B).out
   let g : B →ₐ[A] L := IsScalarTower.toAlgHom A B L
   let T : IntermediateField K L := IntermediateField.adjoin K (g '' (s : Set B))
@@ -121,7 +121,7 @@ theorem trdeg_affineOpen_eq (F : Type) [Field F] {Y : Scheme.{0}} [IsIntegral Y]
     (q : Y ⟶ Sp F) [LocallyOfFiniteType q] {U : Y.Opens} (hU : IsAffineOpen U)
     (hne : (U : Set Y).Nonempty) [Algebra F Γ(Y, U)] [Algebra.FiniteType F Γ(Y, U)] (n : ℕ)
     (hn : topologicalKrullDim Y = n) : Algebra.trdeg F Γ(Y, U) = n := by
-  haveI : Nonempty U := ⟨⟨hne.some, hne.some_mem⟩⟩
+  have : Nonempty U := ⟨⟨hne.some, hne.some_mem⟩⟩
   obtain ⟨d, h₁, h₂⟩ := exists_ringKrullDim_eq_and_trdeg_eq F Γ(Y, U)
   have e : topologicalKrullDim (U : Set Y) = d := by
     rw [← h₁, ← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim]
@@ -144,28 +144,28 @@ theorem residueDegree_genericPoint_ne_zero : ∀ (F : Type) [Field F] (M W : Sch
   obtain ⟨_, ⟨U, hU, rfl⟩, hy, hUV⟩ := M.isBasis_affineOpens.exists_subset_of_mem_open
     (show genericPoint M ∈ f ⁻¹ᵁ V from hx) (f ⁻¹ᵁ V).isOpen
   have hU : IsAffineOpen U := hU
-  haveI : Nonempty V := ⟨⟨_, hx⟩⟩
-  haveI : Nonempty U := ⟨⟨_, hy⟩⟩
+  have : Nonempty V := ⟨⟨_, hx⟩⟩
+  have : Nonempty U := ⟨⟨_, hy⟩⟩
   have e : U ≤ f ⁻¹ᵁ V := hUV
   let φ := Spec.preimage (hV.fromSpec ≫ p)
   have hφ : Spec.map φ = hV.fromSpec ≫ p := Spec.map_preimage _
-  letI : Algebra F Γ(W, V) := φ.hom.toAlgebra
+  let : Algebra F Γ(W, V) := φ.hom.toAlgebra
   have hftA : Algebra.FiniteType F Γ(W, V) :=
     (HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType) (φ := φ)).mp (hφ ▸ inferInstance)
-  letI : Algebra Γ(W, V) Γ(M, U) := (f.appLE V U e).hom.toAlgebra
+  let : Algebra Γ(W, V) Γ(M, U) := (f.appLE V U e).hom.toAlgebra
   have hftB : Algebra.FiniteType Γ(W, V) Γ(M, U) :=
     HasRingHomProperty.appLE @LocallyOfFiniteType f hf ⟨V, hV⟩ ⟨U, hU⟩ e
-  letI : Algebra F Γ(M, U) := (φ ≫ f.appLE V U e).hom.toAlgebra
-  haveI : IsScalarTower F Γ(W, V) Γ(M, U) := IsScalarTower.of_algebraMap_eq' rfl
+  let : Algebra F Γ(M, U) := (φ ≫ f.appLE V U e).hom.toAlgebra
+  have : IsScalarTower F Γ(W, V) Γ(M, U) := IsScalarTower.of_algebraMap_eq' rfl
   have hftC : Algebra.FiniteType F Γ(M, U) := Algebra.FiniteType.trans hftA hftB
   have hA : Algebra.trdeg F Γ(W, V) = n := trdeg_affineOpen_eq F p hV ⟨_, hx⟩ n hW
   have hB : Algebra.trdeg F Γ(M, U) = n := trdeg_affineOpen_eq F (f ≫ p) hU ⟨_, hy⟩ n hM
-  letI := (W.evaluation V _ hx).hom.toAlgebra
-  letI := (M.evaluation U _ hy).hom.toAlgebra
-  letI := (f.residueFieldMap (genericPoint M)).hom.toAlgebra
-  letI : Algebra Γ(W, V) (M.residueField (genericPoint M)) :=
+  let := (W.evaluation V _ hx).hom.toAlgebra
+  let := (M.evaluation U _ hy).hom.toAlgebra
+  let := (f.residueFieldMap (genericPoint M)).hom.toAlgebra
+  let : Algebra Γ(W, V) (M.residueField (genericPoint M)) :=
     (f.appLE V U e ≫ M.evaluation U _ hy).hom.toAlgebra
-  haveI : IsScalarTower Γ(W, V) Γ(M, U) (M.residueField (genericPoint M)) :=
+  have : IsScalarTower Γ(W, V) Γ(M, U) (M.residueField (genericPoint M)) :=
     IsScalarTower.of_algebraMap_eq' rfl
   have nat : f.appLE V U e ≫ M.evaluation U _ hy =
       W.evaluation V _ hx ≫ f.residueFieldMap (genericPoint M) := by
@@ -173,11 +173,11 @@ theorem residueDegree_genericPoint_ne_zero : ∀ (F : Type) [Field F] (M W : Sch
     congr 1
     simp only [Scheme.evaluation]
     rw [← Category.assoc, TopCat.Presheaf.germ_res]
-  haveI : IsScalarTower Γ(W, V) (W.residueField (f (genericPoint M)))
+  have : IsScalarTower Γ(W, V) (W.residueField (f (genericPoint M)))
       (M.residueField (genericPoint M)) :=
     IsScalarTower.of_algebraMap_eq' congr($(nat).hom)
-  haveI := GenFiniteEtale.isFractionRing_eval W hV hη hx
-  haveI := GenFiniteEtale.isFractionRing_eval M hU rfl hy
+  have := GenFiniteEtale.isFractionRing_eval W hV hη hx
+  have := GenFiniteEtale.isFractionRing_eval M hU rfl hy
   have := finiteDimensional_of_trdeg_eq F Γ(W, V) Γ(M, U) (W.residueField (f (genericPoint M)))
     (M.residueField (genericPoint M)) n hA hB
   change Module.finrank (W.residueField (f (genericPoint M))) (M.residueField (genericPoint M)) ≠ 0

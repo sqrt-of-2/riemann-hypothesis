@@ -67,8 +67,8 @@ theorem halfInd_smul_congr {e : AE D} (he : e * e = e) (Λ : AddSubgroup (Mx D m
   have hz := isHalf_smul he z
   have ht := isHalf_smul he t
   by_cases h1 : e • t ∈ Λ
-  · rw [if_pos ⟨by simpa using Λ.add_mem h h1, hz⟩, if_pos ⟨h1, ht⟩]
-  · rw [if_neg fun h2 => h1 (by simpa using Λ.sub_mem h2.1 h), if_neg fun h2 => h1 h2.1]
+  · rw [ite_eq_left ⟨by simpa using Λ.add_mem h h1, hz⟩, ite_eq_left ⟨h1, ht⟩]
+  · rw [ite_eq_right fun h2 => h1 (by simpa using Λ.sub_mem h2.1 h), ite_eq_right fun h2 => h1 h2.1]
 
 theorem smul_of_half {a' b : AE D} (hab : a' * b = 0) {x : Mx D m n} (hx : IsHalf a' x) :
     b • x = 0 ∧ (a' + b) • x = x := by
@@ -87,7 +87,7 @@ theorem isSBHalf_restrictHalf {a' b : AE D} (ha' : a' * a' = a') (hb : b * b = b
   refine ⟨fun t ht => ?_, k, hk, fun u hu hhu t => ?_, fun t ht => ?_⟩
   · rw [restrictHalf_apply] at ht
     by_contra h
-    exact ht (by rw [if_neg h, mul_zero])
+    exact ht (by rw [ite_eq_right h, mul_zero])
   · rw [isHalf_iff'] at hhu
     simp only [restrictHalf_apply]
     have e1 : a' • (t + k • u) = a' • t + k • (a' • u) := by rw [smul_add, smul_comm]
@@ -101,11 +101,11 @@ theorem isSBHalf_restrictHalf {a' b : AE D} (ha' : a' * a' = a') (hb : b * b = b
     have h2 : halfInd b Λ (b • t) ≠ 0 := fun h => ht (by rw [h, mul_zero, zero_mul])
     have h3 : IsHalf (a' + b) t := by
       by_contra h
-      exact ht (by rw [if_neg h, mul_zero])
+      exact ht (by rw [ite_eq_right h, mul_zero])
     have h2' : b • t ∈ Λ := by
       unfold halfInd at h2
       by_contra h
-      exact h2 (if_neg fun h' => h h'.1)
+      exact h2 (ite_eq_right fun h' => h h'.1)
     rw [isHalf_iff', add_smul] at h3
     rw [← h3, smul_add]
     exact Λ.add_mem (hlat _ h1) (Λ.nsmul_mem h2' k)
@@ -147,14 +147,14 @@ theorem isPlaceModel_comp_restrictHalf : ∀ {D : D7} {S T : HSp D} {ψ : AddCha
       by_cases hat : IsHalf (a' + b) t
       · have ht' : t = a' • t + b • t := by rw [← add_smul]; exact ((isHalf_iff' _ _).1 hat).symm
         by_cases ht : t ∈ Λ
-        · rw [if_pos ⟨hΛ a' ha' t ht, i1⟩, if_pos ⟨hΛ b hb t ht, i2⟩, if_pos hat, if_pos ⟨ht, hat⟩]
+        · rw [ite_eq_left ⟨hΛ a' ha' t ht, i1⟩, ite_eq_left ⟨hΛ b hb t ht, i2⟩, ite_eq_left hat, ite_eq_left ⟨ht, hat⟩]
           ring
-        · rw [if_neg (show ¬ (t ∈ Λ ∧ IsHalf (a' + b) t) from fun h => ht h.1), if_pos hat, mul_one]
+        · rw [ite_eq_right (show ¬ (t ∈ Λ ∧ IsHalf (a' + b) t) from fun h => ht h.1), ite_eq_left hat, mul_one]
           by_cases h1 : a' • t ∈ Λ
-          · rw [if_neg (show ¬ (b • t ∈ Λ ∧ IsHalf b (b • t)) from fun h => ht (by rw [ht']; exact Λ.add_mem h1 h.1)),
+          · rw [ite_eq_right (show ¬ (b • t ∈ Λ ∧ IsHalf b (b • t)) from fun h => ht (by rw [ht']; exact Λ.add_mem h1 h.1)),
               mul_zero]
-          · rw [if_neg (show ¬ (a' • t ∈ Λ ∧ IsHalf a' (a' • t)) from fun h => h1 h.1), zero_mul]
-      · rw [if_neg hat, mul_zero, if_neg fun h => hat h.2]
+          · rw [ite_eq_right (show ¬ (a' • t ∈ Λ ∧ IsHalf a' (a' • t)) from fun h => h1 h.1), zero_mul]
+      · rw [ite_eq_right hat, mul_zero, ite_eq_right fun h => hat h.2]
     rw [LinearMap.comp_apply, e]
     exact hT.vac
 

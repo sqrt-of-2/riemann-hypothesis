@@ -110,12 +110,12 @@ theorem alt_double_sum {M : Type*} [AddCommGroup M] (n : ℕ)
     split_ifs <;> simp only <;> omega
   · rintro ⟨i, j⟩ _
     by_cases h : j < i
-    · simp only [h, if_true]
-      rw [if_neg (by omega)]
+    · simp only [h, ite_true]
+      rw [ite_eq_right (by omega)]
       simp only [Prod.mk.injEq, and_true]
       omega
-    · simp only [h, if_false]
-      rw [if_pos (by omega)]
+    · simp only [h, ite_false]
+      rw [ite_eq_left (by omega)]
       simp only [Prod.mk.injEq, true_and]
       omega
 
@@ -125,12 +125,12 @@ theorem dH_comp_dH (a b x y c d : ℕ) : dH a b x y ≫ dH x y c d = 0 := by
   · by_cases h2 : x = c + 1 ∧ y = d
     · obtain ⟨rfl, rfl⟩ := h1
       obtain ⟨rfl, rfl⟩ := h2
-      rw [if_pos ⟨rfl, rfl⟩, if_pos ⟨rfl, rfl⟩, Preadditive.sum_comp]
+      rw [ite_eq_left ⟨rfl, rfl⟩, ite_eq_left ⟨rfl, rfl⟩, Preadditive.sum_comp]
       simp only [Preadditive.comp_sum, Preadditive.zsmul_comp, Preadditive.comp_zsmul, bop_comp, smul_smul]
       have := alt_double_sum c (fun α => bop α (idc b b ≫ idc b b))
       simpa only [mul_comm] using this
-    · rw [if_neg h2, comp_zero]
-  · rw [if_neg h1, zero_comp]
+    · rw [ite_eq_right h2, comp_zero]
+  · rw [ite_eq_right h1, zero_comp]
 
 theorem dV_comp_dV (a b x y c d : ℕ) : dV a b x y ≫ dV x y c d = 0 := by
   unfold dV
@@ -138,17 +138,17 @@ theorem dV_comp_dV (a b x y c d : ℕ) : dV a b x y ≫ dV x y c d = 0 := by
   · by_cases h2 : x = c ∧ y = d + 1
     · obtain ⟨rfl, rfl⟩ := h1
       obtain ⟨rfl, rfl⟩ := h2
-      rw [if_pos ⟨rfl, rfl⟩, if_pos ⟨rfl, rfl⟩, Preadditive.sum_comp]
+      rw [ite_eq_left ⟨rfl, rfl⟩, ite_eq_left ⟨rfl, rfl⟩, Preadditive.sum_comp]
       simp only [Preadditive.comp_sum, Preadditive.zsmul_comp, Preadditive.comp_zsmul, bop_comp, smul_smul]
       have := alt_double_sum d (fun β => bop (idc a a ≫ idc a a) β)
       simpa only [mul_comm] using this
-    · rw [if_neg h2, comp_zero]
-  · rw [if_neg h1, zero_comp]
+    · rw [ite_eq_right h2, comp_zero]
+  · rw [ite_eq_right h1, zero_comp]
 
 theorem dH_comp_dV (c d : ℕ) :
     dH (c + 1) (d + 1) c (d + 1) ≫ dV c (d + 1) c d = dV (c + 1) (d + 1) (c + 1) d ≫ dH (c + 1) d c d := by
   unfold dH dV
-  rw [if_pos ⟨rfl, rfl⟩, if_pos ⟨rfl, rfl⟩, if_pos ⟨rfl, rfl⟩, if_pos ⟨rfl, rfl⟩,
+  rw [ite_eq_left ⟨rfl, rfl⟩, ite_eq_left ⟨rfl, rfl⟩, ite_eq_left ⟨rfl, rfl⟩, ite_eq_left ⟨rfl, rfl⟩,
     Preadditive.sum_comp, Preadditive.sum_comp]
   simp only [Preadditive.comp_sum, Preadditive.zsmul_comp, Preadditive.comp_zsmul, bop_comp, smul_smul,
     idc_self, Category.id_comp, Category.comp_id]
@@ -176,17 +176,17 @@ theorem dT_comp_dT (a b c d k : ℕ) (hk : c + d = k) :
     · obtain ⟨rfl, rfl⟩ := h
       rw [dH_comp_dV c d, ← add_smul, pow_succ]
       simp
-    · have e1 : dH a b c (d + 1) = 0 := by unfold dH; rw [if_neg h]
-      have e2 : dV a b (c + 1) d = 0 := by unfold dV; rw [if_neg h]
+    · have e1 : dH a b c (d + 1) = 0 := by unfold dH; rw [ite_eq_right h]
+      have e2 : dV a b (c + 1) d = 0 := by unfold dV; rw [ite_eq_right h]
       rw [e1, e2, zero_comp, zero_comp, smul_zero, smul_zero, add_zero]
   · rintro ⟨x1, x2⟩ _ hx
     have : dH x1 x2 c d = 0 := by
-      unfold dH; rw [if_neg]; rintro ⟨rfl, rfl⟩; exact hx rfl
+      unfold dH; rw [ite_eq_right]; rintro ⟨rfl, rfl⟩; exact hx rfl
     dsimp only
     rw [this, comp_zero, smul_zero]
   · rintro ⟨x1, x2⟩ _ hx
     have : dV x1 x2 c d = 0 := by
-      unfold dV; rw [if_neg]; rintro ⟨rfl, rfl⟩; exact hx rfl
+      unfold dV; rw [ite_eq_right]; rintro ⟨rfl, rfl⟩; exact hx rfl
     dsimp only
     rw [this, comp_zero, smul_zero]
 

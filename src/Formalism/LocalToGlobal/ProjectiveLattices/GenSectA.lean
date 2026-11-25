@@ -65,12 +65,12 @@ def incl (j₀ : Fin m) : CT Ω D j₀ →ₐ[Ω] ΩT Ω D m := rename Subtype.v
 theorem xv_of_not {j₀ : Fin m} {p : Fin (D + 1) × Fin m} (h : ¬ Zs j₀ p) :
     xv (Ω := Ω) j₀ p = X ⟨p, h⟩ := by
   first
-  | (rw [xv, dif_neg h])
+  | (rw [xv, dite_eq_right h])
 
 theorem xv_of_Z {j₀ : Fin m} {p : Fin (D + 1) × Fin m} (h : Zs j₀ p) :
     xv (Ω := Ω) j₀ p = 0 := by
   first
-  | (rw [xv, dif_pos h])
+  | (rw [xv, dite_eq_left h])
 
 theorem psi_X (x : Fin m → Ω) (j₀ : Fin m) (p : Fin (D + 1) × Fin m) :
     psi x j₀ (X p) = gs x j₀ p := by
@@ -93,11 +93,11 @@ theorem gs_succ (x : Fin m → Ω) (j₀ : Fin m) (i : Fin D) (j : Fin m) :
   · have hz : Zs j₀ (i.succ, j) := by
       unfold Zs
       exact ⟨Fin.succ_ne_zero i, h⟩
-    rw [gs, if_pos hz, xv_of_Z hz, if_pos h, zero_add]
+    rw [gs, ite_eq_left hz, xv_of_Z hz, ite_eq_left h, zero_add]
   · have hz : ¬ Zs j₀ (i.succ, j) := by
       unfold Zs
       exact fun hz => h hz.2
-    rw [gs, if_neg hz, if_neg h, add_zero]
+    rw [gs, ite_eq_right hz, ite_eq_right h, add_zero]
 
 theorem psi_sec (x : Fin m → Ω) (j₀ : Fin m) (hx₀ : x j₀ ≠ 0) (i : Fin D) :
     psi x j₀ (sec x i) = 0 := by
@@ -111,9 +111,9 @@ theorem psi_sec (x : Fin m → Ω) (j₀ : Fin m) (hx₀ : x j₀ ≠ 0) (i : Fi
   have hI : ∑ j : Fin m, (if j = j₀ then -∑ k, xv (Ω := Ω) j₀ (i.succ, k) * C (rr x j₀ k) else 0) * C (x j) =
       -(∑ k, xv (Ω := Ω) j₀ (i.succ, k) * C (rr x j₀ k)) * C (x j₀) := by
     rw [Finset.sum_eq_single j₀]
-    · rw [if_pos rfl]
+    · rw [ite_eq_left rfl]
     · intro b _ hb
-      rw [if_neg hb, zero_mul]
+      rw [ite_eq_right hb, zero_mul]
     · intro h
       exact absurd (Finset.mem_univ j₀) h
   have h1 : psi x j₀ (sec x i) = ∑ j, gs x j₀ (i.succ, j) * C (x j) := by
@@ -124,7 +124,7 @@ theorem psi_sec (x : Fin m → Ω) (j₀ : Fin m) (hx₀ : x j₀ ≠ 0) (i : Fi
   rw [Finset.sum_add_distrib, hI, neg_mul, hS]
   first
   | exact add_neg_cancel _
-  | abel
+
 
 theorem incl_xv_succ (j₀ : Fin m) (i : Fin D) (k : Fin m) :
     incl (Ω := Ω) j₀ (xv j₀ (i.succ, k)) = if k = j₀ then 0 else X (i.succ, k) := by
@@ -132,18 +132,18 @@ theorem incl_xv_succ (j₀ : Fin m) (i : Fin D) (k : Fin m) :
   · have hz : Zs j₀ (i.succ, k) := by
       unfold Zs
       exact ⟨Fin.succ_ne_zero i, h⟩
-    rw [xv_of_Z hz, map_zero, if_pos h]
+    rw [xv_of_Z hz, map_zero, ite_eq_left h]
   · have hz : ¬ Zs j₀ (i.succ, k) := by
       unfold Zs
       exact fun hz => h hz.2
-    rw [xv_of_not hz, if_neg h, incl, rename_X]
+    rw [xv_of_not hz, ite_eq_right h, incl, rename_X]
 
 theorem X_sub_incl_gs (x : Fin m → Ω) (j₀ : Fin m) (hx₀ : x j₀ ≠ 0) (i : Fin D) :
     X (i.succ, j₀) - incl j₀ (gs x j₀ (i.succ, j₀)) = C (x j₀)⁻¹ * sec x i := by
   have hz : Zs j₀ (i.succ, j₀) := by
     unfold Zs
     exact ⟨Fin.succ_ne_zero i, rfl⟩
-  rw [gs, if_pos hz]
+  rw [gs, ite_eq_left hz]
 
   simp only [map_neg, map_sum, map_mul, incl_C, incl_xv_succ, sub_neg_eq_add, sec, Finset.mul_sum]
   have hX : (X (i.succ, j₀) : ΩT Ω D m) = ∑ j : Fin m, if j = j₀ then (X (i.succ, j₀) : ΩT Ω D m) else 0 := by
@@ -152,8 +152,8 @@ theorem X_sub_incl_gs (x : Fin m → Ω) (j₀ : Fin m) (hx₀ : x j₀ ≠ 0) (
   refine Finset.sum_congr rfl fun j _ => ?_
   by_cases h : j = j₀
   · subst h
-    rw [if_pos rfl, if_pos rfl, zero_mul, add_zero, mul_left_comm, ← C_mul, inv_mul_cancel₀ hx₀, C_1, mul_one]
-  · rw [if_neg h, if_neg h, zero_add, rr, div_eq_mul_inv, C_mul]
+    rw [ite_eq_left rfl, ite_eq_left rfl, zero_mul, add_zero, mul_left_comm, ← C_mul, inv_mul_cancel₀ hx₀, C_1, mul_one]
+  · rw [ite_eq_right h, ite_eq_right h, zero_add, rr, div_eq_mul_inv, C_mul]
     ring
 
 theorem sub_incl_psi_mem (x : Fin m → Ω) (j₀ : Fin m) (hx₀ : x j₀ ≠ 0) (f : ΩT Ω D m) :
@@ -171,7 +171,7 @@ theorem sub_incl_psi_mem (x : Fin m → Ω) (j₀ : Fin m) (hx₀ : x j₀ ≠ 0
       rw [hp'.2, X_sub_incl_gs x j₀ hx₀ i]
       exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨i, rfl⟩)
     · first
-      | (rw [gs, if_neg hp, xv_of_not hp, incl, rename_X, sub_self]
+      | (rw [gs, ite_eq_right hp, xv_of_not hp, incl, rename_X, sub_self]
          exact Ideal.zero_mem _)
   induction f using MvPolynomial.induction_on
   next a =>
@@ -209,14 +209,14 @@ theorem pderiv_xv (j₀ : Fin m) (q : {p : Fin (D + 1) × Fin m // ¬ Zs j₀ p}
     pderiv q (xv (Ω := Ω) j₀ p) = if p = q.1 then 1 else 0 := by
   by_cases hp : Zs j₀ p
   · have hne : p ≠ q.1 := fun h => q.2 (h ▸ hp)
-    rw [xv_of_Z hp, map_zero, if_neg hne]
+    rw [xv_of_Z hp, map_zero, ite_eq_right hne]
   · rw [xv_of_not hp, pderiv_X, Pi.single_apply]
     by_cases h : p = q.1
     · have e : (⟨p, hp⟩ : {p : Fin (D + 1) × Fin m // ¬ Zs j₀ p}) = q := Subtype.ext h
-      rw [if_pos e, if_pos h]
+      rw [ite_eq_left e, ite_eq_left h]
     · have e : (⟨p, hp⟩ : {p : Fin (D + 1) × Fin m // ¬ Zs j₀ p}) ≠ q :=
         fun e => h (congrArg Subtype.val e)
-      rw [if_neg e, if_neg h]
+      rw [ite_eq_right e, ite_eq_right h]
 
 theorem pderiv_gs (x : Fin m → Ω) (j₀ : Fin m) (q : {p : Fin (D + 1) × Fin m // ¬ Zs j₀ p})
     (p : Fin (D + 1) × Fin m) :
@@ -224,24 +224,24 @@ theorem pderiv_gs (x : Fin m → Ω) (j₀ : Fin m) (q : {p : Fin (D + 1) × Fin
       if Zs j₀ p ∧ p.1 = q.1.1 then C (rr x j₀ q.1.2) else 0 := by
   by_cases hp : Zs j₀ p
   · have hne : p ≠ q.1 := fun h => q.2 (h ▸ hp)
-    rw [gs, if_pos hp, if_neg hne, zero_sub, map_neg]
+    rw [gs, ite_eq_left hp, ite_eq_right hne, zero_sub, map_neg]
     congr 1
 
     simp only [map_sum, Derivation.leibniz, pderiv_C, smul_eq_mul, pderiv_xv, mul_zero, zero_add]
     rw [Finset.sum_eq_single q.1.2]
     · by_cases h1 : p.1 = q.1.1
       · have e : (p.1, q.1.2) = q.1 := Prod.ext h1 rfl
-        rw [if_pos e, if_pos ⟨hp, h1⟩, mul_one]
+        rw [ite_eq_left e, ite_eq_left ⟨hp, h1⟩, mul_one]
       · have e : (p.1, q.1.2) ≠ q.1 := fun h => h1 (by have h' := congrArg Prod.fst h; exact h')
         have hn : ¬ (Zs j₀ p ∧ p.1 = q.1.1) := fun h => h1 h.2
-        rw [if_neg e, if_neg hn, mul_zero]
+        rw [ite_eq_right e, ite_eq_right hn, mul_zero]
     · intro k _ hk
       have e : (p.1, k) ≠ q.1 := fun h => hk (congrArg Prod.snd h)
-      rw [if_neg e, mul_zero]
+      rw [ite_eq_right e, mul_zero]
     · intro h
       exact absurd (Finset.mem_univ _) h
   · have hn : ¬ (Zs j₀ p ∧ p.1 = q.1.1) := fun h => hp h.1
-    rw [gs, if_neg hp, pderiv_xv, if_neg hn, sub_zero]
+    rw [gs, ite_eq_right hp, pderiv_xv, ite_eq_right hn, sub_zero]
 
 theorem pderiv_aeval {ι : Type*} [Fintype ι] [DecidableEq ι] (j₀ : Fin m) (u : ι → CT Ω D j₀)
     (q : {p : Fin (D + 1) × Fin m // ¬ Zs j₀ p}) (G : MvPolynomial ι K) :

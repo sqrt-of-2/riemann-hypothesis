@@ -78,31 +78,31 @@ theorem hpk_col_esI (a : Fin r) (l : Fin (2 * r + k + 1)) :
   have hl := l.isLt
   unfold Hpk esI
   by_cases hla : l.val = a.val
-  · rw [if_pos (by simp only [Fin.val_mk]; omega), if_pos hla]
-  · rw [if_neg (by simp only [Fin.val_mk]; omega), if_neg (by simp only [Fin.val_mk]; omega),
-      if_neg (by simp only [Fin.ext_iff, Fin.val_mk]; omega), if_neg hla]
+  · rw [ite_eq_left (by simp only []; omega), ite_eq_left hla]
+  · rw [ite_eq_right (by simp only []; omega), ite_eq_right (by simp only []; omega),
+      ite_eq_right (by simp only [Fin.ext_iff]; omega), ite_eq_right hla]
 
 theorem hpk_W_row (w p : Fin (2 * r + k + 1)) (hw : r ≤ w.val ∧ w.val ≤ r + k) :
     Hpk k r w p = if p = w then Hpk k r w w else 0 := by
   by_cases hpw : p = w
   · subst hpw
     simp
-  · rw [if_neg hpw]
+  · rw [ite_eq_right hpw]
     unfold Hpk
-    rw [if_neg (by omega), if_neg (by omega), if_neg (fun h => hpw h.2.2.symm)]
+    rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (fun h => hpw h.2.2.symm)]
 
 theorem hpk_W_col (w p : Fin (2 * r + k + 1)) (hw : r ≤ w.val ∧ w.val ≤ r + k) :
     Hpk k r p w = if p = w then Hpk k r w w else 0 := by
   by_cases hpw : p = w
   · subst hpw
     simp
-  · rw [if_neg hpw]
+  · rw [ite_eq_right hpw]
     unfold Hpk
-    rw [if_neg (by omega), if_neg (by omega), if_neg (fun h => hpw h.2.2)]
+    rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (fun h => hpw h.2.2)]
 
 theorem hpk_W_sq (w : Fin (2 * r + k + 1)) (hw : r ≤ w.val ∧ w.val ≤ r + k) : Hpk k r w w * Hpk k r w w = 1 := by
   unfold Hpk
-  rw [if_neg (by omega), if_neg (by omega), if_pos ⟨hw.1, hw.2, rfl⟩]
+  rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_left ⟨hw.1, hw.2, rfl⟩]
   split_ifs <;> norm_num
 
 theorem herm_Hpk_bvec_eq_star_mul_diag_of_middle (z' : Fin (2 * r + k + 1) → ℂ) (p : Fin (2 * r + k + 1)) (hp : r ≤ p.val ∧ p.val ≤ r + k) :
@@ -110,10 +110,10 @@ theorem herm_Hpk_bvec_eq_star_mul_diag_of_middle (z' : Fin (2 * r + k + 1) → �
   have hc : ∀ l, Hpk k r l p = if l = p then Hpk k r p p else 0 := fun l => hpk_W_col p l hp
   unfold herm bvec
   simp only [dotProduct, Matrix.mulVec, Pi.star_apply, Pi.single_apply, mul_ite, mul_one, mul_zero,
-    Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   rw [Finset.sum_eq_single p]
   · intro l _ hl
-    rw [hc l, if_neg hl, mul_zero]
+    rw [hc l, ite_eq_right hl, mul_zero]
   · intro h
     exact absurd (Finset.mem_univ p) h
 
@@ -137,7 +137,7 @@ theorem unit_a (X : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ)
     split_ifs <;> first | rfl | (exfalso; omega)
   have h := unit_entry X hU (eI k r ⟨a.val + 1, ha⟩) (esI k r a)
   simp only [hcol, hrow, mul_ite, mul_one, mul_zero, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq',
-    Finset.mem_univ, if_true] at h
+    Finset.mem_univ, ite_true] at h
   linear_combination h
 
 theorem unit_w (X : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ)
@@ -149,8 +149,8 @@ theorem unit_w (X : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ)
     simp only [eI, Fin.ext_iff]
   have hrow : ∀ l, Hpk k r w l = if l = w then Hpk k r w w else 0 := fun l => hpk_W_row w l hw
   have h := unit_entry X hU w (esI k r ⟨r - 1, by omega⟩)
-  simp only [hcol, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, if_true] at h
-  rw [Finset.sum_eq_single w (fun l _ hl => by rw [hrow l, if_neg hl, zero_mul])
+  simp only [hcol, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ite_true] at h
+  rw [Finset.sum_eq_single w (fun l _ hl => by rw [hrow l, ite_eq_right hl, zero_mul])
     (fun h' => absurd (Finset.mem_univ w) h')] at h
   linear_combination h
 
@@ -169,60 +169,60 @@ theorem dpsi_is_derivation : DpsiDerivation := by
     intro p
     by_cases h1 : p.val + 1 < r
     · rw [Finset.sum_eq_single ⟨p.val + 1, by omega⟩]
-      · rw [dp1 _ _ _ (by omega) (by simp; omega), if_pos (by simp), mul_one]
-        simp only [in1, in2, in4, dif_pos h1, if_neg (show ¬ p.val + 1 = r by omega), dif_neg (show ¬ (r + k < p.val ∧ p.val + 1 < 2 * r + k + 1) by omega),
-          if_neg (show ¬ (r ≤ p.val ∧ p.val ≤ r + k) by omega)]
+      · rw [dp1 _ _ _ (by omega) (by simp; omega), ite_eq_left (by simp), mul_one]
+        simp only [in1, in2, in4, dite_eq_left h1, ite_eq_right (show ¬ p.val + 1 = r by omega), dite_eq_right (show ¬ (r + k < p.val ∧ p.val + 1 < 2 * r + k + 1) by omega),
+          ite_eq_right (show ¬ (r ≤ p.val ∧ p.val ≤ r + k) by omega)]
         ring
       · intro q _ hq
         by_cases hq1 : q.val < r
-        · rw [dp1 _ _ _ (by omega) hq1, if_neg, mul_zero]; intro h'; apply hq; ext; simp; omega
+        · rw [dp1 _ _ _ (by omega) hq1, ite_eq_right, mul_zero]; intro h'; apply hq; ext; simp; omega
         · by_cases hq2 : q.val ≤ r + k
-          · rw [dp2 _ _ _ (by omega) (by omega) hq2, if_neg (by omega), mul_zero]
+          · rw [dp2 _ _ _ (by omega) (by omega) hq2, ite_eq_right (by omega), mul_zero]
           · rw [dp0 _ _ _ (by omega) (by omega), mul_zero]
       · simp
     · by_cases h2 : p.val + 1 = r
       · have hterm : ∀ q, X p q * dpsiP k r z' p q = X p q * z' q := by
           intro q
           by_cases hq1 : q.val < r
-          · rw [dp1 _ _ _ (by omega) hq1, if_neg (by omega), hz' q (by omega)]
+          · rw [dp1 _ _ _ (by omega) hq1, ite_eq_right (by omega), hz' q (by omega)]
           · by_cases hq2 : q.val ≤ r + k
-            · rw [dp2 _ _ _ (by omega) (by omega) hq2, if_pos h2]
+            · rw [dp2 _ _ _ (by omega) (by omega) hq2, ite_eq_left h2]
             · rw [dp0 _ _ _ (by omega) (by omega), hz' q (by omega)]
-        simp only [hterm, in1, in2, in4, dif_neg h1, if_pos h2, dif_neg (show ¬ (r + k < p.val ∧ p.val + 1 < 2 * r + k + 1) by omega),
-          if_neg (show ¬ (r ≤ p.val ∧ p.val ≤ r + k) by omega)]
+        simp only [hterm, in1, in2, in4, dite_eq_right h1, ite_eq_left h2, dite_eq_right (show ¬ (r + k < p.val ∧ p.val + 1 < 2 * r + k + 1) by omega),
+          ite_eq_right (show ¬ (r ≤ p.val ∧ p.val ≤ r + k) by omega)]
         simp [Matrix.mulVec, dotProduct]
       · by_cases h3 : p.val ≤ r + k
         · rw [Finset.sum_eq_single (esI k r ⟨r - 1, by omega⟩)]
-          · rw [dp3 _ _ _ (by omega) h3 (by simp [esI]; omega), if_pos (by simp [esI]; omega)]
-            simp only [in1, in2, in4, dif_neg h1, if_neg h2, dif_neg (show ¬ (r + k < p.val ∧ p.val + 1 < 2 * r + k + 1) by omega),
-              if_pos (show r ≤ p.val ∧ p.val ≤ r + k by omega)]
+          · rw [dp3 _ _ _ (by omega) h3 (by simp [esI]; omega), ite_eq_left (by simp [esI]; omega)]
+            simp only [in1, in2, in4, dite_eq_right h1, ite_eq_right h2, dite_eq_right (show ¬ (r + k < p.val ∧ p.val + 1 < 2 * r + k + 1) by omega),
+              ite_eq_left (show r ≤ p.val ∧ p.val ≤ r + k by omega)]
             ring
           · intro q _ hq
             by_cases hq1 : q.val ≤ r + k
             · have : ¬ (r ≤ q.val ∧ q.val ≤ r + k ∧ r + k < q.val) := by omega
-              unfold dpsiP; rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), mul_zero]
-            · rw [dp3 _ _ _ (by omega) h3 (by omega), if_neg, mul_zero]
+              unfold dpsiP; rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), mul_zero]
+            · rw [dp3 _ _ _ (by omega) h3 (by omega), ite_eq_right, mul_zero]
               intro h'; apply hq; ext; simp [esI]; omega
           · simp
         · by_cases h4 : p.val + 1 < 2 * r + k + 1
           · rw [Finset.sum_eq_single ⟨p.val + 1, h4⟩]
-            · rw [dp4 _ _ _ (by omega) (by simp; omega), if_pos (by simp), mul_one]
-              simp only [in1, in2, in4, dif_neg h1, if_neg h2, dif_pos (show r + k < p.val ∧ p.val + 1 < 2 * r + k + 1 from ⟨by omega, h4⟩),
-                if_neg (show ¬ (r ≤ p.val ∧ p.val ≤ r + k) by omega)]
+            · rw [dp4 _ _ _ (by omega) (by simp; omega), ite_eq_left (by simp), mul_one]
+              simp only [in1, in2, in4, dite_eq_right h1, ite_eq_right h2, dite_eq_left (show r + k < p.val ∧ p.val + 1 < 2 * r + k + 1 from ⟨by omega, h4⟩),
+                ite_eq_right (show ¬ (r ≤ p.val ∧ p.val ≤ r + k) by omega)]
               ring
             · intro q _ hq
               by_cases hq1 : r + k < q.val
-              · rw [dp4 _ _ _ (by omega) hq1, if_neg, mul_zero]; intro h'; apply hq; ext; simp; omega
-              · unfold dpsiP; rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), mul_zero]
+              · rw [dp4 _ _ _ (by omega) hq1, ite_eq_right, mul_zero]; intro h'; apply hq; ext; simp; omega
+              · unfold dpsiP; rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), mul_zero]
             · simp
           · rw [Finset.sum_eq_zero]
-            · simp only [in1, in2, in4, dif_neg h1, if_neg h2, dif_neg (show ¬ (r + k < p.val ∧ p.val + 1 < 2 * r + k + 1) by omega),
-                if_neg (show ¬ (r ≤ p.val ∧ p.val ≤ r + k) by omega)]
+            · simp only [in1, in2, in4, dite_eq_right h1, ite_eq_right h2, dite_eq_right (show ¬ (r + k < p.val ∧ p.val + 1 < 2 * r + k + 1) by omega),
+                ite_eq_right (show ¬ (r ≤ p.val ∧ p.val ≤ r + k) by omega)]
               ring
             · intro q _
               by_cases hq1 : r + k < q.val
-              · rw [dp4 _ _ _ (by omega) hq1, if_neg (by omega), mul_zero]
-              · unfold dpsiP; rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega), mul_zero]
+              · rw [dp4 _ _ _ (by omega) hq1, ite_eq_right (by omega), mul_zero]
+              · unfold dpsiP; rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega), mul_zero]
 
   have h3eq : ∀ p : Fin (2 * r + k + 1), (if r ≤ p.val ∧ p.val ≤ r + k then X p (esI k r ⟨r - 1, by omega⟩) * herm (Hpk k r) (bvec p) z' else 0) =
       in3 p := by
@@ -241,8 +241,8 @@ theorem dpsi_is_derivation : DpsiDerivation := by
   set M2 : ℂ := (X *ᵥ z') (eI k r ⟨r - 1, by omega⟩) with hM2
   have s2 : ∑ p, in2 p = M2 := by
     rw [Finset.sum_eq_single (eI k r ⟨r - 1, by omega⟩)]
-    · simp only [in2]; rw [if_pos (show (eI k r ⟨r - 1, by omega⟩).val + 1 = r by simp [eI]; omega)]
-    · intro p _ hp; simp only [in2]; rw [if_neg]; intro h'; apply hp; ext; simp [eI]; omega
+    · simp only [in2]; rw [ite_eq_left (show (eI k r ⟨r - 1, by omega⟩).val + 1 = r by simp [eI]; omega)]
+    · intro p _ hp; simp only [in2]; rw [ite_eq_right]; intro h'; apply hp; ext; simp [eI]; omega
     · simp
   have s3 : ∑ p, in3 p = -star M2 := by
     simp only [in3, M2, Matrix.mulVec, dotProduct]
@@ -254,7 +254,7 @@ theorem dpsi_is_derivation : DpsiDerivation := by
     · rw [Finset.sum_map]; rfl
     · intro p _ hp
       simp only [in1]
-      rw [dif_neg]
+      rw [dite_eq_right]
       intro h'
       apply hp
       exact Finset.mem_map.mpr ⟨⟨p.val, by omega⟩, Finset.mem_univ _, by ext; simp [eI]⟩
@@ -267,7 +267,7 @@ theorem dpsi_is_derivation : DpsiDerivation := by
       have hav := a.isLt
       simp only [in4, Function.Embedding.coeFn_mk]
       by_cases ha : a.val + 1 < r
-      · rw [dif_pos ⟨by omega, by omega⟩, dif_pos ha]
+      · rw [dite_eq_left ⟨by omega, by omega⟩, dite_eq_left ha]
         have hu := unit_a X hU a ha
         have e1 : (⟨2 * r + k - 1 - a.val, by omega⟩ : Fin (2 * r + k + 1)) = esI k r ⟨a.val + 1, ha⟩ := by
           ext; simp [esI]; omega
@@ -277,10 +277,10 @@ theorem dpsi_is_derivation : DpsiDerivation := by
             X p q = X (esI k r ⟨a.val + 1, ha⟩) (esI k r a) := by
           rintro p q rfl rfl; rfl
         rw [hx _ _ e1 e2, hu]
-      · rw [dif_neg (by omega), dif_neg ha, star_zero, neg_zero]
+      · rw [dite_eq_right (by omega), dite_eq_right ha, star_zero, neg_zero]
     · intro p _ hp
       simp only [in4]
-      rw [dif_neg]
+      rw [dite_eq_right]
       rintro ⟨h1, h2⟩
       apply hp
       exact Finset.mem_map.mpr ⟨⟨2 * r + k - 1 - p.val, by omega⟩, Finset.mem_univ _, by ext; simp; omega⟩

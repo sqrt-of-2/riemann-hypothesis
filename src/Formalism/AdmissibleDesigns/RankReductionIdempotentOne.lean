@@ -342,13 +342,13 @@ end T12
 omit hT2Core in
 instance submoduleContinuousConstSMul {O M : Type} [Semiring O] [AddCommMonoid M] [Module O M] [TopologicalSpace M]
     [ContinuousConstSMul O M] (S : Submodule O M) : ContinuousConstSMul O ↥S :=
-  ⟨fun c => (continuous_subtype_val.const_smul c).subtype_mk _⟩
+  ⟨fun c => (continuous_subtypeVal.const_smul c).subtype_mk _⟩
 
 section Top
 variable {O : Type} [CommRing O] {A : Type} [Ring A] [Algebra O A] [TopologicalSpace A] [IsTopologicalAddGroup A]
   [ContinuousConstSMul O A] (e₁ : A)
 
-theorem inc_cont : Continuous (FirstSummandSubmodule O e₁).subtype := continuous_subtype_val
+theorem inc_cont : Continuous (FirstSummandSubmodule O e₁).subtype := continuous_subtypeVal
 
 end Top
 
@@ -485,7 +485,7 @@ def piA (ρ : A →ₐ[O] Matrix n n O) (w : n → O) : A →ₗ[O] (n → O) wh
 theorem piM_cont (hO : PadicCoeff ℓ O) (hA : IsFGTop O A) (ρ : A →ₐ[O] Matrix n n O) (e₁ : A) (w : n → O) :
     Continuous (piM ρ e₁ w) := by
   have := hO.ring
-  exact (lin_cont hO hA (piA ρ w)).comp continuous_subtype_val
+  exact (lin_cont hO hA (piA ρ w)).comp continuous_subtypeVal
 
 end Cont
 

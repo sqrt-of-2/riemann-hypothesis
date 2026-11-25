@@ -74,15 +74,15 @@ theorem sum_rw {R : Type*} [AddCommMonoid R] (β : Bool) (F : Rw ε β → R) :
     ∑ b : Fin m, (if h : ε b = β then F ⟨b, h⟩ else 0) = ∑ b : Rw ε β, F b := by
   rw [← Fintype.sum_subtype_add_sum_subtype (fun b : Fin m => ε b = β)]
   have h2 : ∑ b : {b : Fin m // ¬ ε b = β}, (if h : ε b.1 = β then F ⟨b.1, h⟩ else 0) = 0 :=
-    Finset.sum_eq_zero (fun b _ => dif_neg b.2)
+    Finset.sum_eq_zero (fun b _ => dite_eq_right b.2)
   rw [h2, add_zero]
   exact Finset.sum_congr rfl (fun b _ => by rw [dite_eq_left b.2])
 
 theorem blk_block (β : Bool) (v : Matrix (Rw ε β) (Rw ε β) ℂ) (a b : Fin m) (h : ε a ≠ ε b) : blk ε β v a b = 0 := by
   unfold blk
   by_cases ha : ε a = β
-  · rw [dite_eq_left ha, dif_neg (fun hb => h (ha.trans hb.symm))]
-  · rw [dif_neg ha, if_neg (fun e : a = b => h (congrArg ε e))]
+  · rw [dite_eq_left ha, dite_eq_right (fun hb => h (ha.trans hb.symm))]
+  · rw [dite_eq_right ha, ite_eq_right (fun e : a = b => h (congrArg ε e))]
 
 theorem blk_of (β : Bool) (v : Matrix (Rw ε β) (Rw ε β) ℂ) {a : Fin m} (ha : ε a = β) (b : Fin m) :
     blk ε β v a b = if hb : ε b = β then v ⟨a, ha⟩ ⟨b, hb⟩ else 0 := by
@@ -90,7 +90,7 @@ theorem blk_of (β : Bool) (v : Matrix (Rw ε β) (Rw ε β) ℂ) {a : Fin m} (h
 
 theorem blk_of_not (β : Bool) (v : Matrix (Rw ε β) (Rw ε β) ℂ) {a : Fin m} (ha : ¬ ε a = β) (b : Fin m) :
     blk ε β v a b = if a = b then 1 else 0 := by
-  unfold blk; rw [dif_neg ha]
+  unfold blk; rw [dite_eq_right ha]
 
 theorem blk_unitary (β : Bool) (v : Matrix (Rw ε β) (Rw ε β) ℂ) (hv : v ∈ Matrix.unitaryGroup (Rw ε β) ℂ) :
     blk ε β v ∈ Matrix.unitaryGroup (Fin m) ℂ := by
@@ -109,34 +109,34 @@ theorem blk_unitary (β : Bool) (v : Matrix (Rw ε β) (Rw ε β) ℂ) (hv : v �
         rw [blk_of β v ha, blk_of β v hc]
         by_cases hb : ε b = β
         · rw [dite_eq_left hb, dite_eq_left hb, dite_eq_left hb]
-        · rw [dif_neg hb, dif_neg hb, dif_neg hb, zero_mul]
+        · rw [dite_eq_right hb, dite_eq_right hb, dite_eq_right hb, zero_mul]
       rw [Finset.sum_congr rfl (fun b _ => e1 b), sum_rw β (fun j => v ⟨a, ha⟩ j * star (v ⟨c, hc⟩ j)), key]
       by_cases hac : a = c
       · subst hac; simp
-      · rw [if_neg (fun h => hac (congrArg Subtype.val h)), if_neg hac]
+      · rw [ite_eq_right (fun h => hac (congrArg Subtype.val h)), ite_eq_right hac]
     · have e1 : ∀ b, blk ε β v a b * star (blk ε β v c b) = if c = b then blk ε β v a b else 0 := by
         intro b
         rw [blk_of_not β v hc b]
         by_cases hcb : c = b
-        · rw [if_pos hcb, if_pos hcb, star_one, mul_one]
-        · rw [if_neg hcb, if_neg hcb, star_zero, mul_zero]
+        · rw [ite_eq_left hcb, ite_eq_left hcb, star_one, mul_one]
+        · rw [ite_eq_right hcb, ite_eq_right hcb, star_zero, mul_zero]
       rw [Finset.sum_congr rfl (fun b _ => e1 b), Finset.sum_ite_eq]
-      simp only [Finset.mem_univ, if_true]
-      rw [blk_block β v a c (by rw [ha]; exact fun h => hc h.symm), if_neg (by rintro rfl; exact hc ha)]
+      simp only [Finset.mem_univ, ite_true]
+      rw [blk_block β v a c (by rw [ha]; exact fun h => hc h.symm), ite_eq_right (by rintro rfl; exact hc ha)]
   · have e1 : ∀ b, blk ε β v a b * star (blk ε β v c b) = if a = b then star (blk ε β v c b) else 0 := by
       intro b
       rw [blk_of_not β v ha b]
       by_cases hab : a = b
-      · rw [if_pos hab, if_pos hab, one_mul]
-      · rw [if_neg hab, if_neg hab, zero_mul]
+      · rw [ite_eq_left hab, ite_eq_left hab, one_mul]
+      · rw [ite_eq_right hab, ite_eq_right hab, zero_mul]
     rw [Finset.sum_congr rfl (fun b _ => e1 b), Finset.sum_ite_eq]
-    simp only [Finset.mem_univ, if_true]
+    simp only [Finset.mem_univ, ite_true]
     by_cases hc : ε c = β
     · rw [blk_block β v c a (by rw [hc]; exact fun h => ha h.symm), star_zero,
-        if_neg (by rintro rfl; exact ha hc)]
+        ite_eq_right (by rintro rfl; exact ha hc)]
     · rw [blk_of_not β v hc a]
       by_cases hca : c = a
       · subst hca; simp
-      · rw [if_neg hca, star_zero, if_neg (fun h => hca h.symm)]
+      · rw [ite_eq_right hca, star_zero, ite_eq_right (fun h => hca h.symm)]
 
 end PositivityTheory.Rg.Sw.FFTSteps.CycF

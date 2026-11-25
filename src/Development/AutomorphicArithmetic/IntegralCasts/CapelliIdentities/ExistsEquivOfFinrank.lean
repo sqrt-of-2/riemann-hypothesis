@@ -52,7 +52,7 @@ open NumberField in
 private theorem ext_hom {F : Type} [Field F] [NumberField F] {A : Type} [Ring A] [Algebra ℚ A]
     (φ : RingOfIntegers F →+* A) :
     ∃ ψ : F →+* A, ∀ c : RingOfIntegers F, ψ (algebraMap _ F c) = φ c := by
-  haveI : Algebra.IsPushout ℤ (RingOfIntegers F) ℚ F :=
+  have : Algebra.IsPushout ℤ (RingOfIntegers F) ℚ F :=
     Algebra.isPushout_of_isLocalization (nonZeroDivisors ℤ) ℚ (RingOfIntegers F) F
   refine ⟨(Algebra.pushoutDesc F φ.toIntAlgHom (algebraMap ℚ A).toIntAlgHom
     (fun x y => (Algebra.commutes y (φ x)).symm)).toRingHom, fun c => ?_⟩
@@ -62,7 +62,7 @@ private theorem tower {F : Type} [Field F] [NumberField F] {V : Type} [AddCommGr
     [Module ℚ V] (ψ : F →+* Module.End ℚ V) :
     letI : Module F V := Module.compHom V ψ
     IsScalarTower ℚ F V := by
-  letI : Module F V := Module.compHom V ψ
+  let : Module F V := Module.compHom V ψ
   refine ⟨fun q a v => ?_⟩
   change ψ (q • a) v = q • ψ a v
   rw [map_rat_smul ψ q a]
@@ -81,12 +81,12 @@ theorem UpperTheory.Reformulated.B.ExistsEquivOfFinrank.exists_equiv_of_finrank 
   intro F _ _ V V' _ _ _ _ _ _ φ φ' h
   obtain ⟨ψ, hψ⟩ := ext_hom φ
   obtain ⟨ψ', hψ'⟩ := ext_hom φ'
-  letI : Module F V := Module.compHom V ψ
-  letI : Module F V' := Module.compHom V' ψ'
-  haveI := tower ψ
-  haveI := tower ψ'
-  haveI : Module.Finite F V := Module.Finite.of_restrictScalars_finite ℚ F V
-  haveI : Module.Finite F V' := Module.Finite.of_restrictScalars_finite ℚ F V'
+  let : Module F V := Module.compHom V ψ
+  let : Module F V' := Module.compHom V' ψ'
+  have := tower ψ
+  have := tower ψ'
+  have : Module.Finite F V := Module.Finite.of_restrictScalars_finite ℚ F V
+  have : Module.Finite F V' := Module.Finite.of_restrictScalars_finite ℚ F V'
   have h2 : Module.finrank F V = Module.finrank F V' := by
     rw [← Module.finrank_mul_finrank ℚ F V, ← Module.finrank_mul_finrank ℚ F V'] at h
     exact Nat.eq_of_mul_eq_mul_left Module.finrank_pos h

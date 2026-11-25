@@ -67,30 +67,30 @@ theorem piInf_dilV (h : IsCMExt F E σ) (τ' : ∀ w : InfinitePlace F, EmbOver 
     (τ : ℝ) (k : Fin n ⊕ Fin n) :
     piInf (τ' u) (dilV h w i₀ τ k) = if u = w then Sum.elim (fun j => ((Real.exp (τ * Pi.single (M := fun _ => ℝ) i₀ 1 j) : ℝ) : ℂ))
       (fun j => ((Real.exp (-(τ * Pi.single (M := fun _ => ℝ) i₀ 1 j)) : ℝ) : ℂ)) k else 1 := by
-  haveI := h.1
+  have := h.1
   rcases k with j | j
   · simp only [dilV, Sum.elim_inl]
     by_cases h1 : j = i₀
     · subst h1
-      rw [if_pos rfl, piInf_adr h τ']
+      rw [ite_eq_left rfl, piInf_adr h τ']
       by_cases h2 : u = w
-      · rw [if_pos h2, if_pos h2]; simp
-      · rw [if_neg h2, if_neg h2]; simp
-    · rw [if_neg h1, map_one]
+      · rw [ite_eq_left h2, ite_eq_left h2]; simp
+      · rw [ite_eq_right h2, ite_eq_right h2]; simp
+    · rw [ite_eq_right h1, map_one]
       split_ifs <;> simp [h1]
   · simp only [dilV, Sum.elim_inr]
     by_cases h1 : j = i₀
     · subst h1
-      rw [if_pos rfl, piInf_adr h τ']
+      rw [ite_eq_left rfl, piInf_adr h τ']
       by_cases h2 : u = w
-      · rw [if_pos h2, if_pos h2]; simp
-      · rw [if_neg h2, if_neg h2]; simp
-    · rw [if_neg h1, map_one]
+      · rw [ite_eq_left h2, ite_eq_left h2]; simp
+      · rw [ite_eq_right h2, ite_eq_right h2]; simp
+    · rw [ite_eq_right h1, map_one]
       split_ifs <;> simp [h1]
 
 theorem finOne_dilV (h : IsCMExt F E σ) {n : ℕ} (w : InfinitePlace F) (i₀ : Fin n) (τ : ℝ) (k : Fin n ⊕ Fin n) :
     finOne F • dilV h w i₀ τ k = finOne F • (1 : AE F E) := by
-  haveI := h.1
+  have := h.1
   rcases k with j | j <;> simp only [dilV, Sum.elim_inl, Sum.elim_inr] <;> split_ifs
   · exact finOne_smul_adr h w _
   · rfl

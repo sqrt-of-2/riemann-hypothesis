@@ -52,24 +52,24 @@ theorem inG_gen (p : Fin n × Fin n) : inG ε (gen ε p) := by
   simp only [gen, sg]
   by_cases h1 : a = b
   · subst h1
-    simp only [if_true, Matrix.smul_apply, Matrix.single_apply, smul_eq_mul]
+    simp only [ite_true, Matrix.smul_apply, Matrix.single_apply, smul_eq_mul]
     by_cases hi : a = i <;> by_cases hj : a = j
     · subst hi; subst hj; cases ε a <;> simp
     · subst hi; simp [hj]
     · subst hj; simp [hi]
     · simp [hi, hj]
-  · rw [if_neg h1]
+  · rw [ite_eq_right h1]
     have hne : b ≠ a := fun h => h1 h.symm
     by_cases h2 : a < b
-    · rw [if_pos h2]
+    · rw [ite_eq_left h2]
       simp only [Matrix.sub_apply, Matrix.smul_apply, Matrix.single_apply, smul_eq_mul]
       by_cases hia : a = i <;> by_cases hib : b = i <;> by_cases hja : a = j <;> by_cases hjb : b = j <;>
-        simp only [hia, hib, hja, hjb, true_and, and_true, false_and, and_false, if_true, if_false] <;>
+        simp only [hia, hib, hja, hjb, true_and, and_true, false_and, and_false, ite_true, ite_false] <;>
         subst_vars <;> simp_all <;> cases hεa : ε a <;> cases hεb : ε b <;> simp_all
-    · rw [if_neg h2]
+    · rw [ite_eq_right h2]
       simp only [Matrix.add_apply, Matrix.smul_apply, Matrix.single_apply, smul_eq_mul]
       by_cases hia : a = i <;> by_cases hib : b = i <;> by_cases hja : a = j <;> by_cases hjb : b = j <;>
-        simp only [hia, hib, hja, hjb, true_and, and_true, false_and, and_false, if_true, if_false] <;>
+        simp only [hia, hib, hja, hjb, true_and, and_true, false_and, and_false, ite_true, ite_false] <;>
         subst_vars <;> simp_all <;> cases hεa : ε a <;> cases hεb : ε b <;> simp_all
 
 theorem inG_comb (z : Fin n × Fin n → ℝ) : inG ε (∑ p, ((z p : ℝ) : ℂ) • gen ε p) :=

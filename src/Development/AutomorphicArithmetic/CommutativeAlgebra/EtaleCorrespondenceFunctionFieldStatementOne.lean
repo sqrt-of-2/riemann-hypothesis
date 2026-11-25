@@ -52,9 +52,9 @@ private theorem isIntegral_map_iff {K L : Type} [Field K] [Field L] [Algebra ℂ
     IsIntegral (B.map (IsScalarTower.toAlgHom ℂ K L)) y ↔ IsIntegral B y := by
   let j := IsScalarTower.toAlgHom ℂ K L
   let e : B →+* B.map j := (B.equivMapOfInjective j j.toRingHom.injective).toAlgHom.toRingHom
-  letI : Algebra B (B.map j) := e.toAlgebra
-  haveI : IsScalarTower B (B.map j) L := .of_algebraMap_eq fun a => rfl
-  haveI : Algebra.IsIntegral B (B.map j) := ⟨fun b => by
+  let : Algebra B (B.map j) := e.toAlgebra
+  have : IsScalarTower B (B.map j) L := .of_algebraMap_eq fun a => rfl
+  have : Algebra.IsIntegral B (B.map j) := ⟨fun b => by
     obtain ⟨a, rfl⟩ := (B.equivMapOfInjective j j.toRingHom.injective).surjective b
     exact isIntegral_algebraMap (x := a)⟩
   exact ⟨fun h => isIntegral_trans y h, fun h => h.tower_top⟩
@@ -69,12 +69,12 @@ private theorem dualNumberPoint_preimage_top_of_reduction {d : ℕ} {Z Y : Schem
     (x : Fin (d + 1) → F) (U : Fin (d + 1) → Z.Opens) (hx : IsFinCover ℂ Z.functionField x)
     (hU : IsAffCover s U (rB ℂ Z.functionField x)) :
     IsAffCover s' (fun i => c ⁻¹ᵁ U i) (R2 x j) := by
-  letI : Algebra Z.functionField Y.functionField := j.toRingHom.toAlgebra
-  letI : Algebra F Y.functionField :=
+  let : Algebra Z.functionField Y.functionField := j.toRingHom.toAlgebra
+  let : Algebra F Y.functionField :=
     ((algebraMap Z.functionField Y.functionField).comp (algebraMap F Z.functionField)).toAlgebra
-  haveI : IsScalarTower ℂ Z.functionField Y.functionField := .of_algebraMap_eq fun r => (j.commutes r).symm
-  haveI : IsScalarTower F Z.functionField Y.functionField := .of_algebraMap_eq fun r => rfl
-  haveI : IsScalarTower ℂ F Y.functionField := .of_algebraMap_eq fun r => by
+  have : IsScalarTower ℂ Z.functionField Y.functionField := .of_algebraMap_eq fun r => (j.commutes r).symm
+  have : IsScalarTower F Z.functionField Y.functionField := .of_algebraMap_eq fun r => rfl
+  have : IsScalarTower ℂ F Y.functionField := .of_algebraMap_eq fun r => by
     change algebraMap ℂ Y.functionField r = j (algebraMap F Z.functionField (algebraMap ℂ F r))
     rw [← IsScalarTower.algebraMap_apply ℂ F Z.functionField, j.commutes]
   have hjeq : IsScalarTower.toAlgHom ℂ Z.functionField Y.functionField = j := AlgHom.ext fun _ => rfl

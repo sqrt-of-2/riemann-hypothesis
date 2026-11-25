@@ -34,17 +34,17 @@ theorem hpk_mulVec' (v : Fin (2 * r + k + 1) → ℂ) (i : Fin (2 * r + k + 1)) 
       else if i.val = r + k then -v i else v i := by
   simp only [mulVec, dotProduct]
   by_cases h1 : i.val < r ∨ r + k < i.val
-  · rw [if_pos h1]
+  · rw [ite_eq_left h1]
     simp only [hpk_out' k r h1]
     rw [Finset.sum_eq_single ⟨2 * r + k - i.val, by omega⟩]
     · simp
-    · intro b _ hb; rw [if_neg (fun h => hb (Fin.ext h))]; simp
+    · intro b _ hb; rw [ite_eq_right (fun h => hb (Fin.ext h))]; simp
     · simp
-  · rw [if_neg h1]
+  · rw [ite_eq_right h1]
     simp only [hpk_mid' k r h1]
     rw [Finset.sum_eq_single i]
     · split_ifs <;> first | (exfalso; omega) | simp
-    · intro b _ hb; rw [if_neg (fun h => hb (Fin.ext h))]; simp
+    · intro b _ hb; rw [ite_eq_right (fun h => hb (Fin.ext h))]; simp
     · simp
 
 theorem hpk_conjT' : (Hpk k r)ᴴ = Hpk k r := by
@@ -91,12 +91,12 @@ theorem liftVec_apply (z : Fin (2 * r' + k + 1) → ℂ) (p : Fin (2 * (1 + r') 
 
 theorem liftVec_lev (z : Fin (2 * r' + k + 1) → ℂ) (i : Fin (2 * r' + k + 1)) :
     liftVec k 1 r' z (levPos k 1 r' i) = z i := by
-  rw [liftVec_apply, dif_pos (by simp [levPos]; omega)]
+  rw [liftVec_apply, dite_eq_left (by simp [levPos]; omega)]
   congr 1
 
 theorem liftVec_out (z : Fin (2 * r' + k + 1) → ℂ) (p : Fin (2 * (1 + r') + k + 1))
     (h : p.val = 0 ∨ p.val = 2 * (1 + r') + k) : liftVec k 1 r' z p = 0 := by
-  rw [liftVec_apply, dif_neg (by omega)]
+  rw [liftVec_apply, dite_eq_right (by omega)]
 
 theorem bvec_lev (j : Fin (2 * r' + k + 1)) : bvec (levPos k 1 r' j) = liftVec k 1 r' (bvec j) := by
   ext p
@@ -110,13 +110,13 @@ theorem hermitian_form_base_vector_right (u : Fin (2 * (1 + r') + k + 1) → ℂ
   simp only [dotProduct, Pi.star_apply, goodRowsProjector_apply_eq_sum]
   rw [Finset.sum_eq_single ⟨0, by omega⟩]
   · rw [hpk_mulVec']; simp
-  · intro b _ hb; rw [if_neg (fun h => hb (Fin.ext h))]; simp
+  · intro b _ hb; rw [ite_eq_right (fun h => hb (Fin.ext h))]; simp
   · simp
 
 theorem hermitianForm_mulVec_basisSum : Hpk k (1 + r') *ᵥ es0 k r' = e0 k r' := by
   ext p
   rw [hpk_mulVec', goodRowsProjector_apply_eq_sum, last_basis_apply, last_basis_apply]
-  split_ifs <;> (try simp only at *) <;> first | rfl | (exfalso; omega) | simp
+  split_ifs <;> (try simp only at *) <;> first | (exfalso; omega) | simp
 
 theorem hermitian_dual_base_vector_left (v : Fin (2 * (1 + r') + k + 1) → ℂ) :
     herm (Hpk k (1 + r')) (es0 k r') v = star (v ⟨0, by omega⟩) := by
@@ -125,7 +125,7 @@ theorem hermitian_dual_base_vector_left (v : Fin (2 * (1 + r') + k + 1) → ℂ)
   simp only [dotProduct, Pi.star_apply, goodRowsProjector_apply_eq_sum]
   rw [Finset.sum_eq_single ⟨0, by omega⟩]
   · simp
-  · intro b _ hb; rw [if_neg (fun h => hb (Fin.ext h))]; simp
+  · intro b _ hb; rw [ite_eq_right (fun h => hb (Fin.ext h))]; simp
   · simp
 
 end vec
@@ -165,20 +165,20 @@ theorem ιLev_mulVec (g : Mat k r') (u : Fin (2 * (1 + r') + k + 1) → ℂ) (p 
       (g *ᵥ fun j => u (levPos k 1 r' j)) ⟨p.val - 1, by omega⟩ else u p := by
   simp only [mulVec, dotProduct]
   by_cases h : 1 ≤ p.val ∧ p.val < 2 * r' + k + 1 + 1
-  · rw [dif_pos h, sum_lev k r']
+  · rw [dite_eq_left h, sum_lev k r']
     · apply Finset.sum_congr rfl
       intro j _
       have hj : 1 ≤ (levPos k 1 r' j).val ∧ (levPos k 1 r' j).val < 2 * r' + k + 1 + 1 := by
         rw [levPos_val]; omega
-      simp only [ιLev, dif_pos h, dif_pos hj]
+      simp only [ιLev, dite_eq_left h, dite_eq_left hj]
       congr 2
     · intro q hq
-      simp only [ιLev, dif_pos h, dif_neg hq, zero_mul]
-  · rw [dif_neg h]
-    simp only [ιLev, dif_neg h]
+      simp only [ιLev, dite_eq_left h, dite_eq_right hq, zero_mul]
+  · rw [dite_eq_right h]
+    simp only [ιLev, dite_eq_right h]
     rw [Finset.sum_eq_single p]
     · simp
-    · intro b _ hb; rw [if_neg (fun e => hb e.symm)]; simp
+    · intro b _ hb; rw [ite_eq_right (fun e => hb e.symm)]; simp
     · simp
 
 theorem ιLev_liftVec (g : Mat k r') (z : Fin (2 * r' + k + 1) → ℂ) :
@@ -187,8 +187,8 @@ theorem ιLev_liftVec (g : Mat k r') (z : Fin (2 * r' + k + 1) → ℂ) :
   rw [ιLev_mulVec, liftVec_apply]
   split_ifs with h
   · have e : (fun j => liftVec k 1 r' z (levPos k 1 r' j)) = z := funext (liftVec_lev k r' z)
-    rw [e, liftVec_apply, dif_pos h]
-  · rw [liftVec_apply, dif_neg h]
+    rw [e, liftVec_apply, dite_eq_left h]
+  · rw [liftVec_apply, dite_eq_right h]
 
 theorem ιLev_fix (g : Mat k r') (u : Fin (2 * (1 + r') + k + 1) → ℂ)
     (hu : ∀ q : Fin (2 * (1 + r') + k + 1), (1 ≤ q.val ∧ q.val < 2 * r' + k + 1 + 1) → u q = 0) :
@@ -202,10 +202,10 @@ theorem ιLev_fix (g : Mat k r') (u : Fin (2 * (1 + r') + k + 1) → ℂ)
   · rfl
 
 theorem levi_embedding_mulVec_e0 (g : Mat k r') : ιLev k 1 r' g *ᵥ e0 k r' = e0 k r' :=
-  ιLev_fix k r' g _ fun q hq => by rw [goodRowsProjector_apply_eq_sum, if_neg (by omega)]
+  ιLev_fix k r' g _ fun q hq => by rw [goodRowsProjector_apply_eq_sum, ite_eq_right (by omega)]
 
 theorem levelEmbedding_mulVec_es0 (g : Mat k r') : ιLev k 1 r' g *ᵥ es0 k r' = es0 k r' :=
-  ιLev_fix k r' g _ fun q hq => by rw [last_basis_apply, if_neg (by omega)]
+  ιLev_fix k r' g _ fun q hq => by rw [last_basis_apply, ite_eq_right (by omega)]
 
 theorem reflection_apply_entries (c : ℂ) (p q : Fin (2 * (1 + r') + k + 1)) :
     w0 k r' c p q = if p.val = 0 ∧ q.val = 2 * (1 + r') + k then (star c)⁻¹
@@ -216,22 +216,22 @@ theorem reflection_mulVec_levelPos (c : ℂ) (u : Fin (2 * (1 + r') + k + 1) →
     (w0 k r' c *ᵥ u) (levPos k 1 r' i) = u (levPos k 1 r' i) := by
   simp only [mulVec, dotProduct]
   rw [Finset.sum_eq_single (levPos k 1 r' i)]
-  · rw [reflection_apply_entries, if_neg (by rw [levPos_val]; omega), if_neg (by rw [levPos_val]; omega),
-      if_pos ⟨rfl, by rw [levPos_val]; omega, by rw [levPos_val]; omega⟩, one_mul]
+  · rw [reflection_apply_entries, ite_eq_right (by rw [levPos_val]; omega), ite_eq_right (by rw [levPos_val]; omega),
+      ite_eq_left ⟨rfl, by rw [levPos_val]; omega, by rw [levPos_val]; omega⟩, one_mul]
   · intro b _ hb
-    rw [reflection_apply_entries, if_neg (by rw [levPos_val]; omega), if_neg (by rw [levPos_val]; omega),
-      if_neg (fun h => hb h.1.symm), zero_mul]
+    rw [reflection_apply_entries, ite_eq_right (by rw [levPos_val]; omega), ite_eq_right (by rw [levPos_val]; omega),
+      ite_eq_right (fun h => hb h.1.symm), zero_mul]
   · simp
 
 theorem rankOneMatrix_last_coord (c : ℂ) (u : Fin (2 * (1 + r') + k + 1) → ℂ) :
     (w0 k r' c *ᵥ u) ⟨2 * (1 + r') + k, by omega⟩ = c * u ⟨0, by omega⟩ := by
   simp only [mulVec, dotProduct]
   rw [Finset.sum_eq_single ⟨0, by omega⟩]
-  · rw [reflection_apply_entries, if_neg (by simp only; omega), if_pos ⟨rfl, rfl⟩]
+  · rw [reflection_apply_entries, ite_eq_right (by simp only; omega), ite_eq_left ⟨rfl, rfl⟩]
   · intro b _ hb
     have hb' : b.val ≠ 0 := fun h => hb (Fin.ext h)
-    rw [reflection_apply_entries, if_neg (by simp only; omega), if_neg (by simp only; omega),
-      if_neg (fun h => absurd h.2.2 (lt_irrefl _)), zero_mul]
+    rw [reflection_apply_entries, ite_eq_right (by simp only; omega), ite_eq_right (by simp only; omega),
+      ite_eq_right (fun h => absurd h.2.2 (lt_irrefl _)), zero_mul]
   · simp
 
 end lev

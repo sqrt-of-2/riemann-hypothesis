@@ -68,7 +68,7 @@ theorem pivot_castAdd_last (r : ℕ) : piv r (Fin.castAdd r (Fin.last r)) = Fin.
 theorem piv_f (r : ℕ) (i : Fin r) : piv r (Fin.natAdd (r + 1) i) = Fin.castAdd r i.castSucc := by
   apply Fin.ext
   simp only [piv, Fin.val_natAdd, Fin.val_castAdd, Fin.val_castSucc]
-  rw [if_neg (by omega), if_neg (by omega)]
+  rw [ite_eq_right (by omega), ite_eq_right (by omega)]
   omega
 
 theorem piv_invol (r : ℕ) : Function.Involutive (piv r) := by
@@ -84,39 +84,39 @@ theorem hT_hv (a b : Fin (D.R.rS + 1 + D.R.rS)) :
   have hs := (VS D).herm
   refine Fin.addCases (fun a => ?_) (fun a => ?_) a <;> refine Fin.addCases (fun b => ?_) (fun b => ?_) b
   · refine Fin.lastCases ?_ (fun i => ?_) a <;> refine Fin.lastCases ?_ (fun j => ?_) b
-    · rw [pivot_castAdd_last, if_pos rfl, if_pos (by simp)]
+    · rw [pivot_castAdd_last, ite_eq_left rfl, ite_eq_left (by simp)]
       simp only [hv, Fin.append_left, Fin.snoc_last]
       rw [X.zu_norm]; rfl
-    · rw [pivot_castAdd_last, if_neg (fun h => by have := congrArg Fin.val h; simp at this <;> omega)]
+    · rw [pivot_castAdd_last, ite_eq_right (fun h => by have := congrArg Fin.val h; simp at this; omega)]
       simp only [hv, Fin.append_left, Fin.snoc_last, Fin.snoc_castSucc]
       exact (hs.eq_iff).1 (X.zu_orth u' j).1
-    · rw [piv_e, if_neg (fun h => by have := congrArg Fin.val h; simp at this <;> omega)]
+    · rw [piv_e, ite_eq_right (fun h => by have := congrArg Fin.val h; simp at this; omega)]
       simp only [hv, Fin.append_left, Fin.snoc_last, Fin.snoc_castSucc]
       exact (X.zu_orth u' i).1
-    · rw [piv_e, if_neg (fun h => by have := congrArg Fin.val h; simp at this <;> omega)]
+    · rw [piv_e, ite_eq_right (fun h => by have := congrArg Fin.val h; simp at this; omega)]
       simp only [hv, Fin.append_left, Fin.snoc_castSucc]
       exact X.ee i j
   · refine Fin.lastCases ?_ (fun i => ?_) a
-    · rw [pivot_castAdd_last, if_neg (fun h => by have := congrArg Fin.val h; simp at this <;> omega)]
+    · rw [pivot_castAdd_last, ite_eq_right (fun h => by have := congrArg Fin.val h; simp at this; omega)]
       simp only [hv, Fin.append_left, Fin.append_right, Fin.snoc_last]
       exact (hs.eq_iff).1 (X.zu_orth u' b).2
     · rw [piv_e]
       simp only [hv, Fin.append_left, Fin.append_right, Fin.snoc_castSucc]
       rw [X.ef]
       by_cases h : i = b
-      · subst h; rw [if_pos rfl, if_pos rfl, if_neg (by simp <;> omega)]
-      · rw [if_neg h, if_neg (fun e => h ((Fin.natAdd_inj _).1 e).symm)]
+      · subst h; rw [ite_eq_left rfl, ite_eq_left rfl, ite_eq_right (by simp; omega)]
+      · rw [ite_eq_right h, ite_eq_right (fun e => h ((Fin.natAdd_inj _).1 e).symm)]
   · refine Fin.lastCases ?_ (fun j => ?_) b
-    · rw [piv_f, if_neg (fun h => by have := congrArg Fin.val h; simp at this <;> omega)]
+    · rw [piv_f, ite_eq_right (fun h => by have := congrArg Fin.val h; simp at this; omega)]
       simp only [hv, Fin.append_left, Fin.append_right, Fin.snoc_last]
       exact (X.zu_orth u' a).2
     · rw [piv_f]
       simp only [hv, Fin.append_left, Fin.append_right, Fin.snoc_castSucc]
       rw [← (LinearMap.isSymm_def.1 hs) (X.eX j) (X.fY a), X.ef]
       by_cases h : j = a
-      · subst h; rw [if_pos rfl, if_pos rfl, if_neg (by simp <;> omega), map_one]
-      · rw [if_neg h, if_neg (fun e => h (Fin.castSucc_inj.1 (Fin.castAdd_inj.1 e))), map_zero]
-  · rw [piv_f, if_neg (fun h => by have := congrArg Fin.val h; simp at this <;> omega)]
+      · subst h; rw [ite_eq_left rfl, ite_eq_left rfl, ite_eq_right (by simp; omega), map_one]
+      · rw [ite_eq_right h, ite_eq_right (fun e => h (Fin.castSucc_inj.1 (Fin.castAdd_inj.1 e))), map_zero]
+  · rw [piv_f, ite_eq_right (fun h => by have := congrArg Fin.val h; simp at this; omega)]
     simp only [hv, Fin.append_right]
     exact X.ff a b
 
@@ -132,8 +132,8 @@ theorem gram_eq : gramE X.B.I.cm.sig X.B.I.J (tupH (frameOf X u')) =
     Option.some.injEq, Function.Involutive.coe_toPerm, cD]
   by_cases h : b = piv D.R.rS a
   · have h' : piv D.R.rS a = b := h.symm
-    rw [if_pos h]
-    simp only [h', if_true, mul_one]
+    rw [ite_eq_left h]
+    simp only [h', ite_true, mul_one]
     split_ifs <;> simp
   · have h' : ¬ piv D.R.rS a = b := fun e => h e.symm
     simp [h, h']

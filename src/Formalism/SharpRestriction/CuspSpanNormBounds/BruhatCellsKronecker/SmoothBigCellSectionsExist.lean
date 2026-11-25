@@ -117,24 +117,24 @@ theorem ptEntry_col {K : Type} [Zero K] : ∀ (bs : List (K × ℕ)), (∀ b ∈
       simp only [ptEntry]
       by_cases hj' : j' = j
       · subst hj'
-        rw [if_pos ⟨by omega, hjs⟩, if_pos (by omega), if_pos rfl]
-      · rw [if_neg hj']
+        rw [ite_eq_left ⟨by omega, hjs⟩, ite_eq_left (by omega), ite_eq_left rfl]
+      · rw [ite_eq_right hj']
         by_cases h2 : j' < s
-        · rw [if_pos ⟨by omega, h2⟩, if_neg (by omega)]
-        · rw [if_neg (fun hh => h2 hh.2), if_neg (fun hh => by omega)]
+        · rw [ite_eq_left ⟨by omega, h2⟩, ite_eq_right (by omega)]
+        · rw [ite_eq_right (fun hh => h2 hh.2), ite_eq_right (fun hh => by omega)]
     · have hrest : ∀ b ∈ rest, b.1 ≠ 0 ∧ 1 ≤ b.2 :=
         fun b hb => h b (List.mem_cons_of_mem _ hb)
       have hjrest : j - s < (rest.map Prod.snd).sum := by omega
       obtain ⟨i0, hi0, t0, ht0, h0⟩ := ih hrest (j - s) hjrest
       refine ⟨i0 + s, by omega, t0, ht0, fun j' => ?_⟩
       simp only [ptEntry]
-      rw [if_neg (fun hh => by omega)]
+      rw [ite_eq_right (fun hh => by omega)]
       by_cases h2 : s ≤ j'
-      · rw [if_pos ⟨by omega, h2⟩, Nat.add_sub_cancel, h0]
+      · rw [ite_eq_left ⟨by omega, h2⟩, Nat.add_sub_cancel, h0]
         by_cases hj' : j' = j
-        · rw [if_pos (by omega), if_pos hj']
-        · rw [if_neg (by omega), if_neg hj']
-      · rw [if_neg (fun hh => h2 hh.2), if_neg (by omega)]
+        · rw [ite_eq_left (by omega), ite_eq_left hj']
+        · rw [ite_eq_right (by omega), ite_eq_right hj']
+      · rw [ite_eq_right (fun hh => h2 hh.2), ite_eq_right (by omega)]
 
 theorem ptMat_det_ne {K : Type} [Field K] {n : ℕ} (p : Point K n) : (ptMat p).det ≠ 0 := by
   intro hdet
@@ -144,8 +144,8 @@ theorem ptMat_det_ne {K : Type} [Field K] {n : ℕ} (p : Point K n) : (ptMat p).
   obtain ⟨i, hi, t, ht, hcol⟩ := ptEntry_col p.1 p.2.1 j.val (by rw [p.2.2]; exact j.2)
   have h1 := congrFun h0 ⟨i, by rw [← p.2.2]; exact hi⟩
   simp only [Matrix.mulVec, dotProduct, ptMat, hcol, Pi.zero_apply] at h1
-  rw [Finset.sum_eq_single j (fun b _ hb => by rw [if_neg (fun hh => hb (Fin.ext hh)), zero_mul])
-    (fun hh => absurd (Finset.mem_univ j) hh), if_pos rfl] at h1
+  rw [Finset.sum_eq_single j (fun b _ hb => by rw [ite_eq_right (fun hh => hb (Fin.ext hh)), zero_mul])
+    (fun hh => absurd (Finset.mem_univ j) hh), ite_eq_left rfl] at h1
   exact (mul_eq_zero.1 h1).resolve_left ht
 
 theorem Dmin_top_ne (w : Point D.host.E (D.R.rS + 1)) : LocalSplitGroups.Dmin w (D.R.rS + 1) ≠ 0 := by

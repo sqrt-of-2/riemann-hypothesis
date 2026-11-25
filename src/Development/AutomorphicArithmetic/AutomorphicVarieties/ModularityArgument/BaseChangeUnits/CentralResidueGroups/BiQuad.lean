@@ -70,12 +70,12 @@ private theorem exists_compositum (k K K' Ω : Type) [Field k] [Field K] [Field 
   have hM : M = IntermediateField.adjoin k ((a.fieldRange : Set Ω) ∪ b.fieldRange) := IntermediateField.sup_def _ _
   have ha : ∀ x, a x ∈ M := fun x => (le_sup_left : a.fieldRange ≤ M) ⟨x, rfl⟩
   have hb : ∀ x, b x ∈ M := fun x => (le_sup_right : b.fieldRange ≤ M) ⟨x, rfl⟩
-  letI iK : Algebra K M := (a.toRingHom.codRestrict M ha).toAlgebra
-  letI iK' : Algebra K' M := (b.toRingHom.codRestrict M hb).toAlgebra
-  haveI t1 : IsScalarTower k K M := IsScalarTower.of_algebraMap_eq fun x => Subtype.ext (a.commutes x).symm
-  haveI t2 : IsScalarTower k K' M := IsScalarTower.of_algebraMap_eq fun x => Subtype.ext (b.commutes x).symm
-  haveI t3 : IsScalarTower K M Ω := IsScalarTower.of_algebraMap_eq fun x => rfl
-  haveI t4 : IsScalarTower K' M Ω := IsScalarTower.of_algebraMap_eq fun x => rfl
+  let iK : Algebra K M := (a.toRingHom.codRestrict M ha).toAlgebra
+  let iK' : Algebra K' M := (b.toRingHom.codRestrict M hb).toAlgebra
+  have t1 : IsScalarTower k K M := IsScalarTower.of_algebraMap_eq fun x => Subtype.ext (a.commutes x).symm
+  have t2 : IsScalarTower k K' M := IsScalarTower.of_algebraMap_eq fun x => Subtype.ext (b.commutes x).symm
+  have t3 : IsScalarTower K M Ω := IsScalarTower.of_algebraMap_eq fun x => rfl
+  have t4 : IsScalarTower K' M Ω := IsScalarTower.of_algebraMap_eq fun x => rfl
   have hext : ∀ f g : M →ₐ[k] Ω, (∀ x : K, f (algebraMap K M x) = g (algebraMap K M x)) →
       (∀ x : K', f (algebraMap K' M x) = g (algebraMap K' M x)) → f = g := by
     intro f g h1 h2
@@ -83,14 +83,14 @@ private theorem exists_compositum (k K K' Ω : Type) [Field k] [Field K] [Field 
     rintro x (⟨y, rfl⟩ | ⟨y, rfl⟩)
     · exact h1 y
     · exact h2 y
-  haveI : FiniteDimensional k a.fieldRange := a.equivFieldRange.toLinearEquiv.finiteDimensional
-  haveI : FiniteDimensional k b.fieldRange := b.equivFieldRange.toLinearEquiv.finiteDimensional
-  haveI : IsGalois k a.fieldRange := IsGalois.of_algEquiv a.equivFieldRange
-  haveI : IsGalois k b.fieldRange := IsGalois.of_algEquiv b.equivFieldRange
-  haveI : FiniteDimensional k M := IntermediateField.finiteDimensional_sup _ _
-  haveI : Normal k M := IntermediateField.normal_sup k Ω _ _
-  haveI : Algebra.IsSeparable k M := inferInstance
-  haveI : IsGalois k M := ⟨⟩
+  have : FiniteDimensional k a.fieldRange := a.equivFieldRange.toLinearEquiv.finiteDimensional
+  have : FiniteDimensional k b.fieldRange := b.equivFieldRange.toLinearEquiv.finiteDimensional
+  have : IsGalois k a.fieldRange := IsGalois.of_algEquiv a.equivFieldRange
+  have : IsGalois k b.fieldRange := IsGalois.of_algEquiv b.equivFieldRange
+  have : FiniteDimensional k M := IntermediateField.finiteDimensional_sup _ _
+  have : Normal k M := IntermediateField.normal_sup k Ω _ _
+  have : Algebra.IsSeparable k M := inferInstance
+  have : IsGalois k M := ⟨⟩
   refine ⟨M, inferInstance, inferInstance, iK, iK', inferInstance, t1, t2, t3, t4, inferInstance, ?_, ?_⟩
   · refine { is_comm := ⟨fun σ τ => ?_⟩ }
     have := hext (M.val.comp (σ * τ : M ≃ₐ[k] M)) (M.val.comp (τ * σ : M ≃ₐ[k] M))
@@ -100,8 +100,8 @@ private theorem exists_compositum (k K K' Ω : Type) [Field k] [Field K] [Field 
     exact DFunLike.congr_fun (hext ((s : Ω →ₐ[k] Ω).comp M.val) M.val h1 h2) x
 
 private theorem abelian_of_two (K : Type) [Field K] [NumberField K] (h : Module.finrank ℚ K = 2) : IsAbelianGalois ℚ K := by
-  haveI : Algebra.IsQuadraticExtension ℚ K := ⟨h⟩
-  haveI : IsCyclic (K ≃ₐ[ℚ] K) := inferInstance
+  have : Algebra.IsQuadraticExtension ℚ K := ⟨h⟩
+  have : IsCyclic (K ≃ₐ[ℚ] K) := inferInstance
   exact IsAbelianGalois.of_isCyclic ℚ K
 
 end UpperTheory.V.Z.Bc
@@ -109,18 +109,18 @@ end UpperTheory.V.Z.Bc
 theorem UpperTheory.V.Z.Bc.biQuad :
     BiQuad := by
   intro K K' Ω _ _ _ _ _ _ _ _ _ _ _ _ _ h h'
-  haveI := abelian_of_two K h
-  haveI := abelian_of_two K' h'
+  have := abelian_of_two K h
+  have := abelian_of_two K' h'
   obtain ⟨M, fM, iQ, iK, iK', iΩ, t1, t2, t3, t4, hfin, hab, hfix⟩ := exists_compositum ℚ K K' Ω
-  haveI : CharZero M := charZero_of_injective_algebraMap (algebraMap K M).injective
+  have : CharZero M := charZero_of_injective_algebraMap (algebraMap K M).injective
   obtain rfl : iQ = DivisionRing.toRatAlgebra := Subsingleton.elim _ _
-  haveI nM : NumberField M := { to_charZero := inferInstance, to_finiteDimensional := hfin }
-  haveI : IsTotallyComplex M := isTotallyComplex_of_algebra K M
-  haveI cM : IsCMField M := IsCMField.of_isAbelianGalois M
-  haveI a1 : IsAbelianGalois K M := IsAbelianGalois.tower_top ℚ K M
-  haveI a2 : IsAbelianGalois K' M := IsAbelianGalois.tower_top ℚ K' M
+  have nM : NumberField M := { to_charZero := inferInstance, to_finiteDimensional := hfin }
+  have : IsTotallyComplex M := isTotallyComplex_of_algebra K M
+  have cM : IsCMField M := IsCMField.of_isAbelianGalois M
+  have a1 : IsAbelianGalois K M := IsAbelianGalois.tower_top ℚ K M
+  have a2 : IsAbelianGalois K' M := IsAbelianGalois.tower_top ℚ K' M
   refine ⟨M, fM, nM, cM, iK, iK', iΩ, t3, t4, a1.toIsGalois, a2.toIsGalois,
-    isSolvable_of_comm a1.is_comm.comm, isSolvable_of_comm a2.is_comm.comm, fun s => ?_, fun s => ?_⟩
+    Group.isSolvable_of_comm a1.is_comm.comm, Group.isSolvable_of_comm a2.is_comm.comm, fun s => ?_, fun s => ?_⟩
   · rw [mem_range_resG_iff, mem_range_resG_iff]
     constructor
     · intro hs x

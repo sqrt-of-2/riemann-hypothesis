@@ -158,9 +158,9 @@ private theorem UpperTheory.Reformulated.B.FreeAtCompGaloisEmbedding.exists_pow_
     [Field L] [NumberField L] [Algebra L Ω] (g : Gal(Ω/ℚ)) :
     ∃ m : ℕ, 0 < m ∧ ∃ g' : Gal(Ω/L), AlgEquiv.restrictScalarsHom ℚ g' = g ^ m := by
   let K : IntermediateField ℚ Ω := (IsScalarTower.toAlgHom ℚ L Ω).fieldRange
-  haveI : FiniteDimensional ℚ K :=
+  have : FiniteDimensional ℚ K :=
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom ℚ L Ω)).toLinearEquiv.finiteDimensional
-  haveI : IsGalois ℚ Ω := IsAlgClosure.isGalois ℚ Ω
+  have : IsGalois ℚ Ω := IsAlgClosure.isGalois ℚ Ω
   have hi : K.fixingSubgroup.index ≠ 0 := by
     rw [← IntermediateField.finrank_eq_fixingSubgroup_index]
     exact Module.finrank_pos.ne'

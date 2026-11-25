@@ -158,8 +158,8 @@ variable {S : Scheme.{0}}
 
 theorem isAbelianScheme_tensor {A B : Over S} [GrpObj A] [GrpObj B] (hA : IsAbelianScheme A)
     (hB : IsAbelianScheme B) : IsAbelianScheme (A ⊗ B) := by
-  haveI := hA.comm; haveI := hB.comm; haveI := hA.smooth; haveI := hB.smooth
-  haveI := hA.proper; haveI := hB.proper; haveI := hA.geomConnected; haveI := hB.geomConnected
+  have := hA.comm; have := hB.comm; have := hA.smooth; have := hB.smooth
+  have := hA.proper; have := hB.proper; have := hA.geomConnected; have := hB.geomConnected
   refine ⟨inferInstance, ?_, ?_, ?_⟩
   · show Smooth (pullback.fst A.hom B.hom ≫ A.hom); infer_instance
   · show IsProper (pullback.fst A.hom B.hom ≫ A.hom); infer_instance
@@ -168,10 +168,10 @@ theorem isAbelianScheme_tensor {A B : Over S} [GrpObj A] [GrpObj B] (hA : IsAbel
 theorem torusExtension_of_prod {K : Type} [Field K] {G G₁ G₂ : Over (Spec (.of K))} [GrpObj G] [GrpObj G₁]
     [GrpObj G₂] (a₁ : G ⟶ G₁) (a₂ : G ⟶ G₂) [IsMonHom a₁] [IsMonHom a₂] [IsIso (lift a₁ a₂)]
     (E₁ : TorusExtension G₁) (E₂ : TorusExtension G₂) : Nonempty (TorusExtension G) := by
-  letI := E₁.addCommGroup; haveI := E₁.free; haveI := E₁.finite; letI := E₁.grpB
-  letI := E₂.addCommGroup; haveI := E₂.free; haveI := E₂.finite; letI := E₂.grpB
-  haveI := E₁.q_hom; haveI := E₂.q_hom; haveI := E₁.i_hom; haveI := E₂.i_hom
-  haveI := torus_prod_iso (Spec (.of K)) E₁.X E₂.X
+  let := E₁.addCommGroup; have := E₁.free; have := E₁.finite; let := E₁.grpB
+  let := E₂.addCommGroup; have := E₂.free; have := E₂.finite; let := E₂.grpB
+  have := E₁.q_hom; have := E₂.q_hom; have := E₁.i_hom; have := E₂.i_hom
+  have := torus_prod_iso (Spec (.of K)) E₁.X E₂.X
   have hmon : ∀ {X X' : Type} [AddCommGroup X] [AddCommGroup X'] (φ : X →+ X'),
       IsMonHom (SplitTorusPow.torusMap (Spec (.of K)) φ) := by
     intro X X' _ _ φ
@@ -188,11 +188,11 @@ theorem torusExtension_of_prod {K : Type} [Field K] {G G₁ G₂ : Over (Spec (.
           SplitTorusPow.points_comp_torusMap, map_mul, MonoidHom.mul_comp]
       simpa only [Hom.mul_def, lift_fst_snd, Category.id_comp, lift_fst_comp_snd_comp] using
         h (fst (splitTorus _ X') (splitTorus _ X')) (snd _ _)
-  haveI := hmon (AddMonoidHom.inl E₁.X E₂.X)
-  haveI := hmon (AddMonoidHom.inr E₁.X E₂.X)
+  have := hmon (AddMonoidHom.inl E₁.X E₂.X)
+  have := hmon (AddMonoidHom.inr E₁.X E₂.X)
   have key := kernel_tensor _ _ _ _ _ _ _ E₁.i E₂.i E₁.q E₂.q E₁.isKernel E₂.isKernel
-  haveI : IsIso (lift a₁ a₂).left := inferInstanceAs (IsIso ((Over.forget _).map (lift a₁ a₂)))
-  haveI : IsMonHom (inv (lift a₁ a₂)) := inferInstanceAs (IsMonHom (asIso (lift a₁ a₂)).inv)
+  have : IsIso (lift a₁ a₂).left := inferInstanceAs (IsIso ((Over.forget _).map (lift a₁ a₂)))
+  have : IsMonHom (inv (lift a₁ a₂)) := inferInstanceAs (IsMonHom (asIso (lift a₁ a₂)).inv)
   have hP : ∀ (P : MorphismProperty Scheme.{0}) [P.IsMultiplicative] [P.IsStableUnderBaseChange],
       P E₁.q.left → P E₂.q.left → P (lift a₁ a₂ ≫ (E₁.q ⊗ₘ E₂.q)).left := by
     intro P _ _ h₁ h₂
@@ -221,9 +221,9 @@ theorem torusExtension_of_prod {K : Type} [Field K] {G G₁ G₂ : Over (Spec (.
 
 theorem isSemiAbelian_tensor : ∀ (S : Scheme.{0}) (G₁ G₂ : Over S) [GrpObj G₁] [GrpObj G₂], IsSemiAbelian G₁ → IsSemiAbelian G₂ → IsSemiAbelian (G₁ ⊗ G₂) := by
   intro S G₁ G₂ _ _ h₁ h₂
-  haveI := h₁.comm; haveI := h₂.comm; haveI := h₁.smooth; haveI := h₂.smooth
-  haveI := h₁.separated; haveI := h₂.separated; haveI := h₁.quasiCompact; haveI := h₂.quasiCompact
-  haveI := h₁.geomConnected; haveI := h₂.geomConnected
+  have := h₁.comm; have := h₂.comm; have := h₁.smooth; have := h₂.smooth
+  have := h₁.separated; have := h₂.separated; have := h₁.quasiCompact; have := h₂.quasiCompact
+  have := h₁.geomConnected; have := h₂.geomConnected
   refine ⟨inferInstance, ?_, ?_, ?_, ?_, fun Ω _ _ p => ?_⟩
   · show Smooth (pullback.fst G₁.hom G₂.hom ≫ G₁.hom); infer_instance
   · show IsSeparated (pullback.fst G₁.hom G₂.hom ≫ G₁.hom); infer_instance
@@ -231,7 +231,7 @@ theorem isSemiAbelian_tensor : ∀ (S : Scheme.{0}) (G₁ G₂ : Over S) [GrpObj
   · show GeometricallyConnected (pullback.fst G₁.hom G₂.hom ≫ G₁.hom); exact GeometricallyConnected.comp _ _
   · obtain ⟨E₁⟩ := h₁.fibres Ω p
     obtain ⟨E₂⟩ := h₂.fibres Ω p
-    haveI : IsIso (lift ((Over.pullback p).map (fst G₁ G₂)) ((Over.pullback p).map (snd G₁ G₂))) :=
+    have : IsIso (lift ((Over.pullback p).map (fst G₁ G₂)) ((Over.pullback p).map (snd G₁ G₂))) :=
       isIso_prodComparison_of_preservesLimit_pair (Over.pullback p) G₁ G₂
     exact torusExtension_of_prod ((Over.pullback p).map (fst G₁ G₂)) ((Over.pullback p).map (snd G₁ G₂)) E₁ E₂
 

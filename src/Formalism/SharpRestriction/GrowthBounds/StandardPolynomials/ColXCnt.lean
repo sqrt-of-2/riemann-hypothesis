@@ -66,10 +66,10 @@ theorem strip_count {n : ℕ} (nu mu : Fin n → ℤ) (b : ℕ) (h : HStrip nu m
       refine Finset.sum_congr rfl fun a _ => ?_
       have := h.1 a
       by_cases c1 : c ≤ mu a <;> by_cases c2 : c ≤ nu a
-      · rw [if_pos c1, if_pos c2, if_neg (by omega)]; ring
-      · rw [if_pos c1, if_neg c2, if_pos (by omega)]; ring
+      · rw [ite_eq_left c1, ite_eq_left c2, ite_eq_right (by omega)]; ring
+      · rw [ite_eq_left c1, ite_eq_right c2, ite_eq_left (by omega)]; ring
       · omega
-      · rw [if_neg c1, if_neg c2, if_neg (by omega)]; ring
+      · rw [ite_eq_right c1, ite_eq_right c2, ite_eq_right (by omega)]; ring
     rw [← e]
     split_ifs with hne
     · push_cast; omega
@@ -108,14 +108,14 @@ theorem sum_fin_odd {M : Type*} [AddCommMonoid M] (s : ℕ) (F : Fin (2 * s + 1)
   have e1 : ∑ a, F a = ∑ a ∈ Finset.range (2 * s + 1), G a := by
     rw [Finset.sum_range]
     refine Finset.sum_congr rfl fun a _ => ?_
-    rw [hG]; simp only [a.2, dif_pos]
+    rw [hG]; simp only [a.2, dite_eq_left]
   rw [e1, sum_range_odd, Finset.sum_range]
   congr 1
   · refine Finset.sum_congr rfl fun l _ => ?_
     have := l.2
     rw [hG]
     simp only
-    rw [dif_pos (by omega), dif_pos (by omega)]
-  · rw [hG]; simp only; rw [dif_pos (by omega)]
+    rw [dite_eq_left (by omega), dite_eq_left (by omega)]
+  · rw [hG]; simp only; rw [dite_eq_left (by omega)]
 
 end Formalism.MainNotions.ColumnSystems.Pf.GenusGluing

@@ -51,7 +51,7 @@ theorem sw_deriv (a b : Fin r) (f : MvPolynomial (Fin r × Fin n) R) :
     rw [map_mul, Polynomial.derivative_mul, Derivation.leibniz, smul_eq_mul, smul_eq_mul, map_add (f := _),
       map_mul, map_mul, ← hp, Dop_X, sw_rowGen_X]
     by_cases h1 : v.1 = b <;> by_cases h2 : a = b <;>
-      simp only [h1, h2, if_true, if_false, sw_rowGen_X, map_zero, mul_zero, add_zero,
+      simp only [h1, h2, ite_true, ite_false, sw_rowGen_X, map_zero, mul_zero, add_zero,
         Polynomial.derivative_add, Polynomial.derivative_C, Polynomial.derivative_mul,
         Polynomial.derivative_X, zero_add, one_mul] <;> ring
 
@@ -67,7 +67,7 @@ theorem sw_rowDiv_zero (a b : Fin r) (g : MvPolynomial (Fin r × Fin n) R) : row
 theorem sw_step_ne (a b : Fin r) (hab : a ≠ b) (k : ℕ) (f : MvPolynomial (Fin r × Fin n) R) :
     ((k + 1 : ℕ) : R) • rowDiv R a b (k + 1) f = rowDiv R a b k (Dop R a b f) := by
   have h := sw_deriv R a b f
-  rw [if_neg hab, add_zero, one_mul] at h
+  rw [ite_eq_right hab, add_zero, one_mul] at h
   unfold rowDiv
   rw [← h, Polynomial.coeff_derivative, MvPolynomial.smul_eq_C_mul, mul_comm]
   congr 1
@@ -77,7 +77,7 @@ theorem sw_step_eq (a : Fin r) (k : ℕ) (f : MvPolynomial (Fin r × Fin n) R) :
     ((k + 1 : ℕ) : R) • rowDiv R a a (k + 1) f =
       rowDiv R a a k (Dop R a a f) - (k : R) • rowDiv R a a k f := by
   have h := sw_deriv R a a f
-  rw [if_pos rfl] at h
+  rw [ite_eq_left rfl] at h
   unfold rowDiv
   rw [← h, add_mul, one_mul, Polynomial.coeff_add]
   cases k with
@@ -97,7 +97,7 @@ theorem sw_pow_ne (a b : Fin r) (hab : a ≠ b) (k : ℕ) (f : MvPolynomial (Fin
   | zero => simp [sw_rowDiv_zero]
   | succ k ih =>
     rw [Nat.factorial_succ, Nat.cast_mul, mul_comm, mul_smul, sw_step_ne R a b hab k f, ih,
-      pow_succ, Module.End.mul_apply, DL_apply]
+      pow_succ, mul_apply_eq_comp, DL_apply]
 
 theorem sw_pow_eq (a : Fin r) (k : ℕ) (f : MvPolynomial (Fin r × Fin n) R) :
     ((k.factorial : ℕ) : R) • rowDiv R a a k f =
@@ -108,10 +108,10 @@ theorem sw_pow_eq (a : Fin r) (k : ℕ) (f : MvPolynomial (Fin r × Fin n) R) :
   | succ k ih =>
     have step : ((k + 1 : ℕ) : R) • rowDiv R a a (k + 1) f =
         rowDiv R a a k ((DL R (n := n) a a - (k : R) • (1 : Module.End R (MvPolynomial (Fin r × Fin n) R))) f) := by
-      rw [sw_step_eq R a k f, LinearMap.sub_apply, LinearMap.smul_apply, Module.End.one_apply, DL_apply,
+      rw [sw_step_eq R a k f, LinearMap.sub_apply, LinearMap.smul_apply, one_apply_eq_self, DL_apply,
         sub_eq_add_neg ((Dop R a a) f), rowDiv_add, ← neg_smul, rowDiv_smul, neg_smul, sub_eq_add_neg]
     rw [Nat.factorial_succ, Nat.cast_mul, mul_comm, mul_smul, step, ih, List.range_succ,
-      List.map_append, List.prod_append, List.map_singleton, List.prod_singleton, Module.End.mul_apply]
+      List.map_append, List.prod_append, List.map_singleton, List.prod_singleton, mul_apply_eq_comp]
 
 theorem sw_rel (a b c d : Fin r) :
     DL R (n := n) a b * DL R c d - DL R c d * DL R a b =
@@ -127,7 +127,7 @@ theorem sw_rel (a b c d : Fin r) :
   refine LinearMap.ext fun f => ?_
   have h := congrArg (fun D : Derivation R _ _ => D f) hder
   simp only [Derivation.commutator_apply] at h
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, DL_apply]
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, DL_apply]
   rw [h]
   split_ifs <;> simp [DL_apply]
 

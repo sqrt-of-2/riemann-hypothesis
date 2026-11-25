@@ -29,7 +29,7 @@ theorem finiteType_zero (R : Type) [CommRing R] (N : ℕ) :
   | mul_X p i hp => exact Subalgebra.mul_mem _ hp (Algebra.subset_adjoin (by simp))
 
 theorem quasiCompact_str (R : Type) [CommRing R] (N : ℕ) : QuasiCompact (PSpace.str R N) := by
-  haveI := finiteType_zero R N
+  have := finiteType_zero R N
   unfold PSpace.str
   infer_instance
 
@@ -37,16 +37,16 @@ variable {E : Type} [Field E] [NumberField E] [IsCMField E] {H : Host E} {Dw : D
 
 theorem quasiCompact_alt (Xo : Moduli Dw l) : QuasiCompact Xo.s := by
   obtain ⟨N, i, -, hq, h⟩ := Xo.qproj
-  haveI := hq
-  haveI := quasiCompact_str (KA l) N
+  have := hq
+  have := quasiCompact_str (KA l) N
   rw [← h]
   infer_instance
 
 theorem isNoetherian_XF (Xo : Moduli Dw l) (c : Coeff l) : IsNoetherian (Xo.XF c) := by
   obtain ⟨N, i, hi, hq, h⟩ := Xo.qproj
-  haveI := hq
-  haveI := hi
-  haveI := finiteType_zero (KA l) N
+  have := hq
+  have := hi
+  have := finiteType_zero (KA l) N
   have hsurj : Function.Surjective
       (algebraMap (KA l) (MvPolynomial.homogeneousSubmodule (Fin (N + 1)) (KA l) 0)) := by
     rintro ⟨x, hx⟩
@@ -55,18 +55,18 @@ theorem isNoetherian_XF (Xo : Moduli Dw l) (c : Coeff l) : IsNoetherian (Xo.XF c
     rcases eq_or_ne x 0 with rfl | h0
     · simp
     · exact (MvPolynomial.totalDegree_eq_zero_iff_eq_C.1 (hx'.totalDegree h0)).symm
-  haveI : IsClosedImmersion
+  have : IsClosedImmersion
       (spMap (algebraMap (KA l) (MvPolynomial.homogeneousSubmodule (Fin (N + 1)) (KA l) 0))) :=
     IsClosedImmersion.spec_of_surjective _ hsurj
-  haveI : LocallyOfFiniteType Xo.s := by
+  have : LocallyOfFiniteType Xo.s := by
     rw [← h]
     unfold PSpace.str
     infer_instance
-  haveI := quasiCompact_alt Xo
+  have := quasiCompact_alt Xo
   constructor
 
 theorem finite_comp (Xo : Moduli Dw l) (c : Coeff l) : Finite (Comp Xo c) := by
-  haveI := isNoetherian_XF Xo c
+  have := isNoetherian_XF Xo c
   exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.to_subtype
 
 end Formalism.L2.Pj.CompFin

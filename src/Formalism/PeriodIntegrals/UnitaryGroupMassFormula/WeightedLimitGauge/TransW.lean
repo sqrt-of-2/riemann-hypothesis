@@ -72,8 +72,8 @@ theorem form_apply (A : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (i j : Fin (k + 
     (Aᴴ * Hb k * A) i j = ∑ l : Fin k, conj (A l.castSucc i) * A l.castSucc j -
       conj (A (Fin.last k) i) * A (Fin.last k) j := by
   rw [Hb, Matrix.mul_apply, Fin.sum_univ_castSucc]
-  simp only [Matrix.mul_diagonal, Matrix.conjTranspose_apply, Complex.star_def, Fin.castSucc_ne_last, if_false,
-    if_true, mul_one]
+  simp only [Matrix.mul_diagonal, Matrix.conjTranspose_apply, Complex.star_def, Fin.castSucc_ne_last, ite_false,
+    ite_true, mul_one]
   ring
 
 theorem boost_mem (y : Fin k → ℂ) (c : ℂ)
@@ -97,7 +97,7 @@ theorem boost_mem (y : Fin k → ℂ) (c : ℂ)
   | last =>
     induction j using Fin.lastCases with
     | last =>
-      simp only [boost, Fin.lastCases_last, Fin.lastCases_castSucc, Hb, Matrix.diagonal_apply_eq, if_true]
+      simp only [boost, Fin.lastCases_last, Fin.lastCases_castSucc, Hb, Matrix.diagonal_apply_eq, ite_true]
       rw [hS, hc]; ring
     | cast j =>
       simp only [boost, Fin.lastCases_last, Fin.lastCases_castSucc, Hb, Matrix.diagonal_apply_ne _ (Fin.castSucc_ne_last j).symm]
@@ -105,7 +105,7 @@ theorem boost_mem (y : Fin k → ℂ) (c : ℂ)
           (if l = j then conj (y l) else 0) + (conj (y j) / (1 + (‖c‖ : ℂ))) * (conj (y l) * y l) := by
         intro l; split_ifs <;> ring
       rw [Finset.sum_congr rfl (fun l _ => h1 l), Finset.sum_add_distrib, Finset.sum_ite_eq', ← Finset.mul_sum, hS]
-      simp only [Finset.mem_univ, if_true]
+      simp only [Finset.mem_univ, ite_true]
       try simp only [hcb]
       field_simp
       ring
@@ -119,13 +119,13 @@ theorem boost_mem (y : Fin k → ℂ) (c : ℂ)
         simp only [map_add (f := _), map_mul, map_div₀, map_one, Complex.conj_ofReal, Complex.conj_conj]
         split_ifs <;> simp <;> ring
       rw [Finset.sum_congr rfl (fun l _ => h1 l), Finset.sum_add_distrib, Finset.sum_ite_eq', ← Finset.mul_sum, hS]
-      simp only [Finset.mem_univ, if_true, map_mul, map_div₀, Complex.conj_ofReal, Complex.conj_conj]
+      simp only [Finset.mem_univ, ite_true, map_mul, map_div₀, Complex.conj_ofReal, Complex.conj_conj]
       try simp only [hcb]
       field_simp
       ring
     | cast j =>
       simp only [boost, Fin.lastCases_last, Fin.lastCases_castSucc, Hb, Matrix.diagonal_apply, Fin.castSucc_inj,
-        Fin.castSucc_ne_last, if_false]
+        Fin.castSucc_ne_last, ite_false]
       have h1 : ∀ l : Fin k, conj ((if l = i then 1 else 0) + y l * conj (y i) / (1 + (‖c‖ : ℂ))) *
           ((if l = j then 1 else 0) + y l * conj (y j) / (1 + (‖c‖ : ℂ))) =
           (if l = i then (if i = j then 1 else 0) else 0) + (if l = i then y i * conj (y j) / (1 + (‖c‖ : ℂ)) else 0) +
@@ -134,13 +134,13 @@ theorem boost_mem (y : Fin k → ℂ) (c : ℂ)
         intro l
         simp only [map_add (f := _), map_mul, map_div₀, map_one, Complex.conj_ofReal, Complex.conj_conj]
         by_cases hi : l = i <;> by_cases hj : l = j
-        · subst hi; subst hj; simp <;> field_simp <;> ring
-        · subst hi; simp [hj] <;> field_simp <;> ring
-        · subst hj; simp [hi] <;> field_simp <;> ring
-        · simp [hi, hj] <;> field_simp <;> ring
+        · subst hi; subst hj; simp; field_simp; ring
+        · subst hi; simp [hj]; field_simp
+        · subst hj; simp [hi]; field_simp
+        · simp [hi, hj]; field_simp
       rw [Finset.sum_congr rfl (fun l _ => h1 l), Finset.sum_add_distrib, Finset.sum_add_distrib,
         Finset.sum_add_distrib, Finset.sum_ite_eq', Finset.sum_ite_eq', Finset.sum_ite_eq', ← Finset.mul_sum, hS]
-      simp only [Finset.mem_univ, if_true, map_mul, map_div₀, Complex.conj_ofReal, Complex.conj_conj]
+      simp only [Finset.mem_univ, ite_true, map_mul, map_div₀, Complex.conj_ofReal, Complex.conj_conj]
       split_ifs with hij
       · subst hij; try simp only [hcb]; field_simp; ring
       · try simp only [hcb]; field_simp; ring
@@ -149,7 +149,7 @@ theorem hermHb_self (v : Fin (k + 1) → ℂ) :
     herm (Hb k) v v = ((∑ l : Fin k, Complex.normSq (v l.castSucc) - Complex.normSq (v (Fin.last k)) : ℝ) : ℂ) := by
   unfold herm
   rw [dotProduct, Fin.sum_univ_castSucc]
-  simp only [Hb, Matrix.mulVec_diagonal, Fin.castSucc_ne_last, if_false, if_true, Pi.star_apply, Complex.star_def]
+  simp only [Hb, Matrix.mulVec_diagonal, Fin.castSucc_ne_last, ite_false, if_true, Pi.star_apply, Complex.star_def]
   push_cast [Complex.normSq_eq_conj_mul_self]
   ring_nf
 

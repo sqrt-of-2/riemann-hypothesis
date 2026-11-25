@@ -53,11 +53,14 @@ variable {K : Type} [Fintype K] {ι : K → Type} [∀ k, Fintype (ι k)]
 
 def κ₁ (k₀ : K) (k : K) : Option K := if k = k₀ then none else some k
 
-theorem κ₁_self (k₀ : K) : κ₁ k₀ k₀ = none := if_pos rfl
+omit [Fintype K] in
+theorem κ₁_self [Fintype K] (k₀ : K) : κ₁ k₀ k₀ = none := ite_eq_left rfl
 
-theorem κ₁_ne {k₀ k : K} (h : k ≠ k₀) : κ₁ k₀ k = some k := if_neg h
+omit [Fintype K] in
+theorem κ₁_ne [Fintype K] {k₀ k : K} (h : k ≠ k₀) : κ₁ k₀ k = some k := ite_eq_right h
 
-theorem κ₁_inj (k₀ : K) : Function.Injective (κ₁ k₀) := by
+omit [Fintype K] in
+theorem κ₁_inj [Fintype K] (k₀ : K) : Function.Injective (κ₁ k₀) := by
   intro a b h
   unfold κ₁ at h
   split_ifs at h with ha hb hb <;>
@@ -65,7 +68,8 @@ theorem κ₁_inj (k₀ : K) : Function.Injective (κ₁ k₀) := by
     | exact ha.trans hb.symm
     | (cases h; rfl)
 
-theorem isBlockMap_v₁ (k₀ : K) :
+omit [(k : K) → Fintype (ι k)] in
+theorem isBlockMap_v₁ [(k : K) → Fintype (ι k)] (k₀ : K) :
     IsBlockMap (ι := ι) (ι' := fun o : Option K => ι (o.getD k₀)) (κ₁ k₀) (v₁ k₀) := by
   have h3 : ∀ p : (k : K) × ι k, (v₁ k₀ p).fst = κ₁ k₀ p.fst := fun p => by
     unfold v₁ κ₁
@@ -96,14 +100,15 @@ theorem isBlockMap_v₁ (k₀ : K) :
       have hk : k ≠ k₀ := by
         intro hk
         unfold κ₁ at hj
-        split_ifs at hj with h1 <;>
+        split_ifs at hj with h1;
           first
           | (cases hj; exact h1 hk)
       refine ⟨⟨k, x⟩, ?_⟩
       unfold v₁
       rw [dite_eq_right hk]
 
-theorem pullDeg_some (xi : K → ℤ) (o : Option K) : pullDeg (some : K → Option K) xi o = o.elim 0 xi := by
+omit [Fintype K] in
+theorem pullDeg_some [Fintype K] (xi : K → ℤ) (o : Option K) : pullDeg (some : K → Option K) xi o = o.elim 0 xi := by
   unfold pullDeg
   cases o with
   | none =>
@@ -128,7 +133,7 @@ theorem pullDeg_κ₁ (k₀ : K) (xi : K → ℤ) (o : Option K) :
     · have hn : ¬∃ j : K, κ₁ k₀ j = some k := by
         rintro ⟨j, hj⟩
         unfold κ₁ at hj
-        split_ifs at hj with h1 <;>
+        split_ifs at hj with h1;
           first
           | (cases hj; exact h1 hk)
       rw [Function.extend_apply' _ _ _ hn]

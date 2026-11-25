@@ -60,12 +60,12 @@ theorem dec_exists : AllSites (fun {D L hT Gi Gl Kc Dx cX ex u μ w hg Lv I H X}
             mem := ?_, eq := ?_ }⟩
   · intro j hj La
     by_cases h : ((sysS H X std).Pj j).IsLatTup La.2
-    · rw [dif_pos h]
+    · rw [dite_eq_left h]
       exact (Classical.choose_spec (hD j hj La h).2.1).1
     · rw [dite_eq_right h]
       exact Subgroup.one_mem _
   · intro j hj La h
-    simp only [dif_pos h]
+    simp only [dite_eq_left h]
     exact Classical.choose_spec (Classical.choose_spec (hD j hj La h).2.1).2
 
 end GlobalTheory.TwV.DelB

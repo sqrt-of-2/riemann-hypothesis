@@ -74,20 +74,20 @@ theorem zero_of_retract (hS : IsClosed (S : Set G)) (hA : IsClosed (A : Set G)) 
     (LA : Lat (Γ.subgroupOf A)) (ρ : S →* S) (hρ : Continuous ρ) (ρρ : ∀ s, ρ (ρ s) = ρ s) (ker : ∀ s, s.1 ∈ A ↔ ρ s = 1)
     (rat : ∀ s, s.1 ∈ Γ → (ρ s).1 ∈ Γ) (hc : Continuous f) (hf : ∀ γ ∈ Γ, ∀ x, f (γ * x) = f x)
     (h0 : IsAv (Γ.subgroupOf A) (fun a => a.1) f 0) : IsAv (Γ.subgroupOf S) (fun a => a.1) f 0 := by
-  haveI : LocallyCompactSpace S := hS.isClosedEmbedding_subtypeVal.locallyCompactSpace
-  haveI : LocallyCompactSpace A := hA.isClosedEmbedding_subtypeVal.locallyCompactSpace
-  haveI : SecondCountableTopology S := TopologicalSpace.Subtype.secondCountableTopology _
-  haveI : SecondCountableTopology A := TopologicalSpace.Subtype.secondCountableTopology _
+  have : LocallyCompactSpace S := hS.isClosedEmbedding_subtypeVal.locallyCompactSpace
+  have : LocallyCompactSpace A := hA.isClosedEmbedding_subtypeVal.locallyCompactSpace
+  have : SecondCountableTopology S := TopologicalSpace.Subtype.secondCountableTopology _
+  have : SecondCountableTopology A := TopologicalSpace.Subtype.secondCountableTopology _
   let B : Subgroup S := ρ.eqLocus (MonoidHom.id S)
   have hB : IsClosed (B : Set S) := isClosed_eq hρ continuous_id
-  haveI : LocallyCompactSpace B := hB.isClosedEmbedding_subtypeVal.locallyCompactSpace
-  haveI : SecondCountableTopology B := TopologicalSpace.Subtype.secondCountableTopology _
+  have : LocallyCompactSpace B := hB.isClosedEmbedding_subtypeVal.locallyCompactSpace
+  have : SecondCountableTopology B := TopologicalSpace.Subtype.secondCountableTopology _
   let π : S →* B := ρ.codRestrict B ρρ
   have cπ : Continuous π := hρ.subtype_mk _
   have sm : Semi (Γ.subgroupOf S) (Γ.subgroupOf A) ((Γ.subgroupOf S).subgroupOf B) (Subgroup.inclusion le) B.subtype
       (fun s => ⟨(s * (ρ s)⁻¹).1, (ker _).2 (by simp [ρρ])⟩) π :=
-    ⟨continuous_subtype_val.subtype_mk _, continuous_subtype_val,
-      (continuous_subtype_val.comp (continuous_id.mul hρ.inv)).subtype_mk _, cπ, Subgroup.inclusion_injective le,
+    ⟨continuous_subtypeVal.subtype_mk _, continuous_subtypeVal,
+      (continuous_subtypeVal.comp (continuous_id.mul hρ.inv)).subtype_mk _, cπ, Subgroup.inclusion_injective le,
       fun s => Subtype.ext (inv_mul_cancel_right s.1 (ρ s).1), fun a => Subtype.ext ((ker _).1 a.2), fun b => Subtype.ext b.2, fun _ => Iff.rfl,
       fun _ h => h, fun s h => rat s h⟩
   have := L.cnt
@@ -97,10 +97,10 @@ theorem zero_of_retract (hS : IsClosed (S : Set G)) (hA : IsClosed (A : Set G)) 
   have LB : Lat ((Γ.subgroupOf S).subgroupOf B) := by
     obtain ⟨C, c1, c2⟩ := L.cov
     refine ⟨ii.countable, DiscreteTopology.of_continuous_injective
-      ((continuous_subtype_val.comp continuous_subtype_val).subtype_mk _) ii, _, c1.image cπ, fun b => ?_⟩
+      ((continuous_subtypeVal.comp continuous_subtypeVal).subtype_mk _) ii, _, c1.image cπ, fun b => ?_⟩
     obtain ⟨γ, g1, g2⟩ := c2 b.1
     exact ⟨π γ, rat γ g1, _, g2, by rw [map_mul, show π b.1 = b from Subtype.ext b.2]⟩
-  exact sm.stage L LA LB (inc := S.subtype) continuous_subtype_val hc (fun γ h => hf _ h) h0 fun _ _ _ _ _ _ => by simp
+  exact sm.stage L LA LB (inc := S.subtype) continuous_subtypeVal hc (fun γ h => hf _ h) h0 fun _ _ _ _ _ _ => by simp
 
 variable {B : Type} [Group B] [TopologicalSpace B] [IsTopologicalGroup B]
 
@@ -127,23 +127,23 @@ theorem prod_stage [Countable Γ] [DiscreteTopology Γ] (hA : IsClosed (A : Set 
     have : (prodG A ι hn : Set G) = (fun s => s * (ι (π s))⁻¹) ⁻¹' A := Set.ext fun s => ⟨fun h => k' ⟨s, h⟩, fun h => ⟨_, h⟩⟩
     rw [this]
     exact hA.preimage (by fun_prop)
-  haveI : LocallyCompactSpace (prodG A ι hn) := hS.isClosedEmbedding_subtypeVal.locallyCompactSpace
-  haveI : LocallyCompactSpace A := hA.isClosedEmbedding_subtypeVal.locallyCompactSpace
-  haveI : SecondCountableTopology (prodG A ι hn) := TopologicalSpace.Subtype.secondCountableTopology _
-  haveI : SecondCountableTopology A := TopologicalSpace.Subtype.secondCountableTopology _
+  have : LocallyCompactSpace (prodG A ι hn) := hS.isClosedEmbedding_subtypeVal.locallyCompactSpace
+  have : LocallyCompactSpace A := hA.isClosedEmbedding_subtypeVal.locallyCompactSpace
+  have : SecondCountableTopology (prodG A ι hn) := TopologicalSpace.Subtype.secondCountableTopology _
+  have : SecondCountableTopology A := TopologicalSpace.Subtype.secondCountableTopology _
   have le : A ≤ prodG A ι hn := fun a h => ⟨1, by simpa using h⟩
   let π' : prodG A ι hn →* B := MonoidHom.mk' (fun s => π s) fun s t => k _ _ (by
     simpa [mul_assoc] using mul_mem (k' s) (hn (π s) _ (k' t)))
   have sm : Semi (Γ.subgroupOf (prodG A ι hn)) (Γ.subgroupOf A) Δ (Subgroup.inclusion le)
       (ι.codRestrict _ fun b => ⟨b, by simp⟩) (fun s => ⟨_, k' s⟩) π' :=
-    ⟨continuous_subtype_val.subtype_mk _, hι.subtype_mk _, Continuous.subtype_mk (by fun_prop) _,
-      hπ.comp continuous_subtype_val, Subgroup.inclusion_injective le, fun s => Subtype.ext (inv_mul_cancel_right s.1 _),
+    ⟨continuous_subtypeVal.subtype_mk _, hι.subtype_mk _, Continuous.subtype_mk (by fun_prop) _,
+      hπ.comp continuous_subtypeVal, Subgroup.inclusion_injective le, fun s => Subtype.ext (inv_mul_cancel_right s.1 _),
       fun a => k _ _ (by simp), fun b => k (ι b) b (by simp), fun _ => Iff.rfl, fun b h => r1 b h, fun s h => r2 s h⟩
   let i : Γ.subgroupOf (prodG A ι hn) → Γ := fun x => ⟨x.1.1, x.2⟩
   have ii : Function.Injective i := fun a b h => Subtype.ext (Subtype.ext (congrArg Subtype.val h :))
   have L := sm.lat LA LB ii.countable (DiscreteTopology.of_continuous_injective
-      ((continuous_subtype_val.comp continuous_subtype_val).subtype_mk _) ii)
-  exact ⟨hS, L, fun f cA c hc hf h1 h2 => sm.stage L LA LB (inc := Subgroup.subtype _) continuous_subtype_val hc
+      ((continuous_subtypeVal.comp continuous_subtypeVal).subtype_mk _) ii)
+  exact ⟨hS, L, fun f cA c hc hf h1 h2 => sm.stage L LA LB (inc := Subgroup.subtype _) continuous_subtypeVal hc
     (fun γ h => hf _ h) h1 h2⟩
 
 end PositivityTheory.ThKEnd.Cusp

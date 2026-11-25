@@ -86,5 +86,5 @@ theorem UpperTheory.Reformulated.B.CyclotomicCharacterAtPrimeContinuous.cyc_cont
   have h3 : Continuous
       (↑((Algebra.algebraMap ℚ_[l] (UpperTheory.Reformulated.B.CyclotomicCharacterAtPrimeContinuous.Qbar l)).comp PadicInt.Coe.ringHom) :
         ℤ_[l] →* UpperTheory.Reformulated.B.CyclotomicCharacterAtPrimeContinuous.Qbar l) :=
-    h2.comp continuous_subtype_val
+    h2.comp continuous_subtypeVal
   exact (Continuous.units_map _ h3).comp h1

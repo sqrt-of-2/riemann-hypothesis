@@ -21,20 +21,20 @@ theorem hpk_apply (k r : ℕ) (i j : Fin (2 * r + k + 1)) :
     Hpk k r i j = if j.val = sg k r i.val then (if i.val = r + k then -1 else 1) else 0 := by
   unfold Hpk sg
   by_cases h1 : i.val < r ∨ r + k < i.val
-  · rw [if_pos h1]
+  · rw [ite_eq_left h1]
     rcases h1 with h1 | h1
     · by_cases h2 : i.val + j.val = 2 * r + k
-      · rw [if_pos ⟨h1, h2⟩, if_pos (by omega), if_neg (by omega)]
-      · rw [if_neg (fun h => h2 h.2), if_neg (fun h => h2 h.2), if_neg (by omega), if_neg (by omega)]
+      · rw [ite_eq_left ⟨h1, h2⟩, ite_eq_left (by omega), ite_eq_right (by omega)]
+      · rw [ite_eq_right (fun h => h2 h.2), ite_eq_right (fun h => h2 h.2), ite_eq_right (by omega), ite_eq_right (by omega)]
     · by_cases h2 : i.val + j.val = 2 * r + k
-      · rw [if_neg (by omega), if_pos ⟨by omega, h2⟩, if_pos (by omega), if_neg (by omega)]
-      · rw [if_neg (fun h => h2 h.2), if_neg (fun h => h2 h.2), if_neg (by omega), if_neg (by omega)]
-  · rw [if_neg h1]
+      · rw [ite_eq_right (by omega), ite_eq_left ⟨by omega, h2⟩, ite_eq_left (by omega), ite_eq_right (by omega)]
+      · rw [ite_eq_right (fun h => h2 h.2), ite_eq_right (fun h => h2 h.2), ite_eq_right (by omega), ite_eq_right (by omega)]
+  · rw [ite_eq_right h1]
     push Not at h1
-    rw [if_neg (by omega), if_neg (by omega)]
+    rw [ite_eq_right (by omega), ite_eq_right (by omega)]
     by_cases h2 : i = j
-    · subst h2; rw [if_pos ⟨h1.1, h1.2, rfl⟩, if_pos rfl]
-    · rw [if_neg (fun h => h2 h.2.2), if_neg (fun h => h2 (Fin.ext h.symm))]
+    · subst h2; rw [ite_eq_left ⟨h1.1, h1.2, rfl⟩, ite_eq_left rfl]
+    · rw [ite_eq_right (fun h => h2 h.2.2), ite_eq_right (fun h => h2 (Fin.ext h.symm))]
 
 theorem hpk_symm (k r : ℕ) (i j : Fin (2 * r + k + 1)) : Hpk k r j i = Hpk k r i j := by
   rw [hpk_apply, hpk_apply]; unfold sg
@@ -61,7 +61,7 @@ theorem hpk_apply' (k r i : ℕ) (hi : i < 2 * r + k + 1) (j : Fin (2 * r + k + 
 theorem hpk_mul (k r : ℕ) : Hpk k r * Hpk k r = 1 := by
   first
   | exact _root_.Formalism.SharedLemmas.upq_hpk_mul_self
-  | (apply _root_.Formalism.SharedLemmas.upq_hpk_mul_self <;> assumption)
+
 
 theorem inv_eq {k r : ℕ} {g : Mat k r} (hg : g ∈ UH (Hpk k r)) : g⁻¹ = Hpk k r * gᴴ * Hpk k r := by
   have hg' : gᴴ * Hpk k r * g = Hpk k r := hg

@@ -66,7 +66,7 @@ theorem _root_.GlobalTheory.TorsorFieldPoint.formallyUnramified_of_isZTorsor (B 
     [Algebra B D] (q : ℕ) (hq : 0 < q) (act : Multiplicative (ZMod q) →* (D ≃ₐ[B] D))
     (h : _root_.GlobalTheory.KeyOriginCut.IsZTorsor B D q act) : Algebra.FormallyUnramified B D := by
   obtain ⟨-, -, hff, hbij⟩ := h
-  haveI : NeZero q := ⟨hq.ne'⟩
+  have : NeZero q := ⟨hq.ne'⟩
   let g : D →ₐ[B] (Multiplicative (ZMod q) → D) :=
     Pi.algHom B (fun _ ↦ D) fun σ ↦ (act σ : D →ₐ[B] D)
   let F : D ⊗[B] D →ₐ[D] (Multiplicative (ZMod q) → D) :=
@@ -79,9 +79,9 @@ theorem _root_.GlobalTheory.TorsorFieldPoint.formallyUnramified_of_isZTorsor (B 
     | tmul a b => rfl
     | add x y hx hy => simp_all
   have hFb : Function.Bijective F := by rw [hF]; exact hbij
-  haveI : Algebra.FormallyUnramified D (Multiplicative (ZMod q) → D) :=
+  have : Algebra.FormallyUnramified D (Multiplicative (ZMod q) → D) :=
     (Algebra.FormallyUnramified.pi_iff _).2 fun _ ↦ inferInstance
-  haveI : Algebra.FormallyUnramified D (D ⊗[B] D) :=
+  have : Algebra.FormallyUnramified D (D ⊗[B] D) :=
     Algebra.FormallyUnramified.of_equiv (AlgEquiv.ofBijective F hFb).symm
   exact Algebra.FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat D
 
@@ -96,7 +96,7 @@ theorem _root_.GlobalTheory.TorsorFieldPoint.exists_point_finite_separable : ∀
       (_ : Algebra.IsSeparable K L)
       (σ : D →+* L), σ.comp (algebraMap B D) = (algebraMap K L).comp f := by
   intro B K _ _ f D _ _ q hq act h
-  haveI := _root_.GlobalTheory.TorsorFieldPoint.formallyUnramified_of_isZTorsor B D q hq act h
+  have := _root_.GlobalTheory.TorsorFieldPoint.formallyUnramified_of_isZTorsor B D q hq act h
   obtain ⟨hfin, -, hff, -⟩ := h
   letI : Algebra B K := f.toAlgebra
   haveI : Nontrivial (K ⊗[B] D) := Module.FaithfullyFlat.rTensor_nontrivial B D K

@@ -84,32 +84,32 @@ theorem K_iso (k r j : ℕ) (V : ℕ → Fin (2 * r + k + 1) → ℂ)
     have hi := i.isLt
     rw [Hpk_mulVec]
     by_cases h1 : i.val < r
-    · rw [if_neg (show ¬ (r ≤ i.val ∧ i.val ≤ r + k) by omega),
-        if_neg (show ¬ (i = p) from fun h => by rw [h] at h1; omega),
-        if_neg (show ¬ (r ≤ i.val ∧ i.val ≤ r + k) by omega), add_zero, add_zero]
+    · rw [ite_eq_right (show ¬ (r ≤ i.val ∧ i.val ≤ r + k) by omega),
+        ite_eq_right (show ¬ (i = p) from fun h => by rw [h] at h1; omega),
+        ite_eq_right (show ¬ (r ≤ i.val ∧ i.val ≤ r + k) by omega), add_zero, add_zero]
       rw [Vs _ hb (sg k r i) (by simp only [sg_val]; omega)]
       by_cases h2 : i = sg k r q
-      · rw [if_pos (show (sg k r (sg k r i)).val = (sg k r q).val by rw [h2, sg_sg]), if_pos h2,
+      · rw [ite_eq_left (show (sg k r (sg k r i)).val = (sg k r q).val by rw [h2, sg_sg]), ite_eq_left h2,
           mul_one, h2]
-      · rw [if_neg (show ¬ ((sg k r (sg k r i)).val = (sg k r q).val) by
-            intro h; apply h2; ext; simp only [sg_val] at h ⊢; omega), if_neg h2, mul_zero]
+      · rw [ite_eq_right (show ¬ ((sg k r (sg k r i)).val = (sg k r q).val) by
+            intro h; apply h2; ext; simp only [sg_val] at h ⊢; omega), ite_eq_right h2, mul_zero]
     · by_cases h3 : i.val ≤ r + k
-      · rw [if_pos (show r ≤ i.val ∧ i.val ≤ r + k from ⟨by omega, h3⟩),
-          if_neg (show ¬ (i = sg k r q) from fun h => by rw [h] at h1; simp only [sg_val] at h1; omega),
-          if_neg (show ¬ (i = p) from fun h => by rw [h] at h3; omega),
-          if_pos (show r ≤ i.val ∧ i.val ≤ r + k from ⟨by omega, h3⟩)]
+      · rw [ite_eq_left (show r ≤ i.val ∧ i.val ≤ r + k from ⟨by omega, h3⟩),
+          ite_eq_right (show ¬ (i = sg k r q) from fun h => by rw [h] at h1; simp only [sg_val] at h1; omega),
+          ite_eq_right (show ¬ (i = p) from fun h => by rw [h] at h3; omega),
+          ite_eq_left (show r ≤ i.val ∧ i.val ≤ r + k from ⟨by omega, h3⟩)]
         ring
-      · rw [if_neg (show ¬ (r ≤ i.val ∧ i.val ≤ r + k) by omega),
-          if_neg (show ¬ (r ≤ i.val ∧ i.val ≤ r + k) by omega),
-          if_neg (show ¬ (i = sg k r q) from fun h => by rw [h] at h3; simp only [sg_val] at h3; omega),
+      · rw [ite_eq_right (show ¬ (r ≤ i.val ∧ i.val ≤ r + k) by omega),
+          ite_eq_right (show ¬ (r ≤ i.val ∧ i.val ≤ r + k) by omega),
+          ite_eq_right (show ¬ (i = sg k r q) from fun h => by rw [h] at h3; simp only [sg_val] at h3; omega),
           zero_add, add_zero]
         rw [Vs _ hc i (by omega)]
         by_cases h2 : i = p
-        · rw [if_pos (show (sg k r i).val = (sg k r p).val by rw [h2]), if_pos h2, h2]; simp
-        · rw [if_neg (show ¬ ((sg k r i).val = (sg k r p).val) by
-            intro h; apply h2; ext; simp only [sg_val] at h; omega), if_neg h2]; simp
+        · rw [ite_eq_left (show (sg k r i).val = (sg k r p).val by rw [h2]), ite_eq_left h2, h2]; simp
+        · rw [ite_eq_right (show ¬ ((sg k r i).val = (sg k r p).val) by
+            intro h; apply h2; ext; simp only [sg_val] at h; omega), ite_eq_right h2]; simp
   rw [Finset.sum_congr rfl (fun i _ => pt i), Finset.sum_add_distrib, Finset.sum_add_distrib]
-  simp only [Finset.sum_ite_eq', Finset.mem_univ, if_true]
+  simp only [Finset.sum_ite_eq', Finset.mem_univ, ite_true]
 
 theorem E_zero (k r j : ℕ) (V : ℕ → Fin (2 * r + k + 1) → ℂ)
     (V0 : ∀ c, j ≤ c → V c = 0)
@@ -136,34 +136,34 @@ theorem E_zero (k r j : ℕ) (V : ℕ → Fin (2 * r + k + 1) → ℂ)
   · have hpW : ¬ (r ≤ p.val ∧ p.val ≤ r + k) := by omega
     have hA : ∀ x : Fin (2 * r + k + 1), Pm k r j V x p = 0 := fun x => P_colX k r j V x p hpX
     have hB : Pm k r j V (sg k r p) q = 0 := P_rowS k r j V (sg k r p) q (by rw [sg_val]; omega)
-    rw [if_neg hpW, hB, hC (by omega), hA, hA]
+    rw [ite_eq_right hpW, hB, hC (by omega), hA, hA]
     simp
   · by_cases hpW : r ≤ p.val ∧ p.val ≤ r + k
-    · rw [if_pos hpW, hC (by omega), add_zero]
+    · rw [ite_eq_left hpW, hC (by omega), add_zero]
       by_cases hqX : q.val < r
       · have hqW : ¬ (r ≤ q.val ∧ q.val ≤ r + k) := by omega
-        rw [if_neg hqW, P_rowS k r j V (sg k r q) p (by rw [sg_val]; omega), P_colX k r j V p q hqX]
+        rw [ite_eq_right hqW, P_rowS k r j V (sg k r q) p (by rw [sg_val]; omega), P_colX k r j V p q hqX]
         simp
       · by_cases hqW : r ≤ q.val ∧ q.val ≤ r + k
-        · rw [if_pos hqW, P_rowWS_colW k r j V q p hqW.1 hpW.2, P_rowWS_colW k r j V p q hpW.1 hqW.2]
+        · rw [ite_eq_left hqW, P_rowWS_colW k r j V q p hqW.1 hpW.2, P_rowWS_colW k r j V p q hpW.1 hqW.2]
           simp
         · have hqS : r + k < q.val := by omega
-          rw [if_neg hqW, P_XW k r j V (sg k r q) p (by rw [sg_val]; omega) hpW.1 hpW.2,
+          rw [ite_eq_right hqW, P_XW k r j V (sg k r q) p (by rw [sg_val]; omega) hpW.1 hpW.2,
             P_WS k r j V p q hpW.1 hpW.2 hqS, star_neg, star_mul', star_star, star_dW]
           ring
     · have hpS : r + k < p.val := by omega
-      rw [if_neg hpW]
+      rw [ite_eq_right hpW]
       by_cases hqX : q.val < r
       · have hqW : ¬ (r ≤ q.val ∧ q.val ≤ r + k) := by omega
-        rw [if_neg hqW, P_rowS k r j V (sg k r q) p (by rw [sg_val]; omega),
+        rw [ite_eq_right hqW, P_rowS k r j V (sg k r q) p (by rw [sg_val]; omega),
           P_colX k r j V (sg k r p) q hqX, hC (by omega)]
         simp
       · by_cases hqW : r ≤ q.val ∧ q.val ≤ r + k
-        · rw [if_pos hqW, P_WS k r j V q p hqW.1 hqW.2 hpS,
+        · rw [ite_eq_left hqW, P_WS k r j V q p hqW.1 hqW.2 hpS,
             P_XW k r j V (sg k r p) q (by rw [sg_val]; omega) hqW.1 hqW.2, hC (by omega)]
           ring
         · have hqS : r + k < q.val := by omega
-          rw [if_neg hqW]
+          rw [ite_eq_right hqW]
           have hC' : ∑ i, (if r ≤ i.val ∧ i.val ≤ r + k then
               dW k r i * star (Pm k r j V i p) * Pm k r j V i q else 0) =
               ∑ i, (if r ≤ i.val ∧ i.val ≤ r + k then
@@ -176,20 +176,20 @@ theorem E_zero (k r j : ℕ) (V : ℕ → Fin (2 * r + k + 1) → ℂ)
             P_XS k r j V (sg k r p) q (by rw [sg_val]; omega) hqS]
           by_cases hbp : (sg k r p).val < j
           · by_cases hbq : (sg k r q).val < j
-            · rw [if_pos hbp, if_pos hbq]
+            · rw [ite_eq_left hbp, ite_eq_left hbq]
               have hK := K_iso k r j V Vs p q hpS hqS hbq hbp
               rw [Viso _ _ hbq hbp] at hK
               exact hK.symm
             · have h0 := V0 _ (Nat.le_of_not_lt hbq)
-              rw [if_pos hbp, if_neg hbq, h0]
+              rw [ite_eq_left hbp, ite_eq_right hbq, h0]
               simp
           · have h0 := V0 _ (Nat.le_of_not_lt hbp)
-            rw [if_neg hbp, h0]
+            rw [ite_eq_right hbp, h0]
             by_cases hbq : (sg k r q).val < j
-            · rw [if_pos hbq]
+            · rw [ite_eq_left hbq]
               simp
             · have h0' := V0 _ (Nat.le_of_not_lt hbq)
-              rw [if_neg hbq, h0']
+              rw [ite_eq_right hbq, h0']
               simp
 
 theorem unitary_P (k r j : ℕ) (V : ℕ → Fin (2 * r + k + 1) → ℂ)
@@ -253,15 +253,15 @@ theorem pm_col_star (j : ℕ) (V : ℕ → Fin (2 * r + k + 1) → ℂ)
     simp [bvec, Matrix.mulVec, dotProduct, Pi.single_apply, Matrix.add_apply, Matrix.one_apply]
   rw [hcol]
   by_cases hp1 : p.val < r
-  · rw [NFOne.P_XS k r j V p _ hp1 hq, hsg, if_pos hb, if_neg (fun e => by rw [e] at hp1; omega), zero_add]
+  · rw [NFOne.P_XS k r j V p _ hp1 hq, hsg, ite_eq_left hb, ite_eq_right (fun e => by rw [e] at hp1; omega), zero_add]
   · by_cases hp2 : p.val ≤ r + k
-    · rw [NFOne.P_WS k r j V p _ (by omega) hp2 hq, hsg, if_neg (fun e => by rw [e] at hp2; omega), zero_add]
+    · rw [NFOne.P_WS k r j V p _ (by omega) hp2 hq, hsg, ite_eq_right (fun e => by rw [e] at hp2; omega), zero_add]
     · rw [NFOne.P_rowS k r j V p _ (by omega), add_zero, Vs b.val hb p (by omega)]
       have e : p = esI k r b ↔ (NFOne.sg k r p).val = b.val := by
         rw [Fin.ext_iff]; simp only [NFOne.sg, esI]; omega
       by_cases h1 : p = esI k r b
-      · rw [if_pos h1, if_pos (e.mp h1)]
-      · rw [if_neg h1, if_neg (fun h2 => h1 (e.mpr h2))]
+      · rw [ite_eq_left h1, ite_eq_left (e.mp h1)]
+      · rw [ite_eq_right h1, ite_eq_right (fun h2 => h1 (e.mpr h2))]
 
 theorem one_add_projection_mem_isotropic_set (j : ℕ) (z' : Fin (2 * r + k + 1) → ℂ) (hz : inWb k r z') (V : ℕ → Fin (2 * r + k + 1) → ℂ)
     (V0 : ∀ c, j ≤ c → V c = 0)
@@ -290,8 +290,8 @@ private theorem mul_mem_n0set {z' : Fin (2 * r + k + 1) → ℂ}
     intro p q hp hq m
     have hqr : r ≤ q.val := by rcases hq with ⟨h1, -⟩ | ⟨h1, -⟩ <;> omega
     by_cases hm1 : m.val < r
-    · rw [col p m hm1, if_neg (fun e => by rw [e] at hp; omega), zero_mul,
-        if_neg (fun e => by rw [e] at hm1; omega)]
+    · rw [col p m hm1, ite_eq_right (fun e => by rw [e] at hp; omega), zero_mul,
+        ite_eq_right (fun e => by rw [e] at hm1; omega)]
     · have tail : h m q = (if m = q then 1 else 0) → g p m * h m q = if m = q then g p q else 0 := by
         intro hmq
         by_cases e : m = q
@@ -300,8 +300,8 @@ private theorem mul_mem_n0set {z' : Fin (2 * r + k + 1) → ℂ}
       by_cases hm2 : m.val ≤ r + k
       · rcases hq with ⟨hq1, hq2⟩ | ⟨hq1, hp2⟩
         · exact tail (hW m q hq1 hq2 (by omega))
-        · rw [gW p m (by omega) hm2 hp, if_neg (fun e => by rw [e] at hp2; omega), zero_mul,
-            if_neg (fun e => by rw [e] at hm2; omega)]
+        · rw [gW p m (by omega) hm2 hp, ite_eq_right (fun e => by rw [e] at hp2; omega), zero_mul,
+            ite_eq_right (fun e => by rw [e] at hm2; omega)]
       · rcases hq with ⟨hq1, hq2⟩ | ⟨hq1, hp2⟩
         · exact tail (hW m q hq1 hq2 (by omega))
         · exact tail (hS m q hq1 (by omega))
@@ -314,10 +314,10 @@ private theorem mul_mem_n0set {z' : Fin (2 * r + k + 1) → ℂ}
   · rw [← Matrix.mulVec_mulVec, hX, gX]
   · rw [← Matrix.mulVec_mulVec, hz, gz]
   · rw [Matrix.mul_apply, Finset.sum_congr rfl (fun m _ => key p q hp (Or.inl ⟨hq1, hq2⟩) m),
-      Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
+      Finset.sum_ite_eq', ite_eq_left (Finset.mem_univ _)]
     exact gW p q hq1 hq2 hp
   · rw [Matrix.mul_apply, Finset.sum_congr rfl (fun m _ => key p q (by omega) (Or.inr ⟨hq, hp⟩) m),
-      Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
+      Finset.sum_ite_eq', ite_eq_left (Finset.mem_univ _)]
     exact gS p q hq hp
 
 theorem mul_mem_isotropic_unipotent_set (z' : Fin (2 * r + k + 1) → ℂ) (j1 j2 : ℕ) (V1 V2 : ℕ → Fin (2 * r + k + 1) → ℂ)

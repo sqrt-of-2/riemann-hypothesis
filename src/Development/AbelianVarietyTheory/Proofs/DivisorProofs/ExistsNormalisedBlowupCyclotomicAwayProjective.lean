@@ -61,26 +61,26 @@ theorem isFinite_fromNormalization_int_of_isReduced {X Y : Scheme.{0}} {o : Comm
     (hess : ∀ x ∈ genericPoints X, (f.residueFieldMap x).hom.EssFiniteType) :
     IsFinite f.fromNormalization := by
   refine ⟨fun U hU => ?_⟩
-  letI := (f.app U).hom.toAlgebra
-  letI : Algebra o Γ(Y, U) := ((Scheme.ΓSpecIso o).inv ≫ g.appLE ⊤ U le_top).hom.toAlgebra
-  haveI : Algebra.FiniteType o Γ(Y, U) :=
+  let := (f.app U).hom.toAlgebra
+  let : Algebra o Γ(Y, U) := ((Scheme.ΓSpecIso o).inv ≫ g.appLE ⊤ U le_top).hom.toAlgebra
+  have : Algebra.FiniteType o Γ(Y, U) :=
     (g.finiteType_appLE (isAffineOpen_top _) hU le_top).comp
       (.of_surjective _ (ConcreteCategory.bijective_of_isIso (Scheme.ΓSpecIso o).inv).2)
-  haveI : Algebra.FiniteType ℤ Γ(Y, U) := .trans (S := o) inferInstance inferInstance
-  haveI : IsNoetherianRing Γ(Y, U) := Algebra.FiniteType.isNoetherianRing ℤ _
+  have : Algebra.FiniteType ℤ Γ(Y, U) := .trans (S := o) inferInstance inferInstance
+  have : IsNoetherianRing Γ(Y, U) := Algebra.FiniteType.isNoetherianRing ℤ _
   let D : Set X := genericPoints X
   have hD : Dense D := dense_iff_closure_eq.mpr genericPoints.closure
   let ι := ↥(D ∩ (f ⁻¹ᵁ U : X.Opens))
-  haveI : Finite ι := (GlobalTheory.finite_genericPoints_inter _ (f.isCompact_preimage hU.isCompact)).to_subtype
-  letI (x : ι) : Algebra Γ(Y, U) (X.residueField x.1) :=
+  have : Finite ι := (GlobalTheory.finite_genericPoints_inter _ (f.isCompact_preimage hU.isCompact)).to_subtype
+  let (x : ι) : Algebra Γ(Y, U) (X.residueField x.1) :=
     (f.app U ≫ X.evaluation (f ⁻¹ᵁ U) x.1 x.2.2).hom.toAlgebra
-  haveI (x : ι) : Algebra.EssFiniteType Γ(Y, U) (X.residueField x.1) := by
+  have (x : ι) : Algebra.EssFiniteType Γ(Y, U) (X.residueField x.1) := by
     change (f.app U ≫ X.evaluation (f ⁻¹ᵁ U) x.1 x.2.2).hom.EssFiniteType
     rw [← Scheme.evaluation_naturality f (V := U) x.1 x.2.2]
     exact .comp (.comp (essFiniteType_germ hU (f x.1) x.2.2)
       (RingHom.FiniteType.of_surjective _ (Y.residue_surjective _)).essFiniteType) (hess _ x.2.1)
-  haveI (x : ι) := GlobalTheory.ZMain.finite_integralClosure_field Γ(Y, U) (X.residueField x.1)
-  haveI : Module.Finite Γ(Y, U) (integralClosure Γ(Y, U) Γ(X, f ⁻¹ᵁ U)) := by
+  have (x : ι) := GlobalTheory.ZMain.finite_integralClosure_field Γ(Y, U) (X.residueField x.1)
+  have : Module.Finite Γ(Y, U) (integralClosure Γ(Y, U) Γ(X, f ⁻¹ᵁ U)) := by
     refine finite_integralClosure_of_family (L := fun x : ι => X.residueField x.1)
       (fun x => { (X.evaluation (f ⁻¹ᵁ U) x.1 x.2.2).hom with commutes' := fun _ => rfl })
       fun b hb => ?_
@@ -102,8 +102,8 @@ theorem dense_preimage_of_blowup {Z X' : Scheme.{0}} (J : Z.IdealSheafData) (b :
     rw [← hD, ← D.coe_nonzeroLocus_canonical]
     exact D.dense_nonzeroLocus_canonical
   let Uc : Z.Opens := J.support.compl
-  haveI : IsIso (b ∣_ Uc) := hiso Uc fun x hx => hx
-  haveI hoi : IsOpenImmersion ((b ⁻¹ᵁ Uc).ι ≫ b) := by
+  have : IsIso (b ∣_ Uc) := hiso Uc fun x hx => hx
+  have hoi : IsOpenImmersion ((b ⁻¹ᵁ Uc).ι ≫ b) := by
     rw [← morphismRestrict_ι]; infer_instance
   rw [dense_iff_inter_open]
   intro O hO hne
@@ -130,24 +130,24 @@ theorem exists_normBl : ∀ (n : ℕ) (Z : Scheme.{0}) (z : Z ⟶ Sp (cycAway n)
     (BD : EffCartierData S), IsNormBl π J ∧ IsProjOver (π ≫ z) ∧ BD.idealSheaf = J.comap π ∧
     IsIso (π ∣_ W) ∧ Dense (π ⁻¹' W : Set S) := by
   intro n Z z hz hZ J W hWd hWJ
-  haveI : Algebra.FiniteType ℤ (cycAway n) := finiteType_cycAway n
-  haveI : Algebra.FiniteType ℤ (CommRingCat.of (cycAway n)) := ‹Algebra.FiniteType ℤ (cycAway n)›
-  haveI : IsNoetherianRing (cycAway n) := Algebra.FiniteType.isNoetherianRing ℤ _
+  have : Algebra.FiniteType ℤ (cycAway n) := finiteType_cycAway n
+  have : Algebra.FiniteType ℤ (CommRingCat.of (cycAway n)) := ‹Algebra.FiniteType ℤ (cycAway n)›
+  have : IsNoetherianRing (cycAway n) := Algebra.FiniteType.isNoetherianRing ℤ _
   obtain ⟨X', b, hb, hbs, hiso⟩ := GlobalTheory.ProjBlowup.exists_blowup z hz J
-  haveI : LocallyOfFiniteType (b ≫ z) := by
+  have : LocallyOfFiniteType (b ≫ z) := by
     obtain ⟨m, i, hi, e⟩ := hbs
     have := isProper_str (cycAway n) m
     rw [← e]; infer_instance
-  haveI : IsLocallyNoetherian X' := LocallyOfFiniteType.isLocallyNoetherian (b ≫ z)
+  have : IsLocallyNoetherian X' := LocallyOfFiniteType.isLocallyNoetherian (b ≫ z)
   let V : X'.Opens := b ⁻¹ᵁ W
-  haveI hbW : IsIso (b ∣_ W) := hiso W fun x hx hJ => hWJ x hJ hx
-  haveI hoi : IsOpenImmersion (V.ι ≫ b) := by
+  have hbW : IsIso (b ∣_ W) := hiso W fun x hx hJ => hWJ x hJ hx
+  have hoi : IsOpenImmersion (V.ι ≫ b) := by
     rw [← morphismRestrict_ι]; infer_instance
-  haveI : GlobalTheory.IsNormalScheme Z := .of_pred hZ
-  haveI hN : GlobalTheory.IsNormalScheme V.toScheme := .of_isOpenImmersion (V.ι ≫ b)
-  haveI : IsReduced V.toScheme := by
+  have : GlobalTheory.IsNormalScheme Z := .of_pred hZ
+  have hN : GlobalTheory.IsNormalScheme V.toScheme := .of_isOpenImmersion (V.ι ≫ b)
+  have : IsReduced V.toScheme := by
     exact inferInstance
-  haveI hfin : IsFinite V.ι.fromNormalization :=
+  have hfin : IsFinite V.ι.fromNormalization :=
     isFinite_fromNormalization_int_of_isReduced (o := CommRingCat.of (cycAway n)) V.ι (b ≫ z)
       fun x _ => (LocallyOfFiniteType.stalkMap V.ι x).residueFieldMap
   let ν := V.ι.fromNormalization

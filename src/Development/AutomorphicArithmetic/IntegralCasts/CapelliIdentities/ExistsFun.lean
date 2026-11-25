@@ -64,11 +64,11 @@ private theorem UpperTheory.Reformulated.B.Gr28.exists_fun
       have := K.mul_mem hh (K.inv_mem h1)
       simpa [mul_assoc] using this
     have h3 := hw _ h2
-    have h4 : f g = σ hg.choose w := dif_pos hg
+    have h4 : f g = σ hg.choose w := dite_eq_left hg
     rw [h4]
     conv_rhs => rw [← h3]
-    rw [← Module.End.mul_apply, ← map_mul, mul_inv_cancel_left]
-  have neg : ∀ g : G, (¬ ∃ h : H, (h : G)⁻¹ * g ∈ K) → f g = 0 := fun g hg => dif_neg hg
+    rw [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel_left]
+  have neg : ∀ g : G, (¬ ∃ h : H, (h : G)⁻¹ * g ∈ K) → f g = 0 := fun g hg => dite_eq_right hg
   refine ⟨f, ?_, ?_, ?_⟩
   · rw [pos 1 1 (by simp)]
     simp
@@ -76,7 +76,7 @@ private theorem UpperTheory.Reformulated.B.Gr28.exists_fun
     by_cases hg : ∃ h : H, (h : G)⁻¹ * g ∈ K
     · obtain ⟨a, ha⟩ := hg
       rw [pos g a ha, pos (h * g) (h * a) (by simpa [mul_assoc] using ha), map_mul,
-        Module.End.mul_apply]
+        mul_apply_eq_comp]
     · rw [neg g hg, map_zero]
       refine neg _ ?_
       rintro ⟨a, ha⟩
@@ -113,14 +113,14 @@ theorem UpperTheory.Reformulated.B.Gr28.indVec :
       { carrier := {g | GlobalTheory.PRep.ind H σ g F = F}
         mul_mem' := by
           intro x y hx hy
-          simp only [Set.mem_setOf_eq, map_mul, Module.End.mul_apply] at *
+          simp only [Set.mem_ofPred_eq, map_mul, mul_apply_eq_comp] at *
           rw [hy, hx]
         one_mem' := by simp
         inv_mem' := by
           intro x hx
-          simp only [Set.mem_setOf_eq] at *
+          simp only [Set.mem_ofPred_eq] at *
           conv_lhs => rw [← hx]
-          rw [← Module.End.mul_apply, ← map_mul]
+          rw [← mul_apply_eq_comp, ← map_mul]
           simp }
     exact Subgroup.isOpen_mono (H₁ := K) (H₂ := T) hF hK
   refine ⟨⟨F, hs⟩, h1, ?_⟩

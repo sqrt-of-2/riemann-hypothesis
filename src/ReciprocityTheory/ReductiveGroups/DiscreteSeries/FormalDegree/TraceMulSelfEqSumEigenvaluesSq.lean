@@ -56,7 +56,7 @@ theorem pmat_coords {ε : Fin n → Bool} (X : Matrix (Fin n) (Fin n) ℂ) (hX :
     rw [hab] at h
     cases hb : ε b <;> simp [hb] at h <;>
       first
-        | exact h
+
         | linear_combination h / 2
         | linear_combination (-1 / 2 : ℂ) * h
   have hJJ : Jm ε * Jm ε = 1 := by
@@ -96,10 +96,10 @@ lemma norm_pmat_sq {ε : Fin n → Bool} (z : PCoord ε → ℂ) (a b : Fin n) :
   dsimp only
   by_cases h1 : b < a ∧ ε a ≠ ε b
   · have h2 : ¬ (a < b ∧ ε b ≠ ε a) := fun h => lt_asymm h1.1 h.1
-    simp only [dif_pos h1, dif_neg h2, add_zero]
+    simp only [dite_eq_left h1, dite_eq_right h2, add_zero]
   · by_cases h2 : a < b ∧ ε b ≠ ε a
-    · simp only [dif_neg h1, dif_pos h2, norm_star, zero_add]
-    · simp only [dif_neg h1, dif_neg h2, norm_zero, add_zero]
+    · simp only [dite_eq_right h1, dite_eq_left h2, norm_star, zero_add]
+    · simp only [dite_eq_right h1, dite_eq_right h2, norm_zero, add_zero]
       norm_num
 
 lemma sum_pmatHalfSq {ε : Fin n → Bool} (z : PCoord ε → ℂ) :
@@ -112,12 +112,12 @@ lemma sum_pmatHalfSq {ε : Fin n → Bool} (z : PCoord ε → ℂ) :
     split_ifs with h
     · rfl
     · unfold pmatHalfSq
-      rw [dif_neg h]
+      rw [dite_eq_right h]
   rw [e1, Finset.sum_subtype (p := fun ab : Fin n × Fin n => ab.2 < ab.1 ∧ ε ab.1 ≠ ε ab.2) _
     (fun ab => by simp) (pmatHalfSq z)]
   refine Finset.sum_congr rfl fun ab _ => ?_
   unfold pmatHalfSq
-  rw [dif_pos ab.2]
+  rw [dite_eq_left ab.2]
 
 theorem hs_pmat {ε : Fin n → Bool} (z : PCoord ε → ℂ) : hs (pmat z) = 2 * ∑ ab, ‖z ab‖ ^ 2 := by
   unfold S7.hs
@@ -149,34 +149,34 @@ theorem card_PCoord (ε : Fin n → Bool) : Fintype.card (PCoord ε) = pOf ε * 
   refine Finset.card_nbij' (fun ab => if ε ab.1 then ab else (ab.2, ab.1))
     (fun xy => (max xy.1 xy.2, min xy.1 xy.2)) ?_ ?_ ?_ ?_
   · rintro ⟨a, b⟩ h
-    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq] at h
+    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_ofPred_eq] at h
     obtain ⟨hba, hne⟩ := h
     cases ha : ε a <;> cases hb : ε b <;> simp_all
   · rintro ⟨x, y⟩ h
     simp only [Finset.coe_product, Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_prod,
-      Set.mem_setOf_eq] at h
+      Set.mem_ofPred_eq] at h
     obtain ⟨hx, hy⟩ := h
     have hxy : x ≠ y := by
       intro e
       rw [e, hy] at hx
       exact Bool.false_ne_true hx
-    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
+    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_ofPred_eq]
     rcases lt_or_gt_of_ne hxy with h | h
     · rw [max_eq_right h.le, min_eq_left h.le]
       exact ⟨h, by rw [hx, hy]; decide⟩
     · rw [max_eq_left h.le, min_eq_right h.le]
       exact ⟨h, by rw [hx, hy]; decide⟩
   · rintro ⟨a, b⟩ h
-    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq] at h
+    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_ofPred_eq] at h
     obtain ⟨hba, hne⟩ := h
     cases ha : ε a
-    · simp only [ha, Bool.false_eq_true, if_false]
+    · simp only [ha, Bool.false_eq_true, ite_false]
       rw [max_eq_right hba.le, min_eq_left hba.le]
-    · simp only [ha, if_true]
+    · simp only [ha, ite_true]
       rw [max_eq_left hba.le, min_eq_right hba.le]
   · rintro ⟨x, y⟩ h
     simp only [Finset.coe_product, Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_prod,
-      Set.mem_setOf_eq] at h
+      Set.mem_ofPred_eq] at h
     obtain ⟨hx, hy⟩ := h
     have hxy : x ≠ y := by
       intro e

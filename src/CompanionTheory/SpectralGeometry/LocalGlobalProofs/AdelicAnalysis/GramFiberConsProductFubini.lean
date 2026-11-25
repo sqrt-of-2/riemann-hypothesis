@@ -39,7 +39,7 @@ theorem isSFiniteKernel_of_forall_univ_lt_top {α β : Type} [MeasurableSpace α
         simpa [g, hj] using this
       have h2 : η a Set.univ = ENNReal.ofReal (η a Set.univ).toReal :=
         (ENNReal.ofReal_toReal (h a).ne).symm
-      simp only [ηs, Kernel.piecewise_apply, if_pos ha]
+      simp only [ηs, Kernel.piecewise_apply, ite_eq_left ha]
       rw [h2]
       refine ENNReal.ofReal_le_of_le_toReal ?_
       rw [ENNReal.toReal_add (by simp) (by simp)]
@@ -67,7 +67,7 @@ theorem isSFiniteKernel_of_locallyFinite {α β : Type} [MeasurableSpace α] [To
     simp only [C, iUnion_disjointed]
     exact iUnion_compactCovering β
   have hCf : ∀ a k, κ a (C k) < ⊤ := fun a k => by
-    haveI := h a
+    have := h a
     exact (measure_mono (disjointed_subset _ k)).trans_lt
       (isCompact_compactCovering β k).measure_lt_top
   have hk : ∀ k, IsSFiniteKernel (Kernel.restrict κ (hCm k)) := fun k =>
@@ -114,31 +114,31 @@ theorem measurable_Pint (F E : Type) [Field F] [NumberField F] [Field E] [Number
     Measurable (fun z : R × (Fin n → R ⊗[F] E) × HermR R σ n =>
       Pint σ J t m₁ m' s φ z.1 z.2.1 z.2.2) := by
   obtain ⟨iTR, iLR, iSR, iTR2, -⟩ := D.hR
-  haveI := iTR
-  haveI := iLR
-  haveI := iSR
-  haveI := iTR2
+  have := iTR
+  have := iLR
+  have := iSR
+  have := iTR2
   obtain ⟨iTK, iLK, iSK, iT2K, -, -, -, iBor, -, -⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ D.hCM R
-  haveI := iTK
-  haveI := iLK
-  haveI := iSK
-  haveI := iT2K
+  have := iTK
+  have := iLK
+  have := iSK
+  have := iT2K
   have hJ' := _root_.GlobalTheory.CompanionTheory.SW.PiLocalization₂.isHermND_blockOne_algebraMap F E σ M J D.hJ t D.ht
   obtain ⟨-, hloc, -, hmeas, -, -⟩ :=
     _root_.GlobalTheory.CompanionTheory.SW.PiLocalization₂.gramFib_basic F E σ D.hCM M n J D.hJ R D.hR d b lam D.hlam m' D.hm'
   obtain ⟨-, hloc₁, -⟩ :=
     _root_.GlobalTheory.CompanionTheory.SW.PiLocalization₂.gramFib_basic F E σ D.hCM (M + 1) 1 _ hJ' R D.hR d b lam D.hlam m₁ D.hm₁
   obtain ⟨-, -, iSH, -, iBH, hH⟩ := _root_.GlobalTheory.CompanionTheory.SW.TopH.topH_props F E σ D.hCM (M + 1) _ hJ' R
-  haveI := iSH
-  haveI := iBH
-  haveI : BorelSpace (Fin n → Fin M → R ⊗[F] E) := iBor n M
-  haveI : BorelSpace (Fin (n + 1) → Fin (M + 1) → R ⊗[F] E) := iBor (n + 1) (M + 1)
-  haveI : BorelSpace (Fin 1 → Fin (M + 1) → R ⊗[F] E) := iBor 1 (M + 1)
-  haveI : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
-  haveI : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
+  have := iSH
+  have := iBH
+  have : BorelSpace (Fin n → Fin M → R ⊗[F] E) := iBor n M
+  have : BorelSpace (Fin (n + 1) → Fin (M + 1) → R ⊗[F] E) := iBor (n + 1) (M + 1)
+  have : BorelSpace (Fin 1 → Fin (M + 1) → R ⊗[F] E) := iBor 1 (M + 1)
+  have : BorelSpace (R ⊗[F] E) := ⟨rfl⟩
+  have : IsModuleTopology R (R ⊗[F] E) := ⟨rfl⟩
   have hact := (hH (n + 1)).1
   have hten : Measurable (fun r : R => r ⊗ₜ[F] (1 : E)) := by
-    haveI : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R (R ⊗[F] E)
+    have : ContinuousSMul R (R ⊗[F] E) := IsModuleTopology.toContinuousSMul R (R ⊗[F] E)
     have hc : Continuous (fun r : R => r • (1 : R ⊗[F] E)) :=
       Continuous.smul (f := fun r : R => r) (g := fun _ : R => (1 : R ⊗[F] E))
         continuous_id continuous_const
@@ -149,11 +149,11 @@ theorem measurable_Pint (F E : Type) [Field F] [NumberField F] [Field E] [Number
     exact hc.measurable
   let κ : Kernel (HermR R σ n) (Fin n → Fin M → R ⊗[F] E) :=
     ⟨m', Measure.measurable_of_measurable_coe _ hmeas⟩
-  haveI : IsSFiniteKernel κ := isSFiniteKernel_of_locallyFinite κ hloc
+  have : IsSFiniteKernel κ := isSFiniteKernel_of_locallyFinite κ hloc
   let κ' : Kernel ((R × (Fin n → R ⊗[F] E) × HermR R σ n) × (Fin 1 → Fin (M + 1) → R ⊗[F] E))
       (Fin n → Fin M → R ⊗[F] E) :=
     κ.comap (fun p => p.1.2.2) (measurable_snd.comp (measurable_snd.comp measurable_fst))
-  haveI := hloc₁ (hermScal R σ (algebraMap F R t))
+  have := hloc₁ (hermScal R σ (algebraMap F R t))
   have hvec : Measurable (fun q : ((R × (Fin n → R ⊗[F] E) × HermR R σ n) ×
       (Fin 1 → Fin (M + 1) → R ⊗[F] E)) × (Fin n → Fin M → R ⊗[F] E) =>
         (vec (q.1.1.1 ⊗ₜ[F] (1 : E)) q.1.1.2.1 q.2 : Fin (n + 1) → Fin (M + 1) → R ⊗[F] E)) :=

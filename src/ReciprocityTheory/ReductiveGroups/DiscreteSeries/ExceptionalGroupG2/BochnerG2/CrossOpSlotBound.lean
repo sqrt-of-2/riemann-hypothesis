@@ -45,34 +45,34 @@ theorem position_perp (hE : IsGlRep E) (hU : IsInfUnitary ε E) (hV : IsKIrrHW �
       rw [e1, hFapp]
       simp only [Equiv.apply_symm_apply, slRest_symm_self]
       by_cases hr' : r' = r
-      · rw [if_pos hr', if_pos hr']
+      · rw [ite_eq_left hr', ite_eq_left hr']
         rw [show (fun _ : Fin 1 => ι 0) = ι from funext fun z => by rw [Subsingleton.elim z 0]]
-      · rw [if_neg hr', if_neg hr']
+      · rw [ite_eq_right hr', ite_eq_right hr']
         rfl
     have hFm : F ∈ ncV ε V k := by
       rw [slt_mem_ncV_iff]
       intro κ'
       rw [hFapp]
       by_cases h1 : (slRest i κ').2 = r
-      · rw [if_pos h1]
+      · rw [ite_eq_left h1]
         have hxm1 := Wm_le_ncV hxm
         rw [slt_mem_ncV_iff] at hxm1
         have hv := hxm1 (fun _ => κ' i)
         by_cases h2 : ∀ j, ε (κ' j).1 ≠ ε (κ' j).2
-        · rw [if_pos h2]
-          rwa [if_pos (fun _ => h2 i)] at hv
-        · rw [if_neg h2]
-          push_neg at h2
+        · rw [ite_eq_left h2]
+          rwa [ite_eq_left (fun _ => h2 i)] at hv
+        · rw [ite_eq_right h2]
+          push Not at h2
           obtain ⟨j, hj⟩ := h2
           by_cases hji : j = i
           · subst hji
-            rwa [if_neg (fun hall => (hall 0) hj)] at hv
+            rwa [ite_eq_right (fun hall => (hall 0) hj)] at hv
           · exfalso
             have hκj : κ' j = r ⟨j, hji⟩ := by
               rw [← h1]
               rfl
             exact hr ⟨j, hji⟩ (by rw [← hκj]; exact hj)
-      · rw [if_neg h1]
+      · rw [ite_eq_right h1]
         exact Submodule.zero_mem _
     have hslF : ∀ κ', slice i κ' F ∈ Wm ε E V := by
       intro κ'
@@ -82,13 +82,13 @@ theorem position_perp (hE : IsGlRep E) (hU : IsInfUnitary ε E) (hV : IsKIrrHW �
       · exact Submodule.zero_mem _
     have h0 := hperp F hFm hslF
     rw [slt_inner_eq_sum i F P, Finset.sum_eq_single r
-      (fun r' _ hr' => by rw [hsltF, if_neg hr', inner_zero_left])
-      (fun h => absurd (Finset.mem_univ r) h), hsltF, if_pos rfl, hdec, inner_add_right,
+      (fun r' _ hr' => by rw [hsltF, ite_eq_right hr', inner_zero_left])
+      (fun h => absurd (Finset.mem_univ r) h), hsltF, ite_eq_left rfl, hdec, inner_add_right,
       Wm_perp_Wp hU hxm hxp, add_zero] at h0
     have hxm0 : xm = 0 := inner_self_eq_zero.mp h0
     rw [hdec, hxm0, zero_add]
     exact hxp
-  · push_neg at hr
+  · push Not at hr
     obtain ⟨j, hj⟩ := hr
     have hz : slt i r P = 0 := by
       apply PiLp.ext
@@ -96,7 +96,7 @@ theorem position_perp (hE : IsGlRep E) (hU : IsInfUnitary ε E) (hV : IsKIrrHW �
       have e1 : slt i r P ι = P ((slRest i).symm (ι 0, r)) := rfl
       rw [e1]
       have hP' := (slt_mem_ncV_iff.mp hP) ((slRest i).symm (ι 0, r))
-      rw [if_neg] at hP'
+      rw [ite_eq_right] at hP'
       · simpa using hP'
       · intro hall
         exact hall j.1 (by rw [slRest_symm_ne i _ r j.2]; exact hj)

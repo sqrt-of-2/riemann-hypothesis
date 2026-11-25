@@ -69,9 +69,9 @@ theorem lamLdef_eq_lamV (X : Stages) (j : ℕ) (h1 : 1 ≤ j) (h2 : j ≤ X.B.R.
   have q := RowPar.lamV_eq (X.B.hc τ) h1 h2 i'
   have hi := i'.2
   have hE : (RowPar.of (X.B.hc τ)).eAt (j - 1) = W.e := by
-    rw [he]; exact dif_pos hj.2
+    rw [he]; exact dite_eq_left hj.2
   have hB : ∀ n, n < X.B.R.m → (RowPar.of (X.B.hc τ)).bAt n = W.b (n + 1) := fun n hn => by
-    rw [hb ⟨n, hn⟩]; exact dif_pos hn
+    rw [hb ⟨n, hn⟩]; exact dite_eq_left hn
   have key : W.lamPrime (i'.1 + 1) = (RowPar.of (X.B.hc τ)).lamVQ j i' := by
     unfold Ranks.nV Ranks.r at hi
     unfold IndefiniteWeightData.WeightData.lamPrime IndefiniteWeightData.WeightData.thetaWt IndefiniteWeightData.WeightData.dTau IndefiniteWeightData.WeightData.aPlus IndefiniteWeightData.WeightData.aMinus
@@ -80,17 +80,17 @@ theorem lamLdef_eq_lamV (X : Stages) (j : ℕ) (h1 : 1 ≤ j) (h2 : j ≤ X.B.R.
     rw [hk, hm, ht, hjj, hE]
     congr 1
     by_cases a : i'.1 < X.B.R.k + j - 1
-    · rw [if_pos a, if_pos (show i'.1 + 1 ≤ _ from a), Nat.add_sub_cancel]
+    · rw [ite_eq_left a, ite_eq_left (show i'.1 + 1 ≤ _ from a), Nat.add_sub_cancel]
       by_cases b : i'.1 < X.B.R.k - 1
-      · rw [dif_pos b, if_pos (show i'.1 + 1 ≤ _ from b), hv ⟨_, b⟩]
+      · rw [dite_eq_left b, ite_eq_left (show i'.1 + 1 ≤ _ from b), hv ⟨_, b⟩]
         rfl
-      · rw [dite_eq_right b, if_neg (show ¬ i'.1 + 1 ≤ _ from b), hB _ (by omega), Int.cast_neg,
+      · rw [dite_eq_right b, ite_eq_right (show ¬ i'.1 + 1 ≤ _ from b), hB _ (by omega), Int.cast_neg,
           show i'.1 + 1 - (X.B.R.k - 1) = i'.1 - (X.B.R.k - 1) + 1 by omega]
         rfl
-    · rw [if_neg a, if_neg (show ¬ i'.1 + 1 ≤ _ from a)]
+    · rw [ite_eq_right a, ite_eq_right (show ¬ i'.1 + 1 ≤ _ from a)]
       by_cases b : i'.1 < X.B.R.k + j - 1 + X.B.R.t
-      · rw [if_pos b, if_pos (show i'.1 + 1 ≤ _ from b)]
-      · rw [if_neg b, if_neg (show ¬ i'.1 + 1 ≤ _ from b), hB _ (by omega),
+      · rw [ite_eq_left b, ite_eq_left (show i'.1 + 1 ≤ _ from b)]
+      · rw [ite_eq_right b, ite_eq_right (show ¬ i'.1 + 1 ≤ _ from b), hB _ (by omega),
           show X.B.R.m - j + 1 - (X.B.R.m - j + 1 - (i'.1 + 1 - (X.B.R.k + j - 1) - X.B.R.t)) =
             i'.1 - (X.B.R.k + j - 1 + X.B.R.t) + 1 by omega,
           show j + (i'.1 - (X.B.R.k + j - 1 + X.B.R.t) + 1) - 1 + 1 = j + (i'.1 - (X.B.R.k + j - 1 + X.B.R.t) + 1) by omega]

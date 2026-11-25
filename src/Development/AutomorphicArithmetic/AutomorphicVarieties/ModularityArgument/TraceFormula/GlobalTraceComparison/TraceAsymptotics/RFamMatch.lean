@@ -57,7 +57,7 @@ private theorem lc_val {n : ℕ} {w : Pl E} (hs : IsSplitAt w) {g : GLw n w → 
   obtain ⟨K', ho, hle, hc, hk⟩ := hg
   refine ⟨K'.subgroupOf (UL n w), ?_, ?_, ?_, ?_⟩
   · rw [Subgroup.coe_subgroupOf]
-    exact ho.preimage continuous_subtype_val
+    exact ho.preimage continuous_subtypeVal
   · intro x hx
     exact hle hx
   · have hU : ((UL n w : Subgroup (GLw n w)) : Set (GLw n w)) = Set.univ := by
@@ -105,7 +105,7 @@ private theorem match_inert {n a b : ℕ} {w : Pl E} (hs : ¬ IsSplitAt w) (μ :
   intro Q₁ Q₂ h₁ h₂ h₃ h₄ h₅ h₆ h₇
   have := H Q₁ Q₂ h₁ h₂ h₃ h₄ h₅ h₆ h₇
   rw [this]
-  simp only [delta, if_neg hs]
+  simp only [delta, ite_eq_right hs]
 
 theorem rFamMatch : RFamMatch := by
   intro hUm hSp hPl hAct hH2 hCt hMu E _ _ _ hUnr n μ ε hμ S hS Z hZ hZμ f hf a b h
@@ -146,32 +146,32 @@ theorem rFamMatch : RFamMatch := by
         if IsSplitAt w then ctMu h w (μ.loc w) (famU Z T f e₁ e₂ k w) else (K2 a b w : Set _).indicator 1 := by
       intro w hw
       by_cases hs : IsSplitAt w
-      · rw [if_pos hs]
+      · rw [ite_eq_left hs]
         by_cases hz : w ∈ Z
-        · simp only [fam, famU, if_pos hz]
+        · simp only [fam, famU, ite_eq_left hz]
           rfl
         · have hu := hZμ w (hOff w hw hs hz)
           by_cases hwT : w ∈ T
-          · simp only [fam, famU, if_neg hz, if_pos hwT]
+          · simp only [fam, famU, ite_eq_right hz, ite_eq_left hwT]
             rw [(ht w hs hu).1 (((e₁ w).pow k).mul ((e₂ w).pow k))]
             simp only [Ex.bind, Ex.bind_pow]
-          · simp only [fam, famU, if_neg hz, if_neg hwT]
+          · simp only [fam, famU, ite_eq_right hz, ite_eq_right hwT]
             rw [unit_eq, (ht w hs hu).1 Ex.one]
             simp only [fn2, Ex.bind, Ex.fn]
       · have hz : w ∉ Z := fun hz => hs (hZ w hz).2
         have hwT : w ∉ T := fun hz => hs (hT w hz).2
-        simp only [fam, if_neg hz, if_neg hwT, if_neg hs]
+        simp only [fam, ite_eq_right hz, ite_eq_right hwT, ite_eq_right hs]
     have hLcU : ∀ w, IsSplitAt w → Lc (KL n w) (famU Z T f e₁ e₂ k w) := by
       intro w hs
       have hK : ∀ e, Lc (KGL w (n := n)) (fn1 n w e) := fun e =>
         ⟨KGL w (n := n), (hbasic n w).2.2.2.2.1, le_rfl, (hAct E n w e).1⟩
       by_cases hz : w ∈ Z
-      · simp only [famU, if_pos hz]
+      · simp only [famU, ite_eq_left hz]
         exact hLcZ w hz
       · by_cases hwT : w ∈ T
-        · simp only [famU, if_neg hz, if_pos hwT]
+        · simp only [famU, ite_eq_right hz, ite_eq_left hwT]
           exact lc_val hs (hK _)
-        · simp only [famU, if_neg hz, if_neg hwT]
+        · simp only [famU, ite_eq_right hz, ite_eq_right hwT]
           rw [unit_eq]
           exact lc_val hs (hK _)
     have hlev : ∀ w : Pl E, ∃ (K₁ : Subgroup (GLw a w)) (K₂ : Subgroup (GLw b w)),
@@ -182,14 +182,14 @@ theorem rFamMatch : RFamMatch := by
       by_cases hz : w ∈ Z
       · obtain ⟨K₁, K₂, h₁, h₂, h₃⟩ := split_level (hZ w hz).2 (hCtLc w hz)
         refine ⟨K₁, K₂, h₁, h₂, ?_, fun hn => absurd hz hn⟩
-        simp only [fam, if_pos hz]
+        simp only [fam, ite_eq_left hz]
         exact h₃
       · refine ⟨KGL w (n := a), KGL w (n := b), ⟨(hbasic a w).2.2.2.2.1, le_rfl, (hbasic a w).2.2.1⟩,
           ⟨(hbasic b w).2.2.2.2.1, le_rfl, (hbasic b w).2.2.1⟩, ?_, fun _ => ⟨rfl, rfl⟩⟩
         by_cases hwT : w ∈ T
-        · simp only [fam, if_neg hz, if_pos hwT]
+        · simp only [fam, ite_eq_right hz, ite_eq_left hwT]
           exact hH2 E a b w _
-        · simp only [fam, if_neg hz, if_neg hwT]
+        · simp only [fam, ite_eq_right hz, ite_eq_right hwT]
           exact hH2 E a b w Ex.one
     choose K₁ K₂ hk1 hk2 hk3 hk4 using hlev
     have hev : ∀ᶠ w : Pl E in cofinite, w ∉ Z :=
@@ -201,18 +201,18 @@ theorem rFamMatch : RFamMatch := by
         exact hw hc)
     refine ⟨⟨K₁, K₂, ⟨hk1, hev.mono fun w hw => (hk4 w hw).1⟩, ⟨hk2, hev.mono fun w hw => (hk4 w hw).2⟩,
       hk3, hev2.mono fun w hw => ?_⟩, ?_⟩
-    · simp only [fam, if_neg hw.1, if_neg hw.2]
+    · simp only [fam, ite_eq_right hw.1, ite_eq_right hw.2]
     · intro w hw
       refine ⟨?_, hfam w hw⟩
       rw [hfam w hw]
       by_cases hs : IsSplitAt w
-      · rw [if_pos hs]
+      · rw [ite_eq_left hs]
         exact (hSp E w hs n a b h μ _ (hLcU w hs)).2
-      · rw [if_neg hs]
+      · rw [ite_eq_right hs]
         have hz : w ∉ Z := fun hz => hs (hZ w hz).2
         have hwT : w ∉ T := fun hz => hs (hT w hz).2
         have hU : famU Z T f e₁ e₂ k w = (KL n w : Set (UL n w)).indicator 1 := by
-          simp only [famU, if_neg hz, if_neg hwT]
+          simp only [famU, ite_eq_right hz, ite_eq_right hwT]
         rw [hU]
         exact match_inert hs _ (hUm E hUnr w hs n a b h)
 

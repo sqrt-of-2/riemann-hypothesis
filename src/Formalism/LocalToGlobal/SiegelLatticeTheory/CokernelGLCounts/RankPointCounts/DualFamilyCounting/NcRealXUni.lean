@@ -42,7 +42,7 @@ theorem PuJPu_apply (k r : ℕ) (i j : Fin (2 * r + k + 1)) :
   simp only [mul_diagonal, conjTranspose_apply, Pu_star]
   unfold Pu
   simp only [add_mul, mul_add, Finset.sum_add_distrib, ite_mul, mul_ite,
-    zero_mul, mul_zero, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    zero_mul, mul_zero, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   rw [Hpk_eq]
   have hi := i.isLt
   have hs := sig_val k r i
@@ -60,11 +60,11 @@ theorem PuJPu_apply (k r : ℕ) (i j : Fin (2 * r + k + 1)) :
       simp only [u1, u2, dK, epsK, sgn, decide_eq_true_eq]
       split_ifs at * <;> first | (exfalso; omega) | ring_nf
       all_goals first | linear_combination h2 | linear_combination (-1 : ℂ) * h2 |
-        linear_combination (2 : ℂ) * h2 | linear_combination (-2 : ℂ) * h2
+        linear_combination (2 : ℂ) * h2
     · have h1 : ¬ i = j := fun h => hji h.symm
       have h2' : ¬ i = sig k r j := fun h => hjs ((eq_sig_iff k r i j).1 h)
       have h3 : ¬ sig k r j = sig k r i := fun h => hji ((sig_inj k r j i).1 h)
-      rw [if_neg h1, if_neg hjs, if_neg h2', if_neg h3, if_neg hjs]
+      rw [ite_eq_right h1, ite_eq_right hjs, ite_eq_right h2', ite_eq_right h3, ite_eq_right hjs]
       norm_num
 
 theorem PuPu_apply (k r : ℕ) (i j : Fin (2 * r + k + 1)) :
@@ -73,7 +73,7 @@ theorem PuPu_apply (k r : ℕ) (i j : Fin (2 * r + k + 1)) :
   simp only [conjTranspose_apply, Pu_star]
   unfold Pu
   simp only [add_mul, mul_add, Finset.sum_add_distrib, ite_mul, mul_ite,
-    zero_mul, mul_zero, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    zero_mul, mul_zero, Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   have hi := i.isLt
   have hs := sig_val k r i
   have h2 := sq2_mul_sq2_eq_half
@@ -83,7 +83,7 @@ theorem PuPu_apply (k r : ℕ) (i j : Fin (2 * r + k + 1)) :
     simp only [u1, u2]
     split_ifs at * <;> first | (exfalso; omega) | ring_nf
     all_goals first | linear_combination h2 | linear_combination (-1 : ℂ) * h2 |
-      linear_combination (2 : ℂ) * h2 | linear_combination (-2 : ℂ) * h2
+      linear_combination (2 : ℂ) * h2
   · by_cases hjs : j = sig k r i
     · subst hjs
       simp only [sig_sig]

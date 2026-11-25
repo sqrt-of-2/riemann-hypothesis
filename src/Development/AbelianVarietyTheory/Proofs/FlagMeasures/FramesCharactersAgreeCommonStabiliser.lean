@@ -75,33 +75,33 @@ theorem exists_invol {E : Type} [CommRing E] (bs : List (Eˣ × ℕ+)) :
       fun a => if a < s then u else t (a - s), fun a ha => ?_, fun a b ha hb => ?_, fun c hc => ?_⟩
     · by_cases h : a < s
       · have h' : (s : ℕ) - 1 - a < s := by omega
-        simp only [if_pos h, if_pos h']
+        simp only [ite_eq_left h, ite_eq_left h']
         omega
       · obtain ⟨h4, h5⟩ := h1 (a - s) (by omega)
         have h' : ¬ (s : ℕ) + σ (a - s) < s := by omega
-        simp only [if_neg h, if_neg h', Nat.add_sub_cancel_left, h5]
+        simp only [ite_eq_right h, ite_eq_right h', Nat.add_sub_cancel_left, h5]
         omega
     · simp only [ptEntryL]
       by_cases h : a < s
-      · simp only [if_pos h]
+      · simp only [ite_eq_left h]
         by_cases h' : b < s
-        · rw [if_pos ⟨h, h'⟩]
+        · rw [ite_eq_left ⟨h, h'⟩]
           exact if_congr (by omega) rfl rfl
-        · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]
-      · simp only [if_neg h]
-        rw [if_neg (by omega)]
+        · rw [ite_eq_right (by omega), ite_eq_right (by omega), ite_eq_right (by omega)]
+      · simp only [ite_eq_right h]
+        rw [ite_eq_right (by omega)]
         by_cases h' : b < s
-        · rw [if_neg (by omega), if_neg (by omega)]
-        · rw [if_pos (by omega), h2 _ _ (by omega) (by omega)]
+        · rw [ite_eq_right (by omega), ite_eq_right (by omega)]
+        · rw [ite_eq_left (by omega), h2 _ _ (by omega) (by omega)]
           exact if_congr (by omega) rfl rfl
     · by_cases h : c + 1 < s
       · have h' : c < s := by omega
-        simp only [if_pos h, if_pos h']
+        simp only [ite_eq_left h, ite_eq_left h']
         exact Or.inl ⟨by omega, trivial⟩
       · by_cases h' : c < s
-        · simp only [if_neg h, if_pos h']
+        · simp only [ite_eq_right h, ite_eq_left h']
           exact Or.inr (by omega)
-        · simp only [if_neg h, if_neg h']
+        · simp only [ite_eq_right h, ite_eq_right h']
           have e : c + 1 - s = c - s + 1 := by omega
           rw [e]
           rcases h3 (c - s) (by omega) with ⟨h4, h5⟩ | h4
@@ -126,8 +126,8 @@ theorem simple_sum {E : Type} [CommRing E] {r : ℕ} (w : Pt E (r + 1))
     intro a b
     rw [hZ, Pt.mat, h2 _ _ a.2 b.2]
     by_cases hb : b = σ a
-    · rw [if_pos hb, if_pos (by rw [hb, hσ]), hb]; simp [z]
-    · rw [if_neg hb, if_neg (fun e : (b : ℕ) = σ₀ a => hb (Fin.ext e)), zero_mul]
+    · rw [ite_eq_left hb, ite_eq_left (by rw [hb, hσ]), hb]; simp [z]
+    · rw [ite_eq_right hb, ite_eq_right (fun e : (b : ℕ) = σ₀ a => hb (Fin.ext e)), zero_mul]
   have key : ∀ a c, A a c * z c = z a * C (σ a) (σ c) := by
     intro a c
     have := h a (σ c)
@@ -136,11 +136,11 @@ theorem simple_sum {E : Type} [CommRing E] {r : ℕ} (w : Pt E (r + 1))
       -(if (σ c : ℕ) = σ a + 1 then C (σ a) (σ c) else 0) := by
     intro a c
     by_cases hac : (a : ℕ) = c + 1
-    · rw [if_pos hac]
+    · rw [ite_eq_left hac]
       rcases h3 c (hac ▸ a.2) with ⟨h4, h5⟩ | h4
       · rw [← hac, ← hσ, ← hσ] at h4
         rw [← hac] at h5
-        rw [if_pos h4]
+        rw [ite_eq_left h4]
         have hz : z a = -z c := by
           have := (σ c).2
           have e : r - (σ a : ℕ) = r - (σ c : ℕ) + 1 := by omega
@@ -150,13 +150,13 @@ theorem simple_sum {E : Type} [CommRing E] {r : ℕ} (w : Pt E (r + 1))
         rw [hz, Units.val_neg, mul_comm, neg_mul, ← mul_neg] at this
         exact (Units.mul_right_inj _).1 this
       · rw [← hac, ← hσ, ← hσ] at h4
-        rw [if_neg (by omega), neg_zero]
+        rw [ite_eq_right (by omega), neg_zero]
         have := key a c
         rw [hC _ _ h4, mul_zero] at this
         exact (Units.mul_left_eq_zero _).1 this
-    · rw [if_neg hac]
+    · rw [ite_eq_right hac]
       by_cases h4 : (σ c : ℕ) = σ a + 1
-      · rw [if_pos h4]
+      · rw [ite_eq_left h4]
         have h5 := h3 (σ a) (h4 ▸ (σ c).2)
         rw [← h4, ← hσ, ← hσ, hσσ, hσσ] at h5
         have h6 : a < c := by
@@ -166,19 +166,19 @@ theorem simple_sum {E : Type} [CommRing E] {r : ℕ} (w : Pt E (r + 1))
         have := key a c
         rw [hA _ _ h6, zero_mul] at this
         rw [(Units.mul_right_eq_zero _).1 this.symm, neg_zero]
-      · rw [if_neg h4, neg_zero]
+      · rw [ite_eq_right h4, neg_zero]
   have hs : ∀ M : Fin (r + 1) → Fin (r + 1) → E,
       ∑ a : Fin (r + 1), ∑ c : Fin (r + 1), (if (a : ℕ) = c + 1 then M a c else 0) =
         ∑ j : Fin r, M j.succ j.castSucc := by
     intro M
     rw [Fin.sum_univ_succ]
     rw [Finset.sum_eq_zero (s := Finset.univ) (fun (c : Fin (r + 1)) _ =>
-      if_neg (show ¬ ((0 : Fin (r + 1)) : ℕ) = c + 1 by simp)), zero_add]
+      ite_eq_right (show ¬ ((0 : Fin (r + 1)) : ℕ) = c + 1 by simp)), zero_add]
     refine Finset.sum_congr rfl fun j _ => ?_
     rw [Finset.sum_eq_single j.castSucc]
     · simp
     · intro b _ hb
-      exact if_neg fun e => hb (Fin.ext (Nat.add_right_cancel e).symm)
+      exact ite_eq_right fun e => hb (Fin.ext (Nat.add_right_cancel e).symm)
     · simp
   rw [← hs A, ← hs (fun a c => C c a)]
   simp only [term, Finset.sum_neg_distrib]
@@ -223,12 +223,12 @@ theorem psi_eq_psi' : ∀ {F : Type} [Field F] [ValuativeRel F] [TopologicalSpac
   have hneg : ∀ j : Fin r, s' j.castSucc j.succ = -C j.castSucc j.succ := by
     intro j
     have e : hf L S.Hm (h (h⁻¹ (S.f' j.succ))) (S.es' j) = 0 := by
-      rw [hcan, S.dual', if_neg (Fin.castSucc_lt_succ (i := j)).ne']
+      rw [hcan, S.dual', ite_eq_right (Fin.castSucc_lt_succ (i := j)).ne']
 
     rw [hC, map_sum] at e
     simp only [map_smul, hf_sum_l] at e
     simp only [hs', hf_sum_l, S.dual', mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
-      Finset.mem_univ, if_true] at e
+      Finset.mem_univ, ite_true] at e
     rw [Finset.sum_eq_add j.castSucc j.succ (Fin.castSucc_lt_succ (i := j)).ne, hs1', hC1] at e
     · linear_combination e
     · rintro i - ⟨h1, h2⟩

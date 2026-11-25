@@ -87,18 +87,18 @@ theorem UpperTheory.V.Ws.Pp.gram :
     apply Matrix.isUnit_det_of_right_inverse
       (B := ((k⁻¹ : (M4 R)ˣ) : M4 R) * adj ((k⁻¹ : (M4 R)ˣ) : M4 R))
     rw [Matrix.mul_assoc, ← Matrix.mul_assoc (k : M4 R), Units.mul_inv, Matrix.one_mul, hinv]
-  rw [Matrix.det_of_upperTriangular (fun i j h => hQ i j h), Fin.prod_univ_four] at hdet
+  rw [Matrix.det_of_isUpperTriangular (fun i j h => hQ i j h), Fin.prod_univ_four] at hdet
   obtain ⟨a', ha⟩ := (isUnit_of_mul_isUnit_left
     (isUnit_of_mul_isUnit_left (isUnit_of_mul_isUnit_left hdet))).exists_right_inv
   obtain ⟨d', hd⟩ := (isUnit_of_mul_isUnit_right
     (isUnit_of_mul_isUnit_left (isUnit_of_mul_isUnit_left hdet))).exists_right_inv
   obtain ⟨t, ht, htQ⟩ := gram_core _ hQ a' d' ha hd
-    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn] <;> ring)
-    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn] <;> ring)
-    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn] <;> ring)
-    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn] <;> ring)
-    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn] <;> ring)
-    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn] <;> ring)
+    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn]; ring)
+    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn]; ring)
+    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn]; ring)
+    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn]; ring)
+    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn]; ring)
+    (by simp [Matrix.mul_apply, Fin.sum_univ_four, adj_apply, sgn]; ring)
   refine ⟨⟨t, adj t * (adj (k : M4 R) * (k : M4 R)), mul_eq_one_comm.mp htQ, htQ⟩, ht, ?_⟩
   show adj ((k : M4 R) * t) * ((k : M4 R) * t) = (1 : R) • 1
   rw [(grp R).1, one_smul, ← htQ]

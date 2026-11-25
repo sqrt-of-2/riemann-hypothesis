@@ -15,7 +15,8 @@ variable {n : ℕ}
 section BigRepA
 variable {M : Type*} [NormedAddCommGroup M] [InnerProductSpace ℂ M]
 
-theorem big_ext {k : ℕ} {F G : Big n k M} (h : ∀ κ, F κ = G κ) : F = G := by
+omit [NormedAddCommGroup M] [InnerProductSpace ℂ M] in
+theorem big_ext [NormedAddCommGroup M] [InnerProductSpace ℂ M] {k : ℕ} {F G : Big n k M} (h : ∀ κ, F κ = G κ) : F = G := by
   exact PiLp.ext h
 
 theorem mAct_apply (E : Fin n → Fin n → Module.End ℂ M) (k : ℕ) (a b : Fin n) (F : Big n k M) (κ) :
@@ -68,7 +69,7 @@ theorem mAct_factorAd_comm (k : ℕ) (i : Fin k) (a b c d : Fin n) :
   intro F
   apply big_ext
   intro κ
-  simp only [Module.End.mul_apply, mAct_apply, factorAd_apply]
+  simp only [mul_apply_eq_comp, mAct_apply, factorAd_apply]
   split_ifs <;> simp [map_sub]
 
 theorem factorAd_comm_of_ne (k : ℕ) {i j : Fin k} (hij : i ≠ j) (a b c d : Fin n) :
@@ -77,7 +78,7 @@ theorem factorAd_comm_of_ne (k : ℕ) {i j : Fin k} (hij : i ≠ j) (a b c d : F
   intro F
   apply big_ext
   intro κ
-  simp only [Module.End.mul_apply, factorAd_apply, Function.update_of_ne hij,
+  simp only [mul_apply_eq_comp, factorAd_apply, Function.update_of_ne hij,
     Function.update_of_ne hij.symm, Function.update_comm hij.symm]
   split_ifs <;> abel
 
@@ -89,13 +90,13 @@ theorem factorAd_commutator (k : ℕ) (i : Fin k) (a b c d : Fin n) :
   apply big_ext
   intro κ
   by_cases hbc : b = c <;> by_cases hda : d = a <;>
-  simp only [hbc, hda, if_true, if_false, LinearMap.sub_apply, LinearMap.zero_apply,
-    Module.End.mul_apply, PiLp.sub_apply, PiLp.zero_apply, factorAd_apply, Function.update_self,
+  simp only [hbc, hda, ite_true, ite_false, LinearMap.sub_apply, LinearMap.zero_apply,
+    mul_apply_eq_comp, PiLp.sub_apply, PiLp.zero_apply, factorAd_apply, Function.update_self,
     Function.update_idem] <;>
   generalize κ i = p <;>
   obtain ⟨p1, p2⟩ := p <;>
   simp only <;>
-  split_ifs <;> subst_vars <;> first | rfl | abel1 | (simp_all <;> abel1)
+  split_ifs <;> subst_vars <;> first | rfl | abel1 | (simp_all)
 
 end BigRepA
 section BigRepB
@@ -137,10 +138,10 @@ theorem factorAd_adjoint (k : ℕ) (i : Fin k) (a b : Fin n) (F G : Big n k M) :
     · have hκ : Function.update κ i (b, (κ i).2) = κ := by
         conv_rhs => rw [← Function.update_eq_self i κ]
         rw [← h]
-      rw [if_pos (by rw [h, Equiv.swap_apply_right]), if_pos h, hκ, h, Equiv.swap_apply_right]
+      rw [ite_eq_left (by rw [h, Equiv.swap_apply_right]), ite_eq_left h, hκ, h, Equiv.swap_apply_right]
     · have h' : Equiv.swap a b (κ i).1 ≠ a := by
         rwa [Ne, Equiv.swap_apply_eq_iff, Equiv.swap_apply_left]
-      rw [if_neg h', if_neg h, inner_zero_left, inner_zero_right]
+      rw [ite_eq_right h', ite_eq_right h, inner_zero_left, inner_zero_right]
   · rw [← Equiv.sum_comp (swSnd i a b)]
     refine Finset.sum_congr rfl fun κ _ => ?_
     rw [swSnd_apply]
@@ -149,10 +150,10 @@ theorem factorAd_adjoint (k : ℕ) (i : Fin k) (a b : Fin n) (F G : Big n k M) :
     · have hκ : Function.update κ i ((κ i).1, a) = κ := by
         conv_rhs => rw [← Function.update_eq_self i κ]
         rw [← h]
-      rw [if_pos (by rw [h, Equiv.swap_apply_left]), if_pos h, hκ, h, Equiv.swap_apply_left]
+      rw [ite_eq_left (by rw [h, Equiv.swap_apply_left]), ite_eq_left h, hκ, h, Equiv.swap_apply_left]
     · have h' : Equiv.swap a b (κ i).2 ≠ b := by
         rwa [Ne, Equiv.swap_apply_eq_iff, Equiv.swap_apply_right]
-      rw [if_neg h', if_neg h, inner_zero_left, inner_zero_right]
+      rw [ite_eq_right h', ite_eq_right h, inner_zero_left, inner_zero_right]
 
 theorem mem_ncV_iff {k : ℕ} (F : Big n k M) :
     F ∈ ncV ε V k ↔ ∀ κ : Fin k → Fin n × Fin n,
@@ -171,7 +172,7 @@ theorem ncV_mem {k : ℕ} {F : Big n k M} (hF : F ∈ ncV ε V k) (κ : Fin k �
 theorem ncV_eq_zero {k : ℕ} {F : Big n k M} (hF : F ∈ ncV ε V k) {κ : Fin k → Fin n × Fin n}
     (j : Fin k) (hj : ε (κ j).1 = ε (κ j).2) : F κ = 0 := by
   have h := (mem_ncV_iff F).1 hF κ
-  rw [if_neg (fun hc => hc j hj)] at h
+  rw [ite_eq_right (fun hc => hc j hj)] at h
   exact (Submodule.mem_bot ℂ).1 h
 
 end BigRepB
@@ -194,7 +195,7 @@ theorem bAct_isKUnitary (hU : IsInfUnitary ε E) (k : ℕ) : IsKUnitary ε (bAct
   simp only [bAct, LinearMap.add_apply, LinearMap.sum_apply, inner_add_left, inner_add_right,
     sum_inner, inner_sum, factorAd_adjoint]
   congr 1
-  simp [PiLp.inner_apply, mAct_apply, hU a b, adjSign, if_pos hab]
+  simp [PiLp.inner_apply, mAct_apply, hU a b, adjSign, ite_eq_left hab]
 
 theorem ncV_kStable (hV : IsKStableSub ε E V) (k : ℕ) :
     IsKStableSub ε (bAct E k) (ncV ε V k) := by
@@ -207,7 +208,7 @@ theorem ncV_kStable (hV : IsKStableSub ε E V) (k : ℕ) :
     rw [factorAd_apply]
     refine Submodule.sub_mem _ ?_ ?_ <;> split_ifs <;>
       first | exact ncV_mem hF _ | exact Submodule.zero_mem _
-  · push_neg at hc
+  · push Not at hc
     obtain ⟨j, hj⟩ := hc
     rw [Submodule.mem_bot, ncV_eq_zero hF j hj, map_zero, zero_add]
     refine Finset.sum_eq_zero fun i _ => ?_
@@ -236,7 +237,7 @@ theorem ncV_kStable (hV : IsKStableSub ε E V) (k : ℕ) :
 
 theorem finiteDimensional_ncV (hV : FiniteDimensional ℂ V) (k : ℕ) :
     FiniteDimensional ℂ (ncV ε V k) := by
-  haveI := hV
+  have := hV
   let f : ncV ε V k →ₗ[ℂ] ((Fin k → Fin n × Fin n) → V) :=
     LinearMap.pi fun κ => LinearMap.codRestrict V ((coord k κ).comp (ncV ε V k).subtype)
       (fun F => ncV_mem F.2 κ)

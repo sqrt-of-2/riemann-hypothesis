@@ -86,10 +86,10 @@ theorem hpk_col (m q : Fin (2 * r + k + 1)) :
   have ht := tau_val (k := k) (r := r) q
   unfold Hpk sgn
   by_cases hq : q.val < r ∨ r + k < q.val
-  · rw [if_pos hq] at ht
+  · rw [ite_eq_left hq] at ht
     simp only [Fin.ext_iff, ht]
     split_ifs <;> first | rfl | (exfalso; omega)
-  · rw [if_neg hq] at ht
+  · rw [ite_eq_right hq] at ht
     simp only [Fin.ext_iff, ht]
     split_ifs <;> first | rfl | (exfalso; omega)
 
@@ -99,13 +99,13 @@ private theorem tau_tau_lemma (i : Fin (2 * r + k + 1)) : tau k r (tau k r i) = 
   have hi := i.isLt
   ext
   by_cases hc : i.val < r ∨ r + k < i.val
-  · rw [if_pos hc] at h1
+  · rw [ite_eq_left hc] at h1
     have hc2 : (tau k r i).val < r ∨ r + k < (tau k r i).val := by omega
-    rw [if_pos hc2] at h2
+    rw [ite_eq_left hc2] at h2
     omega
-  · rw [if_neg hc] at h1
+  · rw [ite_eq_right hc] at h1
     have hc2 : ¬ ((tau k r i).val < r ∨ r + k < (tau k r i).val) := by omega
-    rw [if_neg hc2] at h2
+    rw [ite_eq_right hc2] at h2
     omega
 
 private theorem sgn_tau' (i : Fin (2 * r + k + 1)) : sgn k r (tau k r i) = sgn k r i := by
@@ -113,9 +113,9 @@ private theorem sgn_tau' (i : Fin (2 * r + k + 1)) : sgn k r (tau k r i) = sgn k
   have hi := i.isLt
   unfold sgn
   by_cases hc : i.val < r ∨ r + k < i.val
-  · rw [if_pos hc] at h1
-    rw [if_neg (by omega : ¬ (tau k r i).val = r + k), if_neg (by omega : ¬ i.val = r + k)]
-  · rw [if_neg hc] at h1
+  · rw [ite_eq_left hc] at h1
+    rw [ite_eq_right (by omega : ¬ (tau k r i).val = r + k), ite_eq_right (by omega : ¬ i.val = r + k)]
+  · rw [ite_eq_right hc] at h1
     rw [h1]
 
 private theorem Hpk_apply_eq_ite_tau (p m : Fin (2 * r + k + 1)) :
@@ -123,9 +123,9 @@ private theorem Hpk_apply_eq_ite_tau (p m : Fin (2 * r + k + 1)) :
   rw [hpk_col]
   by_cases h : m = tau k r p
   · have h2 : p = tau k r m := by rw [h, tau_tau_lemma]
-    rw [if_pos h2, if_pos h, h, sgn_tau']
+    rw [ite_eq_left h2, ite_eq_left h, h, sgn_tau']
   · have h2 : ¬ p = tau k r m := fun h' => h (by rw [h', tau_tau_lemma])
-    rw [if_neg h2, if_neg h]
+    rw [ite_eq_right h2, ite_eq_right h]
 
 private theorem Hpk_mul_self' : Hpk k r * Hpk k r = 1 := by
   ext p q
@@ -154,7 +154,7 @@ theorem adj_apply (a : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ)
 theorem ut_of_mem {a : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     (ha : a ∈ Nset k r) : UT k r a := by
   unfold Nset at ha
-  rw [Set.mem_setOf_eq] at ha
+  rw [Set.mem_ofPred_eq] at ha
   obtain ⟨hU, hcol, hmid⟩ := ha
   have hU' : aᴴ * Hpk k r * a = Hpk k r := hU
   have hba : (Hpk k r * aᴴ * Hpk k r) * a = 1 := by
@@ -172,7 +172,7 @@ theorem ut_of_mem {a : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
   have hsg : ∀ m : Fin (2 * r + k + 1), m.val ≠ r + k → sgn k r m = 1 := by
     intro m hm
     unfold sgn
-    rw [if_neg hm]
+    rw [ite_eq_right hm]
   have key : ∀ q : ℕ, ∀ i j : Fin (2 * r + k + 1), j.val = q → r + k < q → q ≤ i.val →
       a i j = if i = j then 1 else 0 := by
     intro q
@@ -182,9 +182,9 @@ theorem ut_of_mem {a : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
     have hjl := j.isLt
     have hj' : j.val < r ∨ r + k < j.val := Or.inr (by omega)
     have htj := tau_val (k := k) (r := r) j
-    rw [if_pos hj'] at htj
+    rw [ite_eq_left hj'] at htj
     have hbjj : (Hpk k r * aᴴ * Hpk k r) j j = 1 := by
-      rw [adj_apply, hcolv (tau k r j) (tau k r j) (by omega) le_rfl, if_pos rfl, hsg j (by omega)]
+      rw [adj_apply, hcolv (tau k r j) (tau k r j) (by omega) le_rfl, ite_eq_left rfl, hsg j (by omega)]
       simp
     have hsum : ∑ m, a i m * (Hpk k r * aᴴ * Hpk k r) m j = a i j := by
       rw [Finset.sum_eq_single j]
@@ -194,22 +194,22 @@ theorem ut_of_mem {a : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
         by_cases hm1 : m.val ≤ r + k
         · have ha0 : a i m = 0 := by
             by_cases hm2 : m.val < r
-            · rw [hcolv i m hm2 (by omega), if_neg (fun h => by have := congrArg Fin.val h; omega)]
+            · rw [hcolv i m hm2 (by omega), ite_eq_right (fun h => by have := congrArg Fin.val h; omega)]
             · rw [hmid i m (by omega) hm1 (by omega),
-                if_neg (fun h => by have := congrArg Fin.val h; omega)]
+                ite_eq_right (fun h => by have := congrArg Fin.val h; omega)]
           rw [ha0, zero_mul]
         · by_cases hm3 : m.val < j.val
           · rw [IH m.val (by omega) i m rfl (by omega) (by omega),
-              if_neg (fun h => by have := congrArg Fin.val h; omega), zero_mul]
+              ite_eq_right (fun h => by have := congrArg Fin.val h; omega), zero_mul]
           · have hmo : m.val < r ∨ r + k < m.val := Or.inr (by omega)
             have htm := tau_val (k := k) (r := r) m
-            rw [if_pos hmo] at htm
+            rw [ite_eq_left hmo] at htm
             have hmj' : j.val < m.val := by
               rcases Nat.lt_or_ge j.val m.val with h | h
               · exact h
               · exact absurd (Fin.ext (by omega)) hmj
             rw [adj_apply, hcolv (tau k r j) (tau k r m) (by omega) (by omega),
-              if_neg (fun h => by have := congrArg Fin.val h; omega)]
+              ite_eq_right (fun h => by have := congrArg Fin.val h; omega)]
             simp only [star_zero, mul_zero]
       · intro h
         exact absurd (Finset.mem_univ j) h
@@ -244,19 +244,19 @@ theorem dd_tau {c : Fin r → ℂ} (hc : ∀ a, c a ≠ 0) (j : Fin (2 * r + k +
     dd k r (fun a => star (c a)) (tau k r j) * dd k r c j = 1 := by
   have hjl := j.isLt
   have ht := tau_val (k := k) (r := r) j
-  rw [if_pos hj] at ht
+  rw [ite_eq_left hj] at ht
   rcases hj with h | h
   · have h1 : ¬ (tau k r j).val < r := by omega
     have h2 : r + k < (tau k r j).val := by omega
     have e : (⟨2 * r + k - (tau k r j).val, by omega⟩ : Fin r) = ⟨j.val, h⟩ :=
       Fin.ext (by show 2 * r + k - (tau k r j).val = j.val; omega)
-    simp only [dd, dif_neg h1, dif_pos h2, dif_pos h, e, star_star]
+    simp only [dd, dite_eq_right h1, dite_eq_left h2, dite_eq_left h, e, star_star]
     exact inv_mul_cancel₀ (hc _)
   · have h1 : (tau k r j).val < r := by omega
     have h0 : ¬ j.val < r := by omega
     have e : (⟨(tau k r j).val, h1⟩ : Fin r) = ⟨2 * r + k - j.val, by omega⟩ :=
       Fin.ext (by show (tau k r j).val = 2 * r + k - j.val; omega)
-    simp only [dd, dif_pos h1, dif_neg h0, dif_pos h, e]
+    simp only [dd, dite_eq_left h1, dite_eq_right h0, dite_eq_left h, e]
     exact mul_inv_cancel₀ (star_ne_zero.mpr (hc _))
 
 theorem g_col_out (c : Fin r → ℂ) (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ)
@@ -264,25 +264,25 @@ theorem g_col_out (c : Fin r → ℂ) (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) �
     bigCell k r c μ i j = if i = tau k r j then dd k r c j else 0 := by
   have hjl := j.isLt
   have ht := tau_val (k := k) (r := r) j
-  rw [if_pos hj] at ht
+  rw [ite_eq_left hj] at ht
   rcases hj with h | h
   · have e : esI k r ⟨j.val, h⟩ = tau k r j := Fin.ext (by rw [ht]; rfl)
-    simp only [bigCell, dd, dif_pos h, e]
+    simp only [bigCell, dd, dite_eq_left h, e]
   · have h0 : ¬ j.val < r := by omega
     have h2 : ¬ j.val ≤ r + k := by omega
-    simp only [bigCell, dd, dif_neg h0, dif_neg h2, dif_pos h]
+    simp only [bigCell, dd, dite_eq_right h0, dite_eq_right h2, dite_eq_left h]
     by_cases hi : i = tau k r j
     · have hv : i.val = 2 * r + k - j.val := by rw [hi, ht]
-      rw [if_pos hv, if_pos hi]
+      rw [ite_eq_left hv, ite_eq_left hi]
     · have hv : ¬ i.val = 2 * r + k - j.val := fun h' => hi (Fin.ext (by rw [h', ht]))
-      rw [if_neg hv, if_neg hi]
+      rw [ite_eq_right hv, ite_eq_right hi]
 
 theorem g_mid_col (c : Fin r → ℂ) (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ)
     (i j : Fin (2 * r + k + 1)) (hj1 : r ≤ j.val) (hj2 : j.val ≤ r + k)
     (hi : i.val < r ∨ r + k < i.val) : bigCell k r c μ i j = 0 := by
   have h0 : ¬ j.val < r := by omega
   have h3 : ¬ (r ≤ i.val ∧ i.val ≤ r + k) := by omega
-  simp only [bigCell, dif_neg h0, dif_pos hj2, dif_neg h3]
+  simp only [bigCell, dite_eq_right h0, dite_eq_left hj2, dite_eq_right h3]
 
 theorem g_wI (c : Fin r → ℂ) (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (s t : Fin (k + 1)) :
     bigCell k r c μ (wI k r s) (wI k r t) = μ s t := by
@@ -291,7 +291,7 @@ theorem g_wI (c : Fin r → ℂ) (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ) (
   have h1 : ¬ (wI k r t).val < r := by rw [wI_val]; omega
   have h2 : (wI k r t).val ≤ r + k := by rw [wI_val]; omega
   have h3 : r ≤ (wI k r s).val ∧ (wI k r s).val ≤ r + k := by rw [wI_val]; omega
-  simp only [bigCell, dif_neg h1, dif_pos h2, dif_pos h3]
+  simp only [bigCell, dite_eq_right h1, dite_eq_left h2, dite_eq_left h3]
   exact congrArg₂ μ (Fin.ext (by show r + s.val - r = s.val; omega))
     (Fin.ext (by show r + t.val - r = t.val; omega))
 
@@ -301,16 +301,16 @@ theorem g_row_out (c : Fin r → ℂ) (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) �
   have hil := i.isLt
   have hml := m.isLt
   have hti := tau_val (k := k) (r := r) i
-  rw [if_pos hi] at hti
+  rw [ite_eq_left hi] at hti
   by_cases hm : m.val < r ∨ r + k < m.val
   · rw [g_col_out c μ i m hm]
     by_cases h : m = tau k r i
     · have h' : i = tau k r m := by rw [h, tau_tau_lemma]
-      rw [if_pos h', if_pos h, h]
+      rw [ite_eq_left h', ite_eq_left h, h]
     · have h' : ¬ i = tau k r m := fun h'' => h (by rw [h'', tau_tau_lemma])
-      rw [if_neg h', if_neg h]
+      rw [ite_eq_right h', ite_eq_right h]
   · have hne : ¬ m = tau k r i := fun h => by have := congrArg Fin.val h; omega
-    rw [if_neg hne]
+    rw [ite_eq_right hne]
     exact g_mid_col c μ i m (by omega) (by omega) hi
 
 theorem mul_g_out (c : Fin r → ℂ) (μ : Matrix (Fin (k + 1)) (Fin (k + 1)) ℂ)
@@ -382,7 +382,7 @@ theorem g_left_inv {c : Fin r → ℂ} (hc : ∀ a, c a ≠ 0) {μ L : Matrix (F
   have hjl := j.isLt
   by_cases hj : j.val < r ∨ r + k < j.val
   · have ht := tau_val (k := k) (r := r) j
-    rw [if_pos hj] at ht
+    rw [ite_eq_left hj] at ht
     have hto : (tau k r j).val < r ∨ r + k < (tau k r j).val := by omega
     rw [mul_g_out _ _ _ i j hj, g_col_out _ _ i (tau k r j) hto, tau_tau_lemma, ite_mul, zero_mul,
       dd_tau hc j hj]
@@ -393,7 +393,7 @@ theorem g_left_inv {c : Fin r → ℂ} (hc : ∀ a, c a ≠ 0) {μ L : Matrix (F
         have e := congrArg Fin.val h
         simp only [wI_val] at e
         omega
-      rw [if_neg hne]
+      rw [ite_eq_right hne]
       apply Finset.sum_eq_zero
       intro s _
       have hs := s.isLt
@@ -419,10 +419,10 @@ theorem eq_one_of {c : Fin r → ℂ} {μ L : Matrix (Fin (k + 1)) (Fin (k + 1))
   by_cases hmi : m.val ≤ i.val ∨ (r ≤ i.val ∧ i.val ≤ r + k ∧ r ≤ m.val ∧ m.val ≤ r + k)
   · exact ha i m hmi
   have hne : ¬ i = m := fun h => hmi (Or.inl (by subst h; exact le_refl _))
-  rw [if_neg hne]
+  rw [ite_eq_right hne]
   by_cases hm : m.val < r ∨ r + k < m.val
   · have htm := tau_val (k := k) (r := r) m
-    rw [if_pos hm] at htm
+    rw [ite_eq_left hm] at htm
     have hjo : (tau k r m).val < r ∨ r + k < (tau k r m).val := by omega
     have E1 := congrFun (congrFun E i) (tau k r m)
     rw [mul_g_out _ _ _ i _ hjo, tau_tau_lemma] at E1
@@ -430,10 +430,10 @@ theorem eq_one_of {c : Fin r → ℂ} {μ L : Matrix (Fin (k + 1)) (Fin (k + 1))
     by_cases hi : i.val < r ∨ r + k < i.val
     · rw [g_mul_out _ _ _ i _ hi] at E1
       have hti := tau_val (k := k) (r := r) i
-      rw [if_pos hi] at hti
+      rw [ite_eq_left hi] at hti
       have hb0 : b (tau k r i) (tau k r m) = 0 := by
         rw [hb (tau k r i) (tau k r m) (Or.inl (by omega)),
-          if_neg (fun h => by have := congrArg Fin.val h; omega)]
+          ite_eq_right (fun h => by have := congrArg Fin.val h; omega)]
       rw [hb0, mul_zero] at E1
       exact (mul_eq_zero.mp E1).resolve_right hd
     · rw [Matrix.mul_apply] at E1
@@ -443,17 +443,17 @@ theorem eq_one_of {c : Fin r → ℂ} {μ L : Matrix (Fin (k + 1)) (Fin (k + 1))
         have hnl := n.isLt
         by_cases hn : n.val < r ∨ r + k < n.val
         · have htn := tau_val (k := k) (r := r) n
-          rw [if_pos hn] at htn
+          rw [ite_eq_left hn] at htn
           have hin : ¬ i = tau k r n := fun h => by have := congrArg Fin.val h; omega
-          rw [g_col_out _ _ i n hn, if_neg hin, zero_mul]
+          rw [g_col_out _ _ i n hn, ite_eq_right hin, zero_mul]
         · rw [hb n (tau k r m) (Or.inl (by omega)),
-            if_neg (fun h => by have := congrArg Fin.val h; omega), mul_zero]
+            ite_eq_right (fun h => by have := congrArg Fin.val h; omega), mul_zero]
       rw [hz] at E1
       exact (mul_eq_zero.mp E1).resolve_right hd
   · have hi : i.val < r ∨ r + k < i.val := by omega
     have emw : m = wI k r ⟨m.val - r, by omega⟩ := Fin.ext (by simp only [wI_val]; omega)
     have hti := tau_val (k := k) (r := r) i
-    rw [if_pos hi] at hti
+    rw [ite_eq_left hi] at hti
     have hv : (fun s => a i (wI k r s)) = 0 := by
       apply vec_zero hL
       intro t
@@ -462,7 +462,7 @@ theorem eq_one_of {c : Fin r → ℂ} {μ L : Matrix (Fin (k + 1)) (Fin (k + 1))
       have E1 := congrFun (congrFun E i) (wI k r t)
       rw [mul_g_mid, g_mul_out _ _ _ i _ hi] at E1
       rw [E1, hb (tau k r i) (wI k r t) (Or.inl (by simp only [wI_val]; omega)),
-        if_neg (fun h => by
+        ite_eq_right (fun h => by
           have e := congrArg Fin.val h
           simp only [wI_val] at e
           omega), mul_zero]
@@ -485,7 +485,7 @@ theorem stabBig : PI.StabBig := by
     unfold Nset UH
     simp [Matrix.one_apply]
   ext a
-  simp only [RStab, Set.mem_setOf_eq, Set.mem_singleton_iff]
+  simp only [RStab, Set.mem_ofPred_eq, Set.mem_singleton_iff]
   constructor
   · rintro ⟨ha, hb⟩
     have E : a * bigCell k r c μ =

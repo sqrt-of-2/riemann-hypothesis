@@ -69,7 +69,7 @@ lemma nV_cast (h : D.Hyp) : (D.nV : ℚ) = D.p + D.q + D.t := by
 lemma lam_tail (h : D.Hyp) (c : ℕ) : D.lam (D.p + c) = -D.b (D.j + c) := by
   obtain ⟨hk, hj, hjm, -⟩ := h
   unfold WeightData.lam WeightData.p
-  rw [if_neg (by omega)]
+  rw [ite_eq_right (by omega)]
   congr 2
   omega
 
@@ -117,16 +117,16 @@ lemma theta_param (h : D.Hyp) (i : ℕ) (h2 : i ≤ D.nV) :
   rw [nV_eq h] at h2
   unfold WeightData.thetaWt WeightData.rhoNV WeightData.uSideTarget
   by_cases hi : i ≤ D.p
-  · simp only [if_pos hi]
+  · simp only [ite_eq_left hi]
     unfold WeightData.aPlus
     ring
   · by_cases hi' : i ≤ D.p + D.t
-    · simp only [if_neg hi, if_pos hi']
+    · simp only [ite_eq_right hi, ite_eq_left hi']
       rw [nV_cast h]
       ring
     · obtain ⟨c, rfl⟩ : ∃ c, i = D.p + D.t + c := ⟨i - D.p - D.t, by omega⟩
       have e1 : D.p + D.t + c - D.p - D.t = c := by omega
-      simp only [if_neg hi, if_neg hi', e1]
+      simp only [ite_eq_right hi, ite_eq_right hi', e1]
       rw [aMinus_rev c (by omega), nV_cast h]
       push_cast
       ring
@@ -152,25 +152,25 @@ lemma target_step (h : D.Hyp) (hg : D.GapHyp) (i : ℕ) (h1 : 1 ≤ i) (h2 : i <
   rcases lt_trichotomy i D.p with hi | hi | hi
   · have a1 : i ≤ D.p := by omega
     have a2 : i + 1 ≤ D.p := by omega
-    simp only [if_pos a1, if_pos a2]
+    simp only [ite_eq_left a1, ite_eq_left a2]
     exact lam_step h i h1 (by omega)
   · subst hi
     have a2 : ¬ D.p + 1 ≤ D.p := by omega
     have a3 : D.p + 1 ≤ D.p + D.t := by omega
     have h4 := lam_tail h 0
     simp only [add_zero] at h4
-    simp only [if_pos (le_refl D.p), if_neg a2, if_pos a3]
+    simp only [ite_eq_left (le_refl D.p), ite_eq_right a2, ite_eq_left a3]
     rw [h4]
     have := hg.1
     push_cast
     linarith
   · have a1 : ¬ i ≤ D.p := by omega
     have a2 : ¬ i + 1 ≤ D.p := by omega
-    simp only [if_neg a1, if_neg a2]
+    simp only [ite_eq_right a1, ite_eq_right a2]
     rcases lt_trichotomy i (D.p + D.t) with hi' | hi' | hi'
     · have a3 : i ≤ D.p + D.t := by omega
       have a4 : i + 1 ≤ D.p + D.t := by omega
-      simp only [if_pos a3, if_pos a4]
+      simp only [ite_eq_left a3, ite_eq_left a4]
       push_cast
       linarith
     · subst hi'
@@ -178,12 +178,12 @@ lemma target_step (h : D.Hyp) (hg : D.GapHyp) (i : ℕ) (h1 : 1 ≤ i) (h2 : i <
       have e1 : D.p + D.t + 1 - D.p - D.t = 1 := by omega
       have hq : D.q = D.m - D.j := rfl
       have := hg.2 (by omega)
-      simp only [if_pos (le_refl (D.p + D.t)), if_neg a4, e1]
+      simp only [ite_eq_left (le_refl (D.p + D.t)), ite_eq_right a4, e1]
       push_cast
       linarith
     · have a3 : ¬ i ≤ D.p + D.t := by omega
       have a4 : ¬ i + 1 ≤ D.p + D.t := by omega
-      simp only [if_neg a3, if_neg a4]
+      simp only [ite_eq_right a3, ite_eq_right a4]
       obtain ⟨c, rfl⟩ : ∃ c, i = D.p + D.t + c := ⟨i - D.p - D.t, by omega⟩
       have e1 : D.p + D.t + c - D.p - D.t = c := by omega
       have e2 : D.p + D.t + c + 1 - D.p - D.t = c + 1 := by omega

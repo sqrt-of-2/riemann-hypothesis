@@ -26,11 +26,11 @@ open Ideal
 theorem height_polynomial_of_isMaximal {R : Type*} [CommRing R] [IsNoetherianRing R]
     [IsJacobsonRing R] {c : ℕ∞} (hR : ∀ m : Ideal R, m.IsMaximal → m.height = c)
     (M : Ideal (Polynomial R)) (hM : M.IsMaximal) : M.height = c + 1 := by
-  haveI := hM
+  have := hM
   have hp : (M.under R).IsMaximal := by
     rw [Ideal.under, Polynomial.algebraMap_eq]
     exact Polynomial.isMaximal_comap_C_of_isJacobsonRing M
-  haveI : M.LiesOver (M.under R) := ⟨rfl⟩
+  have : M.LiesOver (M.under R) := ⟨rfl⟩
   rw [Polynomial.height_eq_height_add_one (M.under R) M, hR _ hp]
 
 theorem height_mvPolynomial_fin_of_isMaximal {k : Type*} [Field k] :
@@ -57,7 +57,7 @@ theorem height_map_under_eq_zero {R B : Type*} [CommRing R] [CommRing B] [Algebr
   classical
   have hIM : (M.under R).map (algebraMap R B) ≤ M := Ideal.map_comap_le
   set I := (M.under R).map (algebraMap R B) with hIdef
-  haveI hp : (M.map (Ideal.Quotient.mk I)).IsPrime :=
+  have hp : (M.map (Ideal.Quotient.mk I)).IsPrime :=
     Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective (by rw [Ideal.mk_ker]; exact hIM)
   have hMc : (M.map (Ideal.Quotient.mk I)).comap (Ideal.Quotient.mk I) = M := by
     rw [Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective, Ideal.mk_ker,
@@ -65,7 +65,7 @@ theorem height_map_under_eq_zero {R B : Type*} [CommRing R] [CommRing B] [Algebr
   have h0 : M.map (Ideal.Quotient.mk I) ∈ minimalPrimes (B ⧸ I) := by
     refine ⟨⟨hp, bot_le⟩, ?_⟩
     intro Q hQ hQM
-    haveI hQp : Q.IsPrime := hQ.1
+    have hQp : Q.IsPrime := hQ.1
     set Q' := Q.comap (Ideal.Quotient.mk I) with hQ'def
     have hQ'M : Q' ≤ M := by
       rw [← hMc]
@@ -77,8 +77,8 @@ theorem height_map_under_eq_zero {R B : Type*} [CommRing R] [CommRing B] [Algebr
     have hQ'eq : Q' = M := by
       by_contra hne
       have hlt : Q' < M := lt_of_le_of_ne hQ'M hne
-      obtain ⟨x, hxM, hxQ⟩ := SetLike.exists_of_lt hlt
-      have hcl := Ideal.comap_lt_comap_of_integral_mem_sdiff (R := R) hQ'M ⟨hxM, hxQ⟩
+      obtain ⟨x, hxM, hxQ⟩ := IsConcreteLE.exists_of_lt hlt
+      have hcl := Ideal.under_lt_under_of_integral_mem_sdiff (R := R) hQ'M ⟨hxM, hxQ⟩
         (Algebra.IsIntegral.isIntegral x)
       have hge : M.under R ≤ Q'.comap (algebraMap R B) :=
         (Ideal.le_comap_map).trans (Ideal.comap_mono hIQ')
@@ -93,16 +93,16 @@ theorem exists_height_of_isMaximal_of_field (k B : Type*) [Field k] [CommRing B]
     ∃ s : ℕ, ∀ M : Ideal B, M.IsMaximal → M.height = s := by
   classical
   obtain ⟨s, g, hg, hfin⟩ := exists_finite_inj_algHom_of_fg k B
-  letI : Algebra (MvPolynomial (Fin s) k) B := g.toRingHom.toAlgebra
-  haveI : Module.Finite (MvPolynomial (Fin s) k) B := hfin
-  haveI : Algebra.IsIntegral (MvPolynomial (Fin s) k) B := Algebra.IsIntegral.of_finite _ _
-  haveI : FaithfulSMul (MvPolynomial (Fin s) k) B := (faithfulSMul_iff_algebraMap_injective _ _).2 hg
-  haveI : IsNoetherianRing B := Algebra.FiniteType.isNoetherianRing k B
+  let : Algebra (MvPolynomial (Fin s) k) B := g.toRingHom.toAlgebra
+  have : Module.Finite (MvPolynomial (Fin s) k) B := hfin
+  have : Algebra.IsIntegral (MvPolynomial (Fin s) k) B := Algebra.IsIntegral.of_finite _ _
+  have : FaithfulSMul (MvPolynomial (Fin s) k) B := (faithfulSMul_iff_algebraMap_injective _ _).2 hg
+  have : IsNoetherianRing B := Algebra.FiniteType.isNoetherianRing k B
   refine ⟨s, fun M hM => ?_⟩
-  haveI := hM
-  haveI hmax : (M.under (MvPolynomial (Fin s) k)).IsMaximal :=
+  have := hM
+  have hmax : (M.under (MvPolynomial (Fin s) k)).IsMaximal :=
     Ideal.isMaximal_under_of_isIntegral_of_isMaximal M
-  haveI : M.LiesOver (M.under (MvPolynomial (Fin s) k)) := ⟨rfl⟩
+  have : M.LiesOver (M.under (MvPolynomial (Fin s) k)) := ⟨rfl⟩
   rw [Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown (M.under (MvPolynomial (Fin s) k)) M,
     height_mvPolynomial_fin_of_isMaximal s _ hmax, height_map_under_eq_zero M, add_zero]
 

@@ -62,7 +62,7 @@ theorem ofFn_prod_int {t : ℕ} (F : Fin t → Module.End ℂ V) (F' : Fin t →
   induction t generalizing x with
   | zero => simp
   | succ t ih =>
-    rw [List.ofFn_succ, List.ofFn_succ, List.prod_cons, List.prod_cons, Module.End.mul_apply, Module.End.mul_apply,
+    rw [List.ofFn_succ, List.ofFn_succ, List.prod_cons, List.prod_cons, mul_apply_eq_comp, mul_apply_eq_comp,
       h, ih (fun k => F k.succ) (fun k => F' k.succ) (fun k y => h k.succ y)]
 
 theorem tm_int {n : ℕ} {E : Fin n → Fin n → Module.End ℂ V} {E' : Fin n → Fin n → Module.End ℂ V'} (f : V →ₗ[ℂ] V')
@@ -78,7 +78,7 @@ theorem qminor_int {n t : ℕ} {E : Fin n → Fin n → Module.End ℂ V} {E' : 
 
   rw [LinearMap.sum_apply, LinearMap.sum_apply, map_sum]
   refine Finset.sum_congr rfl fun σ _ => ?_
-  rw [Module.End.mul_apply, Module.End.mul_apply, Module.End.intCast_apply, Module.End.intCast_apply, map_zsmul,
+  rw [mul_apply_eq_comp, mul_apply_eq_comp, intCast_apply_eq_smul, intCast_apply_eq_smul, map_zsmul,
     ofFn_prod_int _ _ f (fun k y => tm_int f hf _ _ _ y)]
 
 theorem qdet_int {n : ℕ} {E : Fin n → Fin n → Module.End ℂ V} {E' : Fin n → Fin n → Module.End ℂ V'}
@@ -106,7 +106,7 @@ theorem glRel_resE {E : Fin n → Fin n → Module.End ℂ V} (hE : GlRel E) (S 
   apply Subtype.ext
   have h := LinearMap.congr_fun (hE a b c d) (x : V)
   by_cases hbc : b = c <;> by_cases hda : d = a <;>
-    simp only [hbc, hda, if_true, if_false, Module.End.mul_apply, LinearMap.sub_apply, LinearMap.zero_apply,
+    simp only [hbc, hda, ite_true, ite_false, mul_apply_eq_comp, LinearMap.sub_apply, LinearMap.zero_apply,
       Submodule.coe_sub, Submodule.coe_zero, sub_zero, zero_sub, resE_apply] at h ⊢ <;> exact h
 
 theorem irr_resE {E : Fin n → Fin n → Module.End ℂ V} (S : Submodule ℂ V) (hS : Stab E S) (hne : S ≠ ⊥)
@@ -141,7 +141,8 @@ variable {V : Type} [AddCommGroup V] [Module ℂ V] {ι : Type} [Fintype ι] [De
 def projI (h : DirectSum.IsInternal S) (i : ι) : V →ₗ[ℂ] S i :=
   (DirectSum.component ℂ ι (fun j => S j) i).comp (LinearEquiv.ofBijective (DirectSum.coeLinearMap S) h).symm.toLinearMap
 
-theorem projI_apply (h : DirectSum.IsInternal S) (i : ι) (v : V) :
+omit [Fintype ι] [DecidableEq ι] S in
+theorem projI_apply [Fintype ι] [DecidableEq ι] {S : ι → Submodule ℂ V} (h : DirectSum.IsInternal S) (i : ι) (v : V) :
     projI h i v = (LinearEquiv.ofBijective (DirectSum.coeLinearMap S) h).symm v i := rfl
 
 theorem projI_self (h : DirectSum.IsInternal S) {i : ι} (x : S i) : projI h i (x : V) = x := by

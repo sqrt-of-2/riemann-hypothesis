@@ -47,7 +47,7 @@ theorem Pr_mul (A : Matrix (Fin n) (Fin n) ℂ) : Pr n * A = A.submatrix Fin.rev
   · simp [Pr]
   · intro k _ hk
     simp only [Pr, Matrix.of_apply]
-    rw [if_neg (fun h => hk (by rw [h, Fin.rev_rev]))]
+    rw [ite_eq_right (fun h => hk (by rw [h, Fin.rev_rev]))]
     ring
   · simp
 
@@ -57,7 +57,7 @@ theorem mul_Pr (A : Matrix (Fin n) (Fin n) ℂ) : A * Pr n = A.submatrix id Fin.
   · simp [Pr]
   · intro k _ hk
     simp only [Pr, Matrix.of_apply]
-    rw [if_neg hk]
+    rw [ite_eq_right hk]
     ring
   · simp
 
@@ -97,7 +97,7 @@ theorem inG_sub {ε : Fin n → Bool} {X : Matrix (Fin n) (Fin n) ℂ} (hX : inG
 
 theorem K_sub {ε : Fin n → Bool} {k : Matrix (Fin n) (Fin n) ℂ} (hk : k ∈ Kset (ε ∘ Fin.rev)) :
     sub k ∈ Kset ε := by
-  simp only [Kset, Set.mem_setOf_eq] at hk ⊢
+  simp only [Kset, Set.mem_ofPred_eq] at hk ⊢
   obtain ⟨hu, hc⟩ := hk
   refine ⟨?_, ?_⟩
   · rw [Matrix.mem_unitaryGroup_iff] at hu ⊢
@@ -203,11 +203,11 @@ theorem glRep_Edd (ε : Fin n → Bool) {E : Fin n → Fin n → Module.End ℂ 
   intro x
   obtain ⟨u, rfl⟩ : ∃ u, x = ofD u := ⟨toD x, (ofD_toD x).symm⟩
   have key := congrArg (fun T : Module.End ℂ D => T u) (hE (Fin.rev b) (Fin.rev a) (Fin.rev d) (Fin.rev c))
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, Fin.rev_inj] at key
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, Fin.rev_inj] at key
   have lhs : (Edd ε E a b * Edd ε E c d - Edd ε E c d * Edd ε E a b) (ofD u) =
       ofD ((sg ε a * sg ε b * (sg ε c * sg ε d)) • (E (Fin.rev b) (Fin.rev a) (E (Fin.rev d) (Fin.rev c) u) -
         E (Fin.rev d) (Fin.rev c) (E (Fin.rev b) (Fin.rev a) u))) := by
-    simp only [LinearMap.sub_apply, Module.End.mul_apply, Edd_ofD, LinearMap.map_smul]
+    simp only [LinearMap.sub_apply, mul_apply_eq_comp, Edd_ofD, LinearMap.map_smul]
     rw [← ofD_sub]
     congr 1
     module
@@ -215,31 +215,31 @@ theorem glRep_Edd (ε : Fin n → Bool) {E : Fin n → Fin n → Module.End ℂ 
   by_cases hbc : b = c <;> by_cases hda : d = a
   · subst c
     subst d
-    simp only [if_true, Edd_ofD]
+    simp only [ite_true, Edd_ofD]
     rw [← ofD_sub]
     congr 1
     unfold sg
     split_ifs <;> module
   · subst c
     have hda' : ¬ Fin.rev a = Fin.rev d := fun h => hda (Fin.rev_injective h).symm
-    simp only [if_true, if_neg hda, if_neg (Ne.symm hda), LinearMap.zero_apply, Edd_ofD,
+    simp only [ite_true, ite_eq_right hda, ite_eq_right (Ne.symm hda), LinearMap.zero_apply, Edd_ofD,
       zero_sub]
     first
     | (congr 1; unfold sg; split_ifs <;> module)
-    | (rw [← ofD_neg]; congr 1; unfold sg; split_ifs <;> module)
+
     | (apply ofD_injective; unfold sg; split_ifs <;> module)
-    | (simp only [← ofD_neg, ← ofD_sub, ← ofD_zero]; congr 1; unfold sg; split_ifs <;> module)
+    | (simp only [← ofD_sub, ← ofD_zero]; congr 1; unfold sg; split_ifs <;> module)
   · subst d
     have hbc' : ¬ Fin.rev c = Fin.rev b := fun h => hbc (Fin.rev_injective h).symm
-    simp only [if_true, if_neg hbc, if_neg (Ne.symm hbc), LinearMap.zero_apply, Edd_ofD,
+    simp only [ite_true, ite_eq_right hbc, ite_eq_right (Ne.symm hbc), LinearMap.zero_apply, Edd_ofD,
       zero_sub]
-    simp only [← ofD_neg, ← ofD_sub]
+    simp only [← ofD_neg]
     congr 1
     unfold sg
     split_ifs <;> module
   · have hda' : ¬ Fin.rev a = Fin.rev d := fun h => hda (Fin.rev_injective h).symm
     have hbc' : ¬ Fin.rev c = Fin.rev b := fun h => hbc (Fin.rev_injective h).symm
-    simp only [if_neg hbc, if_neg (Ne.symm hbc), if_neg hda, if_neg (Ne.symm hda), LinearMap.zero_apply]
+    simp only [ite_eq_right hbc, ite_eq_right (Ne.symm hbc), ite_eq_right hda, ite_eq_right (Ne.symm hda), LinearMap.zero_apply]
     simp [ofD_zero]
 
 end Conj

@@ -18,26 +18,26 @@ theorem fibre_unique : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [Num
   intro F E _ _ _ _ _ σ hσ M J hJ R _ _ _ _ _ hR n μ ν m hμ hν hm m' hm' S
   have hU := GlobalTheory.CompanionTheory.SW.KUnits.units_val_isOpenEmbedding F E σ hσ R hR
   obtain ⟨hTR, hLC, hSC, hT2, -⟩ := id hR
-  haveI := hTR
-  haveI := hLC
-  haveI := hSC
-  haveI := hT2
+  have := hTR
+  have := hLC
+  have := hSC
+  have := hT2
   obtain ⟨hTK, hLK, hSK, hTK2, -, -, -, hBor, -, -⟩ := GlobalTheory.CompanionTheory.SW.TopK.topTens_props F E σ hσ R
-  haveI := hTK
-  haveI := hLK
-  haveI := hSK
-  haveI := hTK2
-  haveI := hBor n M
+  have := hTK
+  have := hLK
+  have := hSK
+  have := hTK2
+  have := hBor n M
   obtain ⟨hL, hS2, hT, hB, hg⟩ := GlobalTheory.CompanionTheory.SW.HermTop.herm_top F E σ hσ R n
-  haveI := hL
-  haveI := hS2
-  haveI := hT
-  haveI := hB
+  have := hL
+  have := hS2
+  have := hT
+  have := hB
   obtain ⟨g, hgc, hgf⟩ := hg M J hJ
   let B : Set (HermR R σ n) := {S | IsUnit (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det}
   have hBo : IsOpen B := by
     have h1 : Continuous fun S : HermR R σ n => (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det :=
-      Continuous.matrix_det continuous_subtype_val
+      Continuous.matrix_det continuous_subtypeVal
     have h2 : B = (fun S : HermR R σ n => (S : Matrix (Fin n) (Fin n) (R ⊗[F] E)).det) ⁻¹'
         Set.range (Units.val : (R ⊗[F] E)ˣ → R ⊗[F] E) := by
       ext S

@@ -67,7 +67,8 @@ def wDeg (w : Set ι) (μ : ι × Fin n →₀ ℕ) : ℕ := ∑ v ∈ μ.suppor
 def wCoeff (w : Set ι) (M : ι × Fin n →₀ ℕ) (F : MvPolynomial (ι × Fin n) R) : MvPolynomial (ι × Fin n) R :=
   ∑ μ ∈ F.support with μ.filter (fun v => v.1 ∈ w) = M, monomial (μ.filter (fun v => v.1 ∉ w)) (F.coeff μ)
 
-theorem coeff_wCoeff (w : Set ι) (M ν : ι × Fin n →₀ ℕ) (P : MvPolynomial (ι × Fin n) R) :
+omit [NeZero n] in
+theorem coeff_wCoeff [NeZero n] (w : Set ι) (M ν : ι × Fin n →₀ ℕ) (P : MvPolynomial (ι × Fin n) R) :
     AddMonoidAlgebra.coeff (wCoeff w M P) ν =
       if ν.filter (fun v => v.1 ∈ w) = 0 ∧ M.filter (fun v => v.1 ∉ w) = 0 then AddMonoidAlgebra.coeff P (M + ν) else 0 := by
   unfold wCoeff
@@ -79,7 +80,7 @@ theorem coeff_wCoeff (w : Set ι) (M ν : ι × Fin n →₀ ℕ) (P : MvPolynom
     constructor
     · rintro ⟨h1, h2⟩
       refine ⟨?_, ?_, ?_⟩
-      · rw [← h1, ← h2, Finsupp.filter_pos_add_filter_neg]
+      · rw [← h1, ← h2, Finsupp.filter_add_filter_not]
       · rw [← h2]; ext x
         simp only [Finsupp.filter_apply, Finsupp.coe_zero, Pi.zero_apply]
         split_ifs <;> simp_all
@@ -89,34 +90,34 @@ theorem coeff_wCoeff (w : Set ι) (M ν : ι × Fin n →₀ ℕ) (P : MvPolynom
     · rintro ⟨rfl, h2, h3⟩
       refine ⟨?_, ?_⟩
       · rw [Finsupp.filter_add, h2, add_zero]
-        have := Finsupp.filter_pos_add_filter_neg M (fun v => v.1 ∈ w)
+        have := Finsupp.filter_add_filter_not M (fun v => v.1 ∈ w)
         rw [h3, add_zero] at this
         exact this
       · rw [Finsupp.filter_add, h3, zero_add]
-        have := Finsupp.filter_pos_add_filter_neg ν (fun v => v.1 ∈ w)
+        have := Finsupp.filter_add_filter_not ν (fun v => v.1 ∈ w)
         rw [h2, zero_add] at this
         exact this
   split_ifs with hc
   · by_cases hm : M + ν ∈ P.support
     · rw [Finset.sum_eq_single (M + ν)]
-      · rw [if_pos ((key _).2 ⟨rfl, hc⟩).2]
+      · rw [ite_eq_left ((key _).2 ⟨rfl, hc⟩).2]
       · intro μ hμ hne
         rw [Finset.mem_filter] at hμ
-        rw [if_neg]
+        rw [ite_eq_right]
         intro h2
         exact hne ((key μ).1 ⟨hμ.2, h2⟩).1
       · intro h; exact absurd (Finset.mem_filter.2 ⟨hm, ((key _).2 ⟨rfl, hc⟩).1⟩) h
     · rw [MvPolynomial.notMem_support_iff.1 hm]
       refine Finset.sum_eq_zero fun μ hμ => ?_
       rw [Finset.mem_filter] at hμ
-      rw [if_neg]
+      rw [ite_eq_right]
       intro h2
       have := ((key μ).1 ⟨hμ.2, h2⟩).1
       subst this
       exact hm hμ.1
   · refine Finset.sum_eq_zero fun μ hμ => ?_
     rw [Finset.mem_filter] at hμ
-    rw [if_neg]
+    rw [ite_eq_right]
     intro h2
     exact hc ((key μ).1 ⟨hμ.2, h2⟩).2
 
@@ -138,7 +139,8 @@ theorem wCoeff_mem {Fl : Formalism.MainNotions.TestSideWords.TwistedFiltration.G
   · simpa using hP (M + ν)
   · exact (Fl.F _).zero_mem
 
-theorem wfree_iff_supported {B : Type*} [CommRing B] (w : Set ι) (P : MvPolynomial (ι × Fin n) B) :
+omit [NeZero n] in
+theorem wfree_iff_supported [NeZero n] {B : Type*} [CommRing B] (w : Set ι) (P : MvPolynomial (ι × Fin n) B) :
     WFree w P ↔ P ∈ supported B {v : ι × Fin n | v.1 ∉ w} := by
   classical
   rw [mem_supported]

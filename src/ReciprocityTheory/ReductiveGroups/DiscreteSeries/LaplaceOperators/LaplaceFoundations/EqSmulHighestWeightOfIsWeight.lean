@@ -65,23 +65,23 @@ theorem kE_mul (a b : Matrix (Fin k) (Fin k) ℂ) : kE k r (a * b) = kE k r a * 
   rw [Matrix.mul_apply]
   by_cases hi : i.val < k
   · obtain ⟨qi, rfl⟩ := ex_fI hi
-    rw [sumF _ (fun p hp => by rw [kE_col a _ hp, if_neg (by rintro rfl; exact hp hi), zero_mul])]
+    rw [sumF _ (fun p hp => by rw [kE_col a _ hp, ite_eq_right (by rintro rfl; exact hp hi), zero_mul])]
     by_cases hj : j.val < k
     · obtain ⟨qj, rfl⟩ := ex_fI hj
       simp only [kE_ff, Matrix.mul_apply]
-    · rw [kE_col _ _ hj, if_neg (by rintro rfl; exact hj hi)]
+    · rw [kE_col _ _ hj, ite_eq_right (by rintro rfl; exact hj hi)]
       refine (Finset.sum_eq_zero fun q _ => ?_).symm
-      rw [kE_col b _ hj, if_neg (by intro h; apply hj; rw [← h]; exact q.2), mul_zero]
+      rw [kE_col b _ hj, ite_eq_right (by intro h; apply hj; rw [← h]; exact q.2), mul_zero]
   · rw [kE_row _ j hi]
-    rw [Finset.sum_eq_single i (fun p _ hp => by rw [kE_row a p hi, if_neg (Ne.symm hp), zero_mul])
+    rw [Finset.sum_eq_single i (fun p _ hp => by rw [kE_row a p hi, ite_eq_right (Ne.symm hp), zero_mul])
       (fun h => absurd (Finset.mem_univ _) h)]
-    rw [kE_row a i hi, if_pos rfl, one_mul, kE_row b j hi]
+    rw [kE_row a i hi, ite_eq_left rfl, one_mul, kE_row b j hi]
 
 theorem kE_one : kE k r (1 : Matrix (Fin k) (Fin k) ℂ) = 1 := by
   ext i j
   by_cases hi : i.val < k
   · by_cases hj : j.val < k
-    · simp only [kE, dif_pos hi, dif_pos hj, Matrix.one_apply, Fin.ext_iff]
+    · simp only [kE, dite_eq_left hi, dite_eq_left hj, Matrix.one_apply, Fin.ext_iff]
     · rw [kE_col _ _ hj, Matrix.one_apply]
   · rw [kE_row _ _ hi, Matrix.one_apply]
 
@@ -90,15 +90,15 @@ theorem kE_conjTranspose (h : Matrix (Fin k) (Fin k) ℂ) : (kE k r h)ᴴ = kE k
   rw [Matrix.conjTranspose_apply]
   by_cases hi : i.val < k
   · by_cases hj : j.val < k
-    · simp only [kE, dif_pos hi, dif_pos hj, Matrix.conjTranspose_apply]
+    · simp only [kE, dite_eq_left hi, dite_eq_left hj, Matrix.conjTranspose_apply]
     · rw [kE_row _ _ hj, kE_col _ _ hj]
       by_cases hij : i = j
       · subst hij; simp
-      · rw [if_neg (Ne.symm hij), if_neg hij, star_zero]
+      · rw [ite_eq_right (Ne.symm hij), ite_eq_right hij, star_zero]
   · rw [kE_col _ _ hi, kE_row _ _ hi]
     by_cases hij : i = j
     · subst hij; simp
-    · rw [if_neg (Ne.symm hij), if_neg hij, star_zero]
+    · rw [ite_eq_right (Ne.symm hij), ite_eq_right hij, star_zero]
 
 variable {ε : Fin (2 * r + k + 1) → Bool} {P : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ}
 
@@ -108,7 +108,7 @@ theorem cay_col (hW : WCols k r P) (q : Fin k) (l : Fin (2 * r + k + 1)) :
   have e : Formalism.QuantumDeterminants.wI k r q.castSucc = StandardBasisEmbedding.eB k r q := rfl
   rw [e] at h
   simp only [bvec, Matrix.mulVec, dotProduct, Pi.single_apply, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
-    Finset.mem_univ, if_true] at h
+    Finset.mem_univ, ite_true] at h
   rw [h]
   rfl
 
@@ -123,17 +123,17 @@ theorem cay_entry (hP : Formalism.MainNotions.S.IsCayley k r ε P) (hW : WCols k
 theorem cay_eps (hP : Formalism.MainNotions.S.IsCayley k r ε P) (hW : WCols k r P) (a : Fin (2 * r + k + 1))
     (ha : a.val < k) : ε a = true := by
   have h := cay_entry hP hW ⟨a.val, ha⟩ (StandardBasisEmbedding.eB k r ⟨a.val, ha⟩)
-  rw [StandardBasisEmbedding.H_blrow (StandardBasisEmbedding.bl_eB _), if_pos rfl, cay_col hW, if_pos rfl, mul_one] at h
+  rw [StandardBasisEmbedding.H_blrow (StandardBasisEmbedding.bl_eB _), ite_eq_left rfl, cay_col hW, ite_eq_left rfl, mul_one] at h
   have e : fI k r ⟨a.val, ha⟩ = a := Fin.ext rfl
   rw [e] at h
   by_contra hne
-  rw [if_neg hne] at h
+  rw [ite_eq_right hne] at h
   norm_num at h
 
 theorem cay_zero (hP : Formalism.MainNotions.S.IsCayley k r ε P) (hW : WCols k r P) (q : Fin k) {j : Fin (2 * r + k + 1)}
     (hj : ¬ StandardBasisEmbedding.bl k r j) : P (fI k r q) j = 0 := by
   have h := cay_entry hP hW q j
-  rw [StandardBasisEmbedding.H_blrow (StandardBasisEmbedding.bl_eB _), if_neg (by rintro rfl; exact hj (StandardBasisEmbedding.bl_eB q))] at h
+  rw [StandardBasisEmbedding.H_blrow (StandardBasisEmbedding.bl_eB _), ite_eq_right (by rintro rfl; exact hj (StandardBasisEmbedding.bl_eB q))] at h
   have hne : (if ε (fI k r q) then (1 : ℂ) else -1) ≠ 0 := by split_ifs <;> norm_num
   exact (mul_eq_zero.1 h.symm).resolve_left hne
 
@@ -145,17 +145,17 @@ theorem cay_mul (hP : Formalism.MainNotions.S.IsCayley k r ε P) (hW : WCols k r
   · obtain ⟨q', rfl⟩ := StandardBasisEmbedding.ex_eB hj
     rw [StandardBasisEmbedding.sumB _ (fun p hp => by rw [StandardBasisEmbedding.bw_off h hp hj, mul_zero])]
     simp only [StandardBasisEmbedding.bw_ee, cay_col hW, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ,
-      if_true]
+      ite_true]
     by_cases hi : i.val < k
     · obtain ⟨qi, rfl⟩ := ex_fI hi
       simp only [ite_mul, one_mul, zero_mul, kE_ff]
-      rw [Finset.sum_eq_single qi (fun b _ hb => by rw [if_neg (fun e => hb (fI_inj e).symm)])
-        (fun h => absurd (Finset.mem_univ _) h), if_pos rfl]
-    · rw [kE_row _ _ hi, if_neg (by intro e; apply hi; rw [e]; exact q'.2)]
+      rw [Finset.sum_eq_single qi (fun b _ hb => by rw [ite_eq_right (fun e => hb (fI_inj e).symm)])
+        (fun h => absurd (Finset.mem_univ _) h), ite_eq_left rfl]
+    · rw [kE_row _ _ hi, ite_eq_right (by intro e; apply hi; rw [e]; exact q'.2)]
       refine Finset.sum_eq_zero fun q _ => ?_
-      rw [if_neg (by intro e; apply hi; rw [e]; exact q.2), zero_mul]
-  · rw [Finset.sum_eq_single j (fun b _ hb => by rw [StandardBasisEmbedding.bw_col h b hj, if_neg hb, mul_zero])
-      (fun h => absurd (Finset.mem_univ _) h), StandardBasisEmbedding.bw_col h j hj, if_pos rfl, mul_one]
+      rw [ite_eq_right (by intro e; apply hi; rw [e]; exact q.2), zero_mul]
+  · rw [Finset.sum_eq_single j (fun b _ hb => by rw [StandardBasisEmbedding.bw_col h b hj, ite_eq_right hb, mul_zero])
+      (fun h => absurd (Finset.mem_univ _) h), StandardBasisEmbedding.bw_col h j hj, ite_eq_left rfl, mul_one]
     by_cases hi : i.val < k
     · obtain ⟨qi, rfl⟩ := ex_fI hi
       rw [cay_zero hP hW qi hj]
@@ -163,9 +163,9 @@ theorem cay_mul (hP : Formalism.MainNotions.S.IsCayley k r ε P) (hW : WCols k r
       by_cases hl : l.val < k
       · obtain ⟨ql, rfl⟩ := ex_fI hl
         rw [cay_zero hP hW ql hj, mul_zero]
-      · rw [kE_col _ _ hl, if_neg (by rintro rfl; exact hl (by simp [fI])), zero_mul]
-    · rw [Finset.sum_eq_single i (fun b _ hb => by rw [kE_row h b hi, if_neg (Ne.symm hb), zero_mul])
-        (fun h => absurd (Finset.mem_univ _) h), kE_row h i hi, if_pos rfl, one_mul]
+      · rw [kE_col _ _ hl, ite_eq_right (by rintro rfl; exact hl (by simp [fI])), zero_mul]
+    · rw [Finset.sum_eq_single i (fun b _ hb => by rw [kE_row h b hi, ite_eq_right (Ne.symm hb), zero_mul])
+        (fun h => absurd (Finset.mem_univ _) h), kE_row h i hi, ite_eq_left rfl, one_mul]
 
 theorem cay_kE (hP : Formalism.MainNotions.S.IsCayley k r ε P) (hW : WCols k r P) (h : Matrix (Fin k) (Fin k) ℂ) :
     P * Formalism.MainNotions.S.blockW k r h * P⁻¹ = kE k r h := by
@@ -207,33 +207,33 @@ theorem eq_smul_highestWeight_of_isWeight {ε : Fin n → Bool} {Λ : Fin n → 
       intro c
       have hR := HW.KType.kRel T c c a b rfl he
       have h1 := congrArg (fun f : Module.End ℂ T.V => f v) hR
-      simp only [HW.kunits, LinearMap.sub_apply, Module.End.mul_apply, ContinuousLinearMap.coe_coe] at h1
+      simp only [HW.kunits, LinearMap.sub_apply, mul_apply_eq_comp, ContinuousLinearMap.coe_coe] at h1
       have hab' : a ≠ b := ne_of_lt hab
       rw [hd c, map_smul] at h1
       by_cases hca : c = a
       · subst hca
         have hcb : ¬ b = c := fun h => hab' h.symm
-        rw [if_pos rfl, if_neg hcb] at h1
+        rw [ite_eq_left rfl, ite_eq_right hcb] at h1
         simp only [LinearMap.zero_apply, sub_zero, ContinuousLinearMap.coe_coe] at h1
         rw [sub_eq_iff_eq_add] at h1
         rw [h1]
-        simp only [Pi.add_apply, Pi.sub_apply, Pi.single_apply, if_neg (Ne.symm hcb)]
+        simp only [Pi.add_apply, Pi.sub_apply, Pi.single_apply, ite_eq_right (Ne.symm hcb)]
         push_cast
         module
       · by_cases hcb : b = c
         · subst hcb
-          rw [if_neg hca, if_pos rfl] at h1
+          rw [ite_eq_right hca, ite_eq_left rfl] at h1
           simp only [LinearMap.zero_apply, zero_sub, ContinuousLinearMap.coe_coe] at h1
           rw [sub_eq_iff_eq_add] at h1
           rw [h1]
-          simp only [Pi.add_apply, Pi.sub_apply, Pi.single_apply, if_neg hca]
+          simp only [Pi.add_apply, Pi.sub_apply, Pi.single_apply, ite_eq_right hca]
           push_cast
           module
-        · rw [if_neg hca, if_neg hcb] at h1
+        · rw [ite_eq_right hca, ite_eq_right hcb] at h1
           simp only [LinearMap.zero_apply, sub_zero] at h1
           rw [sub_eq_zero] at h1
           rw [h1]
-          simp only [Pi.add_apply, Pi.sub_apply, Pi.single_apply, if_neg hca, if_neg (Ne.symm hcb)]
+          simp only [Pi.add_apply, Pi.sub_apply, Pi.single_apply, ite_eq_right hca, ite_eq_right (Ne.symm hcb)]
           simp
     obtain ⟨cc, hc, he'⟩ := HW.KType.weight_le T hx hwx
     let ψ : (Fin n → ℝ) →ₗ[ℝ] ℝ :=
@@ -290,11 +290,11 @@ theorem kE_mem_Kset (hε : ∀ a : Fin (2 * r + k + 1), a.val < k → ε a = tru
     by_cases hi : i.val < k
     · by_cases hj : j.val < k
       · rw [hε i hi, hε j hj]; simp
-      · rw [kE_col _ _ hj, if_neg (by rintro rfl; exact hj hi)]; simp
+      · rw [kE_col _ _ hj, ite_eq_right (by rintro rfl; exact hj hi)]; simp
     · rw [kE_row _ _ hi]
       by_cases hij : i = j
       · subst hij; ring
-      · rw [if_neg hij]; simp
+      · rw [ite_eq_right hij]; simp
 
 def dg (θ : Fin (2 * r + k + 1) → ℝ) : Matrix (Fin (2 * r + k + 1)) (Fin (2 * r + k + 1)) ℂ :=
   Matrix.diagonal (fun a => Complex.exp ((θ a : ℂ) * Complex.I))
@@ -334,11 +334,11 @@ theorem dg_split (θ : Fin (2 * r + k + 1) → ℝ) : dg θ = kE k r (dgk (th1 �
   rw [Matrix.mul_diagonal]
   by_cases hi : i.val < k
   · by_cases hj : j.val < k
-    · simp only [dgk, kE, th1, th2, dif_pos hi, dif_pos hj, if_pos hj, Matrix.diagonal_apply, fI]
+    · simp only [dgk, kE, th1, th2, dite_eq_left hi, dite_eq_left hj, ite_eq_left hj, Matrix.diagonal_apply, fI]
       by_cases hij : i = j
       · subst hij; simp
-      · rw [if_neg hij, if_neg (by intro e; apply hij; exact Fin.ext (by simpa using e))]; simp
-    · simp only [th2, if_neg hj, Matrix.diagonal_apply]
+      · rw [ite_eq_right hij, ite_eq_right (by intro e; apply hij; exact Fin.ext (by simpa using e))]; simp
+    · simp only [th2, ite_eq_right hj, Matrix.diagonal_apply]
       rw [kE_col _ _ hj]
       by_cases hij : i = j
       · subst hij; exact absurd hi hj
@@ -356,11 +356,11 @@ theorem central_diagonal_commute (θ : Fin (2 * r + k + 1) → ℝ) (h : Matrix 
   by_cases hi : i.val < k
   · by_cases hj : j.val < k
     · simp [th2, hi, hj]
-    · rw [kE_col _ _ hj, if_neg (by rintro rfl; exact hj hi)]; simp
+    · rw [kE_col _ _ hj, ite_eq_right (by rintro rfl; exact hj hi)]; simp
   · rw [kE_row _ _ hi]
     by_cases hij : i = j
     · subst hij; ring
-    · rw [if_neg hij]; simp
+    · rw [ite_eq_right hij]; simp
 
 variable (T : S7.KType ε Λ)
 
