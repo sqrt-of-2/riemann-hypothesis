@@ -174,14 +174,15 @@ def evalAt : 𝔸f E →+* LocField w := evalRingHom (fun v ↦ LocField v) w
 
 @[simp] lemma evalAt_apply (x : 𝔸f E) : evalAt w x = x w := rfl
 
-set_option synthInstance.maxHeartbeats 200000 in
 /-- The map sending a in E_w to the finite adele with component a at w and 0 elsewhere, a ring
 homomorphism that does not preserve 1. -/
-def singleAdele : LocField w →ₙ+* 𝔸f E where
-  toFun := RestrictedProduct.single LocInt w
-  map_mul' x y := Subtype.ext (Pi.single_mul w x y)
-  map_zero' := single_zero LocInt w
-  map_add' := single_add LocInt w
+def singleAdele : LocField w →ₙ+* 𝔸f E :=
+  letI : (i : FinPlace E) → AddCommGroup (LocField i) := fun i ↦
+    (inferInstance : Field (LocField i)).toAddCommGroup
+  { toFun := RestrictedProduct.single LocInt w
+    map_mul' := fun x y ↦ Subtype.ext (Pi.single_mul w x y)
+    map_zero' := single_zero LocInt w
+    map_add' := single_add LocInt w }
 
 @[simp] lemma singleAdele_same (x : LocField w) : singleAdele w x w = x := dite_eq_left rfl
 
