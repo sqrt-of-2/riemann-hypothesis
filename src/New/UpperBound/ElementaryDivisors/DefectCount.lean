@@ -10,7 +10,9 @@ import Std.Tactic.BVDecide.Normalize.Bool
 public import New.UpperBound.ElementaryDivisors.PieriCone
 public import New.UpperBound.ElementaryDivisors.RootLemma
 import Lib.General.Measure.IntegralOperators
-import Lib.LocalGL.Green.CuspidalFunctions
+import TauCeti.LinearAlgebra.Matrix.GeneralLinearGroup.Card
+import TauCeti.LinearAlgebra.Matrix.GeneralLinearGroup.UpperTriangular.Block
+import TauCeti.SetTheory.Cardinal.Finite
 
 /-!
 # The dimension of the forms of bounded defect
@@ -97,31 +99,35 @@ subgroup of lower triangular matrices in `GL_k(K)` is at most `∏ (q ^ (l + 1) 
 lemma index_borel_le [Finite K] :
     (parabolic (R := K) (OrderDual.toDual ∘ (Fin.val : Fin k → ℕ))).index ≤
       ∏ l : Fin k, ((Nat.card K : ℝ) ^ (l.val + 1) - 1) / (Nat.card K - 1) := by
-  -- A unit on the diagonal and `i` free entries left of it, in each row `i`, give
-  -- `∏ (q - 1) q ^ i` elements of `B`. Divide `#GL = ∏ q ^ i (q ^ (i + 1) - 1)` by this number.
-  set B : Subgroup (GL (Fin k) K) := parabolic (OrderDual.toDual ∘ (Fin.val : Fin k → ℕ))
-  let Rows : Type := ∀ i : Fin k, Kˣ × (Set.Iio i → K)
-  let low (x : Rows) : Matrix (Fin k) (Fin k) K :=
-    of fun i j ↦ if i < j then 0 else if h : j < i then (x i).2 ⟨j, h⟩ else (x i).1
-  let f (x : Rows) : B :=
-    ⟨.mkOfDetNeZero (low x) <| by
-      simp +contextual [low, BlockTriangular, det_of_isLowerTriangular, univ.prod_eq_zero_iff],
-      fun _ _ hij ↦ ite_eq_left hij⟩
-  have f_inj : f.Injective := fun x y hxy ↦ by
-    have h_low : low x = low y :=
-      congrArg (fun g : B ↦ ((g : GL (Fin k) K) : Matrix (Fin k) (Fin k) K)) hxy
-    ext i j
-    · simpa [low] using congrFun₂ h_low i i
-    · simpa [low, Set.mem_Iio.1 j.property,
-      (Set.mem_Iio.1 j.property).not_gt] using congrFun₂ h_low i j
-  have h_card : (B.index : ℝ) * Nat.card Rows ≤ Nat.card (GL (Fin k) K) :=
-    mod_cast (mul_le_mul_right (card_le_card_of_injective f f_inj) _).trans B.index_mul_card.le
-  simp [Rows, Nat.card_pi, Nat.card_units, card_GL_eq_prod, prod_range] at h_card
+  let b : Fin k → (Fin k)ᵒᵈ := OrderDual.toDual
+  let B : Subgroup (GL (Fin k) K) := parabolic (OrderDual.toDual ∘ (Fin.val : Fin k → ℕ))
+  have h_group : B = TauCeti.blockTriangularGroup K b := by
+    ext g
+    exact (TauCeti.mem_blockTriangularGroup_iff (b := b) (g := g)).symm
+  have h_diag (a : (Fin k)ᵒᵈ) : Nat.card (GL {i // b i = a} K) = Nat.card K - 1 := by
+    let : Unique {i // b i = a} :=
+      ⟨⟨OrderDual.ofDual a, rfl⟩, fun i ↦ Subtype.ext i.property⟩
+    let e : {i // b i = a} ≃ Fin 1 := Equiv.ofUnique _ _
+    rw [Nat.card_congr (Units.mapEquiv (reindexRingEquiv K e).toMulEquiv).toEquiv,
+      TauCeti.natCard_GL_fin]
+    simp
+  have h_pairs : Nat.card {p : Fin k × Fin k // b p.1 < b p.2} = k.choose 2 := by
+    change Nat.card {p : (Fin k)ᵒᵈ × (Fin k)ᵒᵈ // p.1 < p.2} = k.choose 2
+    rw [Fintype.natCard_subtype_lt, Fintype.card_orderDual, Fintype.card_fin]
+  have h_card : Nat.card B = (Nat.card K - 1) ^ k * Nat.card K ^ k.choose 2 := by
+    rw [h_group, TauCeti.natCard_blockTriangularGroup, h_pairs]
+    simp [h_diag]
+  have h_index := congrArg ((↑) : ℕ → ℝ) B.index_mul_card
+  rw [h_card, TauCeti.natCard_GL_fin] at h_index
+  push_cast [Nat.cast_sub Nat.card_pos, Nat.cast_sub (Nat.one_le_pow _ _ (Nat.card_pos (α := K)))]
+    at h_index
   have hq : 1 < (Nat.card K : ℝ) := Nat.one_lt_cast.2 Finite.one_lt_card
-  refine le_of_mul_le_mul_right (h_card.trans_eq ?_)
-    (prod_pos fun i _ ↦ mul_pos (sub_pos.2 hq) (pow_pos (one_pos.trans hq) _))
-  rw [← prod_mul_distrib]
-  exact prod_congr rfl fun i _ ↦ by field [(sub_pos.2 hq).ne']
+  change (B.index : ℝ) ≤ _
+  rw [prod_div_distrib, prod_const, Finset.card_univ, Fintype.card_fin]
+  rw [Fin.prod_univ_eq_prod_range (fun l ↦ (Nat.card K : ℝ) ^ (l + 1) - 1) k]
+  refine le_of_eq ((eq_div_iff (pow_ne_zero _ (sub_pos.2 hq).ne')).2 ?_)
+  apply mul_right_cancel₀ (pow_ne_zero _ (by positivity : (Nat.card K : ℝ) ≠ 0))
+  simpa [mul_assoc, mul_comm, mul_left_comm] using h_index
 
 /-- The defect of a vector `β` indexed by `(b, s) ∈ Fin k × ZMod N`, at the letter `i` along the
 root `(b, b')`, is the linear form with coefficients `T.defectWeight i b b'`, namely
