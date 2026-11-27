@@ -76,6 +76,8 @@ cohomology of diamonds (2017), Thm 19.2 and Lemma 19.4, after Huber, Math. Ann. 
 
 @[expose] public section
 
+open TauCeti (IsAbsolutelyIntegrallyClosed)
+
 noncomputable section
 
 /-!
@@ -115,12 +117,12 @@ lemma New.Variety.absIntegrallyClosedSubrings.exists_cocone_iSup {Λ : Ab} {F : 
       -- (b) locally constant functions on the spectrum modulo `J` turn it into a colimit
       IsFilteredColimit ((quotientFunctor J γ ⋙ locConstSpec Λ).mapCocone m) := by
   let φ (B : c) : Subring F := B.val.val
-  have h_mem (B : c) : γ.range ≤ φ B ∧ IsAbsIntegrallyClosed (φ B) := B.val.prop
+  have h_mem (B : c) : γ.range ≤ φ B ∧ IsAbsolutelyIntegrallyClosed (φ B) := B.val.prop
   -- An element of the union lies in all large members, hence so do finitely many elements.
   have h_ev (x : ↥(iSup φ)) : ∀ᶠ B : c in atTop, x.val ∈ φ B := by
     obtain ⟨B, hB⟩ := (mem_iSup_of_directed hc.directed).mp x.prop
     exact eventually_atTop.mpr ⟨B, fun B' hBB' ↦ hBB' hB⟩
-  have h_aic : IsAbsIntegrallyClosed ↥(iSup φ) := by
+  have h_aic : IsAbsolutelyIntegrallyClosed ↥(iSup φ) := by
     refine ⟨fun p ↦ ?_⟩
     obtain ⟨B, hB⟩ : ∃ B : c, ∀ y ∈ p.coeffs, (y : F) ∈ φ B :=
       (p.coeffs.eventually_all.mpr fun y _ ↦ h_ev y).exists
@@ -226,7 +228,7 @@ of the residue of `t` to the value of the place at `t` (as `ResiduePlace.valueMa
 over `Λ`. -/
 lemma New.Variety.ResiduePlace.isAcyclicOver_of_mem_or_inv_mem {Λ : Ab} {Y : PointFunctor}
     {D P : CommRingCat}
-    [IsAbsIntegrallyClosed D] [PreValuationRing D] {s : Y ⟶ reprBy D} {ξ : Y.obj P}
+    [IsAbsolutelyIntegrallyClosed D] [PreValuationRing D] {s : Y ⟶ reprBy D} {ξ : Y.obj P}
     {z : ValuativeLift s ξ} {q : Ideal P} [hq : q.IsMaximal] {J : Ideal D} [hJ : J.IsPrime]
     {B : absIntegrallyClosedSubrings ((algebraMap P q.ResidueField).comp (baseRingMap s ξ).hom)}
     (hB : ∀ x : q.ResidueField, x ∈ B.val ∨ x⁻¹ ∈ B.val)
@@ -243,7 +245,7 @@ lemma New.Variety.ResiduePlace.isAcyclicOver_of_mem_or_inv_mem {Λ : Ab} {Y : Po
   have h_rad : (extendedIdeal J _ B).IsRadical := by
     refine (Ideal.isRadical_iff_pow_one_lt 2 .refl).mpr fun x hx ↦ ?_
     obtain ⟨a, ha, hdvd⟩ := exists_map_dvd_of_mem_map hx
-    obtain ⟨c, rfl⟩ : ∃ c : D, c ^ 2 = a := IsAbsIntegrallyClosed.exists_pow_eq 2 a
+    obtain ⟨c, rfl⟩ : ∃ c : D, c ^ 2 = a := IsAbsolutelyIntegrallyClosed.exists_pow_eq 2 a
     rw [map_pow] at hdvd
     refine mem_of_dvd _ ?_ (mem_map_of_mem _ (hJ.isRadical ⟨2, ha⟩))
     exact (IsIntegrallyClosed.pow_dvd_pow_iff (R := j.valuationSubring) two_ne_zero).mp hdvd
@@ -453,7 +455,7 @@ cohomology vanishes in positive degrees and in degree `0` consists of the locall
 on the spectrum of `B / J B`. -/
 lemma New.Variety.ResiduePlace.exists_isAcyclicOver_placesFiniteOn {ℓ : ℕ} [ThePrime ℓ]
   {Y : PointFunctor}
-    {D P : CommRingCat} [IsAbsIntegrallyClosed D] [PreValuationRing D] {s : Y ⟶ reprBy D}
+    {D P : CommRingCat} [IsAbsolutelyIntegrallyClosed D] [PreValuationRing D] {s : Y ⟶ reprBy D}
       {ξ : Y.obj P}
     (z : ValuativeLift s ξ) (hℓ : IsUnit (ℓ : D)) {q : Ideal P} [q.IsMaximal] (J : Ideal D)
     [J.IsPrime] (B : absIntegrallyClosedSubrings
@@ -548,7 +550,7 @@ lemma New.Variety.ResiduePlace.isTestCohomEquiv_closedFiber_killingPlaces {ℓ :
   -- fibre).
   let γ := (algebraMap P q.ResidueField).comp (baseRingMap s ξ).hom
   have h_surj : Function.Surjective γ.rangeRestrict := γ.rangeRestrict_surjective
-  let B : absIntegrallyClosedSubrings γ := ⟨γ.range, le_rfl, .of_surjective h_surj⟩
+  let B : absIntegrallyClosedSubrings γ := ⟨γ.range, le_rfl, .of_surjective γ.rangeRestrict h_surj⟩
   let T (J : Ideal A) := (placesFiniteOn z J B.val).whisker testIncl
   have h_all (C : CommRingCat) (x : (killingPlaces z q).toFunctor.obj C) :
       x ∈ placesFiniteOn z ⊥ B.val C :=
@@ -773,7 +775,7 @@ are absolutely integrally closed, that is, algebraically closed, with ring maps 
 functors on rings is computed on test rings with locally constant coefficients. -/
 lemma IsProperOver.isTestCohomEquiv_field_extension (hs : IsProperOver s) (hℓ : IsUnit (ℓ : R))
     {a : R ⟶ S} {b : R ⟶ T} {φ : S ⟶ T} (h_comp : a ≫ φ = b) (hS : IsField S) (hT : IsField T)
-    (hS_aic : IsAbsIntegrallyClosed S) (hT_aic : IsAbsIntegrallyClosed T) :
+    (hS_aic : IsAbsolutelyIntegrallyClosed S) (hT_aic : IsAbsolutelyIntegrallyClosed T) :
     IsTestCohomEquiv ⟨ZMod ℓ⟩ (baseChangeTransition s φ h_comp) := by
   -- Classes on `W_T`, and their vanishing, come from the finitely generated `S`-subalgebras `A t`
   -- of `T`, and these have `S`-points `β t` by the Nullstellensatz.
@@ -782,8 +784,8 @@ lemma IsProperOver.isTestCohomEquiv_field_extension (hs : IsProperOver s) (hℓ 
   algebraize [φ.hom]
   let hS_field : Field S := hS.toField
   let hT_field : Field T := hT.toField
-  have hS_closed : IsAlgClosed S := hS_aic.isAlgClosed
-  have hT_closed : IsAlgClosed T := hT_aic.isAlgClosed
+  have hS_closed : IsAlgClosed S := TauCeti.isAbsolutelyIntegrallyClosed_iff_isAlgClosed.mp hS_aic
+  have hT_closed : IsAlgClosed T := TauCeti.isAbsolutelyIntegrallyClosed_iff_isAlgClosed.mp hT_aic
   let A (t : Finset T) : Subalgebra S T := adjoin S t
   let α (t : Finset T) : S ⟶ of (A t) := ofHom (algebraMap S (A t))
   have (t : Finset T) : Algebra.FiniteType S (A t) := .adjoin_of_finite t.finite_toSet
@@ -1247,8 +1249,8 @@ lemma IdealFamily.isDetectedAtPoints_of_proper [InvertsPrime A ℓ]
     exact (zero_iff e _).symm.trans ((Eq.congr_left (he (residueTest c P).hom n x).symm).trans
       Iff.rfl)
   · exact (Comparison.bijective_iff_of_comm_sq (he φ n) e.bijective e.bijective).mpr
-      (hs.isTestCohomEquiv_field_extension isUnit_prime _ hV hk V.property.toIsAbsIntegrallyClosed
-        k.property.toIsAbsIntegrallyClosed n)
+      (hs.isTestCohomEquiv_field_extension isUnit_prime _ hV hk
+        V.property.toIsAbsolutelyIntegrallyClosed k.property.toIsAbsolutelyIntegrallyClosed n)
 
 end ProperBaseChange
 

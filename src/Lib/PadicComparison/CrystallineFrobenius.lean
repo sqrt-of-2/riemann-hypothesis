@@ -405,7 +405,7 @@ private lemma exists_dvd_pow_and_pow_dvd {p : ℕ} [ThePrime p] {R : Type} [Comm
   -- `O_C` is a Bézout ring in which every element has an `(M + 1)`-th root: take `x ^ (M + 1)`
   -- generating the image of `𝔭`. It is not a unit, so `p` divides a power of `x`.
   obtain ⟨y, hy⟩ := IsBezout.isPrincipal_of_FG _ (𝔭.fg_of_isNoetherianRing.map σ)
-  obtain ⟨x, rfl⟩ := IsAbsIntegrallyClosed.exists_pow_eq (M + 1) y
+  obtain ⟨x, rfl⟩ := TauCeti.IsAbsolutelyIntegrallyClosed.exists_pow_eq (M + 1) y
   have hx_nonunit : ¬IsUnit x := fun hx ↦
     map_le_of_le_comap h𝔭 (hy.ge (subset_span rfl)) (hx.pow _)
   obtain ⟨N, hN⟩ := OC.exists_dvd_pow hx_nonunit (NeZero.ne (p : OC))

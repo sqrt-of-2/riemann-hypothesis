@@ -60,7 +60,7 @@ congruence relations with Frobenius.
   between maps of `Ext` groups are checked in degree zero and on connecting maps.
 
 Notions from other files:
-* `New.Variety.IsAbsIntegrallyClosed`: A is absolutely integrally closed: every monic polynomial
+* `IsAbsolutelyIntegrallyClosed`: A is absolutely integrally closed: every monic polynomial
   over A of positive degree has a root in A.
 
 ## Relation to the literature
@@ -69,6 +69,8 @@ Known; see `Lib.Cohomology.Etale.FilteredLimits` and `Lib.Cohomology.WoodsHole` 
 -/
 
 @[expose] public section
+
+open TauCeti (IsAbsolutelyIntegrallyClosed)
 
 noncomputable section
 
@@ -387,16 +389,16 @@ variable (A : Type*) [CommRing A] (Λ : Ab.{0})
 
 /-- A is an absolutely integrally closed local domain: a local domain in which every monic
 polynomial of positive degree has a root. -/
-class IsAbsIntegrallyClosedLocal extends IsDomain A, IsLocalRing A, IsAbsIntegrallyClosed A
+class IsAbsIntegrallyClosedLocal extends IsDomain A, IsLocalRing A, IsAbsolutelyIntegrallyClosed A
 
 -- The projections rank low, so that the instances on algebraically closed fields are found
 -- directly rather than through the instance of this class on such fields (below).
 attribute [instance 100] IsAbsIntegrallyClosedLocal.toIsDomain
-  IsAbsIntegrallyClosedLocal.toIsLocalRing IsAbsIntegrallyClosedLocal.toIsAbsIntegrallyClosed
+  IsAbsIntegrallyClosedLocal.toIsLocalRing IsAbsIntegrallyClosedLocal.toIsAbsolutelyIntegrallyClosed
 
 /-- A is a test ring: reduced, absolutely integrally closed, and any a, b admit an idempotent e
 with a ∣ eb and b ∣ (1 − e)a. -/
-structure IsTest extends IsAbsIntegrallyClosed A where
+structure IsTest extends IsAbsolutelyIntegrallyClosed A where
   /-- Any two elements of `A` are comparable for divisibility after a partition by an idempotent
   (`New.Variety.IsComparableRing` for the identity map of `A`). -/
   isComparableRing : IsComparableRing (· : A → A)
@@ -507,7 +509,8 @@ Stability properties of test rings, the rings on which points and cohomology are
 
 section TestRings
 
-open IsLocalRing ValuationRing IsLocalization IsAbsIntegrallyClosed LocallyConstant Ideal.Quotient
+open IsLocalRing ValuationRing IsLocalization LocallyConstant Ideal.Quotient
+open TauCeti.IsAbsolutelyIntegrallyClosed
 
 universe u
 
@@ -556,9 +559,9 @@ lemma exists_map_dvd_of_mem_map [PreValuationRing A] {J : Ideal A} {x : B}
 
 /-- An absolutely integrally closed domain `A` in which of any two elements one divides the other
 (`PreValuationRing A`) is a test ring: the idempotent `e` can be taken to be `1` or `0`. -/
-lemma isTest_of_preValuationRing [IsDomain A] [PreValuationRing A] [IsAbsIntegrallyClosed A] :
-    IsTest A where
-  toIsAbsIntegrallyClosed := inferInstance
+lemma isTest_of_preValuationRing [IsDomain A] [PreValuationRing A]
+    [IsAbsolutelyIntegrallyClosed A] : IsTest A where
+  toIsAbsolutelyIntegrallyClosed := inferInstance
   isComparableRing := by
     -- take `e = 1` if `a ∣ b` and `e = 0` if `b ∣ a`
     intro a b
@@ -626,14 +629,16 @@ lemma exists_associated_localization (y : Localization M) :
 /-- The localisation of a test ring `A` at a submonoid `M` is a test ring. -/
 lemma IsTest.localization (h : IsTest A) : IsTest (Localization M) :=
   have : IsReduced A := h.isReduced
-  ⟨h.of_isLocalization M,
+  have := h.toIsAbsolutelyIntegrallyClosed
+  ⟨IsAbsolutelyIntegrallyClosed.of_isLocalization M,
     (h.isComparableRing_of_associated exists_associated_localization).id, inferInstance⟩
 
 /-- The quotient of a test ring by a radical ideal is a test ring. -/
 lemma IsTest.quotient (h : IsTest A) {J : Ideal A} (hJ : J.IsRadical) : IsTest (A ⧸ J) := by
   have h_assoc (y : A ⧸ J) : ∃ x : A, Associated (Ideal.Quotient.mk J x) y :=
     (mk_surjective y).imp fun _ hx ↦ .of_eq hx
-  exact ⟨h.of_surjective mk_surjective, (h.isComparableRing_of_associated h_assoc).id,
+  have := h.toIsAbsolutelyIntegrallyClosed
+  exact ⟨inferInstance, (h.isComparableRing_of_associated h_assoc).id,
     J.isRadical_iff_quotient_reduced.mp hJ⟩
 
 /-- Let `A` be a test ring, `p` a prime ideal of `A` and `L` the localisation of `A` at `p`. Then
@@ -674,12 +679,14 @@ lemma IsTest.exists_valuationSubring_atPrime (h : IsTest A) (p : Ideal A) [p.IsP
   let h_alg : Algebra A O := (e_int.toRingHom.comp (algebraMap A L)).toAlgebra
   have h_loc : IsLocalization.AtPrime O p :=
     (isLocalization_iff_of_ringEquiv p.primeCompl e_int).1 inferInstance
-  exact ⟨h_aic_local, inferInstance, FractionRing L, inferInstance, h_test_frac.isAlgClosed, O,
-    h_alg, h_loc⟩
+  have h_closed := TauCeti.isAbsolutelyIntegrallyClosed_iff_isAlgClosed.mp
+    h_test_frac.toIsAbsolutelyIntegrallyClosed
+  exact ⟨h_aic_local, inferInstance, FractionRing L, inferInstance, h_closed, O, h_alg, h_loc⟩
 
 /-- The residue field of an absolutely integrally closed local domain is algebraically closed. -/
 instance [IsAbsIntegrallyClosedLocal A] : IsAlgClosed (ResidueField A) :=
-  isAlgClosed (.of_surjective residue_surjective)
+  TauCeti.isAbsolutelyIntegrallyClosed_iff_isAlgClosed.mp
+    (.of_surjective (residue A) residue_surjective)
 
 end TestRings
 

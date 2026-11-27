@@ -433,7 +433,7 @@ lemma New.Variety.IsAbsIntegrallyClosedLocal.multivariate_hensel {A : Type*} [Co
   obtain ⟨hroot, hg⟩ : P.HasMap (π' P.x) := P.hasMap.map π'
   -- Lift the residual root to a root `a` of `P.f` in `A`; `P.g` is a unit at `a`.
   obtain ⟨a, ha, hres⟩ : ∃ a : A, P.f.IsRoot a ∧ algebraMap A (ResidueField A) a = π' P.x :=
-    IsAbsIntegrallyClosed.exists_root_map_eq P.monic_f hroot
+    TauCeti.IsAbsolutelyIntegrallyClosed.exists_root_map_eq P.monic_f hroot
   rw [← hres, Polynomial.aeval_algebraMap_apply] at hg
   have hga : IsUnit (Polynomial.aeval a P.g) := isUnit_of_map_unit (residue A) _ hg
   -- Sending `P.x` to `a` gives an `A`-point of `A[X] / (X - p)`: a solution of `X = p(X)`.

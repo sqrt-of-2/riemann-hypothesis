@@ -546,10 +546,11 @@ that roots of monic polynomials, the idempotents that compare two elements, and 
 back along `g`. -/
 lemma IsSolutionClosed.isTest (h : IsSolutionClosed g) (hV : IsTest V) : IsTest W := by
   have := hV.isReduced
-  refine { toIsAbsIntegrallyClosed := ⟨fun P h_monic h_deg ↦ ?_⟩, isComparableRing := fun x y ↦ ?_,
+  refine { toIsAbsolutelyIntegrallyClosed := ⟨fun P h_monic h_deg ↦ ?_⟩
+           isComparableRing := fun x y ↦ ?_,
            isReduced := isReduced_of_injective g h.1 }
   · -- `P(x) = 0` is equation number `n + 2` for the `n = P.natDegree + 1` coefficients of `P`
-    obtain ⟨x, hx⟩ := hV.toIsAbsIntegrallyClosed.exists_eval₂_eq_zero g h_monic h_deg
+    obtain ⟨x, hx⟩ := hV.toIsAbsolutelyIntegrallyClosed.exists_eval₂_eq_zero g h_monic h_deg
     obtain ⟨x, hx⟩ := h.2 (P.natDegree + 3) P.coeff
       ⟨x, by simpa [IsSolution, P.eval₂_eq_sum_range] using hx⟩
     refine ⟨x, (P.eval_eq_sum_range x).trans (h.1 ?_)⟩

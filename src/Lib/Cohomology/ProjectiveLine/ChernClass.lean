@@ -110,7 +110,7 @@ lemma shortExact_kummerSeq : (kummerSeq g).ShortExact := by
   -- system of roots.
   refine kerComplex_shortExact fun (c : C) (y : (ringOf g ⋙ Gm).obj c) ↦ ?_
   obtain ⟨χ, hχ⟩ :=
-    exists_compatible_roots (h := (g c).property.toIsAbsIntegrallyClosed) (.ofMul y.down)
+    exists_compatible_roots (h := (g c).property.toIsAbsolutelyIntegrallyClosed) (.ofMul y.down)
   let up : Additive ((ringOf g).obj c)ˣ →+ (ringOf g ⋙ Gm).obj c := .mk' ULift.up fun _ _ ↦ rfl
   exact ⟨up.comp χ, congrArg ULift.up hχ⟩
 
@@ -129,7 +129,7 @@ def compatibleRootsOfUnity :
     -- Take a root ζ of the cyclotomic polynomial; it is a unit with ζ ^ ℓ = 1. Choose a compatible
     -- system of roots χ of ζ, with χ 1 = ζ, and rescale it to s ↦ χ (ℓ * s).
     obtain ⟨ζ, hζ⟩ : ∃ ζ : A, (cyclotomic ℓ A).IsRoot ζ :=
-      IsAbsIntegrallyClosed.exists_root _ (cyclotomic.monic ℓ A)
+      TauCeti.IsAbsolutelyIntegrallyClosed.exists_root _ (cyclotomic.monic ℓ A)
         (by simp [natDegree_cyclotomic, pos])
     have hζ_pow : ζ ^ ℓ = 1 := isRoot_of_unity_of_root_cyclotomic (by aesop) hζ
     obtain ⟨χ, hχ⟩ :

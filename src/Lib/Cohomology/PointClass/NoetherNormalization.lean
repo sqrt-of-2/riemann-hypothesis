@@ -787,7 +787,7 @@ lemma IsCoordsWithUnit.exists_app_eq_algebraMap_of_isHomogeneousSolution
     exact Subtype.prop _
   -- As `k` is algebraically closed, this value is a constant `c`.
   obtain ⟨c, hc⟩ : ∃ c, algebraMap k F c = (f.app _ ξ).down 0 :=
-    IsAbsIntegrallyClosed.mem_range_of_isIntegralElem h_integral
+    TauCeti.IsAbsolutelyIntegrallyClosed.mem_range_of_isIntegralElem h_integral
   refine ⟨c, fun {A} _ {x v} hx hv ↦ ?_⟩
   -- Both `ξ` and `x` are images of one point `y` over `D`, and `j : D ⟶ F` is injective.
   obtain ⟨i, hvi⟩ : ∃ i : ι, IsUnit (v i) := hx.right

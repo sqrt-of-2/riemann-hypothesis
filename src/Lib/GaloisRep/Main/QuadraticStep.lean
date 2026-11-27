@@ -448,7 +448,7 @@ lemma exists_isQuadraticStep (E : Type) [Field E] [EmbeddedNumberField E] [IsCMF
     simp [hM, pow_mem_pow (w.isPrime.mul_mem_iff_mem_or_mem.mpr hw), mul_mem_left, mul_mem_right]
   obtain ⟨t, ht, ht_real, ht_local⟩ :=
     exists_real_twist hn (by simp [k]) hα fun w hw ↦ hD w (.inr hw)
-  obtain ⟨b, hb⟩ := Variety.IsAbsIntegrallyClosed.exists_pow_eq 2 (algebraMap E Ω ↑(α * t))
+  obtain ⟨b, hb⟩ := TauCeti.IsAbsolutelyIntegrallyClosed.exists_pow_eq 2 (algebraMap E Ω ↑(α * t))
   have hb_conj : cmConj b ^ 2 = algebraMap E Ω (star ↑(α * t)) := by
     rw [← map_pow, hb, cmConj_algebraMap]
   let y : Ω := algebraMap E Ω (i / t) * b * cmConj b

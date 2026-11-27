@@ -745,8 +745,9 @@ lemma exists_norm_le_norm_sum_mul_eval {ι σ : Type} [Fintype ι]
       (fun t ↦ IsLocalRing.residue (valRingCp p) (β t))
       (by simpa only [map_sum, smul_eq_C_mul, map_mul, map_C] using h_map) t₀
   have : IsAlgClosed (IsLocalRing.ResidueField (valRingCp p)) :=
-    ((Variety.IsAbsIntegrallyClosed.of_isIntegrallyClosedIn ℂ_[p]).of_surjective
-      IsLocalRing.residue_surjective).isAlgClosed
+    have := TauCeti.IsAbsolutelyIntegrallyClosed.of_isIntegrallyClosedIn ℂ_[p] (B := valRingCp p)
+    TauCeti.isAbsolutelyIntegrallyClosed_iff_isAlgClosed.mp
+      (.of_surjective (IsLocalRing.residue _) IsLocalRing.residue_surjective)
   obtain ⟨x, hx⟩ : ∃ x : σ → IsLocalRing.ResidueField (valRingCp p),
       eval x ((∑ t, β t • b t).map (IsLocalRing.residue (valRingCp p))) ≠ 0 := by
     contrapose! h_ne

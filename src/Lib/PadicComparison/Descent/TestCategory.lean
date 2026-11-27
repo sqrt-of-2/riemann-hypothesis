@@ -44,6 +44,8 @@ sources.
 
 @[expose] public section
 
+open TauCeti (IsAbsolutelyIntegrallyClosed)
+
 noncomputable section
 
 namespace New.Variety
@@ -251,7 +253,7 @@ variable (S) [Algebra Ainf T]
 /-- A cell: a p-adically complete, absolutely integrally closed valuation ring T (a domain) in which
 p is not zero. By `New.Variety.not_isUnit_p`, p is then not a unit in T. -/
 class IsCell extends IsDomain T, ValuationRing T, IsAdicComplete (span {(p : T)}) T,
-  IsAbsIntegrallyClosed T where
+  IsAbsolutelyIntegrallyClosed T where
   /-- `p` is not zero in `T`. -/
   p_ne_zero : (p : T) ≠ 0
 
@@ -391,12 +393,12 @@ def testPoints {R : CommRingCat} [Algebra R OC] :
 
 /-- If S is absolutely integrally closed, then for every unit x of S there is a homomorphism χ from
 ℚ to Sˣ with χ(1) = x, that is, a compatible system of roots of x. -/
-lemma exists_compatible_roots {S : Type} [CommRing S] [h : IsAbsIntegrallyClosed S]
+lemma exists_compatible_roots {S : Type} [CommRing S] [h : IsAbsolutelyIntegrallyClosed S]
     (x : Additive Sˣ) : ∃ χ : ℚ →+ Additive Sˣ, χ 1 = x := by
   -- Units of `S` have `k`-th roots, so `Sˣ` is a divisible group, that is, an injective `ℤ`-module.
   have h_root {k : ℕ} (hk : k ≠ 0) (y : Additive Sˣ) : ∃ z : Additive Sˣ, k • z = y := by
     have : NeZero k := ⟨hk⟩
-    obtain ⟨z, hz⟩ : ∃ z : S, z ^ k = (y.toMul : S) := IsAbsIntegrallyClosed.exists_pow_eq k _
+    obtain ⟨z, hz⟩ := IsAbsolutelyIntegrallyClosed.exists_pow_eq k (y.toMul : S)
     exact ⟨.ofMul (.ofPow _ z hk hz), Units.ext hz⟩
   let h_div_nat : DivisibleBy (Additive Sˣ) ℕ := divisibleByOfSMulRightSurj _ ℕ h_root
   let h_div_int : DivisibleBy (Additive Sˣ) ℤ := AddGroup.divisibleByIntOfDivisibleByNat _

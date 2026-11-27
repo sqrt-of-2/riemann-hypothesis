@@ -65,6 +65,8 @@ See also `Lib.PadicComparison.Descent.AlmostDescent` and `Lib.Cohomology.Etale.F
 
 @[expose] public section
 
+open TauCeti (IsAbsolutelyIntegrallyClosed)
+
 noncomputable section
 
 namespace New.Variety
@@ -98,7 +100,7 @@ and any a, b admit an idempotent e with a ∣ eb and b ∣ (1 − e)a. -/
 lemma isTest : IsTest c.ProdRing :=
   IsTest.pi fun _ ↦ isTest_of_preValuationRing
 
-instance : IsAbsIntegrallyClosed c.ProdRing := c.isTest.toIsAbsIntegrallyClosed
+instance : IsAbsolutelyIntegrallyClosed c.ProdRing := c.isTest.toIsAbsolutelyIntegrallyClosed
 
 /-- Multiplication by `p` is injective on the ring of a p-adic test: each cell is a domain in which
 `p ≠ 0`. -/
@@ -432,9 +434,11 @@ lemma exists_cell_over {B : Type} [CommRing.{0} B] {m : Ideal B} (hm_prime : IsP
   have hW_domain : IsDomain W := NoZeroDivisors.to_isDomain W
   -- `U` is absolutely integrally closed as `K` is; so are `ℕ → U` and its quotients
   have h_test : IsTest (ℕ → U) := IsTest.pi fun _ ↦ isTest_of_preValuationRing
+  have := h_test.toIsAbsolutelyIntegrallyClosed
+  have : IsAbsolutelyIntegrallyClosed _ := IsAbsolutelyIntegrallyClosed.of_surjective γ hγ
   have h_cell : IsCell p W :=
     { toIsAdicComplete := isAdicComplete
-      toIsAbsIntegrallyClosed := (h_test.of_surjective hγ).of_surjective hπ
+      toIsAbsolutelyIntegrallyClosed := .of_surjective π hπ
       p_ne_zero := by simpa using h_reg.ne one_ne_zero }
   -- the elements of `m` go to non-units, as `π` is local
   exact ⟨W, inferInstance, h_cell, π.comp φ,
@@ -453,7 +457,8 @@ lemma isCell_of_isSolutionClosed {W V : Type} [CommRing W] [CommRing V] {g : W �
     { haus' := by
         simp_all [← hg.1.eq_iff, ← hg.map_dvd_iff, hV.haus, ↓ TauCeti.sModEq_span_singleton_pow_iff]
       prec' f hf := ?_
-      toIsAbsIntegrallyClosed := (hg.isTest isTest_of_preValuationRing).toIsAbsIntegrallyClosed
+      toIsAbsolutelyIntegrallyClosed :=
+        (hg.isTest isTest_of_preValuationRing).toIsAbsolutelyIntegrallyClosed
       p_ne_zero := by simp [← hg.1.eq_iff, hV.p_ne_zero] }
   -- `g ∘ f` is again Cauchy in `V`, as `g` reflects divisibility.
   have h_cauchy {m n : ℕ} (h_le : m ≤ n) :

@@ -379,7 +379,7 @@ lemma New.exists_newDirection_dvd {p : ℕ} [Fact p.Prime] {Φ n : Type} [Fintyp
   -- `σ` modulo a `p ^ e`-th root of `π` or at `pr e σ` modulo `π`. The forms depend on `y` only,
   -- so all congruences on one matrix are collected and imposed together.
   have exists_root (e : ℕ) (x : valRingCp p) : ∃ r : valRingCp p, r ^ p ^ e = x :=
-    (Variety.IsAbsIntegrallyClosed.of_isIntegrallyClosedIn ℂ_[p]).exists_pow_eq (p ^ e) x
+    (TauCeti.IsAbsolutelyIntegrallyClosed.of_isIntegrallyClosedIn ℂ_[p]).exists_pow_eq (p ^ e) x
   choose root h_root using exists_root
   have exists_choice (e : ℕ) (σ : Φ) : ∃ c : CongruenceChoice,
       c.cost p e N (κ σ) (κ (pr e σ)) = deductionTerm p κ N marked σ (pr e σ) e ∧

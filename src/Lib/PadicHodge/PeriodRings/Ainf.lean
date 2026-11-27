@@ -55,7 +55,7 @@ Notions from other files:
 * `New.Variety.tiltMap`: For a ring homomorphism f: R → R', the induced ring homomorphism between
   the inverse limits of R/p and R'/p along x ↦ x^p.
 * `New.shiftDiff`: For π in R, the operator (x_j) ↦ (x_j − π x_{j+1}) on sequences in an R-module.
-* `New.Variety.IsAbsIntegrallyClosed`: A ring is absolutely integrally closed if every monic
+* `IsAbsolutelyIntegrallyClosed`: A ring is absolutely integrally closed if every monic
   polynomial of positive degree over it has a root.
 * `PreTilt.untilt`: The multiplicative map x ↦ x^♯ from the tilt of a ring R to R.
 * `New.ThePrime p`: The class saying that the natural number p is prime.
@@ -66,6 +66,8 @@ Known; see `Lib.PadicHodge.PeriodRings.DeRhamPeriods` for sources.
 -/
 
 @[expose] public section
+
+open TauCeti (IsAbsolutelyIntegrallyClosed)
 
 noncomputable section
 
@@ -249,7 +251,7 @@ lemma OFlat.exists_coeff_root_near (n : ℕ) (w : OFlat) {d : ℕ} (b : OFlat) {
     obtain ⟨h_deg, h_monic⟩ := hg
     -- Split off a root: monic polynomials of positive degree over `O_C / p` have roots, so its
     -- Frobenius is onto and every element is the `n`-th coordinate of some `b`.
-    have h_aic : IsAbsIntegrallyClosed (OC ⧸ Ideal.span {(p : OC)}) := .of_surjective mk_surjective
+    have h_aic : IsAbsolutelyIntegrallyClosed (OC ⧸ Ideal.span {(p : OC)}) := inferInstance
     obtain ⟨r, hr⟩ := h_aic.exists_root g h_monic (by omega)
     obtain ⟨b, rfl⟩ : ∃ b : OFlat, b.coeff n = r := coeff_surjective (h_aic.exists_pow_eq p) n r
     obtain ⟨q, rfl⟩ : X - C (b.coeff n) ∣ g := dvd_iff_isRoot.mpr hr
@@ -280,7 +282,7 @@ private lemma OFlat.coeff_add_pow_pow (x : OFlat) (m n : ℕ) :
 
 /-- The tilt O^♭ is absolutely integrally closed: every monic polynomial of positive degree over
 it has a root. The root is built coordinate by coordinate from roots modulo `p`. -/
-lemma OFlat.isAbsIntegrallyClosed : IsAbsIntegrallyClosed OFlat := by
+lemma OFlat.isAbsIntegrallyClosed : IsAbsolutelyIntegrallyClosed OFlat := by
   refine ⟨fun f hf h_deg ↦ ?_⟩
   -- Choose `s (m + 1)` near `s m` such that `f (s (m + 1))` has `m`-th coordinate `0`. The root has
   -- as its `n`-th coordinate that of `s (n + d + 1)`, where `d` is the degree of `f`.
@@ -430,7 +432,9 @@ instance : SMulDistribClass G Ainf WittCFlat :=
 
 instance : CharP (IsLocalRing.ResidueField OFlat) p := .of_ringHom_of_ne_zero (mk _) _ out
 
-instance : IsAlgClosed CFlat := (OFlat.isAbsIntegrallyClosed.of_isLocalization _⁰).isAlgClosed
+instance : IsAlgClosed CFlat :=
+  have := OFlat.isAbsIntegrallyClosed
+  IsAbsolutelyIntegrallyClosed.isAlgClosed (A := OFlat) CFlat
 
 end Ainf
 
@@ -480,7 +484,8 @@ open Ideal Period.Witt Function RingHom PadicComplex Pi OFlat NeZero Fact SModEq
 /-- Artin–Schreier–Witt equations: let k be a non-zero perfect, absolutely integrally closed ring of
 characteristic p, and let φ be the Frobenius of W(k). Then for all a, s in W(k) the equation
 φ(y) − sy = a has a solution y in W(k). -/
-lemma Witt.artin_schreier_witt [Nontrivial k] [h : IsAbsIntegrallyClosed k] (s a : WittVector p k) :
+lemma Witt.artin_schreier_witt [Nontrivial k] [h : IsAbsolutelyIntegrallyClosed k]
+    (s a : WittVector p k) :
     ∃ y : WittVector p k, WittVector.frobenius y - s * y = a := by
   -- Modulo `p` the left side is `x ↦ x ^ p - s₀ * x`, with `s₀` the reduction of `s`; this map is
   -- onto since `k` is absolutely integrally closed.
@@ -898,7 +903,7 @@ lemma Ainf.mem_radical_of_not_isUnit (h : ¬IsUnit a) (hδ : ¬↑p ∣ δ) :
 by the Artin–Schreier–Witt equations over the absolutely integrally closed ring `O^♭`. -/
 lemma Ainf.exists_frobEnd_sub_xi_pow_mul_eq (n : ℕ) (x : Ainf) :
     ∃ c : Ainf, frobEnd c - xi ^ n * c = x := by
-  have h_aic : IsAbsIntegrallyClosed OFlat := OFlat.isAbsIntegrallyClosed
+  have h_aic : IsAbsolutelyIntegrallyClosed OFlat := OFlat.isAbsIntegrallyClosed
   simpa only [frobEnd_eq_frobenius] using artin_schreier_witt (xi ^ n) x
 
 /-- Let a, c be non-units of A_inf and δ, y ∈ A_inf with δ not divisible by p. If for every m

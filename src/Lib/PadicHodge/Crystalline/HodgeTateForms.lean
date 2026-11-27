@@ -74,7 +74,7 @@ lemma exists_algHom_lift [Algebra.IsAlgebraic ℤ_[p] R] :
   have h_range (r : R) : γ r ∈ incl.range := by
     have h_alg : IsAlgebraic (PadicAlgCl p) (γ r) := ((Algebra.IsAlgebraic.isAlgebraic r).algHom
       γ).extendScalars (algebraMap_injective ℤ_[p] (PadicAlgCl p))
-    exact Variety.IsAbsIntegrallyClosed.mem_range_of_isIntegralElem h_alg.isIntegral
+    exact TauCeti.IsAbsolutelyIntegrallyClosed.mem_range_of_isIntegralElem h_alg.isIntegral
   let e : PadicAlgCl p ≃ₐ[ℤ_[p]] incl.range := AlgEquiv.ofInjectiveField incl
   exact ⟨e.symm.toAlgHom.comp (γ.codRestrict _ h_range),
     fun r ↦ (congrArg Subtype.val (e.apply_symm_apply ⟨γ r, h_range r⟩)).symm⟩

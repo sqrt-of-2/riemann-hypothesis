@@ -238,7 +238,7 @@ lemma exists_smul_teichmuller_eq (C : Subgroup (Gp p)) [hC : IsClosed (C : Set (
     have h_root_eval : (Polynomial.X ^ (p ^ n * e) - Polynomial.C π).eval₂
         (algebraMap (PadicAlgCl p) ℂ_[p]) (untiltRoot n y).val = 0 := by
       simp [pow_mul, ← SubmonoidClass.coe_pow, untiltRoot, coe_eq, hy, hu]
-    simpa [← coe_eq, sub_eq_zero] using IsAbsIntegrallyClosed.exists_root_map_eq
+    simpa [← coe_eq, sub_eq_zero] using TauCeti.IsAbsolutelyIntegrallyClosed.exists_root_map_eq
       (f := algebraMap ..)
       (Polynomial.monic_X_pow_sub_C π (ne (p ^ n * e))) h_root_eval
   -- `b y n` is the `n`-th component of `y`, as an element of `ℚ̄_p`.

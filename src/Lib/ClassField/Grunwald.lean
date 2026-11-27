@@ -216,7 +216,7 @@ lemma grunwald [IsTotallyComplex E] {p : ℕ} {S : Set (FinPlace E)} (hp : p.Pri
   have h_N_fin : N.FiniteIndex := N.finiteIndex_iff.mpr h_index_ne
   let H : Subgroup Gal(Ω/E) := (cyclotomicCharMod Ω p).ker
   -- `r a`: a chosen `p`-th root of `a` in `Ω`
-  choose r hr using Variety.IsAbsIntegrallyClosed.exists_pow_eq (A := Ω) p
+  choose r hr using TauCeti.IsAbsolutelyIntegrallyClosed.exists_pow_eq (A := Ω) p
   -- An `x` not killed by `ψ` is no `p`-th power in `E`, so some element of `H` moves its root.
   have h_moves (x : Eˣ) (hx : ψ (principalIdele x) ≠ 1) :
       ((H : Set Gal(Ω/E)) \ {g | g • r (algebraMap E Ω x) = r (algebraMap E Ω x)}).Nonempty := by

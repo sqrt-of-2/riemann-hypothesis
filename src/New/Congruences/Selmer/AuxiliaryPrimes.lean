@@ -351,7 +351,7 @@ lemma New.Selmer.exists_isAuxPrimeDataAt {E : Type} [Field E]
   obtain ⟨s, hs⟩ : ∃ s : Finset (Additive (T.unit E)),
       Submodule.span ℤ (s : Set (Additive (T.unit E))) = ⊤ := h_finite.fg_top
   have h_root (x : E) : ∃ y : Ω, y ^ ℓ ^ N = algebraMap E Ω x :=
-    Variety.IsAbsIntegrallyClosed.exists_pow_eq (ℓ ^ N) (algebraMap E Ω x)
+    TauCeti.IsAbsolutelyIntegrallyClosed.exists_pow_eq (ℓ ^ N) (algebraMap E Ω x)
   choose y hy using h_root
   -- `U` fixes the roots of unity of order `ℓ ^ N` and the roots of the generators of the `T`-units
   let U : Subgroup Gal(Ω/E) :=

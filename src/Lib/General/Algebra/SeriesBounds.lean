@@ -61,7 +61,7 @@ infinite, there is a point at which none of the reductions vanishes.
 
 section IntegralityPrinciple
 
-open Finset IsLocalRing MvPolynomial New.Variety.IsAbsIntegrallyClosed
+open Finset IsLocalRing MvPolynomial TauCeti.IsAbsolutelyIntegrallyClosed
 
 /-- Over an algebraically closed valued field there is an integral point at which each of finitely
 many polynomials takes a value at least as large as all its coefficients. -/
@@ -98,7 +98,9 @@ lemma New.exists_val_coeff_le_val_eval {K σ : Type*} {n : ℕ} [Field K] [IsAlg
   -- Now `f i = c i • g i`, and the reduction of each `g i` is not zero.
   choose c g hg hfg using fun i : Fin n ↦ h_scale (f i)
   have : IsAlgClosed (ResidueField V) :=
-    ((of_isIntegrallyClosedIn K).of_surjective residue_surjective).isAlgClosed
+    have := of_isIntegrallyClosedIn K (B := V)
+    TauCeti.isAbsolutelyIntegrallyClosed_iff_isAlgClosed.mp
+      (.of_surjective (residue V) residue_surjective)
   -- Over an infinite field a nonzero polynomial has a nonzero value.
   obtain ⟨y₀, hy₀⟩ :
       ∃ y₀ : σ → ResidueField V, eval y₀ (∏ i : Fin n, map (residue V) (g i)) ≠ eval y₀ 0 :=

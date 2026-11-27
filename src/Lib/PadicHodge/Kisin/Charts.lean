@@ -762,7 +762,7 @@ lemma mem_of_fixed_thetaPhiInvS {K : Subalgebra ℚ_[p] ℂ_[p]} {y : PadicAlgCl
     (Submodule.fg_range ((c.thetaPhiInvS n).toLinearMap ∘ₗ poly.restrictScalars ℤ_[p])).of_le
       (forall_mem_range.mpr h_rem)
   obtain ⟨x', rfl⟩ : x ∈ (algebraMap (PadicAlgCl p) ℂ_[p]).range :=
-    Variety.IsAbsIntegrallyClosed.mem_range_of_isIntegralElem
+    TauCeti.IsAbsolutelyIntegrallyClosed.mem_range_of_isIntegralElem
       (IsIntegral.of_mem_of_fg _ h_fg _ hx).tower_top
   -- `g` fixes `x'`, which lies in the field of `K`.
   have h_fix : (g : Gp p) x' = x' := g.property ⟨x', hxK⟩

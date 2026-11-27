@@ -59,6 +59,8 @@ Known; see `Lib.PadicHodge.PeriodRings.DeRhamPeriods` and `Lib.PadicHodge.TateSe
 
 @[expose] public section
 
+open TauCeti (IsAbsolutelyIntegrallyClosed)
+
 noncomputable section
 
 /-! ## Functorial tilting, Fontaine's θ and the Galois action on ℂ_p -/
@@ -188,7 +190,7 @@ lemma untilt_eq_zero_iff [IsDomain R] [IsIntegrallyClosed R] {x : PreTilt R p} :
 /-- Let R be a p-adically complete ring in which p is not a unit. If R is absolutely integrally
 closed (every monic polynomial of positive degree over R has a root in R), then every element of R
 is the untilt x^♯ of an element x of the tilt. -/
-lemma untilt_surjective_of_isAbsIntegrallyClosed [h : IsAbsIntegrallyClosed R] :
+lemma untilt_surjective_of_isAbsIntegrallyClosed [h : IsAbsolutelyIntegrallyClosed R] :
     (PreTilt.untilt : PreTilt R p → R).Surjective := by
   -- choose successive `p`-th roots of `r`; the untilt of this sequence is its first term `r`
   intro r
@@ -200,7 +202,7 @@ lemma untilt_surjective_of_isAbsIntegrallyClosed [h : IsAbsIntegrallyClosed R] :
 
 /-- Let R be a p-adically complete ring in which p is not a unit. If R is absolutely integrally
 closed, then Fontaine's `θ : W(tilt R) → R` is onto. -/
-lemma fontaineTheta_surjective_of_isAbsIntegrallyClosed [IsAbsIntegrallyClosed R] :
+lemma fontaineTheta_surjective_of_isAbsIntegrallyClosed [IsAbsolutelyIntegrallyClosed R] :
     (⇑(fontaineTheta R p)).Surjective := by
   -- every `r ∈ R` is an untilt `y^♯`, and `θ` maps the Teichmüller lift `[y]` to `y^♯`
   intro r
@@ -294,7 +296,7 @@ instance : Away (p : OC) ℂ_[p] := by
 
 /-- `O_C` is absolutely integrally closed: every monic polynomial of positive degree over `O_C`
 has a root in `O_C`. -/
-instance : IsAbsIntegrallyClosed OC := .of_isIntegrallyClosedIn ℂ_[p]
+instance : IsAbsolutelyIntegrallyClosed OC := .of_isIntegrallyClosedIn ℂ_[p]
 
 end New
 

@@ -418,7 +418,8 @@ lemma hasLineFormula_of_lerayHirsch_ne_zero {C : Type _} [Category C]
       isLerayHirschBasis_of_forall_isField isDetectedAtPoints_projLine fun k _ ↦ h_field k
   rintro ⟨k, k_test⟩ k_field
   let k_field_inst : Field k := k_field.toField
-  have k_alg_closed : IsAlgClosed k := k_test.isAlgClosed
+  have k_alg_closed : IsAlgClosed k :=
+    TauCeti.isAbsolutelyIntegrallyClosed_iff_isAlgClosed.mp k_test.toIsAbsolutelyIntegrallyClosed
   have k_inverts : InvertsPrime k ℓ :=
     ⟨by simpa using (InvertsPrime.isUnit_prime (A := A) (ℓ := ℓ)).map (algebraMap A k)⟩
   let Θ : Theory (TestOver.restrictScalars A k ⋙ 𝟭 (TestOver A)) := {Theory.locallyConstant with}
