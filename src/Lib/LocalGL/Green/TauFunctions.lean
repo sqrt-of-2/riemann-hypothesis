@@ -1,6 +1,7 @@
 module
 
 import Mathlib.Algebra.AffineMonoid.UniqueSums
+import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.FieldTheory.Finite.Extension
 import Mathlib.NumberTheory.MulChar.Duality
 import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
@@ -662,19 +663,23 @@ q^(m+1) ∏_{i<m} q^i, this says that ∏_{i<m} (1 - q^(-(i+1))) is at least 1 -
 lemma _root_.sub_mul_pow_mul_prod_le_mul_prod {q : ℝ} (hq : 1 < q) (m : ℕ) :
     (q - m) * q ^ m * ∏ i ∈ Finset.range m, q ^ i ≤
       q * ∏ i ∈ Finset.range m, (q ^ (i + 1) - 1) := by
-  induction m with
-  | zero => simp
-  | succ m ih =>
-    -- One more factor on each side; it suffices that `q - m ≤ q ^ (m + 1)`.
-    have h_factor_nonneg : 0 ≤ q ^ (m + 1) - 1 := sub_nonneg.2 (one_le_pow₀ hq.le)
-    have h_key : (q - (m + 1)) * q ^ (m + 1) ≤ (q - m) * (q ^ (m + 1) - 1) := by
-      linarith only [le_self_pow₀ hq.le m.add_one_ne_zero, (Nat.cast_nonneg m : (0 : ℝ) ≤ m)]
-    push_cast [Finset.prod_range_succ]
-    calc (q - (m + 1)) * q ^ (m + 1) * ((∏ i ∈ Finset.range m, q ^ i) * q ^ m)
-        ≤ (q - m) * (q ^ (m + 1) - 1) * ((∏ i ∈ Finset.range m, q ^ i) * q ^ m) := by gcongr
-      _ = (q - m) * q ^ m * (∏ i ∈ Finset.range m, q ^ i) * (q ^ (m + 1) - 1) := by ring
-      _ ≤ q * (∏ i ∈ Finset.range m, (q ^ (i + 1) - 1)) * (q ^ (m + 1) - 1) := by gcongr
-      _ = q * ((∏ i ∈ Finset.range m, (q ^ (i + 1) - 1)) * (q ^ (m + 1) - 1)) := by ring
+  have hq₀ : 0 < q := zero_lt_one.trans hq
+  have hratio : 0 ≤ (q - 1) / q := div_nonneg (sub_nonneg.mpr hq.le) hq₀.le
+  -- Bernoulli bounds the product with every normalized factor replaced by 1 - 1 / q.
+  have hBernoulli := one_add_mul_sub_le_pow (a := (q - 1) / q) (by linarith) m
+  have hscaled : (q - m) * q ^ m ≤ q * (q - 1) ^ m := by
+    rw [show (q - 1) / q - 1 = -(1 / q) by field, div_pow,
+      le_div_iff₀ (pow_pos hq₀ _)] at hBernoulli
+    convert mul_le_mul_of_nonneg_left hBernoulli hq₀.le using 1
+    field
+  calc
+    _ ≤ q * (q - 1) ^ m * ∏ i ∈ Finset.range m, q ^ i := by gcongr
+    _ = q * ∏ i ∈ Finset.range m, ((q - 1) * q ^ i) := by
+      rw [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_range, mul_assoc]
+    _ ≤ _ := by
+      gcongr with i
+      rw [pow_succ]
+      nlinarith only [one_le_pow₀ hq.le (n := i)]
 
 variable (k) in
 /-- The power basis of `k` over itself with generator `1`. -/
