@@ -2,6 +2,10 @@ module
 
 import Mathlib.FieldTheory.Galois.Profinite
 import Mathlib.Topology.Sheaves.Presheaf
+import TauCeti.NumberTheory.ClassFieldTheory.Global.HasseNorm.Basic
+import TauCeti.NumberTheory.LocalField.PowerSubgroup.Open
+import TauCeti.NumberTheory.NumberField.InfinitePlace.Completion.Norm
+import TauCeti.RingTheory.DedekindDomain.AdicValuation.ValuativeRel
 public import Lib.ClassField.Local.ArtinMap
 import Lib.ClassField.Global.AlbertBrauerHasseNoether
 import Lib.ClassField.Global.ArtinMap
@@ -10,8 +14,8 @@ import Lib.ClassField.Global.ArtinReciprocity
 /-!
 # Surjectivity of the Artin map, Hasse's norm theorem and norm groups of cyclic extensions
 
-Global class field theory for cyclic extensions of a number field `K`, deduced from the reciprocity
-law, the second inequality `New.second_inequality` and `New.albert_brauer_hasse_noether`.
+Global class field theory for cyclic extensions of a number field `K`, using the reciprocity law,
+the second inequality `New.second_inequality` and Tau Ceti's cyclic Hasse norm theorem.
 
 * `New.artinMap_surjective`: the Artin map from the finite ideles onto `Γ^ab` is surjective.
 * `New.exists_isProGalois_ker_of_isCyclic`: a cyclic extension `L/K` is cut out by a character.
@@ -132,6 +136,8 @@ lemma exists_isProGalois_ker_of_isCyclic (h_cyc : IsCyclic Gal(L/K)) :
   rw [h_fix_iff, ← Subgroup.mem_bot, ← hψ]
   rfl
 
+open NumberField TauCeti TauCeti.GlobalNumberFields in
+open scoped TensorProduct in
 omit [EmbeddedNumberField K] [EmbeddedNumberField L] in
 variable [NumberField K] [NumberField L] in
 /-- Hasse's norm theorem. Let `L / K` be a cyclic extension of number fields. A totally positive `x`
@@ -146,24 +152,42 @@ lemma hasse_norm [IsCyclic Gal(L/K)] (x : Kˣ)
         (range fun y : L ↦ algebraMap K (LocField v) (Algebra.norm K y)))
     (hx_pos : IsTotallyPositive x.val) :
     ∃ z : Lˣ, z.map (Algebra.norm K) = x := by
-  -- Embed `L` in `Ω` and let `χ` cut it out. Then `x` is a norm exactly when the symbol `(χ, x)`
-  -- vanishes in the Brauer group, which by Albert–Brauer–Hasse–Noether
-  -- (`albert_brauer_hasse_noether`) can be checked place by place; total positivity takes care of
-  -- the real places.
-  algebraize [Ω.fieldEmb L, (Ω.fieldEmb L).comp (algebraMap K L)]
-  obtain ⟨χ, hχ⟩ := exists_isProGalois_ker_of_isCyclic (K := K) (L := L) inferInstance
-  -- `α` is the symbol `(χ, x)` in the Brauer group.
-  set α : (unitsModule Gal(Ω/K)).H2 :=
-    cyclicClass (unitsModule Gal(Ω/K)).ρ χ (DiscreteUnits.ofBase Gal(Ω/K) Ω (Additive.ofMul x))
-  obtain ⟨U, hU_conj, hU_res⟩ : ∃ U : OpenSubgroup Gal(Ω/K),
-      (∀ c : Gal(Ω/K), IsComplexConj c → c ∈ U) ∧ (unitsModule Gal(Ω/K)).resH2 U α = 0 :=
-    hx_pos.exists_resH2_cyclicClass_eq_zero (χ := χ)
-  -- At a finite place `v` the symbol vanishes since `x` is a limit of norms in `K_v`.
-  have h_dec {A : ClosurePlace} {v : FinPlace K} (hv : IsPlaceOver A v) :
-      (unitsModule Gal(Ω/K)).resH2 (decompGroup Gal(Ω/K) A) α = 0 :=
-    hv.abelianLift_artinAt_eq_one_iff.mp (abelianLift_artinAt_eq_one_of_mem_closure (h_loc v))
-  have hα_zero : α = 0 := albert_brauer_hasse_noether α h_dec U hU_conj hU_res
-  exact (cyclicClass_eq_zero_iff_norm (J := hχ) x).mp hα_zero
+  have h_norm : x ∈ normGroup K L := by
+    apply (TauCeti.ClassFieldTheory.isGlobalNorm_iff_isLocalNormEverywhere K L x).2
+    rw [isLocalNormEverywhere_def]
+    have h_degree : finrank K L ≠ 0 := finrank_pos.ne'
+    refine ⟨fun v ↦ ?_, fun w ↦ ?_⟩
+    · -- The local norm subgroup contains an open subgroup of powers, so it contains the limits.
+      rw [isFiniteLocalNorm_def]
+      let F := LocField v
+      let N := (Algebra.normUnits F (S := F ⊗[K] L)).range
+      have hN : IsOpen (N : Set Fˣ) :=
+        Subgroup.isOpen_mono (Algebra.range_powMonoidHom_le_range_normUnits_baseChange K L F)
+          (TauCeti.isOpen_range_powMonoidHom (Nat.cast_ne_zero.2 h_degree))
+      let S := range fun y : L ↦ algebraMap K F (Algebra.norm K y)
+      have h_subset : (Units.val : Fˣ → F) ⁻¹' S ⊆ N := by
+        intro u hu
+        obtain ⟨y, hy⟩ := hu
+        have hy0 : y ≠ 0 := by
+          rintro rfl
+          exact u.ne_zero (by simpa using hy.symm)
+        refine ⟨Units.map (Algebra.TensorProduct.includeRight (R := K) (A := F)).toMonoidHom
+          (Units.mk0 y hy0), Units.ext ?_⟩
+        simpa [TauCeti.Algebra.norm_baseChange_tmul] using hy
+      have hx : Units.map (algebraMap K F).toMonoidHom x ∈
+          _root_.closure ((Units.val : Fˣ → F) ⁻¹' S) := by
+        rw [← IsOpenUnits.isOpenEmbedding_unitsVal.isOpenMap.preimage_closure_eq_closure_preimage
+          Units.continuous_val]
+        exact h_loc v
+      exact closure_minimal h_subset (Subgroup.isClosed_of_isOpen N hN) hx
+    · -- At infinity, total positivity supplies a root of degree `[L : K]`.
+      rw [isInfiniteLocalNorm_def]
+      apply Algebra.range_powMonoidHom_le_range_normUnits_baseChange K L w.Completion
+      refine InfinitePlace.Completion.mem_range_powMonoidHom h_degree _ fun hw ↦ ?_
+      simpa [AbsoluteValue.Completion.algebraMap_def, WithAbs.algebraMap_right_apply, WithAbs.equiv]
+        using hx_pos (InfinitePlace.embedding_of_isReal hw)
+  obtain ⟨z, hz⟩ := mem_normGroup_iff.1 h_norm
+  exact ⟨z, Units.ext hz⟩
 
 omit [IsGalois K L] in
 /-- If the kernel of `χ` is the Galois group of `Ω / L`, then the kernel of `χ ∘ artinMap` has index
