@@ -10,6 +10,7 @@ import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.RegularLocalRing.Defs
 import Mathlib.RingTheory.SimpleRing.Principal
 import Mathlib.RingTheory.Valuation.LocalSubring
+import TauCeti.AlgebraicGeometry.IdealSheaf.VanishingIdeal
 public import Lib.General.Geometry.ProjectiveSpace
 
 /-!
@@ -83,25 +84,20 @@ lemma New.exists_reduced_closure {Z : Type} {X : Scheme}
     (ξ : Z → (Spec (CommRingCat.of ℂ) ⟶ X)) :
     ∃ (Y : Scheme) (i : Y ⟶ X) (e : Z → (Spec (CommRingCat.of ℂ) ⟶ Y)),
       IsClosedImmersion i ∧ (∀ z : Z, e z ≫ i = ξ z) ∧ IsSeparatingFamily e := by
-  -- Take the reduced closed subscheme on the closure of the points.
-  let I : IdealSheafData X := vanishingIdeal (.closure (.range fun z ↦ ξ z (closedPoint ℂ)))
-  -- Each point `ξ z` lands in the support, so it factors through the subscheme.
-  have h_lift (z : Z) : ∃ g : Spec (CommRingCat.of ℂ) ⟶ I.subscheme, g ≫ I.subschemeι = ξ z :=
-    exists_lift_of_dense_preimage I.subschemeι (ξ z)
-      (dense_indiscrete ⟨_, ⟨ξ z (closedPoint ℂ), subset_closure ⟨z, rfl⟩⟩, rfl⟩)
-  choose e he using h_lift
-  -- On each affine chart the ideal is a vanishing ideal, hence radical.
-  have (U : I.subschemeCover.cover.I₀) : IsReduced (I.subschemeCover.cover.X U) :=
-    (affine_isReduced_iff _).2
-      ((Ideal.isRadical_iff_quotient_reduced _).1 (PrimeSpectrum.isRadical_vanishingIdeal _))
-  have h_red : IsReduced I.subscheme := IsReduced.of_openCover _ I.subschemeCover.cover
-  -- The image of a point of the subscheme lies in the closure of the images of the `e z`.
-  have h_dense : IsDenseFamily e := by
-    have h_pt (z : Z) (x : Spec (CommRingCat.of ℂ)) : I.subschemeι (e z x) = ξ z x := by
-      rw [← he z, Scheme.Hom.comp_apply]
-    refine I.subschemeι.isEmbedding.dense_iff.2 fun y ↦ closure_mono ?_ y.property
-    exact Set.range_subset_iff.2 fun z ↦ ⟨e z (closedPoint ℂ), ⟨z, rfl⟩, h_pt z _⟩
-  exact ⟨I.subscheme, I.subschemeι, e, inferInstance, he, h_red, h_dense⟩
+  let S : TopologicalSpace.Closeds X := .closure (.range fun z ↦ ξ z (closedPoint ℂ))
+  let I : IdealSheafData X := vanishingIdeal S
+  have h_ker (z : Z) : I.subschemeι.ker ≤ (ξ z).ker := by
+    rw [ker_subschemeι]
+    apply vanishingIdeal_le_ker_of_range_subset
+    rintro _ ⟨x, rfl⟩
+    rw [Subsingleton.elim x (closedPoint ℂ)]
+    exact subset_closure (Set.mem_range_self z)
+  let e (z : Z) := IsClosedImmersion.lift I.subschemeι (ξ z) (h_ker z)
+  have he (z : Z) : e z ≫ I.subschemeι = ξ z := IsClosedImmersion.lift_fac ..
+  refine ⟨I.subscheme, I.subschemeι, e, inferInstance, he, inferInstance, ?_⟩
+  refine I.subschemeι.isEmbedding.dense_iff.2 fun y ↦ closure_mono ?_ y.property
+  exact Set.range_subset_iff.2 fun z ↦ ⟨e z (closedPoint ℂ), ⟨z, rfl⟩,
+    congrArg (fun f : Spec (CommRingCat.of ℂ) ⟶ X ↦ f (closedPoint ℂ)) (he z)⟩
 
 end ReducedClosure
 
