@@ -775,8 +775,7 @@ lemma exists_isAddFundamentalDomain_of_integral {V σ : Type*} [NormedAddCommGro
   let L' := ZLattice.comap ℝ L f.toLinearMap
   have h_integral : ZLattice.IsIntegral L' := ZLattice.isIntegral_iff.2 fun x hx y hy ↦ by
     have h_coord (z : EuclideanSpace ℝ σ) (i : σ) : e.repr (f z) i = z i := by
-      simp [f, Basis.equiv]
-      rfl
+      simp [f, Basis.equiv, b₀, EuclideanSpace.basisFun_repr]
     simpa [h_coord, PiLp.inner_apply, starRingEnd_apply, star_trivial, mul_comm] using
       h_int (f x) hx (f y) hy
   -- The Gram determinant bound gives the desired lower bound on covolume.
