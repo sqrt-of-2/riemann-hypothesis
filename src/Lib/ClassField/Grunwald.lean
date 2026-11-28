@@ -541,7 +541,7 @@ the norm of `x` from `L` to `E`. -/
 lemma New.prod_Φ_eq_Φ_norm {E L : Type} [Field E] [CMType E] [Field L] [Algebra E L]
     [h : CMTypeOver E L] (w : InfinitePlace E) (x : L) :
     ∏ u : InfinitePlace L with u.comap (algebraMap E L) = w, Φ u x = Φ w (Algebra.norm E x) := by
-  let h_nonreal := IsTotallyComplex.complexEmbedding_not_isReal (Φ w)
+  have h_nonreal := IsTotallyComplex.complexEmbedding_not_isReal (Φ w)
   let e := ComplexEmbedding.Extension.equivPlacesOver (L := L) h_nonreal
   let := Fintype.ofFinite (InfinitePlace.placesOver L (InfinitePlace.mk (Φ w)))
   have h_chosen (u : InfinitePlace.placesOver L (InfinitePlace.mk (Φ w))) :
