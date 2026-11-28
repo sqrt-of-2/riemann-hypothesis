@@ -119,7 +119,7 @@ lemma minkowski_pow_le_covolume [FiniteDimensional ℝ E] [MeasurableSpace E] [B
       (L := Λ.toAddSubgroup) hD h_symm h_conv h
     exact h_no_point x hx hxC
   have hC : volume C = ENNReal.ofReal ((ρ / √m) ^ m) * 2 ^ m := by
-    let h_pres := (PiLp.volume_preserving_ofLp (Fin m)).comp o.measurePreserving_repr
+    have h_pres := (PiLp.volume_preserving_ofLp (Fin m)).comp o.measurePreserving_repr
     change volume ((WithLp.ofLp ∘ o.repr) ⁻¹' B) = _
     rw [h_pres.measure_preimage (Metric.isOpen_ball.measurableSet.nullMeasurableSet)]
     change volume (Metric.ball (0 : Fin m → ℝ) (ρ / √m)) = _
